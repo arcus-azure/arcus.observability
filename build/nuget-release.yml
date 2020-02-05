@@ -99,17 +99,17 @@ stages:
                 parameters:
                   repositoryName: '$(Repository)'
                   releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project)/$(Build.BuildNumber))
+                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
                     ```shell
-                    PM > Install-Package $(Project) --Version $(Build.BuildNumber)
+                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
                     ```
           - ${{ if contains(variables['Build.BuildNumber'], '-') }}:
               - template: create-pre-release.yml@templates
                 parameters:
                   repositoryName: '$(Repository)'
                   releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project)/$(Build.BuildNumber))
+                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
                     ```shell
-                    PM > Install-Package $(Project) --Version $(Build.BuildNumber)
+                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
                     ```
           - template: nuget/publish-official-package.yml@templates
