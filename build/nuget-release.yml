@@ -14,7 +14,7 @@ variables:
   - group: 'Arcus Observability - .NET'
   - group: 'Build Configuration'
   - name: 'Repository'
-    value: 'azure-arcus/arcus.observability'
+    value: 'arcus-azure/arcus.observability'
   # 'Package.Version' is added as queue-time variable on build in Azure DevOps
 
 stages:
