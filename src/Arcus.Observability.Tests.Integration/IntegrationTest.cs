@@ -1,8 +1,8 @@
-﻿using Arcus.Template.Tests.Integration.Logging;
+﻿using Arcus.Observability.Tests.Integration.Logging;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
-namespace Arcus.Template.Tests.Integration
+namespace Arcus.Observability.Tests.Integration
 {
     public class IntegrationTest
     {
