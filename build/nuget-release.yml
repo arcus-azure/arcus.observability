@@ -11,14 +11,10 @@ resources:
       endpoint: arcus-azure
 
 variables:
+  - group: 'Arcus Observability - .NET'
   - group: 'Build Configuration'
-  # Always use fixed version for .NET Core SDK
-  - name: 'DotNet.Sdk.Version'
-    value: '2.2.105'
-  - name: 'Project'
-    value: 'Arcus.Observability'
   - name: 'Repository'
-    value: 'azure-arcus/arcus.template'
+    value: 'azure-arcus/arcus.observability'
   # 'Package.Version' is added as queue-time variable on build in Azure DevOps
 
 stages:
