@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace Arcus.Template.Tests.Unit
+namespace Arcus.Observability.Tests.Unit
 {
     [Trait(name: "Category", value: "Unit")]
     public class DemoUnitTest

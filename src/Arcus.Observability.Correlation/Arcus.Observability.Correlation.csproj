@@ -4,15 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
-    <Description>Provides a template for new Arcus projects</Description>
+    <Description>Provides capability to use correlation in applications</Description>
     <Copyright>Copyright (c) Arcus</Copyright>
     <PackageLicenseUrl>https://github.com/arcus-azure/arcus.github.template/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/arcus-azure/arcus.github.template</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/arcus-azure/arcus/master/media/arcus.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/arcus-azure/arcus.github.template</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Azure;Template</PackageTags>
-    <PackageId>Arcus.GitHub.Template.Core</PackageId>
+    <PackageTags>Azure;Observability;Correlation</PackageTags>
+    <PackageId>Arcus.Observability.Correlation</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

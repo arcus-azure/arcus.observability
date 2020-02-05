@@ -23,12 +23,8 @@ resources:
 
 variables:
   - group: 'Arcus - GitHub Package Registry'
+  - group: 'Arcus Observability - .NET'
   - group: 'Build Configuration'
-  # Always use fixed version for .NET Core SDK
-  - name: 'DotNet.Sdk.Version'
-    value: '2.2.105'
-  - name: 'Project'
-    value: 'Arcus.Template'
     # 'Package.Version.ManualTrigger' is added as queue-time variable on build in Azure DevOps
 
 stages:

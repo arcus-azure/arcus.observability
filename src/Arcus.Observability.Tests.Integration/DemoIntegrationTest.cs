@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Template.Tests.Integration
+namespace Arcus.Observability.Tests.Integration
 {
     [Trait(name: "Category", value: "Integration")]
     public class DemoIntegrationTest : IntegrationTest
