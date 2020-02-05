@@ -16,7 +16,7 @@ variables:
   - name: 'DotNet.Sdk.Version'
     value: '2.2.105'
   - name: 'Project'
-    value: 'Arcus.Template'
+    value: 'Arcus.Observability'
   - name: 'Repository'
     value: 'azure-arcus/arcus.template'
   # 'Package.Version' is added as queue-time variable on build in Azure DevOps
