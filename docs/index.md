@@ -6,14 +6,14 @@ redirect_from:
  - /index.html
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability/)
+[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
 
 # Installation
 
-The Arcus.Observability can be installed via NuGet:
+The Arcus.Observability.Correlation can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability
+PM > Install-Package Arcus.Observability.Correlation
 ```
 
 For more granular packages we recommend reading the documentation.
