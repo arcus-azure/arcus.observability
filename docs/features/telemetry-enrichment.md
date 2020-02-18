@@ -3,7 +3,7 @@ title: "Home"
 layout: default
 ---
 
-# Telemetry (Serilog enrichment)
+# Telemetry Enrichment
 
 ## Version Enricher
 
