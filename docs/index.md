@@ -13,7 +13,7 @@ redirect_from:
 The Arcus.Observability.Correlation can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlationo
+PM > Install-Package Arcus.Observability.Correlation
 ```
 
 For more granular packages we recommend reading the documentation.
