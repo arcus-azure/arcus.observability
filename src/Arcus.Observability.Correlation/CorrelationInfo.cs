@@ -1,5 +1,4 @@
-﻿using System;
-using GuardNet;
+﻿using GuardNet;
 
 namespace Arcus.Observability.Correlation
 {
@@ -15,9 +14,6 @@ namespace Arcus.Observability.Correlation
         {
             Guard.NotNullOrEmpty(operationId, nameof(operationId),
                 "Cannot create a correlation instance with a blank operation ID");
-            Guard.For<ArgumentException>(
-                () => transactionId == string.Empty,
-                "Cannot create correlation instance with a blank transaction ID, only 'null' or non-blank ID's are allowed");
 
             OperationId = operationId;
             TransactionId = transactionId;

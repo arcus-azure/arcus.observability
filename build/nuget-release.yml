@@ -14,7 +14,7 @@ variables:
   - group: 'Arcus Observability - .NET'
   - group: 'Build Configuration'
   - name: 'Repository'
-    value: 'azure-arcus/arcus.observability'
+    value: 'arcus-azure/arcus.observability'
   # 'Package.Version' is added as queue-time variable on build in Azure DevOps
 
 stages:
@@ -99,17 +99,17 @@ stages:
                 parameters:
                   repositoryName: '$(Repository)'
                   releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project)/$(Build.BuildNumber))
+                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
                     ```shell
-                    PM > Install-Package $(Project) --Version $(Build.BuildNumber)
+                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
                     ```
           - ${{ if contains(variables['Build.BuildNumber'], '-') }}:
               - template: create-pre-release.yml@templates
                 parameters:
                   repositoryName: '$(Repository)'
                   releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project)/$(Build.BuildNumber))
+                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
                     ```shell
-                    PM > Install-Package $(Project) --Version $(Build.BuildNumber)
+                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
                     ```
           - template: nuget/publish-official-package.yml@templates
