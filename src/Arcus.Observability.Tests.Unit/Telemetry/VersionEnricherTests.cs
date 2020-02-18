@@ -20,7 +20,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var configuration = 
                 new LoggerConfiguration()
                     .WriteTo.Sink(spy)
-                    .Enrich.With(new VersionEnricher());
+                    .Enrich.With<VersionEnricher>();
 
             ILogger logger = configuration.CreateLogger();
 
