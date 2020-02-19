@@ -2,12 +2,12 @@
 [![Build Status](https://dev.azure.com/codit/Arcus/_apis/build/status/Commit%20builds/CI%20-%20Arcus.Observability?branchName=master)](https://dev.azure.com/codit/Arcus/_build/latest?definitionId=733&branchName=master)
 [![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
 
-Web API development in a breeze.
+Observability with Microsoft Azure in a breeze.
 
 ![Arcus](https://raw.githubusercontent.com/arcus-azure/arcus/master/media/arcus.png)
 
 # Installation
-Soon you will be able to install it via NuGet:
+Easy to install it via NuGet:
 
 ```shell
 PM > Install-Package Arcus.Observability.Correlation
