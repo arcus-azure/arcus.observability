@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
-    <Description>Provides capability to improve telemetry with Serilog in applications</Description>
+    <Description>Provides capability to use additional telemetry functionality for Serilog in applications</Description>
     <Copyright>Copyright (c) Arcus</Copyright>
     <PackageLicenseUrl>https://github.com/arcus-azure/arcus.observability/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/arcus-azure/arcus.observability</PackageProjectUrl>

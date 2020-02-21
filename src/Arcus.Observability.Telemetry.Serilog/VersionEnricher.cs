@@ -25,8 +25,8 @@ namespace Arcus.Observability.Telemetry.Serilog
             }
             
             _assemblyVersion = 
-                executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                    ?? executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
+                executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
+                    ?? executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                     ?? executingAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
         }
 
