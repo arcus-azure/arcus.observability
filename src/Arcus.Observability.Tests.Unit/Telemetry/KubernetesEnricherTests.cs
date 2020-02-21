@@ -40,9 +40,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            ContainsLogProperty(logEvent, kubernetesNodeName, nodeName);
-            ContainsLogProperty(logEvent, kubernetesPodName, podName);
-            ContainsLogProperty(logEvent, kubernetesNamespace, @namespace);
+            ContainsLogProperty(logEvent, "NodeName", nodeName);
+            ContainsLogProperty(logEvent, "PodName", podName);
+            ContainsLogProperty(logEvent, "Namespace", @namespace);
         }
 
         [Fact]
@@ -75,54 +75,93 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            ContainsLogProperty(logEvent, kubernetesNodeName, nodeName);
-            ContainsLogProperty(logEvent, kubernetesPodName, podName);
-            ContainsLogProperty(logEvent, kubernetesNamespace, @namespace);
+            ContainsLogProperty(logEvent, "NodeName", nodeName);
+            ContainsLogProperty(logEvent, "PodName", podName);
+            ContainsLogProperty(logEvent, "Namespace", @namespace);
         }
 
         [Fact]
-        public void LogEvent_WithCustomEnvironmentVariablesAndLogPropertyNamesWithinKubernetesEnricher_HasEnvironmentInformation()
+        public void LogEventWithNodeNameProperty_WithKubernetesEnricher_HasEnvironmentInformation()
         {
             // Arrange
-            const string kubernetesNodeNameEnvVar = "MY_KUBERNETES_NODE_NAME",
-                         kubernetesPodNameEnvVar = "MY_KUBERNETES_POD_NAME",
-                         kubernetesNamespaceEnvVar = "MY_KUBERNETES_NAMESPACE";
-
-            const string kubernetesNodeNamePropName = "MyKubernetesNodeName",
-                         kubernetesPodNamePropName = "MyKubernetesPodName",
-                         kubernetesNamespacePropName = "MyKubernetesNamespace";
-
-            string nodeName = $"node-{Guid.NewGuid()}";
-            string podName = $"pod-{Guid.NewGuid()}";
-            string @namespace = $"namespace-{Guid.NewGuid()}";
+            string expectedNodeName = $"node-{Guid.NewGuid()}";
+            string ignoredNodeName = $"node-{Guid.NewGuid()}";
 
             var spy = new InMemoryLogSink();
-            var kubernetesEnvironmentToLogProperty = new Dictionary<string, string>
-            {
-                [kubernetesNodeNameEnvVar] = kubernetesNodeNamePropName,
-                [kubernetesPodNameEnvVar] = kubernetesPodNamePropName, 
-                [kubernetesNamespaceEnvVar] = kubernetesNamespacePropName
-            };
             ILogger logger = new LoggerConfiguration()
-                .Enrich.With(new KubernetesEnricher(kubernetesEnvironmentToLogProperty))
+                .Enrich.With<KubernetesEnricher>()
                 .WriteTo.Sink(spy)
                 .CreateLogger();
 
-            using (TemporaryEnvironmentVariable.Create(kubernetesNodeNameEnvVar, nodeName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesPodNameEnvVar, podName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesNamespaceEnvVar, @namespace))
+            using (TemporaryEnvironmentVariable.Create("KUBERNETES_NODE_NAME", ignoredNodeName))
             {
                 // Act
-                logger.Information("This log event should be enriched with Kubernetes information");
+                logger.Information("This log even already has a Kubernetes NodeName {NodeName}", expectedNodeName);
             }
 
             // Assert
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
-            
-            ContainsLogProperty(logEvent, kubernetesNodeNamePropName, nodeName);
-            ContainsLogProperty(logEvent, kubernetesPodNamePropName, podName);
-            ContainsLogProperty(logEvent, kubernetesNamespacePropName, @namespace);
+
+            ContainsLogProperty(logEvent, "NodeName", expectedNodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+        }
+
+        [Fact]
+        public void LogEventWithPodNameProperty_WithKubernetesEnricher_HasEnvironmentInformation()
+        {
+            // Arrange
+            string expectedPodName = $"pod-{Guid.NewGuid()}";
+            string ignoredPodName = $"pod-{Guid.NewGuid()}";
+
+            var spy = new InMemoryLogSink();
+            ILogger logger = new LoggerConfiguration()
+                             .Enrich.With<KubernetesEnricher>()
+                             .WriteTo.Sink(spy)
+                             .CreateLogger();
+
+            using (TemporaryEnvironmentVariable.Create("KUBERNETES_POD_NAME", ignoredPodName))
+            {
+                // Act
+                logger.Information("This log even already has a Kubernetes PodName {PodName}", expectedPodName);
+            }
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            ContainsLogProperty(logEvent, "PodName", expectedPodName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+        }
+
+        [Fact]
+        public void LogEventWithNamespaceProperty_WithKubernetesEnricher_HasEnvironmentInformation()
+        {
+            // Arrange
+            string expectedNamespace = $"namespace-{Guid.NewGuid()}";
+            string ignoredNamespace = $"namespace-{Guid.NewGuid()}";
+
+            var spy = new InMemoryLogSink();
+            ILogger logger = new LoggerConfiguration()
+                             .Enrich.With<KubernetesEnricher>()
+                             .WriteTo.Sink(spy)
+                             .CreateLogger();
+
+            using (TemporaryEnvironmentVariable.Create("KUBERNETES_NAMESPACE", ignoredNamespace))
+            {
+                // Act
+                logger.Information("This log even already has a Kubernetes Namespace {Namespace}", expectedNamespace);
+            }
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            ContainsLogProperty(logEvent, "Namespace", expectedNamespace);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
         }
 
         private static void ContainsLogProperty(LogEvent logEvent, string name, string expectedValue)

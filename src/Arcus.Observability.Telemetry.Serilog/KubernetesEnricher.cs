@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GuardNet;
@@ -13,33 +12,40 @@ namespace Arcus.Observability.Telemetry.Serilog
     /// </summary>
     public class KubernetesEnricher : ILogEventEnricher
     {
+        private const string NodeNameVariable = "KUBERNETES_NODE_NAME",
+                             PodNameVariable = "KUBERNETES_POD_NAME",
+                             NamespaceVariable = "KUBERNETES_NAMESPACE";
+
+        private const string NodeNameProperty = "NodeName",
+                             PodNameProperty = "PodName",
+                             NamespaceProperty = "Namespace";
+
         private readonly IDictionary<string, string> _kubernetesEnvironmentToLogProperty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KubernetesEnricher"/> class.
         /// </summary>
-        public KubernetesEnricher() : this("KUBERNETES_NODE_NAME", "KUBERNETES_POD_NAME", "KUBERNETES_NAMESPACE")
+        public KubernetesEnricher() : this(NodeNameVariable, PodNameVariable, NamespaceVariable)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KubernetesEnricher"/> class.
         /// </summary>
-        /// <param name="kubernetesNodeName"></param>
-        public KubernetesEnricher(string kubernetesNodeName, string kubernetesPodName, string kubernetesNamespace)
+        /// <param name="nodeNameVariableName">The name of the environment variable that specifies the Kubernetes node name.</param>
+        /// <param name="podNameVariableName">The name of the environment variable that specifies the Kubernetes pod name.</param>
+        /// <param name="namespaceVariableName">The name of the environment variable that specifies the Kubernetes namespace.</param>
+        public KubernetesEnricher(string nodeNameVariableName, string podNameVariableName, string namespaceVariableName)
             : this(new Dictionary<string, string>
                    {
-                       [kubernetesNodeName] = kubernetesNodeName,
-                       [kubernetesPodName] = kubernetesPodName,
-                       [kubernetesNamespace] = kubernetesNamespace
+                       [nodeNameVariableName] = NodeNameProperty,
+                       [podNameVariableName] = PodNameProperty,
+                       [namespaceVariableName] = NamespaceProperty
                    })
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KubernetesEnricher"/> class.
-        /// </summary>
-        public KubernetesEnricher(IDictionary<string, string> kubernetesEnvironmentToLogProperty)
+        private KubernetesEnricher(IDictionary<string, string> kubernetesEnvironmentToLogProperty)
         {
             Guard.NotNull(kubernetesEnvironmentToLogProperty, nameof(kubernetesEnvironmentToLogProperty));
             Guard.For<ArgumentException>(
@@ -68,8 +74,7 @@ namespace Arcus.Observability.Telemetry.Serilog
             LogEvent logEvent,
             ILogEventPropertyFactory propertyFactory)
         {
-            string value =
-                Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Process);
+            string value = Environment.GetEnvironmentVariable(environmentVariableName, EnvironmentVariableTarget.Process);
             if (!String.IsNullOrWhiteSpace(value))
             {
                 LogEventProperty property = propertyFactory.CreateProperty(logPropertyName, value);
