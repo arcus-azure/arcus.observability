@@ -17,7 +17,7 @@ namespace Arcus.Observability.Telemetry.Serilog
         /// </summary>
         public VersionEnricher()
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
+            var executingAssembly = Assembly.GetEntryAssembly();
             if (executingAssembly == null)
             {
                 throw new InvalidOperationException(
