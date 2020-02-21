@@ -32,7 +32,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         /// </summary>
         public void Dispose()
         {
-            Environment.SetEnvironmentVariable(_name, value: null, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable(_name, value: null, target: EnvironmentVariableTarget.Process);
         }
     }
 }
