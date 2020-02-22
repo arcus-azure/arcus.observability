@@ -46,41 +46,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogEvent_WithCustomEnvironmentVariablesWithinKubernetesEnricher_HasEnvironmentInformation()
-        {
-            // Arrange
-            const string kubernetesNodeName = "MY_KUBERNETES_NODE_NAME",
-                         kubernetesPodName = "MY_KUBERNETES_POD_NAME",
-                         kubernetesNamespace = "MY_KUBERNETES_NAMESPACE";
-
-            string nodeName = $"node-{Guid.NewGuid()}";
-            string podName = $"pod-{Guid.NewGuid()}";
-            string @namespace = $"namespace-{Guid.NewGuid()}";
-
-            var spy = new InMemoryLogSink();
-            ILogger logger = new LoggerConfiguration()
-                .Enrich.With(new KubernetesEnricher(kubernetesNodeName, kubernetesPodName, kubernetesNamespace))
-                .WriteTo.Sink(spy)
-                .CreateLogger();
-
-            using (TemporaryEnvironmentVariable.Create(kubernetesNodeName, nodeName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesPodName, podName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesNamespace, @namespace))
-            {
-                // Act
-                logger.Information("This log event should be enriched with Kubernetes information");
-            }
-
-            // Assert
-            LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
-            Assert.NotNull(logEvent);
-            
-            ContainsLogProperty(logEvent, "NodeName", nodeName);
-            ContainsLogProperty(logEvent, "PodName", podName);
-            ContainsLogProperty(logEvent, "Namespace", @namespace);
-        }
-
-        [Fact]
         public void LogEventWithNodeNameProperty_WithKubernetesEnricher_HasEnvironmentInformation()
         {
             // Arrange

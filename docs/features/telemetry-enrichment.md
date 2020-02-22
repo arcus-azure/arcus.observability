@@ -44,16 +44,3 @@ ILogger logger = new LoggerConfiguration()
 
 logger.Information("This event will be enriched with the Kubernetes environment information");
 ```
-
-The name of each environment variable can be configured:
-
-```csharp
-ILogger logger = new LoggerConfiguration()
-    .Enrich.With(new KubernetesEnricher(
-        "My_KUBERNETES_NODE_NAME",
-        "MY_KUBERNETES_POD_NAME",
-        "MY_KUBERNETES_NAMESPACE"))
-    .CreateLogger();
-
-logger.Information("This event will be enriched with the Kubernetes environment information");
-```
