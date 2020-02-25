@@ -29,11 +29,11 @@ logger.Information("This event will be enriched with the runtime assembly produc
 The `Arcus.Observability.Telemetry.Serilog` library provides a [Kubernetes](https://kubernetes.io/) enricher that adds several machine information from the environment (variables).
 
 **Example**
-| Environment Variable   | Log Property | Value                |
-| ---------------------- | ------------ | -------------------- |
-| `KUBERNETES_NODE_NAME` | NodeName     | `spec.nodeName`      |
-| `KUBERNETES_POD_NAME`  | PodName      | `metadata.name`      |
-| `KUBERNETES_NAMESPACE` | Namespace    | `metadata.namespace` |
+| Environment Variable   | Log Property |
+| ---------------------- | ------------ |
+| `KUBERNETES_NODE_NAME` | NodeName     |
+| `KUBERNETES_POD_NAME`  | PodName      |
+| `KUBERNETES_NAMESPACE` | Namespace    |
 
 **Usage**
 
