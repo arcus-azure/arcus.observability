@@ -23,3 +23,24 @@ ILogger logger = new LoggerConfiguration()
 
 logger.Information("This event will be enriched with the runtime assembly product version");
 ```
+
+## Kubernetes Enricher
+
+The `Arcus.Observability.Telemetry.Serilog` library provides a [Kubernetes](https://kubernetes.io/) enricher that adds several machine information from the environment (variables).
+
+**Example**
+| Environment Variable   | Log Property |
+| ---------------------- | ------------ |
+| `KUBERNETES_NODE_NAME` | NodeName     |
+| `KUBERNETES_POD_NAME`  | PodName      |
+| `KUBERNETES_NAMESPACE` | Namespace    |
+
+**Usage**
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.With<KubernetesEnricher>()
+    .CreateLogger();
+
+logger.Information("This event will be enriched with the Kubernetes environment information");
+```
