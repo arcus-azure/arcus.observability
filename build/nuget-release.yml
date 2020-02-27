@@ -94,7 +94,6 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - ${{ if not(contains(variables['Build.BuildNumber'], '-')) }}:
           - template: github/create-release.yml@templates
             parameters:
               repositoryName: '$(Repository)'
