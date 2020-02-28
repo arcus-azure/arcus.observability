@@ -94,22 +94,12 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - ${{ if not(contains(variables['Build.BuildNumber'], '-')) }}:
-              - template: github/create-release.yml@templates
-                parameters:
-                  repositoryName: '$(Repository)'
-                  releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
-                    ```shell
-                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
-                    ```
-          - ${{ if contains(variables['Build.BuildNumber'], '-') }}:
-              - template: create-pre-release.yml@templates
-                parameters:
-                  repositoryName: '$(Repository)'
-                  releaseNotes: |
-                    Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
-                    ```shell
-                    PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
-                    ```
+          - template: github/create-release.yml@templates
+            parameters:
+              repositoryName: '$(Repository)'
+              releaseNotes: |
+                Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
+                ```shell
+                PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
+                ```
           - template: nuget/publish-official-package.yml@templates
