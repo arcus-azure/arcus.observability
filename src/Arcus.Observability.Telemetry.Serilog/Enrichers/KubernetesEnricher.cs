@@ -1,4 +1,5 @@
 ﻿using System;
+using Arcus.Observability.Telemetry.Core;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -13,10 +14,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
                              PodNameVariable = "KUBERNETES_POD_NAME",
                              NamespaceVariable = "KUBERNETES_NAMESPACE";
 
-        private const string NodeNameProperty = "NodeName",
-                             PodNameProperty = "PodName",
-                             NamespaceProperty = "Namespace";
-
         /// <summary>
         /// Enrich the log event.
         /// </summary>
@@ -24,9 +21,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            EnrichEnvironmentVariable(NodeNameVariable, NodeNameProperty, logEvent, propertyFactory);
-            EnrichEnvironmentVariable(PodNameVariable, PodNameProperty, logEvent, propertyFactory);
-            EnrichEnvironmentVariable(NamespaceVariable, NamespaceProperty, logEvent, propertyFactory);
+            EnrichEnvironmentVariable(NodeNameVariable, ContextProperties.Kubernetes.NodeName, logEvent, propertyFactory);
+            EnrichEnvironmentVariable(NamespaceVariable, ContextProperties.Kubernetes.Namespace, logEvent, propertyFactory);
+            EnrichEnvironmentVariable(PodNameVariable, ContextProperties.Kubernetes.PodName, logEvent, propertyFactory);
         }
 
         private static void EnrichEnvironmentVariable(
