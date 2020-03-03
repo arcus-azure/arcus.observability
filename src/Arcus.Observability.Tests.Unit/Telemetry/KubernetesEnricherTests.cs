@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Serilog;
 using Serilog;
 using Serilog.Events;
@@ -40,9 +39,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            ContainsLogProperty(logEvent, "NodeName", nodeName);
-            ContainsLogProperty(logEvent, "PodName", podName);
-            ContainsLogProperty(logEvent, "Namespace", @namespace);
+            Assert.True(logEvent.ContainsProperty("NodeName", nodeName), "Log event should contain node name property");
+            Assert.True(logEvent.ContainsProperty("PodName", podName), "Log event should contain pod name property");
+            Assert.True(logEvent.ContainsProperty("Namespace", @namespace), "Log event should contain namespace property");
         }
 
         [Fact]
@@ -68,7 +67,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "NodeName", expectedNodeName);
+            Assert.True(logEvent.ContainsProperty("NodeName", expectedNodeName), "Log event should contain node name property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
         }
@@ -82,9 +81,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                             .Enrich.With<KubernetesEnricher>()
-                             .WriteTo.Sink(spy)
-                             .CreateLogger();
+                .Enrich.With<KubernetesEnricher>()
+                .WriteTo.Sink(spy)
+                .CreateLogger();
 
             using (TemporaryEnvironmentVariable.Create("KUBERNETES_POD_NAME", ignoredPodName))
             {
@@ -96,7 +95,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "PodName", expectedPodName);
+            Assert.True(logEvent.ContainsProperty("PodName", expectedPodName), "Log event should contain pod name property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
         }
@@ -110,9 +109,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                             .Enrich.With<KubernetesEnricher>()
-                             .WriteTo.Sink(spy)
-                             .CreateLogger();
+                .Enrich.With<KubernetesEnricher>()
+                .WriteTo.Sink(spy)
+                .CreateLogger();
 
             using (TemporaryEnvironmentVariable.Create("KUBERNETES_NAMESPACE", ignoredNamespace))
             {
@@ -124,18 +123,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "Namespace", expectedNamespace);
+            Assert.True(logEvent.ContainsProperty("Namespace", expectedNamespace), "Log event should contain namespace property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
-        }
-
-        private static void ContainsLogProperty(LogEvent logEvent, string name, string expectedValue)
-        {
-            (string key, LogEventPropertyValue actual) = 
-                Assert.Single(logEvent.Properties, prop => prop.Key == name);
-            
-            string actualValue = actual.ToString().Trim('\"');
-            Assert.Equal(expectedValue, actualValue);
         }
     }
 }

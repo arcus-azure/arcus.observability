@@ -13,9 +13,9 @@ namespace Arcus.Observability.Telemetry.Serilog
                              PodNameVariable = "KUBERNETES_POD_NAME",
                              NamespaceVariable = "KUBERNETES_NAMESPACE";
 
-        private const string NodeNameProperty = "NodeName",
-                             PodNameProperty = "PodName",
-                             NamespaceProperty = "Namespace";
+        internal const string NodeNameProperty = "NodeName",
+                              PodNameProperty = "PodName",
+                              NamespaceProperty = "Namespace";
 
         /// <summary>
         /// Enrich the log event.
