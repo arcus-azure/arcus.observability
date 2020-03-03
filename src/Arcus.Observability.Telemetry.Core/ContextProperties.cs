@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#pragma warning disable 1591
 namespace Arcus.Observability.Telemetry.Core
 {
     public class ContextProperties
@@ -38,6 +35,12 @@ namespace Arcus.Observability.Telemetry.Core
             public const string ResponseStatusCode = "ResponseStatusCode";
             public const string RequestDuration = "RequestDuration";
             public const string RequestTime = "RequestTime";
+        }
+
+        public class MetricTracking
+        {
+            public const string MetricName = "MetricName";
+            public const string MetricValue = "MetricValue";
         }
     }
 }

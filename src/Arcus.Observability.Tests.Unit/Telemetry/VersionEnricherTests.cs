@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Linq;
-using Arcus.Observability.Telemetry.Serilog;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
-using Serilog.Parsing;
 using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry
