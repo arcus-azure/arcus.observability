@@ -5,6 +5,14 @@ layout: default
 
 # Telemetry Enrichment
 
+## Installation
+
+This feature requires to install our NuGet package
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.Serilog
+```
+
 ## Version Enricher
 
 The `Arcus.Observability.Telemetry.Serilog` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
