@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve telemetry with Serilog that is sent to Azure Application Insights</Description>
@@ -12,7 +13,6 @@
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Azure;Observability;Telemetry;Serilog</PackageTags>
-    <PackageId>Arcus.Observability.Telemetry.Serilog</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
