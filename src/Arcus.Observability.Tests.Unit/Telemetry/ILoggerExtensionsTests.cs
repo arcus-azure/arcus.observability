@@ -205,7 +205,70 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var duration = _bogusGenerator.Date.Timespan();
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, startTime, duration));
+            Assert.Throws<ArgumentNullException>(() => logger.LogHttpDependency(request, statusCode, startTime, duration));
+        }
+
+        [Fact]
+        public void LogRequest_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Name.FirstName()}";
+            var host = _bogusGenerator.Name.FirstName();
+            var method = HttpMethod.Head;
+            var mockRequest = new Mock<HttpRequest>();
+            mockRequest.Setup(request => request.Method).Returns(method.ToString());
+            mockRequest.Setup(request => request.Host).Returns(new HostString(host));
+            mockRequest.Setup(request => request.Path).Returns(path);
+            var mockResponse = new Mock<HttpResponse>();
+            mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act;
+            logger.LogRequest(mockRequest.Object, mockResponse.Object, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
+            Assert.Contains(path, logMessage);
+            Assert.Contains(host, logMessage);
+            Assert.Contains(statusCode.ToString(), logMessage);
+            Assert.Contains(method.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogRequest_NoRequestWasSpecified_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            HttpRequest request = null;
+            var mockResponse = new Mock<HttpResponse>();
+            mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentNullException>(() => logger.LogRequest(request, mockResponse.Object, duration));
+        }
+
+        [Fact]
+        public void LogRequest_NoResponseWasSpecified_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var path = $"/{_bogusGenerator.Name.FirstName()}";
+            var host = _bogusGenerator.Name.FirstName();
+            var method = HttpMethod.Head;
+            var mockRequest = new Mock<HttpRequest>();
+            mockRequest.Setup(request => request.Method).Returns(method.ToString());
+            mockRequest.Setup(request => request.Host).Returns(new HostString(host));
+            mockRequest.Setup(request => request.Path).Returns(path);
+            HttpResponse response = null;
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentNullException>(() => logger.LogRequest(mockRequest.Object, response, duration));
         }
     }
 }
