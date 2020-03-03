@@ -1,10 +1,11 @@
 ﻿using System;
+using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Telemetry
+namespace Arcus.Observability.Tests.Unit.Serilog
 {
     [Trait("Category", "Unit")]
     public class KubernetesEnricherTests
@@ -39,9 +40,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            ContainsLogProperty(logEvent, "NodeName", nodeName);
-            ContainsLogProperty(logEvent, "PodName", podName);
-            ContainsLogProperty(logEvent, "Namespace", @namespace);
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.NodeName, nodeName);
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.PodName, podName);
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.Namespace, @namespace);
         }
 
         [Fact]
@@ -67,9 +68,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "NodeName", expectedNodeName);
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.NodeName, expectedNodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
 
         [Fact]
@@ -95,9 +96,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "PodName", expectedPodName);
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.PodName, expectedPodName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
 
         [Fact]
@@ -123,9 +124,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, "Namespace", expectedNamespace);
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
+            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.Namespace, expectedNamespace);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
         }
 
         private static void ContainsLogProperty(LogEvent logEvent, string name, string expectedValue)
