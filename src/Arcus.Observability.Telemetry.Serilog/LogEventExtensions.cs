@@ -23,16 +23,13 @@ namespace Serilog.Events
         {
             Guard.NotNull(logEvent, nameof(logEvent));
 
-            KeyValuePair<string, LogEventPropertyValue> actual = 
-                logEvent.Properties.SingleOrDefault(prop => prop.Key == name);
-
-            if (actual.Key is null || actual.Value is null)
+            if (logEvent.Properties.TryGetValue(name, out LogEventPropertyValue actual))
             {
-                return false;
+                string actualValue = actual.ToString().Trim('\"');
+                return value == actualValue;
             }
 
-            string actualValue = actual.ToString().Trim('\"');
-            return value == actualValue;
+            return false;
         }
     }
 }
