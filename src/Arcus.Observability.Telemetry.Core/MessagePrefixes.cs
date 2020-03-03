@@ -5,7 +5,7 @@
         public const string DependencyViaHttp = "HTTP Dependency";
         public const string DependencyViaSql = "SQL Dependency";
         public const string Event = "Events";
-        public const string Metric = "Events";
+        public const string Metric = "Metric";
         public const string RequestViaHttp = "HTTP Request";
     }
 }

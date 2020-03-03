@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
 
             logger.LogInformation(
-                $"{MessagePrefixes.Metric} Metric {{{ContextProperties.MetricTracking.MetricName}}}: {{{ContextProperties.MetricTracking.MetricValue}}} (Context: {{@{ContextProperties.EventTracking.EventContext}}})",
+                $"{MessagePrefixes.Metric} {{{ContextProperties.MetricTracking.MetricName}}}: {{{ContextProperties.MetricTracking.MetricValue}}} (Context: {{@{ContextProperties.EventTracking.EventContext}}})",
                 name, value, context);
         }
     }
