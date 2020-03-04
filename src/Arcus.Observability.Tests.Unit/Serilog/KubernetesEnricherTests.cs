@@ -40,9 +40,9 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.NodeName, nodeName);
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.PodName, podName);
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.Namespace, @namespace);
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.NodeName, nodeName), "Log event should contain node name property");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.PodName, podName), "Log event should contain pod name property");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.Namespace, @namespace), "Log event should contain namespace property");
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.NodeName, expectedNodeName);
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.NodeName, expectedNodeName), "Log event should contain node name property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
@@ -82,9 +82,9 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                             .Enrich.With<KubernetesEnricher>()
-                             .WriteTo.Sink(spy)
-                             .CreateLogger();
+                .Enrich.With<KubernetesEnricher>()
+                .WriteTo.Sink(spy)
+                .CreateLogger();
 
             using (TemporaryEnvironmentVariable.Create("KUBERNETES_POD_NAME", ignoredPodName))
             {
@@ -96,7 +96,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.PodName, expectedPodName);
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.PodName, expectedPodName), "Log event should contain pod name property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
@@ -110,9 +110,9 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                             .Enrich.With<KubernetesEnricher>()
-                             .WriteTo.Sink(spy)
-                             .CreateLogger();
+                .Enrich.With<KubernetesEnricher>()
+                .WriteTo.Sink(spy)
+                .CreateLogger();
 
             using (TemporaryEnvironmentVariable.Create("KUBERNETES_NAMESPACE", ignoredNamespace))
             {
@@ -124,18 +124,9 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            ContainsLogProperty(logEvent, ContextProperties.Kubernetes.Namespace, expectedNamespace);
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.Namespace, expectedNamespace), "Log event should contain namespace property");
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
             Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
-        }
-
-        private static void ContainsLogProperty(LogEvent logEvent, string name, string expectedValue)
-        {
-            (string key, LogEventPropertyValue actual) = 
-                Assert.Single(logEvent.Properties, prop => prop.Key == name);
-            
-            string actualValue = actual.ToString().Trim('\"');
-            Assert.Equal(expectedValue, actualValue);
         }
     }
 }

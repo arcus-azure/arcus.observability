@@ -17,6 +17,12 @@ namespace Arcus.Observability.Tests.Unit
             _name = name;
         }
 
+        /// <summary>
+        /// Creates a <see cref="TemporaryEnvironmentVariable"/> instance that creates and removes the environment variable
+        /// with <paramref name="name"/> and <paramref name="value"/> during its lifetime.
+        /// </summary>
+        /// <param name="name">The name of the environment variable.</param>
+        /// <param name="value">The value of the environment variable.</param>
         public static TemporaryEnvironmentVariable Create(string name, string value)
         {
             Guard.NotNullOrWhitespace(name, nameof(name));
