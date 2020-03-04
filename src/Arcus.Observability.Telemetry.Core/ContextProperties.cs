@@ -1,9 +1,9 @@
 ﻿#pragma warning disable 1591
 namespace Arcus.Observability.Telemetry.Core
 {
-    public class ContextProperties
+    public static class ContextProperties
     {
-        public class DependencyTracking
+        public static class DependencyTracking
         {
             public const string TargetName = "DependencyTargetName";
             public const string DependencyName = "DependencyName";
@@ -14,20 +14,20 @@ namespace Arcus.Observability.Telemetry.Core
             public const string IsSuccessful = "DependencyIsSuccessful";
         }
 
-        public class EventTracking
+        public static class EventTracking
         {
             public const string EventName = "EventName";
             public const string EventContext = "EventDescription";
         }
 
-        public class Kubernetes
+        public static class Kubernetes
         {
             public const string Namespace = "Namespace";
             public const string NodeName = "NodeName";
             public const string PodName = "PodName";
         }
 
-        public class RequestTracking
+        public static class RequestTracking
         {
             public const string RequestMethod = "RequestMethod";
             public const string RequestHost = "RequestHost";
@@ -37,7 +37,7 @@ namespace Arcus.Observability.Telemetry.Core
             public const string RequestTime = "RequestTime";
         }
 
-        public class MetricTracking
+        public static class MetricTracking
         {
             public const string MetricName = "MetricName";
             public const string MetricValue = "MetricValue";

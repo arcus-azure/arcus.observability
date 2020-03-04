@@ -1,6 +1,6 @@
 ﻿namespace Arcus.Observability.Telemetry.Core
 {
-    public class MessagePrefixes
+    public static class MessagePrefixes
     {
         public const string DependencyViaHttp = "HTTP Dependency";
         public const string DependencyViaSql = "SQL Dependency";
