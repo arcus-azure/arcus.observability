@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
-    <Description>Provides capability to use correlation in applications</Description>
+    <Description>Provides capability to improve telemetry with Serilog that is sent to Azure Application Insights</Description>
     <Copyright>Copyright (c) Arcus</Copyright>
     <PackageLicenseUrl>https://github.com/arcus-azure/arcus.observability/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/arcus-azure/arcus.observability</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/arcus-azure/arcus/master/media/arcus.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Azure;Observability;Correlation</PackageTags>
-    <PackageId>Arcus.Observability.Correlation</PackageId>
+    <PackageTags>Azure;Observability;Telemetry;Serilog</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

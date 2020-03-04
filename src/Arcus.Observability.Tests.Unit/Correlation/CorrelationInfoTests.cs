@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit
+namespace Arcus.Observability.Tests.Unit.Correlation
 {
     [Trait("Category", "Unit")]
     public class CorrelationInfoTests

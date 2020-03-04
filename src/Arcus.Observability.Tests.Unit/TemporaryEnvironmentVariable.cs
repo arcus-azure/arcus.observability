@@ -1,7 +1,7 @@
 ﻿using System;
 using GuardNet;
 
-namespace Arcus.Observability.Tests.Unit.Telemetry 
+namespace Arcus.Observability.Tests.Unit 
 {
     /// <summary>
     /// Represents a temporary environment variable that gets removed when the model gets disposed.

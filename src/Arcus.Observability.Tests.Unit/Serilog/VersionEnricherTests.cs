@@ -1,10 +1,11 @@
 ﻿using System;
-using Arcus.Observability.Telemetry.Serilog;
+using System.Linq;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Telemetry
+namespace Arcus.Observability.Tests.Unit.Serilog
 {
     [Trait(name: "Category", value: "Unit")]
     public class VersionEnricherTests
@@ -27,10 +28,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
             LogEvent emit = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(emit);
-            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
-
-            Assert.Equal("version", key);
-            Assert.True(Version.TryParse(value.ToString().Trim('\"'), out Version result));
+            var property = Assert.Single(emit.Properties);
+            Assert.Equal("version", property.Key);
+            Assert.True(Version.TryParse(property.Value.ToString().Trim('\"'), out Version result));
         }
     }
 }

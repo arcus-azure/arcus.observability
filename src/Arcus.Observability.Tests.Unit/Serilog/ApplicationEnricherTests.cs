@@ -4,7 +4,7 @@ using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Telemetry
+namespace Arcus.Observability.Tests.Unit.Serilog
 {
     [Trait("Category", "Unit")]
     public class ApplicationEnricherTests

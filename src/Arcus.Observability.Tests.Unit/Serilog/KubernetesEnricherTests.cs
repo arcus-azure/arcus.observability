@@ -1,10 +1,11 @@
 ﻿using System;
-using Arcus.Observability.Telemetry.Serilog;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Telemetry
+namespace Arcus.Observability.Tests.Unit.Serilog
 {
     [Trait("Category", "Unit")]
     public class KubernetesEnricherTests
@@ -39,9 +40,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
             
-            Assert.True(logEvent.ContainsProperty("NodeName", nodeName), "Log event should contain node name property");
-            Assert.True(logEvent.ContainsProperty("PodName", podName), "Log event should contain pod name property");
-            Assert.True(logEvent.ContainsProperty("Namespace", @namespace), "Log event should contain namespace property");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.NodeName, nodeName), "Log event should contain node name property");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.PodName, podName), "Log event should contain pod name property");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.Namespace, @namespace), "Log event should contain namespace property");
         }
 
         [Fact]
@@ -67,9 +68,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            Assert.True(logEvent.ContainsProperty("NodeName", expectedNodeName), "Log event should contain node name property");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.NodeName, expectedNodeName), "Log event should contain node name property");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
 
         [Fact]
@@ -95,9 +96,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            Assert.True(logEvent.ContainsProperty("PodName", expectedPodName), "Log event should contain pod name property");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "Namespace");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.PodName, expectedPodName), "Log event should contain pod name property");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.Namespace);
         }
 
         [Fact]
@@ -123,9 +124,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             LogEvent logEvent = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
-            Assert.True(logEvent.ContainsProperty("Namespace", expectedNamespace), "Log event should contain namespace property");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "NodeName");
-            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == "PodName");
+            Assert.True(logEvent.ContainsProperty(ContextProperties.Kubernetes.Namespace, expectedNamespace), "Log event should contain namespace property");
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.NodeName);
+            Assert.DoesNotContain(logEvent.Properties, prop => prop.Key == ContextProperties.Kubernetes.PodName);
         }
     }
 }

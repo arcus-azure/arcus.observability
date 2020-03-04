@@ -3,7 +3,7 @@ using System.Reflection;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Arcus.Observability.Telemetry.Serilog
+namespace Arcus.Observability.Telemetry.Serilog.Enrichers
 {
     /// <summary>
     /// Enrichment on log events with the current runtime version (i.e. 'version' = '1.0.0').
