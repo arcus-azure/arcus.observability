@@ -23,8 +23,8 @@ resources:
 
 variables:
   - group: 'Arcus - GitHub Package Registry'
-  - group: 'Arcus Observability - .NET'
   - group: 'Build Configuration'
+  - template: ./variables/build.yml
     # 'Package.Version.ManualTrigger' is added as queue-time variable on build in Azure DevOps
 
 stages:
