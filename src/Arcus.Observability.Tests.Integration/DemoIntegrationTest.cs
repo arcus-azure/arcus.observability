@@ -15,7 +15,7 @@ namespace Arcus.Observability.Tests.Integration
         }
 
         [Fact]
-        public async Task ThisJustWorks()
+        public void ThisJustWorks()
         {
             // Arrange
 
