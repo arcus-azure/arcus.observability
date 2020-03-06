@@ -1,5 +1,5 @@
 ﻿using System;
-using Arcus.Observability.Telemetry.Serilog;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Serilog.Events;
 using Xunit;

@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcus.Observability.Correlation\Arcus.Observability.Correlation.csproj" />
-    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog\Arcus.Observability.Telemetry.Serilog.csproj" />
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Enrichers\Arcus.Observability.Telemetry.Serilog.Enrichers.csproj" />
   </ItemGroup>
 
 </Project>
