@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Tests.U
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{88258D35-6B48-4F82-AD45-9B3BEB7F8828}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Serilog", "Arcus.Observability.Telemetry.Serilog\Arcus.Observability.Telemetry.Serilog.csproj", "{59A48CCF-7355-48E8-8564-0595F895555F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Serilog.Enrichers", "Arcus.Observability.Telemetry.Serilog.Enrichers\Arcus.Observability.Telemetry.Serilog.Enrichers.csproj", "{59A48CCF-7355-48E8-8564-0595F895555F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights", "Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.csproj", "{6E867573-915E-4071-B35F-BF2DED51D4C8}"
 EndProject
