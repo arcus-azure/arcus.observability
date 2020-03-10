@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.Serilog</PackageId>
+    <PackageId>Arcus.Observability.Telemetry.Serilog.Filters</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to reduce telemetry with Serilog filters</Description>
@@ -20,11 +20,6 @@
   <ItemGroup>
     <PackageReference Include="Guard.Net" Version="1.2.0" />
     <PackageReference Include="Serilog" Version="2.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
-    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog\Arcus.Observability.Telemetry.Serilog.csproj" />
   </ItemGroup>
 
 </Project>
