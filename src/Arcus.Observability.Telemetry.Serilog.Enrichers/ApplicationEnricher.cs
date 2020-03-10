@@ -2,7 +2,7 @@
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Arcus.Observability.Telemetry.Serilog
+namespace Arcus.Observability.Telemetry.Serilog.Enrichers
 {
     /// <summary>
     /// Enrichment on log events with the application role concerning the component and instance name.
