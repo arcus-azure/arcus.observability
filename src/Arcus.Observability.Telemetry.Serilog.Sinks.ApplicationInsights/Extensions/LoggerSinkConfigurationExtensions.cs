@@ -41,8 +41,7 @@ namespace Serilog.Configuration
             Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration));
             Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey));
 
-            return loggerSinkConfiguration.ApplicationInsights(instrumentationKey,
-                ApplicationInsightsTelemetryConverter.Create(), restrictedToMinimumLevel);
+            return loggerSinkConfiguration.ApplicationInsights(instrumentationKey, ApplicationInsightsTelemetryConverter.Create(), restrictedToMinimumLevel);
         }
     }
 }

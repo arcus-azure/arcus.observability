@@ -2,7 +2,7 @@
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Filters
+namespace Arcus.Observability.Telemetry.Serilog.Filters
 {
     public class TelemetryTypeFilter : ILogEventFilter
     {
