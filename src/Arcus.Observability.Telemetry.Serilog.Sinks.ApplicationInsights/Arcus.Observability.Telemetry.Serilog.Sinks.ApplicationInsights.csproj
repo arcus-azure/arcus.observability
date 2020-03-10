@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
     <PackageId>Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
@@ -19,6 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="Guard.Net" Version="1.2.0" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog\Arcus.Observability.Telemetry.Serilog.csproj" />
   </ItemGroup>
 
 </Project>

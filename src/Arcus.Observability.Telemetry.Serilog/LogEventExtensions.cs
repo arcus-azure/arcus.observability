@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GuardNet;
+﻿using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Serilog.Events

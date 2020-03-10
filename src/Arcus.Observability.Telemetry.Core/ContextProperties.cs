@@ -3,6 +3,11 @@ namespace Arcus.Observability.Telemetry.Core
 {
     public static class ContextProperties
     {
+        public class Correlation
+        {
+            public const string OperationId = "OperationId";
+        }
+
         public static class DependencyTracking
         {
             public const string TargetName = "DependencyTargetName";
@@ -18,6 +23,13 @@ namespace Arcus.Observability.Telemetry.Core
         {
             public const string EventName = "EventName";
             public const string EventContext = "EventDescription";
+        }
+
+        public static class General
+        {
+            public const string ComponentName = "ComponentName";
+            public const string MachineName = "MachineName";
+            public const string TelemetryType = "TelemetryType";
         }
 
         public static class Kubernetes
