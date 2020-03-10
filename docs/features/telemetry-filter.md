@@ -43,3 +43,5 @@ ILogger logger = new LoggerConfiguration()
     .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency, isTrackingEnabled: bool.Parse(trackDependencies)))
     .CreateLogger();
 ```
+
+[&larr; back](/)

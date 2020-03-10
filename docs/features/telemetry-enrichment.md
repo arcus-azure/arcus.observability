@@ -72,3 +72,5 @@ ILogger logger = new LoggerConfiguration()
 
 logger.Information("This event will be enriched with the application component's name");
 ```
+
+[&larr; back](/)
