@@ -4,6 +4,9 @@ using Serilog.Events;
 
 namespace Arcus.Observability.Telemetry.Serilog.Filters
 {
+    /// <summary>
+    ///     Provides capability to filter telemetry based on its type
+    /// </summary>
     public class TelemetryTypeFilter : ILogEventFilter
     {
         /// <summary>

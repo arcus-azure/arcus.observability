@@ -23,16 +23,24 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         public override IEnumerable<ITelemetry> Convert(LogEvent logEvent, IFormatProvider formatProvider)
         {
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.RequestViaHttp))
+            {
                 return _requestTelemetryConverter.Convert(logEvent, formatProvider);
+            }
 
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.DependencyViaHttp))
+            {
                 return _httpDependencyTelemetryConverter.Convert(logEvent, formatProvider);
+            }
 
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.DependencyViaSql))
+            {
                 return _sqlDependencyTelemetryConverter.Convert(logEvent, formatProvider);
+            }
 
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.Event))
+            {
                 return _eventTelemetryConverter.Convert(logEvent, formatProvider);
+            }
 
             return _traceTelemetryConverter.Convert(logEvent, formatProvider);
         }

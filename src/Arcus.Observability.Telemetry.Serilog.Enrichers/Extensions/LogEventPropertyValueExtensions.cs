@@ -35,7 +35,7 @@ namespace Serilog.Events
 
             if (logEventPropertyValue is DictionaryValue == false)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException($"Value for '{propertyKey}' is not a dictionary");
             }
 
             return (logEventPropertyValue as DictionaryValue).Elements;

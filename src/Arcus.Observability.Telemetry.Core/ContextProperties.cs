@@ -3,7 +3,7 @@ namespace Arcus.Observability.Telemetry.Core
 {
     public static class ContextProperties
     {
-        public class Correlation
+        public static class Correlation
         {
             public const string OperationId = "OperationId";
         }
