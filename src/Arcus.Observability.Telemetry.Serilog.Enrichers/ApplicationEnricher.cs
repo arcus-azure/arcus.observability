@@ -19,7 +19,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="componentName">The name of the application component.</param>
         public ApplicationEnricher(string componentName)
         {
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName));
+            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Application component name cannot be blank");
 
             _componentValue = componentName;
         }
