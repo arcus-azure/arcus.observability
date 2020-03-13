@@ -54,7 +54,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                .Enrich.With<KubernetesEnricher>()
+                .Enrich.WithKubernetesInfo()
                 .WriteTo.Sink(spy)
                 .CreateLogger();
 

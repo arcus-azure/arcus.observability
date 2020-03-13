@@ -18,7 +18,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string componentName = $"component-{Guid.NewGuid()}";
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                .Enrich.With(new ApplicationEnricher(componentName))
+                .Enrich.WithComponentName(componentName)
                 .WriteTo.Sink(spy)
                 .CreateLogger();
 

@@ -18,7 +18,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             var configuration = 
                 new LoggerConfiguration()
                     .WriteTo.Sink(spy)
-                    .Enrich.With<VersionEnricher>();
+                    .Enrich.WithVersion();
 
             ILogger logger = configuration.CreateLogger();
 

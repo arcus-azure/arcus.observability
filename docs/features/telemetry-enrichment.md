@@ -26,6 +26,16 @@ Value: `1.0.0-preview`
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
+    .Enrich.WithVersion()
+    .CreateLogger();
+
+logger.Information("This event will be enriched with the runtime assembly product version");
+```
+
+Or using the enricher directly:
+
+```csharp
+ILogger logger = new LoggerConfiguration()
     .Enrich.With<VersionEnricher>()
     .CreateLogger();
 
@@ -48,6 +58,16 @@ that adds several machine information from the environment (variables).
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
+    .Enrich.WithKubernetesInfo()
+    .CreateLogger();
+
+logger.Information("This event will be enriched with the Kubernetes environment information");
+```
+
+Or using the enricher directly:
+
+```csharp
+ILogger logger = new LoggerConfiguration()
     .Enrich.With<KubernetesEnricher>()
     .CreateLogger();
 
@@ -64,6 +84,16 @@ Name: `ComponentName`
 Value: `My application component`
 
 **Usage**
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithComponentName("My application component")
+    .CreateLogger();
+
+logger.Information("This event will be enriched with the application component's name");
+```
+
+Or using the enricher directly:
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
