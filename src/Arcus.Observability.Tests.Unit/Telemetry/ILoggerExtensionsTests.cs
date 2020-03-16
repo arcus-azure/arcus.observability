@@ -277,7 +277,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const string categoryName = "Input validation";
+            const string categoryName = "Validation";
             const string message = "something was invalidated wrong: {Input}";
             const string arguments = "invalid input";
 
@@ -286,9 +286,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.SecurityEvent, logMessage);
-            Assert.Contains(categoryName, logMessage);
-            Assert.Contains(arguments, logMessage);
+            Assert.Equal("Validation something was invalidated wrong: invalid input", logMessage);
         }
 
         [Fact]
@@ -296,7 +294,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const string categoryName = "Input validation";
+            const string categoryName = "Validation";
             const string message = "something was invalidated wrong: {Input}";
             const string arguments = "invalid input";
 
@@ -305,9 +303,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.SecurityEvent, logMessage);
-            Assert.Contains(categoryName, logMessage);
-            Assert.Contains(arguments, logMessage);
+            Assert.Equal("Validation something was invalidated wrong: invalid input", logMessage);
         }
     }
 }

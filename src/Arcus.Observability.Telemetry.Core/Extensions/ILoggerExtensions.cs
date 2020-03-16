@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
             + ContextProperties.DependencyTracking.ResultCode + "} in {"
             + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: "
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
@@ -194,7 +194,7 @@ namespace Microsoft.Extensions.Logging
             
             arguments = arguments ?? new object[0];
 
-            logger.Log(level, SecurityPrefix + message, arguments.Prepend(categoryName));
+            logger.Log(level, SecurityPrefix + message, arguments.Prepend(categoryName).ToArray());
         }
     }
 }
