@@ -55,9 +55,9 @@ namespace Serilog.Events
             var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
             var rawEnum = logEventPropertyValue?.ToDecentString();
 
-            if (Enum.TryParse(typeof(TEnum), rawEnum, out var enumRepresentation))
+            if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
             {
-                return (TEnum)enumRepresentation;
+                return enumRepresentation;
             }
 
             return null;
