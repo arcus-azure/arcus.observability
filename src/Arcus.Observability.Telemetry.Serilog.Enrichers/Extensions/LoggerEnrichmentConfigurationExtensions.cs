@@ -1,4 +1,6 @@
-﻿using Arcus.Observability.Telemetry.Serilog.Enrichers;
+﻿using System;
+using Arcus.Observability.Correlation;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using GuardNet;
 using Serilog.Configuration;
 
@@ -43,6 +45,19 @@ namespace Serilog
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
 
             return enrichmentConfiguration.With<KubernetesEnricher>();
+        }
+
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
+        public static LoggerConfiguration WithCorrelationInfo(this LoggerEnrichmentConfiguration enrichmentConfiguration, ICorrelationInfoAccessor correlationInfoAccessor)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
+
+            return enrichmentConfiguration.With(new CorrelationInfoEnricher(correlationInfoAccessor));
         }
     }
 }
