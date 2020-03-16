@@ -45,7 +45,7 @@ var telemetryContext = new Dictionary<string, object>
 };
 
 logger.LogEvent("Order Created", telemetryContext);
-// Output: ""
+// Output: "Events Order Created (Context: [Customer, Arcus], [OrderId, ABC])"
 ```
 
 [&larr; back](/)
