@@ -17,4 +17,14 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.13.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Enrichers\Arcus.Observability.Telemetry.Serilog.Enrichers.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -22,4 +22,8 @@
     <PackageReference Include="Serilog" Version="2.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
+  </ItemGroup>
+
 </Project>
