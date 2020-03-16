@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +13,16 @@ namespace Microsoft.Extensions.Logging
 {
     public static class ILoggerExtensions
     {
+        private const string RequestFormat =
+            MessagePrefixes.RequestViaHttp + " {"
+            + ContextProperties.RequestTracking.RequestMethod + "} {"
+            + ContextProperties.RequestTracking.RequestHost + "}/{" 
+            + ContextProperties.RequestTracking.RequestUri + "} completed with {"
+            + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
+            + ContextProperties.RequestTracking.RequestDuration + "} at {"
+            + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
         /// <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -31,11 +43,18 @@ namespace Microsoft.Extensions.Logging
             var resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(
-                $"{MessagePrefixes.RequestViaHttp} {{{ContextProperties.RequestTracking.RequestMethod}}} {{{ContextProperties.RequestTracking.RequestHost}}}/{{{ContextProperties.RequestTracking.RequestUri}}} completed with {{{ContextProperties.RequestTracking.ResponseStatusCode}}} in {{{ContextProperties.RequestTracking.RequestDuration}}} at {{{ContextProperties.RequestTracking.RequestTime}}} (Context: {{@{ContextProperties.EventTracking.EventContext}}})",
-                request.Method,
-                host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
         }
+
+        private const string HttpDependencyFormat =
+            MessagePrefixes.DependencyViaHttp + "{"
+            + ContextProperties.DependencyTracking.TargetName + "} for {"
+            + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
+            + ContextProperties.DependencyTracking.ResultCode + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: "
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs an HTTP dependency
@@ -53,16 +72,24 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            var requestUri = request.RequestUri;
-            var targetName = requestUri.Host;
-            var requestMethod = request.Method;
-            var dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
-            var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
+            Uri requestUri = request.RequestUri;
+            string targetName = requestUri.Host;
+            HttpMethod requestMethod = request.Method;
+            string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
+            bool isSuccessful = (int) statusCode >= 200 && (int)statusCode < 300;
 
-            logger.LogInformation(
-                $"{MessagePrefixes.DependencyViaHttp} {{{ContextProperties.DependencyTracking.TargetName}}} for {{{ContextProperties.DependencyTracking.DependencyName}}} completed with {{{ContextProperties.DependencyTracking.ResultCode}}} in {{{ContextProperties.DependencyTracking.Duration}}} at {{{ContextProperties.DependencyTracking.StartTime}}} (Successful: {{{ContextProperties.DependencyTracking.IsSuccessful}}} - Context: {{@{ContextProperties.EventTracking.EventContext}}})",
-                targetName, dependencyName, (int)statusCode, duration, startTime, isSuccessful, context);
+            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
         }
+
+        private const string SqlDependencyFormat =
+            MessagePrefixes.DependencyViaSql + " {" 
+            + ContextProperties.DependencyTracking.TargetName + "} for {"
+            + ContextProperties.DependencyTracking.DependencyName
+            + "} for operation {" + ContextProperties.DependencyTracking.DependencyData
+            + "} in {" + ContextProperties.DependencyTracking.Duration
+            + "} at {" + ContextProperties.DependencyTracking.StartTime
+            + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
+            + "} - Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs a SQL dependency
@@ -88,10 +115,13 @@ namespace Microsoft.Extensions.Logging
 
             var dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogInformation(
-                $"{MessagePrefixes.DependencyViaSql} {{{ContextProperties.DependencyTracking.TargetName}}} for {{{ContextProperties.DependencyTracking.DependencyName}}} for operation {{{ContextProperties.DependencyTracking.DependencyData}}} in {{{ContextProperties.DependencyTracking.Duration}}} at {{{ContextProperties.DependencyTracking.StartTime}}} (Successful: {{{ContextProperties.DependencyTracking.IsSuccessful}}} - Context: {{@{ContextProperties.EventTracking.EventContext}}})",
-                serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
+            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
         }
+
+        private const string EventFormat = 
+            MessagePrefixes.Event + " {" 
+            + ContextProperties.EventTracking.EventName 
+            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs a custom event
@@ -106,10 +136,14 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(
-                $"{MessagePrefixes.Event} {{{ContextProperties.EventTracking.EventName}}} (Context: {{@{ContextProperties.EventTracking.EventContext}}})",
-                name, context);
+            logger.LogInformation(EventFormat, name, context);
         }
+
+        private const string MetricFormat =
+            MessagePrefixes.Metric + " {" 
+            + ContextProperties.MetricTracking.MetricName + "}: {" 
+            + ContextProperties.MetricTracking.MetricValue 
+            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs a custom metric
@@ -125,9 +159,42 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(
-                $"{MessagePrefixes.Metric} {{{ContextProperties.MetricTracking.MetricName}}}: {{{ContextProperties.MetricTracking.MetricValue}}} (Context: {{@{ContextProperties.EventTracking.EventContext}}})",
-                name, value, context);
+            logger.LogInformation(MetricFormat, name, value, context);
+        }
+
+        /// <summary>
+        ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="categoryName">The name of the security category.</param>
+        /// <param name="message">The user message written with in the <paramref name="categoryName"/>.</param>
+        /// <param name="arguments">The arguments formatted with the <paramref name="message"/>.</param>
+        public static void LogSecurityEvent(this ILogger logger, string categoryName, string message, params object[] arguments)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(categoryName, nameof(categoryName), "Security category name cannot be blank");
+
+            LogSecurityEvent(logger, LogLevel.Warning, categoryName, message, arguments);
+        }
+
+        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} ";
+
+        /// <summary>
+        ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="level">The level at which the security event should be written.</param>
+        /// <param name="categoryName">The name of the security category.</param>
+        /// <param name="message">The user message written with in the <paramref name="categoryName"/>.</param>
+        /// <param name="arguments">The arguments formatted with the <paramref name="message"/>.</param>
+        public static void LogSecurityEvent(this ILogger logger, LogLevel level, string categoryName, string message, params object[] arguments)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(categoryName, nameof(categoryName), "Security category name cannot be blank");
+            
+            arguments = arguments ?? new object[0];
+
+            logger.Log(level, SecurityPrefix + message, arguments.Prepend(categoryName));
         }
     }
 }

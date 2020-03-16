@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
@@ -269,6 +270,44 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Act & Arrange
             Assert.Throws<ArgumentNullException>(() => logger.LogRequest(mockRequest.Object, response, duration));
+        }
+
+        [Fact]
+        public void LogSecurityEvent_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const string categoryName = "Input validation";
+            const string message = "something was invalidated wrong: {Input}";
+            const string arguments = "invalid input";
+
+            // Act
+            logger.LogSecurityEvent(categoryName, message, arguments);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.SecurityEvent, logMessage);
+            Assert.Contains(categoryName, logMessage);
+            Assert.Contains(arguments, logMessage);
+        }
+
+        [Fact]
+        public void LogSecurityEventWithLevel_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const string categoryName = "Input validation";
+            const string message = "something was invalidated wrong: {Input}";
+            const string arguments = "invalid input";
+
+            // Act
+            logger.LogSecurityEvent(LogLevel.Error, categoryName, message, arguments);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.SecurityEvent, logMessage);
+            Assert.Contains(categoryName, logMessage);
+            Assert.Contains(arguments, logMessage);
         }
     }
 }
