@@ -23,7 +23,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
         }
 
         [Fact]
@@ -39,7 +38,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
             Assert.NotNull(serviceProvider.GetService<IOptions<CorrelationInfoOptions>>());
         }
 
@@ -57,8 +55,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsNotType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
-            Assert.NotNull(Mock.Get(correlationInfoAccessor));
         }
 
         [Fact]
@@ -75,8 +71,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsNotType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
-            Assert.NotNull(Mock.Get(correlationInfoAccessor));
             Assert.NotNull(serviceProvider.GetService<IOptions<CorrelationInfoOptions>>());
         }
 
@@ -94,8 +88,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsNotType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
-            Assert.NotNull(Mock.Get(correlationInfoAccessor));
         }
 
         [Fact]
@@ -112,9 +104,26 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             // Assert
             var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
             Assert.NotNull(correlationInfoAccessor);
-            Assert.IsNotType<DefaultCorrelationInfoAccessor>(correlationInfoAccessor);
-            Assert.NotNull(Mock.Get(correlationInfoAccessor));
             Assert.NotNull(serviceProvider.GetService<IOptions<CorrelationInfoOptions>>());
+        }
+
+        [Fact]
+        public void AddCorrelation_CustomCorrelationFactory_RegisterCustomCorrelation()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            var testCorrelationInfoAccessor = new TestCorrelationInfoAccessor();
+            services.AddCorrelation<TestCorrelationInfoAccessor, TestCorrelationInfo>(provider => testCorrelationInfoAccessor);
+
+            // Act
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Assert
+            var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor>();
+            Assert.NotNull(correlationInfoAccessor);
+            var correlationInfoAccessorT = serviceProvider.GetService<ICorrelationInfoAccessor<TestCorrelationInfo>>();
+            Assert.NotNull(correlationInfoAccessorT);
+            Assert.Same(testCorrelationInfoAccessor, correlationInfoAccessorT);
         }
     }
 }
