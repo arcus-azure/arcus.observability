@@ -72,9 +72,9 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            var statusCode = response.StatusCode;
-            var resourcePath = request.Path;
-            var host = $"{request.Scheme}://{request.Host}";
+            int statusCode = response.StatusCode;
+            PathString resourcePath = request.Path;
+            string host = $"{request.Scheme}://{request.Host}";
 
             logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
         }
@@ -99,7 +99,7 @@ namespace Microsoft.Extensions.Logging
             string targetName = requestUri.Host;
             HttpMethod requestMethod = request.Method;
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
-            bool isSuccessful = (int) statusCode >= 200 && (int)statusCode < 300;
+            bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
             logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
         }
@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            var dependencyName = $"{databaseName}/{tableName}";
+            string dependencyName = $"{databaseName}/{tableName}";
 
             logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
         }
