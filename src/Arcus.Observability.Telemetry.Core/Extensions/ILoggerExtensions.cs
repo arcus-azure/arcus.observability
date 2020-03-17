@@ -23,6 +23,39 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
+        private const string HttpDependencyFormat =
+            MessagePrefixes.DependencyViaHttp + "{"
+            + ContextProperties.DependencyTracking.TargetName + "} for {"
+            + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
+            + ContextProperties.DependencyTracking.ResultCode + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
+        private const string SqlDependencyFormat =
+            MessagePrefixes.DependencyViaSql + " {" 
+            + ContextProperties.DependencyTracking.TargetName + "} for {"
+            + ContextProperties.DependencyTracking.DependencyName
+            + "} for operation {" + ContextProperties.DependencyTracking.DependencyData
+            + "} in {" + ContextProperties.DependencyTracking.Duration
+            + "} at {" + ContextProperties.DependencyTracking.StartTime
+            + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
+            + "} - Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+
+        private const string EventFormat = 
+            MessagePrefixes.Event + " {" 
+            + ContextProperties.EventTracking.EventName 
+            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+
+        private const string MetricFormat =
+            MessagePrefixes.Metric + " {" 
+            + ContextProperties.MetricTracking.MetricName + "}: {" 
+            + ContextProperties.MetricTracking.MetricValue 
+            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+
+        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} ";
+
         /// <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -45,16 +78,6 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
         }
-
-        private const string HttpDependencyFormat =
-            MessagePrefixes.DependencyViaHttp + "{"
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
-            + ContextProperties.DependencyTracking.ResultCode + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs an HTTP dependency
@@ -80,16 +103,6 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
         }
-
-        private const string SqlDependencyFormat =
-            MessagePrefixes.DependencyViaSql + " {" 
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName
-            + "} for operation {" + ContextProperties.DependencyTracking.DependencyData
-            + "} in {" + ContextProperties.DependencyTracking.Duration
-            + "} at {" + ContextProperties.DependencyTracking.StartTime
-            + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
-            + "} - Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs a SQL dependency
@@ -118,11 +131,6 @@ namespace Microsoft.Extensions.Logging
             logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
         }
 
-        private const string EventFormat = 
-            MessagePrefixes.Event + " {" 
-            + ContextProperties.EventTracking.EventName 
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
-
         /// <summary>
         ///     Logs a custom event
         /// </summary>
@@ -138,12 +146,6 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogInformation(EventFormat, name, context);
         }
-
-        private const string MetricFormat =
-            MessagePrefixes.Metric + " {" 
-            + ContextProperties.MetricTracking.MetricName + "}: {" 
-            + ContextProperties.MetricTracking.MetricValue 
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
         ///     Logs a custom metric
@@ -176,8 +178,6 @@ namespace Microsoft.Extensions.Logging
 
             LogSecurityEvent(logger, LogLevel.Warning, categoryName, message, arguments);
         }
-
-        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} ";
 
         /// <summary>
         ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
