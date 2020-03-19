@@ -5,24 +5,17 @@ layout: default
 
 # Correlation
 
+`CorrelationInfo` provides a common set of correlation levels:
+
+- Transaction Id - ID that relates different requests together into a functional transaction.
+- Operation Id - Unique ID information for a single request.
+
 ## Installation
 
 This feature requires to install our NuGet package
 
 ```shell
 PM > Install-Package Arcus.Observability.Correlation
-```
-
-## Model
-
-The `Arcus.Observability.Correlation` library provides a common correlation information model called `CorrelationInfo`.
-
-```csharp
-var correlationInfo = new CorrelationInfo("my-operation-id", "my-transaction-id");
-
-string operationId = correlationInfo.OperationId;
-
-string transactionId = correlationInfo.TransactionId;
 ```
 
 ## What We Provide
@@ -96,3 +89,6 @@ public void ConfigureServices(IServiceCollection services)
 Later in the application, the options can be retrieved by injecting the `IOptions<CorrelationInfoOptions>` type.
 
 [&larr; back](/)
+=======
+[&larr; back](/)
+>>>>>>> master
