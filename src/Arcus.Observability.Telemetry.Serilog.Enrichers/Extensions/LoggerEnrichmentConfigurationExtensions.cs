@@ -3,6 +3,8 @@ using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using GuardNet;
 using Serilog.Configuration;
+using Serilog.Core;
+using Serilog.Events;
 
 // ReSharper disable once CheckNamespace
 namespace Serilog
@@ -48,7 +50,7 @@ namespace Serilog
         }
 
         /// <summary>
-        /// Adds the <see cref="CorrelationInfoEnricher"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
@@ -57,7 +59,41 @@ namespace Serilog
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
             Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
 
-            return enrichmentConfiguration.With(new CorrelationInfoEnricher(correlationInfoAccessor));
+            return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor);
+        }
+
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor) where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
+
+            return WithCorrelationInfo(enrichmentConfiguration, correlationInfoAccessor, enrichAdditionalCorrelationInfo: null);
+        }
+
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
+        /// <param name="enrichAdditionalCorrelationInfo">The function to enrich additional information from the custom <see cref="CorrelationInfo"/> model</param>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
+            Action<LogEvent, ILogEventPropertyFactory, TCorrelationInfo> enrichAdditionalCorrelationInfo) where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
+
+            return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor, enrichAdditionalCorrelationInfo));
         }
     }
 }

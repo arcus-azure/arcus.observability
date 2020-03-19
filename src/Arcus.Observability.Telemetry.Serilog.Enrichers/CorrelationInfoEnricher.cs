@@ -10,19 +10,33 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <summary>
     /// Enriches the log events with the correlation information.
     /// </summary>
-    public class CorrelationInfoEnricher : ILogEventEnricher
+    public class CorrelationInfoEnricher<TCorrelationInfo> : ILogEventEnricher where TCorrelationInfo : CorrelationInfo
     {
-        private readonly ICorrelationInfoAccessor _correlationInfoAccessor;
+        private readonly ICorrelationInfoAccessor<TCorrelationInfo> _correlationInfoAccessor;
+        private readonly Action<LogEvent, ILogEventPropertyFactory, TCorrelationInfo> _enrichAdditionalCorrelationInfo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelationInfoEnricher"/> class.
+        /// Initializes a new instance of the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> class.
         /// </summary>
-        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
-        public CorrelationInfoEnricher(ICorrelationInfoAccessor correlationInfoAccessor)
+        /// <param name="correlationInfoAccessor">The accessor implementation for the custom <see cref="CorrelationInfo"/> model.</param>
+        public CorrelationInfoEnricher(ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor)
+            : this(correlationInfoAccessor, enrichAdditionalCorrelationInfo: null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> class.
+        /// </summary>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the custom <see cref="CorrelationInfo"/> model.</param>
+        /// <param name="enrichAdditionalCorrelationInfo">The function to enrich additional information from the custom <see cref="CorrelationInfo"/> model</param>
+        public CorrelationInfoEnricher(
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
+            Action<LogEvent, ILogEventPropertyFactory, TCorrelationInfo> enrichAdditionalCorrelationInfo)
         {
             Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
 
             _correlationInfoAccessor = correlationInfoAccessor;
+            _enrichAdditionalCorrelationInfo = enrichAdditionalCorrelationInfo;
         }
 
         /// <summary>Enrich the log event.</summary>
@@ -33,7 +47,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             Guard.NotNull(logEvent, nameof(logEvent));
             Guard.NotNull(propertyFactory, nameof(propertyFactory));
 
-            CorrelationInfo correlationInfo = _correlationInfoAccessor.CorrelationInfo;
+            TCorrelationInfo correlationInfo = _correlationInfoAccessor.CorrelationInfo;
 
             if (correlationInfo is null)
             {
@@ -51,6 +65,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
                 LogEventProperty property = propertyFactory.CreateProperty(ContextProperties.Correlation.TransactionId, correlationInfo.TransactionId);
                 logEvent.AddPropertyIfAbsent(property);
             }
+
+            _enrichAdditionalCorrelationInfo?.Invoke(logEvent, propertyFactory, correlationInfo);
         }
     }
 }
