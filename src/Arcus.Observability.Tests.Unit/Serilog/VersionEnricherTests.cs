@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Serilog.Events;
