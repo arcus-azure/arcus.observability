@@ -286,7 +286,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.Equal("Validation something was invalidated wrong: invalid input", logMessage);
+            Assert.Equal("Validation - something was invalidated wrong: invalid input", logMessage);
         }
 
         [Fact]
@@ -303,7 +303,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.Equal("Validation something was invalidated wrong: invalid input", logMessage);
+            Assert.Equal("Validation - something was invalidated wrong: invalid input", logMessage);
         }
     }
 }
