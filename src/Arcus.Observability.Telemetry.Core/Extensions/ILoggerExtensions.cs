@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.MetricTracking.MetricValue 
             + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
-        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} ";
+        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} - ";
 
         /// <summary>
         ///     Logs an HTTP request
