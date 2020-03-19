@@ -27,6 +27,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds operation and transaction correlation to the application.
         /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <param name="services">The services collection containing the dependency injection services.</param>
+        /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
+        public static IServiceCollection AddCorrelation<TCorrelationInfo>(
+            this IServiceCollection services,
+            Action<CorrelationInfoOptions> configureOptions = null) 
+            where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(services, nameof(services));
+
+            return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
+                services,
+                serviceProvider => new DefaultCorrelationInfoAccessor<TCorrelationInfo>(),
+                configureOptions);
+        }
+
+        /// <summary>
+        /// Adds operation and transaction correlation to the application.
+        /// </summary>
         /// <typeparam name="TAccessor">The type of the <see cref="ICorrelationInfoAccessor"/> implementation.</typeparam>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="customCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation to retrieve the <see cref="CorrelationInfo"/>.</param>

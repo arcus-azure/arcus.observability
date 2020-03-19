@@ -6,6 +6,7 @@ namespace Arcus.Observability.Telemetry.Core
         public static class Correlation
         {
             public const string OperationId = "OperationId";
+            public const string TransactionId = "TransactionId";
         }
 
         public static class DependencyTracking
@@ -53,12 +54,6 @@ namespace Arcus.Observability.Telemetry.Core
         {
             public const string MetricName = "MetricName";
             public const string MetricValue = "MetricValue";
-        }
-
-        public static class Correlation
-        {
-            public const string OperationId = "OperationId";
-            public const string TransactionId = "TransactionId";
         }
     }
 }
