@@ -11,10 +11,6 @@ namespace Arcus.Observability.Tests.Unit.Correlation
         /// <summary>
         /// Gets or sets the current correlation information initialized in this context.
         /// </summary>
-        public TestCorrelationInfo CorrelationInfo
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
+        public TestCorrelationInfo CorrelationInfo { get; set; }
     }
 }
