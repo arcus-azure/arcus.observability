@@ -48,4 +48,20 @@ logger.LogEvent("Order Created", telemetryContext);
 // Output: "Events Order Created (Context: [Customer, Arcus], [OrderId, ABC])"
 ```
 
+### Security Events
+
+Some events are considered "security events" when they relate to possible malicious activity, authentication, input validation...
+
+Here is how an invalid `Order` can be reported:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    {"OrderId", "OrderId was not in correct format"}
+};
+
+loger.LogSecurityEvent("Invalid Order", telemetryContext);
+// Output: "Events Invalid Order (Context: [EventType, Security], [OrderId, OrderId was not in correct format])"
+```
+
 [&larr; back](/)

@@ -7,5 +7,6 @@
         public const string Event = "Events";
         public const string Metric = "Metric";
         public const string RequestViaHttp = "HTTP Request";
+        public const string SecurityEvent = "Security";
     }
 }
