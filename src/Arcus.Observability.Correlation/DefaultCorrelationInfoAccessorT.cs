@@ -10,6 +10,13 @@ namespace Arcus.Observability.Correlation
         private static readonly AsyncLocal<TCorrelationInfo> CorrelationInfoLocalData = new AsyncLocal<TCorrelationInfo>();
 
         /// <summary>
+        /// Prevents a new instance of the <see cref="DefaultCorrelationInfoAccessor"/> class from being created.
+        /// </summary>
+        private protected DefaultCorrelationInfoAccessor()
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the current correlation information initialized in this context.
         /// </summary>
         public TCorrelationInfo CorrelationInfo
@@ -17,5 +24,10 @@ namespace Arcus.Observability.Correlation
             get => CorrelationInfoLocalData.Value;
             set => CorrelationInfoLocalData.Value = value;
         }
+
+        /// <summary>
+        /// Gets the default instance for the <see cref="DefaultCorrelationInfoAccessor{TCorrelation}"/> class.
+        /// </summary>
+        public static DefaultCorrelationInfoAccessor<TCorrelationInfo> Instance { get; } = new DefaultCorrelationInfoAccessor<TCorrelationInfo>();
     }
 }

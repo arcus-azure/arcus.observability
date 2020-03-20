@@ -50,6 +50,29 @@ namespace Serilog
         }
 
         /// <summary>
+        /// Adds the <see cref="DefaultCorrelationInfoAccessor"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        public static LoggerConfiguration WithCorrelationInfo(this LoggerEnrichmentConfiguration enrichmentConfiguration)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+
+            return WithCorrelationInfo(enrichmentConfiguration, DefaultCorrelationInfoAccessor.Instance);
+        }
+
+        /// <summary>
+        /// Adds the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(this LoggerEnrichmentConfiguration enrichmentConfiguration) 
+            where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+
+            return WithCorrelationInfo(enrichmentConfiguration, DefaultCorrelationInfoAccessor<TCorrelationInfo>.Instance);
+        }
+
+        /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
@@ -63,19 +86,37 @@ namespace Serilog
         }
 
         /// <summary>
-        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <see cref="CorrelationInfo"/> information from the current context.
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
         /// </summary>
         /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
-        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <typeparamref name="TCorrelationInfo"/> model.</param>
         public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
             this LoggerEnrichmentConfiguration enrichmentConfiguration, 
-            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor) where TCorrelationInfo : CorrelationInfo
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor) 
+            where TCorrelationInfo : CorrelationInfo
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
             Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
 
             return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor));
+        }
+
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoEnricher">The custom correlation enricher implementation for the <typeparamref name="TCorrelationInfo"/> model.</param>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            CorrelationInfoEnricher<TCorrelationInfo> correlationInfoEnricher) 
+            where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
+            Guard.NotNull(correlationInfoEnricher, nameof(correlationInfoEnricher));
+
+            return enrichmentConfiguration.With(correlationInfoEnricher);
         }
     }
 }

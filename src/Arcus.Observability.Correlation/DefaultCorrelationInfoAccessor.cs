@@ -5,5 +5,16 @@
     /// </summary>
     public class DefaultCorrelationInfoAccessor : DefaultCorrelationInfoAccessor<CorrelationInfo>, ICorrelationInfoAccessor
     {
+        /// <summary>
+        /// Prevents a new instance of the <see cref="DefaultCorrelationInfoAccessor"/> class from being created.
+        /// </summary>
+        private DefaultCorrelationInfoAccessor()
+        {
+        }
+
+        /// <summary>
+        /// Gets the default instance for the <see cref="DefaultCorrelationInfoAccessor"/> class.
+        /// </summary>
+        public static DefaultCorrelationInfoAccessor Instance { get; } = new DefaultCorrelationInfoAccessor();
     }
 }

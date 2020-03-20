@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             Guard.NotNull(services, nameof(services));
 
-            return AddCorrelation(services, new DefaultCorrelationInfoAccessor(), configureOptions);
+            return AddCorrelation(services, DefaultCorrelationInfoAccessor.Instance, configureOptions);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
                 services,
-                serviceProvider => new DefaultCorrelationInfoAccessor<TCorrelationInfo>(),
+                serviceProvider => DefaultCorrelationInfoAccessor<TCorrelationInfo>.Instance,
                 configureOptions);
         }
 
