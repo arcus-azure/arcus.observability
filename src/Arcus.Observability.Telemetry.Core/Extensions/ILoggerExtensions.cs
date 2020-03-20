@@ -168,33 +168,16 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
         /// </summary>
         /// <param name="logger">The logger to use.</param>
-        /// <param name="categoryName">The name of the security category.</param>
-        /// <param name="message">The user message written with in the <paramref name="categoryName"/>.</param>
-        /// <param name="arguments">The arguments formatted with the <paramref name="message"/>.</param>
-        public static void LogSecurityEvent(this ILogger logger, string categoryName, string message, params object[] arguments)
+        /// <param name="eventName">The user message written.</param>
+        /// <param name="context">The context that provides more insights on the event that occured.</param>
+        public static void LogSecurityEvent(this ILogger logger, string eventName, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
-            Guard.NotNullOrWhitespace(categoryName, nameof(categoryName), "Security category name cannot be blank");
 
-            LogSecurityEvent(logger, LogLevel.Warning, categoryName, message, arguments);
-        }
+            context = context ?? new Dictionary<string, object>();
+            context["EventType"] = "Security";
 
-        /// <summary>
-        ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="level">The level at which the security event should be written.</param>
-        /// <param name="categoryName">The name of the security category.</param>
-        /// <param name="message">The user message written with in the <paramref name="categoryName"/>.</param>
-        /// <param name="arguments">The arguments formatted with the <paramref name="message"/>.</param>
-        public static void LogSecurityEvent(this ILogger logger, LogLevel level, string categoryName, string message, params object[] arguments)
-        {
-            Guard.NotNull(logger, nameof(logger));
-            Guard.NotNullOrWhitespace(categoryName, nameof(categoryName), "Security category name cannot be blank");
-            
-            arguments = arguments ?? new object[0];
-
-            logger.Log(level, SecurityPrefix + message, arguments.Prepend(categoryName).ToArray());
+            LogEvent(logger, eventName, context);
         }
     }
 }

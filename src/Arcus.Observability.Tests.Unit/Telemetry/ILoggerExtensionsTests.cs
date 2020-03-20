@@ -277,33 +277,16 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const string categoryName = "Validation";
-            const string message = "something was invalidated wrong: {Input}";
-            const string arguments = "invalid input";
+            const string message = "something was invalidated wrong";
 
             // Act
-            logger.LogSecurityEvent(categoryName, message, arguments);
+            logger.LogSecurityEvent(message);
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.Equal("Validation - something was invalidated wrong: invalid input", logMessage);
-        }
-
-        [Fact]
-        public void LogSecurityEventWithLevel_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            const string categoryName = "Validation";
-            const string message = "something was invalidated wrong: {Input}";
-            const string arguments = "invalid input";
-
-            // Act
-            logger.LogSecurityEvent(LogLevel.Error, categoryName, message, arguments);
-
-            // Assert
-            string logMessage = logger.WrittenMessage;
-            Assert.Equal("Validation - something was invalidated wrong: invalid input", logMessage);
+            Assert.StartsWith(MessagePrefixes.Event, logMessage);
+            Assert.Contains(message, logMessage);
+            Assert.Contains("[EventType, Security]", logMessage);
         }
     }
 }
