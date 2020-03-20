@@ -274,6 +274,17 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogSecurityEvent_WithNoEventName_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventName = null;
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogSecurityEvent(eventName));
+        }
+
+        [Fact]
         public void LogSecurityEvent_ValidArguments_Succeeds()
         {
             // Arrange

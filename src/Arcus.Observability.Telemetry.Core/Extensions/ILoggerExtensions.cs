@@ -54,8 +54,6 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.MetricTracking.MetricValue 
             + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
-        private const string SecurityPrefix = "{" + MessagePrefixes.SecurityEvent + "} - ";
-
         /// <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -168,16 +166,17 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
         /// </summary>
         /// <param name="logger">The logger to use.</param>
-        /// <param name="eventName">The user message written.</param>
+        /// <param name="name">The user message written.</param>
         /// <param name="context">The context that provides more insights on the event that occured.</param>
-        public static void LogSecurityEvent(this ILogger logger, string eventName, Dictionary<string, object> context = null)
+        public static void LogSecurityEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(name, nameof(name));
 
             context = context ?? new Dictionary<string, object>();
             context["EventType"] = "Security";
 
-            LogEvent(logger, eventName, context);
+            LogEvent(logger, name, context);
         }
     }
 }
