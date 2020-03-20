@@ -136,5 +136,3 @@ public void ConfigureServices(IServiceCollection services)
 Later in the application, the options can be retrieved by injecting the `IOptions<CorrelationInfoOptions>` type.
 
 [&larr; back](/)
-=======
-[&larr; back](/)
