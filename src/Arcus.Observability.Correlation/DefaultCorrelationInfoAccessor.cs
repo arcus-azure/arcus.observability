@@ -15,6 +15,6 @@
         /// <summary>
         /// Gets the default instance for the <see cref="DefaultCorrelationInfoAccessor"/> class.
         /// </summary>
-        public static DefaultCorrelationInfoAccessor Instance { get; } = new DefaultCorrelationInfoAccessor();
+        public new static DefaultCorrelationInfoAccessor Instance { get; } = new DefaultCorrelationInfoAccessor();
     }
 }
