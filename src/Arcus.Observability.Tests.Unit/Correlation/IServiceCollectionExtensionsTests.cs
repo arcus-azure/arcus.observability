@@ -125,5 +125,49 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             Assert.NotNull(correlationInfoAccessorT);
             Assert.Same(testCorrelationInfoAccessor, correlationInfoAccessorT);
         }
+
+        [Fact]
+        public void AddCorrelation_CustomCorrelationInfoOptionsWithDefaultAccessor_RegisterCustomOptions()
+        {
+            // Arrange
+            string expectedTestOption = $"test-option-{Guid.NewGuid()}";
+            var services = new ServiceCollection();
+            services.AddCorrelation<TestCorrelationInfo, TestCorrelationInfoOptions>(options => options.TestOption = expectedTestOption);
+
+            // Act
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Assert
+            Assert.NotNull(serviceProvider.GetService<ICorrelationInfoAccessor>());
+            Assert.NotNull(serviceProvider.GetService<ICorrelationInfoAccessor<TestCorrelationInfo>>());
+            var testOptions = serviceProvider.GetService<IOptions<TestCorrelationInfoOptions>>();
+            Assert.NotNull(testOptions);
+            Assert.NotNull(testOptions.Value);
+            Assert.Equal(expectedTestOption, testOptions.Value.TestOption);
+        }
+
+        [Fact]
+        public void AddCorrelation_CustomCorrelationAccessorWithCustomOptions_RegisterCustomAccessorAndOptions()
+        {
+            // Arrange
+            string expectedTestOption = $"test-option-{Guid.NewGuid()}";
+            var testCorrelationInfoProvider = new TestCorrelationInfoAccessor();
+            var services = new ServiceCollection();
+            services.AddCorrelation<TestCorrelationInfoAccessor, TestCorrelationInfo, TestCorrelationInfoOptions>(
+                provider => testCorrelationInfoProvider,
+                options => options.TestOption = expectedTestOption);
+
+            // Act
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Assert
+            Assert.NotNull(serviceProvider.GetService<ICorrelationInfoAccessor>());
+            var correlationInfoAccessor = serviceProvider.GetService<ICorrelationInfoAccessor<TestCorrelationInfo>>();
+            Assert.Same(testCorrelationInfoProvider, correlationInfoAccessor);
+            var testOptions = serviceProvider.GetService<IOptions<TestCorrelationInfoOptions>>();
+            Assert.NotNull(testOptions);
+            Assert.NotNull(testOptions.Value);
+            Assert.Equal(expectedTestOption, testOptions.Value.TestOption);
+        }
     }
 }

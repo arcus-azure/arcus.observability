@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class IServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds operation and transaction correlation to the application.
+        /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor"/>
         /// </summary>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds operation and transaction correlation to the application.
+        /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/>
         /// </summary>
         /// <typeparam name="TCorrelationInfo">The type of the <see cref="CorrelationInfo"/> model.</typeparam>
         /// <param name="services">The services collection containing the dependency injection services.</param>
@@ -37,9 +37,27 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             Guard.NotNull(services, nameof(services));
 
-            return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
-                services,
-                serviceProvider => DefaultCorrelationInfoAccessor<TCorrelationInfo>.Instance,
+            return AddCorrelation<TCorrelationInfo, CorrelationInfoOptions>(services, configureOptions);
+        }
+
+        /// <summary>
+        /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/>.
+        /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <typeparam name="TOptions">The type of the custom <see cref="CorrelationInfoOptions"/> model.</typeparam>
+        /// <param name="services">The services collection containing the dependency injection services.</param>
+        /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
+        public static IServiceCollection AddCorrelation<TCorrelationInfo, TOptions>(
+            this IServiceCollection services,
+            Action<TOptions> configureOptions = null)
+            where TCorrelationInfo : CorrelationInfo
+            where TOptions : CorrelationInfoOptions
+        {
+            Guard.NotNull(services, nameof(services));
+
+            return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo, TOptions>(
+                services, 
+                serviceProvider => DefaultCorrelationInfoAccessor<TCorrelationInfo>.Instance, 
                 configureOptions);
         }
 
@@ -85,7 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds operation and transaction correlation to the application.
         /// </summary>
         /// <typeparam name="TAccessor">The type of the <see cref="ICorrelationInfoAccessor"/> implementation.</typeparam>
-        /// <typeparam name="TCorrelationInfo">The type of the <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
@@ -93,10 +111,34 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor,
             Action<CorrelationInfoOptions> configureOptions = null)
-            where TAccessor : class, ICorrelationInfoAccessor<TCorrelationInfo> 
-            where TCorrelationInfo : CorrelationInfo 
+            where TAccessor : class, ICorrelationInfoAccessor<TCorrelationInfo>
+            where TCorrelationInfo : CorrelationInfo
         {
             Guard.NotNull(services, nameof(services));
+            Guard.NotNull(createCustomCorrelationAccessor, nameof(createCustomCorrelationAccessor));
+
+            return AddCorrelation<TAccessor, TCorrelationInfo, CorrelationInfoOptions>(services, createCustomCorrelationAccessor, configureOptions);
+        }
+
+        /// <summary>
+        /// Adds operation and transaction correlation to the application.
+        /// </summary>
+        /// <typeparam name="TAccessor">The type of the <see cref="ICorrelationInfoAccessor"/> implementation.</typeparam>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <typeparam name="TOptions">The type of the custom <see cref="CorrelationInfoOptions"/> model.</typeparam>
+        /// <param name="services">The services collection containing the dependency injection services.</param>
+        /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
+        /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
+        public static IServiceCollection AddCorrelation<TAccessor, TCorrelationInfo, TOptions>(
+            this IServiceCollection services,
+            Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor,
+            Action<TOptions> configureOptions = null)
+            where TAccessor : class, ICorrelationInfoAccessor<TCorrelationInfo> 
+            where TCorrelationInfo : CorrelationInfo 
+            where TOptions : CorrelationInfoOptions
+        {
+            Guard.NotNull(services, nameof(services));
+            Guard.NotNull(createCustomCorrelationAccessor, nameof(createCustomCorrelationAccessor));
 
             services.AddSingleton<ICorrelationInfoAccessor<TCorrelationInfo>>(createCustomCorrelationAccessor);
             services.AddSingleton<ICorrelationInfoAccessor>(serviceProvider =>
