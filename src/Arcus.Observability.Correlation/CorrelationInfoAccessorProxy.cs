@@ -2,6 +2,10 @@
 
 namespace Arcus.Observability.Correlation
 {
+    /// <summary>
+    /// Internal proxy implementation to register an <see cref="ICorrelationInfoAccessor{TCorrelationInfo}"/> as an <see cref="ICorrelationInfoAccessor"/>.
+    /// </summary>
+    /// <typeparam name="TCorrelationInfo">The custom <see cref="Correlation.CorrelationInfo"/> model.</typeparam>
     internal class CorrelationInfoAccessorProxy<TCorrelationInfo> : ICorrelationInfoAccessor
         where TCorrelationInfo : CorrelationInfo
     {
