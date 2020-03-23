@@ -91,10 +91,8 @@ Value: `0477E377-414D-47CD-8756-BCBE3DBE3ACB`
 **Usage**
 
 ```csharp
-ICorrelationInfoAccessor defaultImplementation = new DefaultCorrelationInfoAccessor();
-
 ILogger logger = new LoggerConfiguration()
-    .Enrich.WithCorrelationInfo(defaultImplementation)
+    .Enrich.WithCorrelationInfo()
     .CreateLogger();
 
 logger.Information("This event will be enriched with the correlation information");
