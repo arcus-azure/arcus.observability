@@ -39,12 +39,22 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             Guard.NotNull(propertyFactory, nameof(propertyFactory));
 
             TCorrelationInfo correlationInfo = CorrelationInfoAccessor.GetCorrelationInfo();
-
             if (correlationInfo is null)
             {
                 return;
             }
 
+            EnrichCorrelationInfo(logEvent, propertyFactory, correlationInfo);
+        }
+
+        /// <summary>
+        /// Enrich the <paramref name="logEvent"/> with the given <paramref name="correlationInfo"/> model.
+        /// </summary>
+        /// <param name="logEvent">The log event to enrich with correlation information.</param>
+        /// <param name="propertyFactory">The log property factory to create log properties with correlation information.</param>
+        /// <param name="correlationInfo">The correlation model that contains the current correlation information.</param>
+        protected virtual void EnrichCorrelationInfo(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, TCorrelationInfo correlationInfo)
+        {
             if (!String.IsNullOrEmpty(correlationInfo.OperationId))
             {
                 LogEventProperty property = propertyFactory.CreateProperty(ContextProperties.Correlation.OperationId, correlationInfo.OperationId);
@@ -56,24 +66,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
                 LogEventProperty property = propertyFactory.CreateProperty(ContextProperties.Correlation.TransactionId, correlationInfo.TransactionId);
                 logEvent.AddPropertyIfAbsent(property);
             }
-
-            EnrichAdditionalCorrelationInfo(logEvent, propertyFactory, correlationInfo);
-        }
-
-        /// <summary>
-        /// Enrich additional information from the correlation model.
-        /// </summary>
-        /// <param name="logEvent">The log event to enrich.</param>
-        /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
-        /// <param name="correlationInfo">The custom correlation information model.</param>
-        /// <remarks>
-        ///     The <see cref="CorrelationInfo.OperationId"/> and <see cref="CorrelationInfo.TransactionId"/> are already enriched as log properties.
-        /// </remarks>
-        protected virtual void EnrichAdditionalCorrelationInfo(
-            LogEvent logEvent,
-            ILogEventPropertyFactory propertyFactory,
-            TCorrelationInfo correlationInfo)
-        {
         }
     }
 }
