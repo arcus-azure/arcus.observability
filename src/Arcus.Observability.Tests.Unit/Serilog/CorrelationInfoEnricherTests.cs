@@ -22,7 +22,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spySink = new InMemoryLogSink();
             var correlationInfoAccessor = DefaultCorrelationInfoAccessor.Instance;
-            correlationInfoAccessor.CorrelationInfo = new CorrelationInfo(expectedOperationId, expectedTransactionId);
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(expectedOperationId, expectedTransactionId));
 
             ILogger logger = new LoggerConfiguration()
                 .Enrich.WithCorrelationInfo()
@@ -52,7 +52,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spySink = new InMemoryLogSink();
             var correlationInfoAccessor = DefaultCorrelationInfoAccessor<TestCorrelationInfo>.Instance;
-            correlationInfoAccessor.CorrelationInfo = new TestCorrelationInfo(expectedOperationId, expectedTransactionId, expectedTestId);
+            correlationInfoAccessor.SetCorrelationInfo(new TestCorrelationInfo(expectedOperationId, expectedTransactionId, expectedTestId));
 
             ILogger logger = new LoggerConfiguration()
                 .Enrich.WithCorrelationInfo<TestCorrelationInfo>()
@@ -84,7 +84,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spySink = new InMemoryLogSink();
             var stubAccessor = new Mock<ICorrelationInfoAccessor>();
-            stubAccessor.Setup(accessor => accessor.CorrelationInfo)
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
                         .Returns(new CorrelationInfo(expectedOperationId, expectedTransactionId));
             
             ILogger logger = new LoggerConfiguration()
@@ -115,7 +115,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var spySink = new InMemoryLogSink();
             var stubAccessor = new Mock<ICorrelationInfoAccessor<TestCorrelationInfo>>();
-            stubAccessor.Setup(accessor => accessor.CorrelationInfo)
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
                         .Returns(new TestCorrelationInfo(expectedOperationId, expectedTransactionId, expectedTestId));
 
             ILogger logger = new LoggerConfiguration()
