@@ -7,8 +7,14 @@
         where TCorrelationInfo : CorrelationInfo
     {
         /// <summary>
-        /// Gets or sets the current correlation information initialized in this context.
+        /// Gets the current correlation information initialized in this context.
         /// </summary>
-        TCorrelationInfo CorrelationInfo { get; set; }
+        TCorrelationInfo GetCorrelationInfo();
+        
+        /// <summary>
+        /// Sets the current correlation information for this context.
+        /// </summary>
+        /// <param name="correlationInfo">The correlation model to set.</param>
+        void SetCorrelationInfo(TCorrelationInfo correlationInfo);
     }
 }

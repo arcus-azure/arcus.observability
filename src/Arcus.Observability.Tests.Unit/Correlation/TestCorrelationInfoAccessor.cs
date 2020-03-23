@@ -8,9 +8,23 @@ namespace Arcus.Observability.Tests.Unit.Correlation
     /// </summary>
     public class TestCorrelationInfoAccessor : ICorrelationInfoAccessor<TestCorrelationInfo>
     {
+        private TestCorrelationInfo _correlationInfo;
+
         /// <summary>
-        /// Gets or sets the current correlation information initialized in this context.
+        /// Gets the current correlation information initialized in this context.
         /// </summary>
-        public TestCorrelationInfo CorrelationInfo { get; set; }
+        public TestCorrelationInfo GetCorrelationInfo()
+        {
+            return _correlationInfo;
+        }
+
+        /// <summary>
+        /// Sets the current correlation information for this context.
+        /// </summary>
+        /// <param name="correlationInfo">The correlation model to set.</param>
+        public void SetCorrelationInfo(TestCorrelationInfo correlationInfo)
+        {
+            _correlationInfo = correlationInfo;
+        }
     }
 }

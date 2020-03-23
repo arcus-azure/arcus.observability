@@ -22,17 +22,22 @@ namespace Arcus.Observability.Correlation
         }
 
         /// <summary>
-        /// Gets or sets the current correlation information initialized in this context.
+        /// Gets the current correlation information initialized in this context.
         /// </summary>
-        public CorrelationInfo CorrelationInfo
+        public CorrelationInfo GetCorrelationInfo()
         {
-            get => _correlationInfoAccessor.CorrelationInfo;
-            set
+            return _correlationInfoAccessor.GetCorrelationInfo();
+        }
+
+        /// <summary>
+        /// Sets the current correlation information for this context.
+        /// </summary>
+        /// <param name="correlationInfo">The correlation model to set.</param>
+        public void SetCorrelationInfo(CorrelationInfo correlationInfo)
+        {
+            if (correlationInfo is TCorrelationInfo typedCorrelationInfo)
             {
-                if (value is TCorrelationInfo correlationInfo)
-                {
-                    _correlationInfoAccessor.CorrelationInfo = correlationInfo;
-                }
+                _correlationInfoAccessor.SetCorrelationInfo(typedCorrelationInfo);
             }
         }
     }
