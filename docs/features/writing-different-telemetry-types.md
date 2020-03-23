@@ -9,10 +9,10 @@ Logs are a great way to gain insights, but sometimes they are not the best appro
 
 We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
 
-- [Events](#events)
-- Metrics
-- Requests
 - [Dependencies](#dependencies)
+- [Events](#events)
+- [Metrics](#metrics)
+- Requests
 
 For most optimal output, we recommend using our [Azure Application Insights sink](/features/sinks/azure-application-insights).
 
@@ -121,5 +121,24 @@ var telemetryContext = new Dictionary<string, object>
 loger.LogSecurityEvent("Invalid Order", telemetryContext);
 // Output: "Events Invalid Order (Context: [EventType, Security], [OrderId, OrderId was not in correct format])"
 ```
+
+## Metrics
+
+Metrics allow you to report custom metrics which allow you to give insights on application-specific metrics.
+
+Here is how you can report an `Invoice Received` metric:
+
+```csharp
+var context = new Dictionary<string, object>
+{
+    { "InvoiceId", "ABC"},
+    { "Vendor", "Contoso"},
+};
+
+logger.LogMetric("Invoice Received", 133.37, context);
+// Output: "Metric Invoice Received: 133.37 (Context: [InvoiceId, ABC], [Vendor, Contoso])"
+```
+
+By using contextual information, you can create powerful metrics. When writing to Application Insights, for example, which will report the `Invoice Received` metric as [multi-dimensional metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-platform-metrics#multi-dimensional-metrics) which allow you to filter the metric based on its context.
 
 [&larr; back](/)
