@@ -110,8 +110,7 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 
 logger.Information("This event will be enriched with the correlation information");
-// Output: This event will be enriched with the correlation information
-//         {OperationId: 52EE2C00-53EE-476E-9DAB-C1234EB4AD0B, TransactionId: 0477E377-414D-47CD-8756-BCBE3DBE3ACB}
+// Output: This event will be enriched with the correlation information {OperationId: 52EE2C00-53EE-476E-9DAB-C1234EB4AD0B, TransactionId: 0477E377-414D-47CD-8756-BCBE3DBE3ACB}
 ```
 
 [&larr; back](/)
