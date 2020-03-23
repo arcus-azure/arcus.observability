@@ -38,7 +38,7 @@ We provide support for the following dependencies:
 Here is how you can report a HTTP dependency:
 
 ```csharp
-var context = new Dictionary<string, object>
+var telemetryContext = new Dictionary<string, object>
 {
     { "Tenant", "Contoso"},
 };
@@ -56,7 +56,7 @@ durationMeasurement.Start();
 // Send request to dependant service
 var response = await httpClient.SendAsync(request);
 
-_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed, context: context);
+_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed, telemetryContext);
 // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
 ```
 
@@ -65,7 +65,7 @@ _logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasu
 Here is how you can report a SQL dependency:
 
 ```csharp
-var context = new Dictionary<string, object>
+var telemetryContext = new Dictionary<string, object>
 {
     { "Catalog", "Products"},
     { "Tenant", "Contoso"},
@@ -78,7 +78,7 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: context);
+_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
 ```
 
