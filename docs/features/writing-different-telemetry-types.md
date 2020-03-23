@@ -9,7 +9,7 @@ Logs are a great way to gain insights, but sometimes they are not the best appro
 
 We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
 
-- Dependencies
+- [Dependencies](#dependencies)
 - [Events](#events)
 - [Metrics](#metrics)
 - Requests
@@ -22,6 +22,64 @@ This feature requires to install our NuGet package
 
 ```shell
 PM > Install-Package Arcus.Observability.Telemetry.Core
+```
+
+## Dependencies
+
+Dependencies allow you to track how your external dependencies are doing to give you insights on performance and error rate.
+
+We provide support for the following dependencies:
+
+- [HTTP](#measuring-http-dependencies)
+- [SQL](#measuring-sql-dependencies)
+
+### Measuring HTTP dependencies
+
+Here is how you can report a HTTP dependency:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Tenant", "Contoso"},
+};
+
+// Create request
+var request = new HttpRequestMessage(HttpMethod.Post, "http://requestbin.net/r/ujxglouj")
+{
+    Content = new StringContent("{\"message\":\"Hello World!\"")
+};
+
+// Start measuring
+var startTime = DateTimeOffset.UtcNow;
+durationMeasurement.Start();
+
+// Send request to dependant service
+var response = await httpClient.SendAsync(request);
+
+_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed, telemetryContext);
+// Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
+```
+
+### Measuring SQL dependencies
+
+Here is how you can report a SQL dependency:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Catalog", "Products"},
+    { "Tenant", "Contoso"},
+};
+
+// Start measuring
+var startTime = DateTimeOffset.UtcNow;
+durationMeasurement.Start();
+
+// Interact with database
+var products = await _repository.GetProducts();
+
+_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
+// Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
 ```
 
 ## Events
