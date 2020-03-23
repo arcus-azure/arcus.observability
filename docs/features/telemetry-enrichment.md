@@ -5,6 +5,12 @@ layout: default
 
 # Telemetry Enrichment
 
+We provide a variety of enrichers for Serilog:
+
+- [Application Enricher](#application-enricher)
+- [Kubernetes Enricher](#kubernetes-enricher)
+- [Version Enricher](#version-enricher)
+
 ## Installation
 
 This feature requires to install our NuGet package
@@ -13,23 +19,23 @@ This feature requires to install our NuGet package
 PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
 ```
 
-## Version Enricher
+## Application Enricher
 
-The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
-that adds the current runtime assembly version of the product to the log event as a log property with the name `version`.
+The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
+that adds the application's component name to the log event as a log property with the name `ComponentName`.
 
 **Example**
-Name: `version`
-Value: `1.0.0-preview`
+Name: `ComponentName`
+Value: `My application component`
 
 **Usage**
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
-    .Enrich.WithVersion()
+    .Enrich.WithComponentName("My application component")
     .CreateLogger();
 
-logger.Information("This event will be enriched with the runtime assembly product version");
+logger.Information("This event will be enriched with the application component's name");
 ```
 
 ## Kubernetes Enricher
@@ -54,23 +60,69 @@ ILogger logger = new LoggerConfiguration()
 logger.Information("This event will be enriched with the Kubernetes environment information");
 ```
 
-## Application Enricher
+Here is an example of a Kubernetes YAML that provides the required environment variables:
 
-The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
-that adds the application's component name to the log event as a log property with the name `ComponentName`.
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  labels:
+    app: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: demo-app
+      app.kubernetes.io/instance: instance
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: demo-app
+        app.kubernetes.io/instance: instance
+    spec:
+      containers:
+      - name: event-proxy
+        image: arcusazure/arcus-event-grid-proxy
+        env:
+        - name: ARCUS_EVENTGRID_TOPICENDPOINT
+          value: https://arcus.io
+        - name: ARCUS_EVENTGRID_AUTHKEY
+          valueFrom:
+            secretKeyRef:
+             name: secrets-order-consumer
+             key: servicebus-connectionstring
+        - name: KUBERNETES_NODE_NAME
+          valueFrom:
+            fieldRef:
+             fieldPath: spec.nodeName
+        - name: KUBERNETES_POD_NAME
+          valueFrom:
+            fieldRef:
+             fieldPath: metadata.name
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+             fieldPath: metadata.namespace
+```
+
+## Version Enricher
+
+The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
+that adds the current runtime assembly version of the product to the log event as a log property with the name `version`.
 
 **Example**
-Name: `ComponentName`
-Value: `My application component`
+Name: `version`
+Value: `1.0.0-preview`
 
 **Usage**
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
-    .Enrich.WithComponentName("My application component")
+    .Enrich.WithVersion()
     .CreateLogger();
 
-logger.Information("This event will be enriched with the application component's name");
+logger.Information("This event will be enriched with the runtime assembly product version");
 ```
 
 ## Correlation Enricher
