@@ -23,15 +23,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         /// <summary>
-        /// Enrich additional information from the <see cref="TestCorrelationInfo"/> type.
+        /// Enrich the <paramref name="logEvent"/> with the given <paramref name="correlationInfo"/> model.
         /// </summary>
-        /// <param name="logEvent">The log event to enrich.</param>
-        /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
-        /// <param name="correlationInfo">The custom correlation information model.</param>
-        /// <remarks>
-        ///     The <see cref="CorrelationInfo.OperationId"/> and <see cref="CorrelationInfo.TransactionId"/> are already enriched as log properties.
-        /// </remarks>
-        protected override void EnrichAdditionalCorrelationInfo(
+        /// <param name="logEvent">The log event to enrich with correlation information.</param>
+        /// <param name="propertyFactory">The log property factory to create log properties with correlation information.</param>
+        /// <param name="correlationInfo">The correlation model that contains the current correlation information.</param>
+        protected override void EnrichCorrelationInfo(
             LogEvent logEvent,
             ILogEventPropertyFactory propertyFactory,
             TestCorrelationInfo correlationInfo)

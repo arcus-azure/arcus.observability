@@ -128,12 +128,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             // Assert
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
-            Assert.True(
+            Assert.False(
                 logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
-                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
-            Assert.True(
+                $"Expected not to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.False(
                 logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
-                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+                $"Expected not to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
             Assert.True(
                 logEvent.ContainsProperty(TestCorrelationInfoEnricher.TestId, expectedTestId),
                 $"Expected to have a log property test ID '{TestCorrelationInfoEnricher.TestId}' with the value '{expectedTestId}'");
