@@ -108,7 +108,7 @@ var telemetryContext = new Dictionary<string, object>
 
 var stopWatch = Stopwatch.StartNew();
 
-// Perform action, in this case call next middleware in the chain which creates the response.
+// Perform action that creates a response, in this case call next middleware in the chain.
 await _next(httpContext);
 
 logger.LogRequest(httpContext.Request, httpContext.Response, stopWatch.Elapsed, telemetryContext);
