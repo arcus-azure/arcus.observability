@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +22,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.EventTracking.EventContext + "})";
 
         private const string HttpDependencyFormat =
-            MessagePrefixes.DependencyViaHttp + "{"
+            MessagePrefixes.DependencyViaHttp + " {"
             + ContextProperties.DependencyTracking.TargetName + "} for {"
             + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
             + ContextProperties.DependencyTracking.ResultCode + "} in {"
