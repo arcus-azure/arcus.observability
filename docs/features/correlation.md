@@ -135,4 +135,38 @@ public void ConfigureServices(IServiceCollection services)
 
 Later in the application, the options can be retrieved by injecting the `IOptions<CorrelationInfoOptions>` type.
 
+### Custom Configuration
+
+We also provide a way to provide custom configuration options when the application uses a custom correlation model.
+
+For example, with a custom correlation model:
+
+```csharp
+public class OrderCorrelationInfo : CorrelationInfo
+{
+    public string OrderId { get; }
+}
+```
+
+We could introduce an `OrderCorrelationInfoOptions` model:
+
+```csharp
+public class OrderCorrelationInfoOptions : CorrelationInfoOptions
+{
+    public bool IncludeOrderId { get; set; }
+}
+```
+
+This custom options model can then be included when registering the correlation:
+
+```csharp
+public class Startup
+{
+    public void ConfigureSerivces(IServiceCollection services)
+    {
+        services.AddCorrelation<OrderCorrelationInfo, OrderCorrelationInfoOptions>(options => options.IncludeOrderId = true);
+    }
+}
+```
+
 [&larr; back](/)
