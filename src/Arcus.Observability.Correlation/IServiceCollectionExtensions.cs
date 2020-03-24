@@ -140,8 +140,8 @@ namespace Microsoft.Extensions.DependencyInjection
             Guard.NotNull(services, nameof(services));
             Guard.NotNull(createCustomCorrelationAccessor, nameof(createCustomCorrelationAccessor));
 
-            services.AddSingleton<ICorrelationInfoAccessor<TCorrelationInfo>>(createCustomCorrelationAccessor);
-            services.AddSingleton<ICorrelationInfoAccessor>(serviceProvider =>
+            services.AddScoped<ICorrelationInfoAccessor<TCorrelationInfo>>(createCustomCorrelationAccessor);
+            services.AddScoped<ICorrelationInfoAccessor>(serviceProvider =>
             {
                 return new CorrelationInfoAccessorProxy<TCorrelationInfo>(
                     serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>());
