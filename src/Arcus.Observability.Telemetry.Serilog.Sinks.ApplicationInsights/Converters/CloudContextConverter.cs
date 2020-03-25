@@ -28,7 +28,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var podName = logEvent.Properties.GetAsRawString(ContextProperties.Kubernetes.PodName);
 
             telemetry.Context.Cloud.RoleName = componentName;
-            telemetry.Context.Cloud.RoleInstance = String.IsNullOrWhiteSpace(podName) ? machineName : podName;
+            telemetry.Context.Cloud.RoleInstance = string.IsNullOrWhiteSpace(podName) ? machineName : podName;
         }
     }
 }
