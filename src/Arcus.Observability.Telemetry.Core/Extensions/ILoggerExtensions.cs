@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
@@ -72,7 +73,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             string host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
-            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
+            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace Microsoft.Extensions.Logging
 
             string dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
+            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>

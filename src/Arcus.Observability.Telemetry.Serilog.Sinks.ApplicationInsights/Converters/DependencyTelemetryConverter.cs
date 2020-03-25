@@ -1,15 +1,27 @@
 ﻿using System;
-using System.Net.Http.Headers;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
+    /// <summary>
+    /// Represents a conversion from a Serilog <see cref="LogEvent"/> to an <see cref="DependencyTelemetry"/> instance.
+    /// </summary>
     public abstract class DependencyTelemetryConverter : CustomTelemetryConverter<DependencyTelemetry>
     {
+        /// <summary>
+        ///     Gets the type of the dependency in an <see cref="DependencyTelemetry"/> instance.
+        /// </summary>
         protected abstract DependencyType DependencyType { get; }
 
+        /// <summary>
+        ///     Creates a telemetry entry for a given log event
+        /// </summary>
+        /// <param name="logEvent">Event that was logged and written to this sink</param>
+        /// <param name="formatProvider">Provider to format event</param>
+        /// <returns>Telemetry entry to emit to Azure Application Insights</returns>
         protected override DependencyTelemetry CreateTelemetryEntry(LogEvent logEvent, IFormatProvider formatProvider)
         {
             var target = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.TargetName);
@@ -29,6 +41,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             return dependencyTelemetry;
         }
 
+        /// <summary>
+        ///     Provides capability to remove intermediary properties that are logged, but should not be tracked in the sink
+        /// </summary>
+        /// <param name="logEvent">Event that was logged and written to this sink</param>
         protected override void RemoveIntermediaryProperties(LogEvent logEvent)
         {
             logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.TargetName);

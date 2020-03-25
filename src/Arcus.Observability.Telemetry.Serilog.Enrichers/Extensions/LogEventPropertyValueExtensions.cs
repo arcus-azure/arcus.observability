@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using GuardNet;
 
 // ReSharper disable once CheckNamespace
@@ -19,6 +20,27 @@ namespace Serilog.Events
 
             var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
             return logEventPropertyValue?.ToDecentString();
+        }
+
+        /// <summary>
+        ///     Provides a <c>double</c> representation for a <paramref name="propertyKey"/>.
+        /// </summary>
+        /// <remarks>The built-in <c>ToString</c> wraps the <c>string</c> with quotes.</remarks>
+        /// <param name="eventPropertyValues">The Event property values to provide as a <c>string</c> representation.</param>
+        /// <param name="propertyKey">The key of the property to return.</param>
+        public static double GetAsDouble(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
+        {
+            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            string rawDouble = logEventPropertyValue?.ToDecentString();
+
+            if (rawDouble != null)
+            {
+                return Double.Parse(rawDouble, CultureInfo.InvariantCulture);
+            }
+
+            return Double.NaN;
         }
 
         /// <summary>
@@ -73,7 +95,7 @@ namespace Serilog.Events
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
-            var value = DateTimeOffset.Parse(logEventPropertyValue);
+            var value = DateTimeOffset.Parse(logEventPropertyValue, CultureInfo.InvariantCulture);
             return value;
         }
 
