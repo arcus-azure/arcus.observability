@@ -63,7 +63,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
         private static bool DetermineRequestOutcome(string rawResponseStatusCode)
         {
-            var statusCode = Int32.Parse(rawResponseStatusCode);
+            var statusCode = int.Parse(rawResponseStatusCode);
 
             return statusCode >= 200 && statusCode < 300;
         }
