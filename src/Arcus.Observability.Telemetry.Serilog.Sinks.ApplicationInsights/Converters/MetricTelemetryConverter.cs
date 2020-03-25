@@ -21,16 +21,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             var metricName = logEvent.Properties.GetAsRawString(ContextProperties.MetricTracking.MetricName);
             var metricValue = logEvent.Properties.GetAsDouble(ContextProperties.MetricTracking.MetricValue);
-            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext);
 
             var metricTelemetry = new MetricTelemetry(metricName, metricValue);
-
-            foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
-            {
-                var value = contextProperty.Value.ToDecentString();
-                metricTelemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
-            }
-
             return metricTelemetry;
         }
 

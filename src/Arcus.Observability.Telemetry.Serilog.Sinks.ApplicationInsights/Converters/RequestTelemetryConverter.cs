@@ -26,7 +26,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var requestDuration = logEvent.Properties.GetAsTimeSpan(ContextProperties.RequestTracking.RequestDuration);
             var requestTime = logEvent.Properties.GetAsDateTimeOffset(ContextProperties.RequestTracking.RequestTime);
             var operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
-            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext);
 
             var requestName = $"{requestMethod} {requestUri}";
             var isSuccessfulRequest = DetermineRequestOutcome(responseStatusCode);
@@ -37,12 +36,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 Id = operationId,
                 Url = url
             };
-
-            foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
-            {
-                var value = contextProperty.Value.ToDecentString();
-                requestTelemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
-            }
 
             return requestTelemetry;
         }

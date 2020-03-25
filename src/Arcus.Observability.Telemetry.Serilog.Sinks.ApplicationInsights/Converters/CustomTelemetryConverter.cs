@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Arcus.Observability.Telemetry.Core;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
@@ -25,11 +26,28 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             TEntry telemetryEntry = CreateTelemetryEntry(logEvent, formatProvider);
 
+            AssignTelemetryContextProperties(logEvent, telemetryEntry);
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
-            RemoveIntermediaryProperties(logEvent);
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
+            RemoveIntermediaryProperties(logEvent);
 
             return new List<ITelemetry> {telemetryEntry};
+        }
+
+        /// <summary>
+        /// Project the <see cref="LogEvent.Properties"/> to the properties of the given <paramref name="telemetry"/>.
+        /// </summary>
+        /// <param name="logEvent">The log event to extract the properties from.</param>
+        /// <param name="telemetry">The destination telemetry instance to add the properties to.</param>
+        protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
+        {
+            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext);
+
+            foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
+            {
+                var value = contextProperty.Value.ToDecentString();
+                telemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
+            }
         }
 
         /// <summary>

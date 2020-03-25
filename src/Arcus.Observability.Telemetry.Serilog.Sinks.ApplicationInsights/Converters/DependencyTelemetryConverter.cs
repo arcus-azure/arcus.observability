@@ -32,18 +32,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var resultCode = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.ResultCode);
             var outcome = logEvent.Properties.GetAsBool(ContextProperties.DependencyTracking.IsSuccessful);
             var operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
-            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext);
 
             var dependencyTelemetry = new DependencyTelemetry(DependencyType.ToString(), target, dependencyName, data, startTime, duration, resultCode, success: outcome)
             {
                 Id = operationId
             };
-
-            foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
-            {
-                var value = contextProperty.Value.ToDecentString();
-                dependencyTelemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
-            }
 
             return dependencyTelemetry;
         }
