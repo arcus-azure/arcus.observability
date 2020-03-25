@@ -95,7 +95,7 @@ namespace Serilog.Events
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
-            var value = DateTimeOffset.Parse(logEventPropertyValue);
+            var value = DateTimeOffset.Parse(logEventPropertyValue, CultureInfo.InvariantCulture);
             return value;
         }
 

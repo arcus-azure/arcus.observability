@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
@@ -11,8 +12,6 @@ namespace Microsoft.Extensions.Logging
 {
     public static class ILoggerExtensions
     {
-        private const string UniversalSortableDateTimePattern = "yyyy'-'MM'-'dd HH':'mm':'ss'Z'";
-
         private const string RequestFormat =
             MessagePrefixes.RequestViaHttp + " {"
             + ContextProperties.RequestTracking.RequestMethod + "} {"
@@ -74,7 +73,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             string host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(UniversalSortableDateTimePattern), context);
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
-            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(UniversalSortableDateTimePattern), isSuccessful, context);
+            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -126,7 +125,7 @@ namespace Microsoft.Extensions.Logging
 
             string dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(UniversalSortableDateTimePattern), isSuccessful, context);
+            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
