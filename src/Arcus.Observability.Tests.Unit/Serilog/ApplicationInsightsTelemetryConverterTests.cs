@@ -30,7 +30,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
     public class ApplicationInsightsTelemetryConverterTests
     {
         [Fact]
-        public void LogRequest_WithRequestMessagePrefix_CreatesRequestTelemetry()
+        public void LogRequest_WithRequest_CreatesRequestTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -98,14 +98,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             return response.Object;
         }
 
-        private static DateTimeOffset TruncateToSeconds(DateTimeOffset dateTimeOffset)
-        {
-            return new DateTimeOffset(
-                dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day, dateTimeOffset.Hour, dateTimeOffset.Minute, dateTimeOffset.Second, dateTimeOffset.Offset);
-        }
-
         [Fact]
-        public void LogHttpDependency_WithHttpDependencyMessagePrefix_CreatesHttpDependencyTelemetry()
+        public void LogHttpDependency_WithHttpDependency_CreatesHttpDependencyTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -154,7 +148,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogSqlDependency_WithSqlDependencyMessagePrefix_CreatesSqlDependencyTelemetry()
+        public void LogSqlDependency_WithSqlDependency_CreatesSqlDependencyTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -200,7 +194,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogEvent_WithEventMessagePrefix_CreatesEventTelemetry()
+        public void LogEvent_WithEvent_CreatesEventTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -234,7 +228,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogMetric_WithMetricMessagePrefix_CreatesMetricTelemetry()
+        public void LogMetric_WithMetric_CreatesMetricTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -267,7 +261,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogInformationWithPodName_WithoutMessagePrefix_CreatesTraceTelemetryWithPodNameAsRoleInstance()
+        public void LogInformationWithPodName_Without_CreatesTraceTelemetryWithPodNameAsRoleInstance()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -299,7 +293,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogInformationWithMachineName_WithoutMessagePrefix_CreatesTraceTelemetryWithPodNameAsRoleInstance()
+        public void LogInformationWithMachineName_Without_CreatesTraceTelemetryWithPodNameAsRoleInstance()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -348,6 +342,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         private static void AssertContainsTelemetryProperty(ISupportProperties telemetry, string key, string value)
         {
             Assert.Contains(telemetry.Properties, prop => prop.Equals(new KeyValuePair<string, string>(key, value)));
+        }
+
+        private static DateTimeOffset TruncateToSeconds(DateTimeOffset dateTimeOffset)
+        {
+            return new DateTimeOffset(
+                dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day, dateTimeOffset.Hour, dateTimeOffset.Minute, dateTimeOffset.Second, dateTimeOffset.Offset);
         }
     }
 }
