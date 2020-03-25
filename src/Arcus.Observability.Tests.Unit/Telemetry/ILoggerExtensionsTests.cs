@@ -85,22 +85,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string tableName = _bogusGenerator.Name.FullName();
             string operationName = _bogusGenerator.Name.FullName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            var duration = _bogusGenerator.Date.Timespan();
 
-            // Act
-            logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration);
+            using (var measurement = DependencyMeasurement.Start(operationName))
+            {
+                DateTimeOffset startTime = measurement.StartTime;
+                TimeSpan duration = measurement.Elapsed;
 
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
-            Assert.Contains(serverName, logMessage);
-            Assert.Contains(databaseName, logMessage);
-            Assert.Contains(tableName, logMessage);
-            Assert.Contains(operationName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
+                // Act
+                logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration);
+
+                // Assert
+
+                var logMessage = logger.WrittenMessage;
+                Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
+                Assert.Contains(serverName, logMessage);
+                Assert.Contains(databaseName, logMessage);
+                Assert.Contains(tableName, logMessage);
+                Assert.Contains(operationName, logMessage);
+                Assert.Contains(isSuccessful.ToString(), logMessage);
+                Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+                Assert.Contains(duration.ToString(), logMessage);
+            }
         }
 
         [Fact]
@@ -178,22 +183,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
             HttpStatusCode statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            var duration = _bogusGenerator.Date.Timespan();
 
-            // Act;
-            logger.LogHttpDependency(request, statusCode, startTime, duration);
+            using (var measurement = DependencyMeasurement.Start())
+            {
+                DateTimeOffset startTime = measurement.StartTime;
+                TimeSpan duration = measurement.Elapsed;
 
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
-            Assert.Contains(request.RequestUri.Host, logMessage);
-            Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
-            Assert.Contains(request.Method.ToString(), logMessage);
-            Assert.Contains(((int)statusCode).ToString(), logMessage);
-            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
-            var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
-            Assert.Contains($"Successful: {isSuccessful}", logMessage);
+                // Act
+                logger.LogHttpDependency(request, statusCode, startTime, duration);
+
+                // Assert
+                var logMessage = logger.WrittenMessage;
+                Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
+                Assert.Contains(request.RequestUri.Host, logMessage);
+                Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
+                Assert.Contains(request.Method.ToString(), logMessage);
+                Assert.Contains(((int)statusCode).ToString(), logMessage);
+                Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+                var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
+                Assert.Contains($"Successful: {isSuccessful}", logMessage); 
+            }
         }
 
         [Fact]

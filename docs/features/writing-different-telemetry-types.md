@@ -50,14 +50,14 @@ var request = new HttpRequestMessage(HttpMethod.Post, "http://requestbin.net/r/u
 };
 
 // Start measuring
-var startTime = DateTimeOffset.UtcNow;
-durationMeasurement.Start();
-
-// Send request to dependant service
-var response = await httpClient.SendAsync(request);
-
-_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
+using (var measurement = DependencyMeasurement.Start())
+{
+    // Send request to dependant service
+    var response = await httpClient.SendAsync(request);
+    
+    _logger.LogHttpDependency(request, response.StatusCode, measurement.StartTime, measurement.Elapsed, telemetryContext);
+    // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
+}
 ```
 
 ### Measuring SQL dependencies
@@ -72,14 +72,14 @@ var telemetryContext = new Dictionary<string, object>
 };
 
 // Start measuring
-var startTime = DateTimeOffset.UtcNow;
-durationMeasurement.Start();
-
-// Interact with database
-var products = await _repository.GetProducts();
-
-_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
-// Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
+using (var measurement = DependencyMeasurement.Start("get-products"))
+{
+    // Interact with database
+    var products = await _repository.GetProducts();
+    
+    _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: measurement.StartTime, duration: measurement.Elapsed, context: telemetryContext);
+    // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
+}
 ```
 
 ## Events
