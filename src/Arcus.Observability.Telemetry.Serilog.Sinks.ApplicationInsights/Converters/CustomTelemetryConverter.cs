@@ -7,14 +7,23 @@ using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConve
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
+    /// <summary>
+    /// Represents a custom typed conversion to a series of <see cref="ITelemetry"/> instances.
+    /// </summary>
+    /// <typeparam name="TEntry">The concrete <see cref="ITelemetry"/> implementation.</typeparam>
     public abstract class CustomTelemetryConverter<TEntry> : TelemetryConverterBase
         where TEntry : ITelemetry, ISupportProperties
     {
         private readonly CloudContextConverter _cloudContextConverter = new CloudContextConverter();
 
+        /// <summary>
+        ///     Convert the given <paramref name="logEvent"/> to a series of <see cref="ITelemetry"/> instances.
+        /// </summary>
+        /// <param name="logEvent">The event containing all relevant information for an <see cref="ITelemetry"/> instance.</param>
+        /// <param name="formatProvider">The instance to control formatting.</param>
         public override IEnumerable<ITelemetry> Convert(LogEvent logEvent, IFormatProvider formatProvider)
         {
-            var telemetryEntry = CreateTelemetryEntry(logEvent, formatProvider);
+            TEntry telemetryEntry = CreateTelemetryEntry(logEvent, formatProvider);
 
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
             RemoveIntermediaryProperties(logEvent);
