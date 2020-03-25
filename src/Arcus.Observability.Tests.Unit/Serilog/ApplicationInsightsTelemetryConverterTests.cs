@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
-using Bogus;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
-using Serilog.Context;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
-using Serilog.Formatting.Display;
 using Xunit;
 using static Arcus.Observability.Telemetry.Core.ContextProperties;
 using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
@@ -77,25 +72,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
             });
-        }
-
-        private static HttpRequest CreateStubRequest(HttpMethod httpMethod, string requestScheme, string host, string path)
-        {
-            var request = new Mock<HttpRequest>();
-            request.Setup(req => req.Method).Returns(httpMethod.ToString().ToUpper);
-            request.Setup(req => req.Scheme).Returns(requestScheme);
-            request.Setup(req => req.Host).Returns(new HostString(host));
-            request.Setup(req => req.Path).Returns(path);
-
-            return request.Object;
-        }
-
-        private static HttpResponse CreateStubResponse(HttpStatusCode statusCode)
-        {
-            var response = new Mock<HttpResponse>();
-            response.Setup(res => res.StatusCode).Returns((int) statusCode);
-
-            return response.Object;
         }
 
         [Fact]
@@ -332,6 +308,25 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             var factory = new SerilogLoggerFactory(logger);
             return factory.CreateLogger<ApplicationInsightsTelemetryConverterTests>();
+        }
+
+        private static HttpRequest CreateStubRequest(HttpMethod httpMethod, string requestScheme, string host, string path)
+        {
+            var request = new Mock<HttpRequest>();
+            request.Setup(req => req.Method).Returns(httpMethod.ToString().ToUpper);
+            request.Setup(req => req.Scheme).Returns(requestScheme);
+            request.Setup(req => req.Host).Returns(new HostString(host));
+            request.Setup(req => req.Path).Returns(path);
+
+            return request.Object;
+        }
+
+        private static HttpResponse CreateStubResponse(HttpStatusCode statusCode)
+        {
+            var response = new Mock<HttpResponse>();
+            response.Setup(res => res.StatusCode).Returns((int) statusCode);
+
+            return response.Object;
         }
 
         private static void AssertDoesNotContainLogProperty(LogEvent logEvent, string name)
