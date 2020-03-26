@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core
 {
@@ -48,7 +45,7 @@ namespace Arcus.Observability.Telemetry.Core
         public TimeSpan Elapsed => _stopwatch.Elapsed;
 
         /// <summary>
-        /// 
+        /// Gets the additional data that corresponds with the measured dependency.
         /// </summary>
         public string DependencyData { get; }
 
