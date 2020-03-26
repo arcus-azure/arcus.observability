@@ -44,13 +44,14 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         public async Task DependencyMeasurementWithDependencyData_StartMeasuringAction_HoldsStartAndElapsedTime()
         {
             // Act
-            using (var measurement = DependencyMeasurement.Start("Operation")) 
+            const string dependencyData = "Operation";
+            using (var measurement = DependencyMeasurement.Start(dependencyData)) 
             {
                 // Assert
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
 
                 Assert.NotNull(measurement);
-                Assert.Equal("Operation", measurement.DependencyData);
+                Assert.Equal(dependencyData, measurement.DependencyData);
                 Assert.True(DateTimeOffset.UtcNow > measurement.StartTime, "Measurement should have lesser start time");
                 Assert.True(TimeSpan.Zero < measurement.Elapsed, "Measurement should be running");
             }
@@ -60,7 +61,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         public async Task DependencyMeasurementWithDependencyData_StopsMeasuringAction_WhenDisposed()
         {
             // Arrange
-            var measurement = DependencyMeasurement.Start("Operation");
+            const string dependencyData = "Operation";
+            var measurement = DependencyMeasurement.Start(dependencyData);
             await Task.Delay(TimeSpan.FromMilliseconds(100));
             measurement.Dispose();
             var elapsed = measurement.Elapsed;
@@ -70,7 +72,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             Assert.NotNull(measurement);
-            Assert.Equal("Operation", measurement.DependencyData);
+            Assert.Equal(dependencyData, measurement.DependencyData);
             Assert.Equal(elapsed, measurement.Elapsed);
         }
     }
