@@ -81,6 +81,23 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">Logger to use</param>
         /// <param name="request">Request that started the HTTP communication</param>
         /// <param name="statusCode">Status code that was returned by the service for this HTTP communication</param>
+        /// <param name="measurement">Measuring the latency of the HTTP dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogHttpDependency(this ILogger logger, HttpRequestMessage request, HttpStatusCode statusCode, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNull(request, nameof(request));
+            Guard.NotNull(measurement, nameof(measurement));
+
+            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs an HTTP dependency
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="request">Request that started the HTTP communication</param>
+        /// <param name="statusCode">Status code that was returned by the service for this HTTP communication</param>
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
@@ -98,6 +115,27 @@ namespace Microsoft.Extensions.Logging
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
             logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
+        }
+
+        /// <summary>
+        ///     Logs a SQL dependency
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="serverName">Name of server hosting the database</param>
+        /// <param name="databaseName">Name of database</param>
+        /// <param name="tableName">Name of table</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the SQL dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogSqlDependency(this ILogger logger, string serverName, string databaseName, string tableName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(serverName, nameof(serverName));
+            Guard.NotNullOrWhitespace(databaseName, nameof(databaseName));
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName));
+            Guard.NotNull(measurement, nameof(measurement));
+
+            LogSqlDependency(logger, serverName, databaseName, tableName, measurement.DependencyData, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
