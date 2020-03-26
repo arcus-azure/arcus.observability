@@ -114,26 +114,25 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string operationName = _bogusGenerator.Name.FullName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
-            using (var measurement = DependencyMeasurement.Start(operationName))
-            {
-                DateTimeOffset startTime = measurement.StartTime;
-                TimeSpan duration = measurement.Elapsed;
+            var measurement = DependencyMeasurement.Start(operationName);
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
 
-                // Act
-                logger.LogSqlDependency(serverName, databaseName, tableName, isSuccessful, measurement);
+            // Act
+            logger.LogSqlDependency(serverName, databaseName, tableName, isSuccessful, measurement);
 
-                // Assert
+            // Assert
 
-                var logMessage = logger.WrittenMessage;
-                Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
-                Assert.Contains(serverName, logMessage);
-                Assert.Contains(databaseName, logMessage);
-                Assert.Contains(tableName, logMessage);
-                Assert.Contains(operationName, logMessage);
-                Assert.Contains(isSuccessful.ToString(), logMessage);
-                Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
-                Assert.Contains(duration.ToString(), logMessage);
-            }
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
+            Assert.Contains(serverName, logMessage);
+            Assert.Contains(databaseName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
         }
 
         [Fact]
