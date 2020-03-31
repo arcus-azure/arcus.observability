@@ -18,6 +18,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog
 {
+    [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
         private readonly string _instrumentationKey;
