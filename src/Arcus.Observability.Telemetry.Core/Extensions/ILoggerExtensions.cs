@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
@@ -19,6 +20,15 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
             + ContextProperties.RequestTracking.RequestDuration + "} at {"
             + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
+        private const string DependencyFormat =
+            MessagePrefixes.Dependency + " {"
+            + ContextProperties.DependencyTracking.DependencyType + "} {"
+            + ContextProperties.DependencyTracking.DependencyData + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
         private const string HttpDependencyFormat =
@@ -72,7 +82,28 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             string host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow, context);
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogDependency(this ILogger logger, string dependencyType, object dependencyData, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType));
+            Guard.NotNull(dependencyData, nameof(dependencyData));
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogInformation(DependencyFormat, dependencyType, dependencyData, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -97,7 +128,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
-            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime, isSuccessful, context);
+            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -124,7 +155,7 @@ namespace Microsoft.Extensions.Logging
 
             string dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime, isSuccessful, context);
+            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>

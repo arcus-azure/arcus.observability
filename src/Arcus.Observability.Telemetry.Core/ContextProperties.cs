@@ -11,6 +11,7 @@ namespace Arcus.Observability.Telemetry.Core
 
         public static class DependencyTracking
         {
+            public const string DependencyType = "DependencyType";
             public const string TargetName = "DependencyTargetName";
             public const string DependencyName = "DependencyName";
             public const string DependencyData = "DependencyData";
