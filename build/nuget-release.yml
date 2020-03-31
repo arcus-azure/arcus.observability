@@ -11,7 +11,7 @@ resources:
       endpoint: arcus-azure
 
 variables:
-  - group: 'Arcus Web Api - Integration Testing'
+  - group: 'Arcus Observability - Integration Testing'
   - group: 'Build Configuration'
   - template: ./variables/build.yml
   - name: 'Repository'

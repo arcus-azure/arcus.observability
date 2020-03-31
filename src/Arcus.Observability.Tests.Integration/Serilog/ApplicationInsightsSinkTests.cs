@@ -29,7 +29,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         /// </summary>
         public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
-            _instrumentationKey = Configuration.GetValue<string>("Arcus:ApplicationInsights:InstrumentationKey");
+            _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
         }
 
         [Fact]
