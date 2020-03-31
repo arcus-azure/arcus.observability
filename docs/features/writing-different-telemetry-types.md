@@ -82,7 +82,7 @@ using (var measurement = DependencyMeasurement.Start())
     // Send request to dependant service
     var response = await httpClient.SendAsync(request);
     
-    _logger.LogHttpDependency(request, response.StatusCode, measurement.StartTime, measurement.Elapsed, telemetryContext);
+    _logger.LogHttpDependency(request, response.StatusCode, measurement, telemetryContext);
     // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
 }
 ```
@@ -126,7 +126,7 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
     // Interact with database
     var products = await _repository.GetProducts();
     
-    _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: measurement.StartTime, duration: measurement.Elapsed, context: telemetryContext);
+    _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, measurement: measurement, context: telemetryContext);
     // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
 }
 ```
