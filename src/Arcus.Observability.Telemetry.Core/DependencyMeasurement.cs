@@ -10,10 +10,10 @@ namespace Arcus.Observability.Telemetry.Core
     {
         private readonly Stopwatch _stopwatch;
         
-        private DependencyMeasurement(string dependencyData, DateTimeOffset startTime, Stopwatch stopwatch)
+        private DependencyMeasurement(string dependencyData)
         {
-            _stopwatch = stopwatch;
-            StartTime = startTime;
+            _stopwatch = Stopwatch.StartNew();
+            StartTime = DateTimeOffset.UtcNow;
             DependencyData = dependencyData;
         }
 
@@ -31,7 +31,7 @@ namespace Arcus.Observability.Telemetry.Core
         /// <param name="dependencyData">The additional data related to the dependency.</param>
         public static DependencyMeasurement Start(string dependencyData)
         {
-            return new DependencyMeasurement(dependencyData, DateTimeOffset.UtcNow,  Stopwatch.StartNew());
+            return new DependencyMeasurement(dependencyData);
         }
 
         /// <summary>
