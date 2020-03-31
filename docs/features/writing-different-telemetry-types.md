@@ -30,9 +30,9 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
+- [Custom](#measuring-custom-dependencies)
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
-- [Custom](#measuring-custom-dependencies)
 
 ### Measuring HTTP dependencies
 
