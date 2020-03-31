@@ -148,6 +148,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private ILogger CreateLogger()
         {
+            Logger.LogInformation("Create new Serilog logger on Application Insights");
+
             Logger logger = new LoggerConfiguration()
                 .WriteTo.AzureApplicationInsights(_instrumentationKey)
                 .CreateLogger();
@@ -156,11 +158,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             return factory.CreateLogger<ApplicationInsightsSinkTests>();
         }
 
-        private static Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
+        private Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
         {
+            var operationId = Guid.NewGuid();
+            Logger.LogInformation("Testing '{TestName}' using {OperationId}", memberName, operationId);
+
             return new Dictionary<string, object>
             {
-                ["OperationId"] = Guid.NewGuid(),
+                ["OperationId"] = operationId,
                 ["TestName"] = memberName
             };
         }
