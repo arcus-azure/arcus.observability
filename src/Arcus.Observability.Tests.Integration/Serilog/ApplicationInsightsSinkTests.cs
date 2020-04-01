@@ -122,6 +122,30 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
+        public void LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
+        {
+            // Arrange
+            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
+            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                string dependencyType = _bogusGenerator.Name.FullName();
+                object dependencyData = _bogusGenerator.Finance.Account();
+                bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+                TimeSpan duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration, telemetryContext);
+
+                // Assert
+                // Hold on till  we have agreed on assertion...
+            }
+        }
+
+        [Fact]
         public void LogHttpDependency_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
         {
             // Arrange

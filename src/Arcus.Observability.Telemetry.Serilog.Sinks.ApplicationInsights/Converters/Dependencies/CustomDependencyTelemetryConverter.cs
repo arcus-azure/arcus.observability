@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights.DataContracts;
+﻿using Arcus.Observability.Telemetry.Core;
+using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters.Dependencies
@@ -6,7 +7,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// <summary>
     /// Represents a conversion from a Serilog <see cref="LogEvent"/> to an Application Insights <see cref="DependencyTelemetry"/> instance.
     /// </summary>
-    public class HttpDependencyTelemetryConverter : DependencyTelemetryConverter
+    public class CustomDependencyTelemetryConverter : DependencyTelemetryConverter
     {
         /// <summary>
         ///     Gets the custom dependency type name from the given <paramref name="logEvent"/> to use in an <see cref="DependencyTelemetry"/> instance.
@@ -14,7 +15,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="logEvent">The logged event.</param>
         protected override string GetDependencyType(LogEvent logEvent)
         {
-            return DependencyType.Http.ToString();
+            return logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.DependencyType);
         }
     }
 }

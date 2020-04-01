@@ -9,8 +9,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     public class SqlDependencyTelemetryConverter : DependencyTelemetryConverter
     {
         /// <summary>
-        ///     Gets the type of the dependency in an <see cref="DependencyTelemetry"/> instance.
+        ///     Gets the custom dependency type name from the given <paramref name="logEvent"/> to use in an <see cref="DependencyTelemetry"/> instance.
         /// </summary>
-        protected override DependencyType DependencyType { get; } = DependencyType.Sql;
+        /// <param name="logEvent">The logged event.</param>
+        protected override string GetDependencyType(LogEvent logEvent)
+        {
+            return DependencyType.Sql.ToString();
+        }
     }
 }

@@ -17,6 +17,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
         private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
         private readonly RequestTelemetryConverter _requestTelemetryConverter = new RequestTelemetryConverter();
+        
+        private readonly CustomDependencyTelemetryConverter _customDependencyTelemetryConverter = 
+            new CustomDependencyTelemetryConverter();
 
         private readonly HttpDependencyTelemetryConverter _httpDependencyTelemetryConverter =
             new HttpDependencyTelemetryConverter();
@@ -34,6 +37,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.RequestViaHttp))
             {
                 return _requestTelemetryConverter.Convert(logEvent, formatProvider);
+            }
+
+            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.Dependency))
+            {
+                return _customDependencyTelemetryConverter.Convert(logEvent, formatProvider);
             }
 
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.DependencyViaHttp))

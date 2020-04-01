@@ -30,6 +30,7 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
+- [Custom](#measuring-custom-dependencies)
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
 
@@ -110,7 +111,6 @@ var products = await _repository.GetProducts();
 _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
 ```
-
 Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
 
 ```csharp
@@ -128,6 +128,48 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
     
     _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, measurement: measurement, context: telemetryContext);
     // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
+}
+```
+
+### Measuring custom dependencies
+
+Here is how you can areport a custom depenency:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Subject", "Your order is being processed!" },
+    { "OrderId", "ABC" }
+};
+
+// Start measuring
+var startTime = DateTimeOffset.UtcNow;
+durationMeasurement.Start();
+
+string dependencyName = "SendGrid";
+object dependencyData = "http://my.sendgrid.uri/"
+
+_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
+// Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Subject, Your order is being processed!], [OrderId, ABC])"
+```
+
+Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Subject", "Your order is being processed!" },
+    { "OrderId", "ABC" }
+};
+
+// Start measuring
+using (var measurement = DependencyMeasurement.Start())
+{
+    string dependencyName = "SendGrid";
+    object dependencyData = "http://my.sendgrid.uri/"
+
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, measurement: measurement, context: telemetryContext);
+    // Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Subject, Your order is being processed!], [OrderId, ABC])"
 }
 ```
 

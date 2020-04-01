@@ -22,6 +22,15 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
+        private const string DependencyFormat =
+            MessagePrefixes.Dependency + " {"
+            + ContextProperties.DependencyTracking.DependencyType + "} {"
+            + ContextProperties.DependencyTracking.DependencyData + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
         private const string HttpDependencyFormat =
             MessagePrefixes.DependencyViaHttp + " {"
             + ContextProperties.DependencyTracking.TargetName + "} for {"
@@ -74,6 +83,27 @@ namespace Microsoft.Extensions.Logging
             string host = $"{request.Scheme}://{request.Host}";
 
             logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogDependency(this ILogger logger, string dependencyType, object dependencyData, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType));
+            Guard.NotNull(dependencyData, nameof(dependencyData));
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogInformation(DependencyFormat, dependencyType, dependencyData, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
