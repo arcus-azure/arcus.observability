@@ -12,6 +12,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class TraceTelemetryConverter : ApplicationInsightsSink.TelemetryConverters.TraceTelemetryConverter
     {
+        private readonly OperationContextConverter _operationContextConverter = new OperationContextConverter();
         private readonly CloudContextConverter _cloudContextConverter = new CloudContextConverter();
 
         /// <summary>
@@ -25,7 +26,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             {
                 _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetry);
 
-                yield return telemetry;
+                var traceTelemetry = telemetry as TraceTelemetry;
+                _operationContextConverter.EnrichWithCorrelationInfo(traceTelemetry);
+
+                yield return traceTelemetry;
             }
         }
     }

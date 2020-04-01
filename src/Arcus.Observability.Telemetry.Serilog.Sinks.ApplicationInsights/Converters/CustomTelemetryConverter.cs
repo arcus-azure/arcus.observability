@@ -15,6 +15,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     public abstract class CustomTelemetryConverter<TEntry> : TelemetryConverterBase
         where TEntry : ITelemetry, ISupportProperties
     {
+        private readonly OperationContextConverter _operationContextConverter = new OperationContextConverter();
         private readonly CloudContextConverter _cloudContextConverter = new CloudContextConverter();
 
         /// <summary>
@@ -28,7 +29,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             AssignTelemetryContextProperties(logEvent, telemetryEntry);
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
+
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
+            _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
             RemoveIntermediaryProperties(logEvent);
 
             return new List<ITelemetry> {telemetryEntry};
