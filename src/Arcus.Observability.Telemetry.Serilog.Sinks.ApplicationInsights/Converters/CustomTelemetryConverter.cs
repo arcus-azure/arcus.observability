@@ -29,9 +29,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             AssignTelemetryContextProperties(logEvent, telemetryEntry);
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
-            _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
 
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
+            _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
             RemoveIntermediaryProperties(logEvent);
 
             return new List<ITelemetry> {telemetryEntry};

@@ -68,6 +68,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.True(requestTelemetry.Success);
                 Assert.Equal(operationId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -118,6 +119,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Equal("200", dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
+                AssertOperationContext(dependencyTelemetry, operationId);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Port", "4000");
             });
@@ -164,6 +166,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Null(dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
+                AssertOperationContext(dependencyTelemetry, operationId);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Statement", "Query");
             });
@@ -173,8 +176,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         public void LogEvent_WithEvent_CreatesEventTelemetry()
         {
             // Arrange
+            const string eventName = "Order Invoiced";
             var spySink = new InMemoryLogSink();
-            ILogger logger = CreateLogger(spySink);
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
             var telemetryContext = new Dictionary<string, object>
             {
@@ -182,7 +187,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["Vendor"] = "Contoso"
             };
 
-            logger.LogEvent("Order Invoiced", telemetryContext);
+            logger.LogEvent(eventName, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -197,7 +202,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
-                Assert.Equal("Order Invoiced", eventTelemetry.Name);
+                Assert.Equal(eventName, eventTelemetry.Name);
+                AssertOperationContext(eventTelemetry, operationId);
                 AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
                 AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
             });
@@ -207,14 +213,17 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         public void LogMetric_WithMetric_CreatesMetricTelemetry()
         {
             // Arrange
+            const string metricName = "Request stream";
+            const double metricValue = 0.13;
             var spySink = new InMemoryLogSink();
-            ILogger logger = CreateLogger(spySink);
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Capacity"] = "0.45"
             };
-            logger.LogMetric("Request stream", 0.13, telemetryContext);
+            logger.LogMetric(metricName, metricValue, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -229,9 +238,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var metricTelemetry = Assert.IsType<MetricTelemetry>(telemetry);
-                Assert.Equal("Request stream", metricTelemetry.Name);
-                Assert.Equal(0.13, metricTelemetry.Sum);
-                
+                Assert.Equal(metricName, metricTelemetry.Name);
+                Assert.Equal(metricValue, metricTelemetry.Sum);
+                AssertOperationContext(metricTelemetry, operationId);
+
                 AssertContainsTelemetryProperty(metricTelemetry, "Capacity", "0.45");
             });
         }
@@ -241,9 +251,11 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
-            ILogger logger = CreateLogger(spySink, config => 
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config =>
             {
-                return config.Enrich.WithProperty(General.ComponentName, "component")
+                return config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                             .Enrich.WithProperty(General.ComponentName, "component")
                              .Enrich.WithProperty(Kubernetes.PodName, "pod");
             });
 
@@ -265,6 +277,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(SeverityLevel.Information, traceTelemetry.SeverityLevel);
                 Assert.Equal("component", traceTelemetry.Context.Cloud.RoleName);
                 Assert.Equal("pod", traceTelemetry.Context.Cloud.RoleInstance);
+                AssertOperationContext(traceTelemetry, operationId);
             });
         }
 
@@ -273,9 +286,11 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => 
             {
-                return config.Enrich.WithProperty(General.ComponentName, "component")
+                return config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                             .Enrich.WithProperty(General.ComponentName, "component")
                              .Enrich.WithProperty(General.MachineName, "machine");
             });
 
@@ -297,7 +312,15 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(SeverityLevel.Information, traceTelemetry.SeverityLevel);
                 Assert.Equal("component", traceTelemetry.Context.Cloud.RoleName);
                 Assert.Equal("machine", traceTelemetry.Context.Cloud.RoleInstance);
+                AssertOperationContext(traceTelemetry, operationId);
             });
+        }
+
+        private static void AssertOperationContext<TTelemetry>(TTelemetry telemetry, string operationId) where TTelemetry : ITelemetry
+        {
+            Assert.NotNull(telemetry.Context);
+            Assert.NotNull(telemetry.Context.Operation);
+            Assert.Equal(operationId, telemetry.Context.Operation.Id);
         }
 
         private static ILogger CreateLogger(ILogEventSink sink, Func<LoggerConfiguration, LoggerConfiguration> configureLoggerConfiguration = null)
