@@ -21,6 +21,7 @@ You can easily configure the sink by providing the Azure Application Insights ke
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
     .WriteTo.AzureApplicationInsights("<key>")
     .CreateLogger();
 ```
@@ -29,6 +30,7 @@ Alternatively, you can override the default minimum log level to reduce amount o
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
     .WriteTo.AzureApplicationInsights("<key>", restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 ```
