@@ -162,7 +162,7 @@ This custom options model can then be included when registering the correlation:
 ```csharp
 public class Startup
 {
-    public void ConfigureSerivces(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
         services.AddCorrelation<OrderCorrelationInfo, OrderCorrelationInfoOptions>(options => options.IncludeOrderId = true);
     }
