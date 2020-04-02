@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Serilog.Filters", "Arcus.Observability.Telemetry.Serilog.Filters\Arcus.Observability.Telemetry.Serilog.Filters.csproj", "{ED747983-87B8-47B5-AAF8-DDFCB69E98EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcus.Observability.Tests.Core", "Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj", "{DC18426F-4D03-4DBD-8D92-224C026BFADC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{ED747983-87B8-47B5-AAF8-DDFCB69E98EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED747983-87B8-47B5-AAF8-DDFCB69E98EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED747983-87B8-47B5-AAF8-DDFCB69E98EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4DCD1626-66B4-4396-9CD6-951E9CE7BDE8} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
 		{3D66B14F-2CC7-44E6-A53F-1E45F9A6BCF6} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
+		{DC18426F-4D03-4DBD-8D92-224C026BFADC} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E5382820-51FF-4B00-92BE-C78E80EA0841}

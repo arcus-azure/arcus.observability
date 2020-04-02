@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using Arcus.Observability.Correlation;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
+using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -37,8 +40,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogTrace_SinksToApplicationInsights_ResultsInTraceTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
                 string message = _bogusGenerator.Lorem.Sentence();
@@ -56,8 +58,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -76,8 +77,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -97,8 +97,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogRequest_SinksToApplicationInsights_ResultsInRequestTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -125,8 +124,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -149,8 +147,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogHttpDependency_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -176,8 +173,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogSqlDependency_SinksToApplicationInsights_ResultsInSqlDependencyTelemetry()
         {
             // Arrange
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
-            using (var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true)))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
                 
@@ -195,6 +191,92 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 // Assert
                 // Hold on till we have agreed on assertion...
             }
+        }
+
+        [Fact]
+        public void LogEventWithComponentName_SinksToApplicationInsights_ResultsInTelemetryWithComponentName()
+        {
+            // Arrange
+            string componentName = _bogusGenerator.Commerce.ProductName();
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                // Act
+                logger.LogInformation("This message will be enriched with a component name");
+
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        [Fact]
+        public void LogEventWithVersion_SinksToApplicationInsights_ResultsInTelemetryWithVersion()
+        {
+            // Arrange
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithVersion()))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                // Act
+                logger.LogEvent("Update version");
+
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        [Fact]
+        public void LogEventWithCorrelationInfo_SinksToApplicationInsights_ResultsInTelemetryWithCorrelationInfo()
+        {
+            // Arrange
+            string operationId = $"operation-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            DefaultCorrelationInfoAccessor.Instance.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId));
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo()))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                // Act
+                logger.LogInformation("This message will be correlated");
+
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        [Fact]
+        public void LogEventWithKubernetesInfo_SinksToApplicationInsights_ResultsInTelemetryWithKubernetesInfo()
+        {
+            // Arrange
+            const string kubernetesNodeName = "KUBERNETES_NODE_NAME",
+                         kubernetesPodName = "KUBERNETES_POD_NAME",
+                         kubernetesNamespace = "KUBERNETES_NAMESPACE";
+
+            string nodeName = $"node-{Guid.NewGuid()}";
+            string podName = $"pod-{Guid.NewGuid()}";
+            string @namespace = $"namespace-{Guid.NewGuid()}";
+
+            using (TemporaryEnvironmentVariable.Create(kubernetesNodeName, nodeName))
+            using (TemporaryEnvironmentVariable.Create(kubernetesPodName, podName))
+            using (TemporaryEnvironmentVariable.Create(kubernetesNamespace, @namespace))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithKubernetesInfo()))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                // Act
+                logger.LogInformation("This message will have Kubernetes information");
+                
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        private ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
+        {
+            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
+            configureLogging?.Invoke(configuration);
+            return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
 
         private Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")

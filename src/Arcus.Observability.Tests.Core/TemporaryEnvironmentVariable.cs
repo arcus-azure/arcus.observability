@@ -1,7 +1,7 @@
 ﻿using System;
 using GuardNet;
 
-namespace Arcus.Observability.Tests.Unit 
+namespace Arcus.Observability.Tests.Core
 {
     /// <summary>
     /// Represents a temporary environment variable that gets removed when the model gets disposed.
