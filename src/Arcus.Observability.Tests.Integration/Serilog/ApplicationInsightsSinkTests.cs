@@ -103,7 +103,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 HttpMethod httpMethod = GenerateHttpMethod();
-                string host = _bogusGenerator.Company.CompanyName();
+                string host = _bogusGenerator.Company.CompanyName().Replace(" ", "");
                 string path = "/" + _bogusGenerator.Commerce.ProductName();
                 HttpRequest request = CreateStubRequest(httpMethod, "https", host, path);
 

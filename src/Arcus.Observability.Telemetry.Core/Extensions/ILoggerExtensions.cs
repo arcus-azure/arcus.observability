@@ -75,6 +75,9 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNull(request, nameof(request));
             Guard.NotNull(response, nameof(response));
+            Guard.For<ArgumentException>(() => request.Scheme != null && request.Scheme.Contains(" "), "HTTP request scheme cannot contain whitespace");
+            Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
+            Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
 
             context = context ?? new Dictionary<string, object>();
 
