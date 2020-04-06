@@ -282,13 +282,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
-                HttpStatusCode statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-                DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+                HttpMethod httpMethod = GenerateHttpMethod();
+                string requestUri = _bogusGenerator.Image.LoremFlickrUrl();
+                var request = new HttpRequestMessage(httpMethod, requestUri)
+                {
+                    Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
+                };
+                var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
                 var duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogHttpDependency(request, statusCode, startTime, duration);
+                logger.LogHttpDependency(request, statusCode, DateTimeOffset.UtcNow, duration, telemetryContext);
 
                 // Assert
                 // Hold on till we have agreed on assertion...
