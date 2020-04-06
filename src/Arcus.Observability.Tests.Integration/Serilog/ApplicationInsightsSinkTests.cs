@@ -238,7 +238,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 // Act
-                logger.LogInformation("This message will be correlated");
+                logger.LogInformation("Message 1/2 that will be correlated");
+                logger.LogInformation("Message 2/2 that will be correlated");
 
                 // Assert
                 // Hold on till we have agreed on assertion...
@@ -267,6 +268,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 // Act
                 logger.LogInformation("This message will have Kubernetes information");
                 
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithComponentName_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
+        {
+            // Arrange
+            string componentName = _bogusGenerator.Commerce.ProductName();
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
+                HttpStatusCode statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+                DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+                var duration = _bogusGenerator.Date.Timespan();
+
+                // Act
+                logger.LogHttpDependency(request, statusCode, startTime, duration);
+
                 // Assert
                 // Hold on till we have agreed on assertion...
             }
