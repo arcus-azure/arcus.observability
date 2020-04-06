@@ -40,6 +40,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             };
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
             HttpResponse response = CreateStubResponse(HttpStatusCode.OK);
+            var startTime = DateTimeOffset.UtcNow;
             TimeSpan duration = TimeSpan.FromSeconds(5);
             logger.LogRequest(request, response, duration, telemetryContext);
 
@@ -62,7 +63,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
                 Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
-                Assert.Equal(TruncateToSeconds(DateTimeOffset.UtcNow), requestTelemetry.Timestamp);
+                Assert.Equal(TruncateToSeconds(startTime), requestTelemetry.Timestamp);
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal("200", requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
