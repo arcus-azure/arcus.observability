@@ -64,6 +64,30 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void EnrichWithAppInfo_EventWithComponentNameAndPodNameAndMachineName_CloudContextRoleNameAndPodNameRoleInstanceSet()
+        {
+            // Arrange
+            string roleName = _bogusGenerator.Name.JobArea();
+            string podRoleInstance = _bogusGenerator.Name.JobType() + _bogusGenerator.Random.Number();
+            string machineRoleInstance = _bogusGenerator.Name.JobType() + _bogusGenerator.Random.Number();
+
+            LogEvent logEvent = CreateLogEvent(
+                new LogEventProperty(ContextProperties.General.ComponentName, new ScalarValue(roleName)),
+                new LogEventProperty(ContextProperties.Kubernetes.PodName, new ScalarValue(podRoleInstance)),
+                new LogEventProperty(ContextProperties.General.MachineName, new ScalarValue(machineRoleInstance)));
+            
+            var telemetry = new EventTelemetry();
+            var converter = new CloudContextConverter();
+
+            // Act
+            converter.EnrichWithAppInfo(logEvent, telemetry);
+
+            // Assert
+            Assert.Equal(roleName, telemetry.Context.Cloud.RoleName);
+            Assert.Equal(podRoleInstance, telemetry.Context.Cloud.RoleInstance);
+        }
+
+        [Fact]
         public void EnrichWithAppInfo_DependencyWithoutComponentNameAndPodName_CloudContextRoleNameAndRoleInstanceSet()
         {
             // Arrange
