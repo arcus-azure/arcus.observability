@@ -130,13 +130,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusDependencyType dependencyType = ServiceBusDependencyType.Queue;
+            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Queue;
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
-            logger.LogServiceBusDependency(dependencyType, isSuccessful, startTime, duration);
+            logger.LogServiceBusDependency(isSuccessful, startTime, duration, dependencyType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -152,7 +152,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusDependencyType dependencyType = ServiceBusDependencyType.Queue;
+            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Queue;
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -160,7 +160,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogServiceBusDependency(dependencyType, isSuccessful, measurement);
+            logger.LogServiceBusDependency(isSuccessful, measurement, dependencyType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -186,7 +186,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(ServiceBusDependencyType.Queue.ToString(), logMessage);
+            Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -209,7 +209,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(ServiceBusDependencyType.Queue.ToString(), logMessage);
+            Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -230,7 +230,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(ServiceBusDependencyType.Topic.ToString(), logMessage);
+            Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -253,7 +253,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(ServiceBusDependencyType.Topic.ToString(), logMessage);
+            Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);

@@ -156,7 +156,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogServiceBusDependency(ServiceBusDependencyType.Queue, isSuccessful, DateTimeOffset.UtcNow, duration, telemetryContext);
+                logger.LogServiceBusDependency(isSuccessful, DateTimeOffset.UtcNow, duration, ServiceBusEntityType.Queue, telemetryContext);
 
                 // Assert
                 // Hold on till we have agreed on assertion...
