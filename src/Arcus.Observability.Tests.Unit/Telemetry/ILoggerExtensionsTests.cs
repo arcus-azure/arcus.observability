@@ -172,6 +172,94 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogServiceBusQueueDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusQueueDependency(isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(ServiceBusDependencyType.Queue.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusQueueDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusQueueDependency(isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(ServiceBusDependencyType.Queue.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusTopicDependency(isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(ServiceBusDependencyType.Topic.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusTopicDependency(isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(ServiceBusDependencyType.Topic.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogSqlDependency_ValidArguments_Succeeds()
         {
             // Arrange

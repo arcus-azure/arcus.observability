@@ -4,16 +4,21 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Corresponds with the type of the dependency type when logging an Azure Service Bus dependency.
     /// </summary>
-    public enum ServiceBusDependencyType
+    public enum ServiceBusEntityType
     {
         /// <summary>
-        /// Sets the dependency type to a topic.
+        /// Sets the dependency type to a unknown entity.
         /// </summary>
-        Topic, 
-        
+        Unknown = 0,
+
         /// <summary>
         /// Sets the dependency type to a queue.
         /// </summary>
-        Queue
+        Queue = 1,
+
+        /// <summary>
+        /// Sets the dependency type to a topic.
+        /// </summary>
+        Topic = 2,
     }
 }
