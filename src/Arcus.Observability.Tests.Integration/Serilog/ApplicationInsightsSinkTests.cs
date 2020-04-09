@@ -144,6 +144,26 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
+        public void LogServiceBusDependency_SinksToApplicationInsights_ResultsInServiceBusDependencyTelemetry()
+        {
+            // Arrange
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                TimeSpan duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogServiceBusDependency(ServiceBusDepenencyType.Queue, isSuccessful, DateTimeOffset.UtcNow, duration, telemetryContext);
+
+                // Assert
+                // Hold on till we have agreed on assertion...
+            }
+        }
+
+        [Fact]
         public void LogHttpDependency_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
         {
             // Arrange

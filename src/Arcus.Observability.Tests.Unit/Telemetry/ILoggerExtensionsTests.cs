@@ -100,6 +100,78 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const ServiceBusDepenencyType dependencyType = ServiceBusDepenencyType.Queue;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusDependency(dependencyType, isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const ServiceBusDepenencyType dependencyType = ServiceBusDepenencyType.Queue;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusDependency(dependencyType, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogSqlDependency_ValidArguments_Succeeds()
         {
             // Arrange
