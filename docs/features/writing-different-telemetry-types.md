@@ -30,9 +30,46 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
+- [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Custom](#measuring-custom-dependencies)
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
+
+### Measuring Azure Service Bus dependencies
+
+Here is how you can report an Azure Service Bus dependency:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Namespace", "azure.servicebus.namespace" }
+};
+
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogServiceBusDependency(ServiceBusDependencyType.Queue, isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
+// Output: "Dependency Azure ServiceBus Queue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
+```
+
+Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Namespace", "azure.servicebus.namespace" }
+};
+
+// Start measuring
+using (var measurement = DependencyMeasurement.Start())
+{
+    _logger.LogServiceBusDependency(ServiceBusDependencyType.Queue, isSuccessful: true, measurement, telemetryContext);
+    // Output: "Dependency Azure ServiceBus Queue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
+}
+```
 
 ### Measuring HTTP dependencies
 

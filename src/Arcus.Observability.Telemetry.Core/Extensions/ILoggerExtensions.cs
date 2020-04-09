@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Http;
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
 {
-    public enum ServiceBusDepenencyType { Topic, Queue }
-
     public static class ILoggerExtensions
     {
         private const string RequestFormat =
@@ -34,8 +32,8 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.EventTracking.EventContext + "})";
 
         private const string ServiceBusDependencyFormat =
-            MessagePrefixes.Dependency + "{" 
-            + ContextProperties.DependencyTracking.DependencyType + "} {" 
+            MessagePrefixes.Dependency + " Azure Service Bus {" 
+            + ContextProperties.DependencyTracking.DependencyType + "} in {" 
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
@@ -145,7 +143,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusDependency(this ILogger logger, ServiceBusDepenencyType dependencyType, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogServiceBusDependency(this ILogger logger, ServiceBusDependencyType dependencyType, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNull(measurement, nameof(measurement));
@@ -162,7 +160,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusDependency(this ILogger logger, ServiceBusDepenencyType dependencyType, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogServiceBusDependency(this ILogger logger, ServiceBusDependencyType dependencyType, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             logger.LogInformation(ServiceBusDependencyFormat, dependencyType, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
