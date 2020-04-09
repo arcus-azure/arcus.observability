@@ -130,7 +130,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusDepenencyType dependencyType = ServiceBusDepenencyType.Queue;
+            const ServiceBusDependencyType dependencyType = ServiceBusDependencyType.Queue;
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
@@ -152,7 +152,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusDepenencyType dependencyType = ServiceBusDepenencyType.Queue;
+            const ServiceBusDependencyType dependencyType = ServiceBusDependencyType.Queue;
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
