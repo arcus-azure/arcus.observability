@@ -128,18 +128,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                string dependencyType = _bogusGenerator.Name.FullName();
+                string dependencyType = _bogusGenerator.Lorem.Word();
                 object dependencyData = _bogusGenerator.Finance.Account();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogDependency(dependencyType, dependencyData, isSuccessful, DateTimeOffset.UtcNow, duration, telemetryContext);
 
                 // Assert
-                // Hold on till  we have agreed on assertion...
+                // Hold on till we have agreed on assertion...
             }
         }
 
