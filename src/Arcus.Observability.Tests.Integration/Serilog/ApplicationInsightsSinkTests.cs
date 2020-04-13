@@ -131,7 +131,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 string dependencyType = _bogusGenerator.Lorem.Word();
                 object dependencyData = _bogusGenerator.Finance.Account();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
@@ -158,7 +158,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                     Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
                 };
                 var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 var duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
@@ -183,7 +183,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 string tableName = _bogusGenerator.Database.Column();
                 string operation = _bogusGenerator.PickRandom("GET", "UPDATE", "DELETE", "CREATE");
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
