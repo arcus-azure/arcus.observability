@@ -324,6 +324,31 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogRequestMessage_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
+            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var method = HttpMethod.Head;
+            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
+            var response = new HttpResponseMessage(statusCode);
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act;
+            logger.LogRequest(request, response, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
+            Assert.Contains(path, logMessage);
+            Assert.Contains(host, logMessage);
+            Assert.Contains(((int) statusCode).ToString(), logMessage);
+            Assert.Contains(method.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogRequest_RequestWithSchemeWithWhitespaceWasSpecified_ThrowsException()
         {
             // Arrange
