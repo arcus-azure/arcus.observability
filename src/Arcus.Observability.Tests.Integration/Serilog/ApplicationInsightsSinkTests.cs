@@ -128,7 +128,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                string dependencyType = _bogusGenerator.Lorem.Word();
+                string dependencyType = "Arcus";
                 object dependencyData = _bogusGenerator.Finance.Account();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
