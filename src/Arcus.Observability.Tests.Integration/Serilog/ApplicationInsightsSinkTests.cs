@@ -121,6 +121,32 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
+        public void LogRequestMessage_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                HttpMethod httpMethod = GenerateHttpMethod();
+                var requestUri = new Uri(_bogusGenerator.Internet.Url());
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+
+                var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+                var response = new HttpResponseMessage(statusCode);
+
+                var duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, duration, telemetryContext);
+
+                // Assert
+                // Hold on till we have agreed on assertion... 
+            }
+        }
+
+        [Fact]
         public void LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
         {
             // Arrange
