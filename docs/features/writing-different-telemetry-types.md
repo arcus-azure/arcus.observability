@@ -37,7 +37,7 @@ We provide support for the following dependencies:
 
 ### Measuring Azure Service Bus dependencies
 
-We allow you to measure Azure Service Bus dependencies for both queues & topics or unknown entities.
+We allow you to measure Azure Service Bus dependencies for both queues & topics.
 
 Here is how you can report an Azure Service Bus Queue dependency:
 
