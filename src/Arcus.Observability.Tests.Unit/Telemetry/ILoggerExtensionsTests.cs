@@ -130,19 +130,19 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Queue;
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
             string entityName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
-            logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyType);
+            logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, entityType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
-            Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(entityType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
@@ -154,7 +154,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Topic;
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Topic;
             string entityName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
@@ -163,12 +163,12 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, dependencyType);
+            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, entityType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
-            Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(entityType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
