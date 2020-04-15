@@ -143,6 +143,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -168,6 +169,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(dependencyType.ToString(), logMessage);
+            Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -190,6 +192,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
+            Assert.Contains(queueName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -214,6 +217,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
+            Assert.Contains(queueName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -236,6 +240,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
+            Assert.Contains(topicName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
@@ -260,6 +265,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
+            Assert.Contains(topicName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
