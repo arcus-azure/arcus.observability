@@ -100,6 +100,178 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
+            string entityName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, entityType);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(entityType.ToString(), logMessage);
+            Assert.Contains(entityName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Topic;
+            string entityName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, entityType);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(entityType.ToString(), logMessage);
+            Assert.Contains(entityName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusQueueDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
+            Assert.Contains(queueName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusQueueDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
+            Assert.Contains(queueName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
+            Assert.Contains(topicName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
+            Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
+            Assert.Contains(topicName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogSqlDependency_ValidArguments_Succeeds()
         {
             // Arrange

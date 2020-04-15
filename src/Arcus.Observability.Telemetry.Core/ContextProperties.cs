@@ -19,6 +19,11 @@ namespace Arcus.Observability.Telemetry.Core
             public const string ResultCode = "DependencyResultCode";
             public const string Duration = "DependencyDuration";
             public const string IsSuccessful = "DependencyIsSuccessful";
+
+            public static class ServiceBus
+            {
+                public const string EntityType = "EntityType";
+            }
         }
 
         public static class EventTracking
