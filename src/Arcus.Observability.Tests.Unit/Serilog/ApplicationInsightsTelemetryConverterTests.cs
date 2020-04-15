@@ -158,7 +158,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
-                Assert.Equal("Azure Resource", dependencyTelemetry.Type);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(entityName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
@@ -204,7 +204,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
-                Assert.Equal("Azure Resource", dependencyTelemetry.Type);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(queueName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
@@ -250,7 +250,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
-                Assert.Equal("Azure Resource", dependencyTelemetry.Type);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(topicName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
