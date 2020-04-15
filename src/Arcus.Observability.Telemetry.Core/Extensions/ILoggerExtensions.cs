@@ -32,7 +32,8 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.EventTracking.EventContext + "})";
 
         private const string ServiceBusDependencyFormat =
-            MessagePrefixes.Dependency + " Azure Service Bus {"
+            MessagePrefixes.Dependency + " {"
+            + ContextProperties.DependencyTracking.DependencyType + "} {"
             + ContextProperties.DependencyTracking.ServiceBus.EntityType + "} named {"
             + ContextProperties.DependencyTracking.TargetName + "} {"
             + ContextProperties.DependencyTracking.DependencyType + "} in {" 
@@ -230,7 +231,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
-            logger.LogInformation(ServiceBusDependencyFormat, entityType, entityName, "Azure Resource", duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, "Azure Resource", duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
