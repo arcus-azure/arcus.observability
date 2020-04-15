@@ -71,6 +71,8 @@ using (var measurement = DependencyMeasurement.Start())
 }
 ```
 
+Note that we have an `LogServiceBusTopicDependency` to log dependency logs for an Azure Service Bus Topic and an `LogServiceBusDependency` to log Azure Service Bus logs where the entity type is not known.
+
 ### Measuring HTTP dependencies
 
 Here is how you can report a HTTP dependency:
