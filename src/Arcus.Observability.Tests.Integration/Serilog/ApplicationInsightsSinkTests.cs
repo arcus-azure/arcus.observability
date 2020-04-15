@@ -121,6 +121,32 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
+        public void LogRequestMessage_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                HttpMethod httpMethod = GenerateHttpMethod();
+                var requestUri = new Uri(_bogusGenerator.Internet.Url());
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+
+                var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+                var response = new HttpResponseMessage(statusCode);
+
+                var duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, duration, telemetryContext);
+
+                // Assert
+                // Hold on till we have agreed on assertion... 
+            }
+        }
+
+        [Fact]
         public void LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
         {
             // Arrange
@@ -128,10 +154,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                string dependencyType = _bogusGenerator.Name.FullName();
+                string dependencyType = "Arcus";
                 object dependencyData = _bogusGenerator.Finance.Account();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
@@ -139,7 +165,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration, telemetryContext);
 
                 // Assert
-                // Hold on till  we have agreed on assertion...
+                // Hold on till we have agreed on assertion...
             }
         }
 
@@ -180,11 +206,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                     Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
                 };
                 var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 var duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogHttpDependency(request, statusCode, DateTimeOffset.UtcNow, duration, telemetryContext);
+                logger.LogHttpDependency(request, statusCode, startTime, duration, telemetryContext);
 
                 // Assert
                 // Hold on till we have agreed on assertion... 
@@ -204,11 +231,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 string tableName = _bogusGenerator.Database.Column();
                 string operation = _bogusGenerator.PickRandom("GET", "UPDATE", "DELETE", "CREATE");
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogSqlDependency(serverName, databaseName, tableName, operation, isSuccessful, DateTimeOffset.UtcNow, duration, telemetryContext);
+                logger.LogSqlDependency(serverName, databaseName, tableName, operation, isSuccessful, startTime, duration, telemetryContext);
 
                 // Assert
                 // Hold on till we have agreed on assertion...

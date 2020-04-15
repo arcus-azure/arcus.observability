@@ -25,6 +25,58 @@ namespace Arcus.Observability.Tests.Unit.Serilog
     public class ApplicationInsightsTelemetryConverterTests
     {
         [Fact]
+        public void LogRequestMessage_WithRequest_CreatesRequestTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Client"] = "https://localhost",
+                ["ContentType"] = "application/json",
+            };
+            var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            var startTime = DateTimeOffset.UtcNow;
+            TimeSpan duration = TimeSpan.FromSeconds(5);
+            logger.LogRequest(request, response, duration, telemetryContext);
+
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestMethod);
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestHost);
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestDuration);
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestTime);
+            AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
+                Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
+                Assert.Equal(TruncateToSeconds(startTime), requestTelemetry.Timestamp);
+                Assert.Equal(duration, requestTelemetry.Duration);
+                Assert.Equal("200", requestTelemetry.ResponseCode);
+                Assert.True(requestTelemetry.Success);
+                Assert.Equal(operationId, requestTelemetry.Id);
+                Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
+
+                AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
+                AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+            });
+        }
+
+        [Fact]
         public void LogRequest_WithRequest_CreatesRequestTelemetry()
         {
             // Arrange

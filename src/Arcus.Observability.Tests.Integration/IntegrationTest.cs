@@ -1,4 +1,4 @@
-﻿using Arcus.Observability.Tests.Integration.Logging;
+﻿using Arcus.Testing.Logging;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 

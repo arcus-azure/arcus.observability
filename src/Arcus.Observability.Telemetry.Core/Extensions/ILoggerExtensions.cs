@@ -99,6 +99,32 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        ///     Logs an HTTP request
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="request">Request that was done</param>
+        /// <param name="response">Response that will be sent out</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
+        public static void LogRequest(this ILogger logger, HttpRequestMessage request, HttpResponseMessage response, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNull(request, nameof(request));
+            Guard.NotNull(response, nameof(response));
+            Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
+            Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
+            Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
+
+            context = context ?? new Dictionary<string, object>();
+
+            var statusCode = (int) response.StatusCode;
+            PathString resourcePath = request.RequestUri.AbsolutePath;
+            string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
+
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+        }
+
+        /// <summary>
         ///     Logs a dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
