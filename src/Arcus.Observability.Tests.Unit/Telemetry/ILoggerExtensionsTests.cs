@@ -141,7 +141,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(dependencyType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -167,7 +167,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(dependencyType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -190,7 +190,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(queueName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -215,7 +215,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(queueName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -238,7 +238,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(topicName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -263,7 +263,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(topicName, logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
