@@ -51,8 +51,8 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogServiceBusDependency(ServiceBusDependencyType.Queue, isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "Dependency Azure ServiceBus Queue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
+_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
+// Output: "Dependency Azure ServiceBus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
 ```
 
 Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
@@ -66,8 +66,8 @@ var telemetryContext = new Dictionary<string, object>
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
-    _logger.LogServiceBusDependency(ServiceBusDependencyType.Queue, isSuccessful: true, measurement, telemetryContext);
-    // Output: "Dependency Azure ServiceBus Queue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
+    _logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, measurement, telemetryContext);
+    // Output: "Dependency Azure ServiceBus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
 }
 ```
 
