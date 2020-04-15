@@ -153,11 +153,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 string entityName = _bogusGenerator.Commerce.Product();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogServiceBusDependency(entityName, isSuccessful, DateTimeOffset.UtcNow, duration, ServiceBusEntityType.Queue, telemetryContext);
+                logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, telemetryContext);
 
                 // Assert
                 // Hold on till we have agreed on assertion...
