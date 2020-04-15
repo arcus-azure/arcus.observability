@@ -33,7 +33,8 @@ namespace Microsoft.Extensions.Logging
 
         private const string ServiceBusDependencyFormat =
             MessagePrefixes.Dependency + " Azure Service Bus {"
-            + ContextProperties.DependencyTracking.ServiceBus.EntityType + "} {"
+            + ContextProperties.DependencyTracking.ServiceBus.EntityType + "} named {"
+            + ContextProperties.DependencyTracking.TargetName + "} {"
             + ContextProperties.DependencyTracking.DependencyType + "} in {" 
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
@@ -140,90 +141,96 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="queueName">Name of the Service Bus queue</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusQueueDependency(this ILogger logger, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogServiceBusQueueDependency(this ILogger logger, string queueName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNull(measurement, nameof(measurement));
 
-            LogServiceBusQueueDependency(logger, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+            LogServiceBusQueueDependency(logger, queueName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="queueName">Name of the Service Bus queue</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusQueueDependency(this ILogger logger, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogServiceBusQueueDependency(this ILogger logger, string queueName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             
-            LogServiceBusDependency(logger, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, context);
+            LogServiceBusDependency(logger, queueName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="topicName">Name of the Service Bus topic</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusTopicDependency(this ILogger logger, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogServiceBusTopicDependency(this ILogger logger, string topicName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNull(measurement, nameof(measurement));
 
-            LogServiceBusTopicDependency(logger, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+            LogServiceBusTopicDependency(logger, topicName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="topicName">Name of the Service Bus topic</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusTopicDependency(this ILogger logger, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogServiceBusTopicDependency(this ILogger logger, string topicName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             
-            LogServiceBusDependency(logger, isSuccessful, startTime, duration, ServiceBusEntityType.Topic, context);
+            LogServiceBusDependency(logger, topicName, isSuccessful, startTime, duration, ServiceBusEntityType.Topic, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="entityName">Name of the Service Bus entity</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
         /// <param name="entityType">Type of the Service Bus entity</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusDependency(this ILogger logger, bool isSuccessful, DependencyMeasurement measurement, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
+        public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DependencyMeasurement measurement, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNull(measurement, nameof(measurement));
 
-            LogServiceBusDependency(logger, isSuccessful, measurement.StartTime, measurement.Elapsed, entityType, context);
+            LogServiceBusDependency(logger, entityName, isSuccessful, measurement.StartTime, measurement.Elapsed, entityType, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
+        /// <param name="entityName">Name of the Service Bus entity</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="entityType">Type of the Service Bus entity</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogServiceBusDependency(this ILogger logger, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
+        public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
-            logger.LogInformation(ServiceBusDependencyFormat, entityType, "Azure Resource", duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(ServiceBusDependencyFormat, entityType, entityName, "Azure Resource", duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>

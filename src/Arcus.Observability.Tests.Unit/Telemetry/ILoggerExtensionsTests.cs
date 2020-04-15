@@ -131,12 +131,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType dependencyType = ServiceBusEntityType.Queue;
+            string entityName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
-            logger.LogServiceBusDependency(isSuccessful, startTime, duration, dependencyType);
+            logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -152,7 +153,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Queue;
+            const ServiceBusEntityType dependencyType = ServiceBusEntityType.Topic;
+            string entityName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -160,7 +162,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogServiceBusDependency(isSuccessful, measurement, dependencyType);
+            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, dependencyType);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -176,12 +178,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
-            logger.LogServiceBusQueueDependency(isSuccessful, startTime, duration);
+            logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -197,6 +200,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -204,7 +208,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogServiceBusQueueDependency(isSuccessful, measurement);
+            logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -220,12 +224,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
-            logger.LogServiceBusTopicDependency(isSuccessful, startTime, duration);
+            logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -241,6 +246,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -248,7 +254,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogServiceBusTopicDependency(isSuccessful, measurement);
+            logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement);
 
             // Assert
             string logMessage = logger.WrittenMessage;
