@@ -31,7 +31,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         protected override void RemoveIntermediaryProperties(LogEvent logEvent)
         {
             logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventName);
-            logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventContext);
         }
     }
 }
