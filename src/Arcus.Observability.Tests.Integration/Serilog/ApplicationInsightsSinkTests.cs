@@ -432,17 +432,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
-        public void LogHttpDependencyWithComponentName_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
+        public async Task LogHttpDependencyWithComponentName_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
         {
             // Arrange
             string componentName = _bogusGenerator.Commerce.ProductName();
+            HttpMethod httpMethod = GenerateHttpMethod();
+            string requestUrl = _bogusGenerator.Image.LoremFlickrUrl();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                HttpMethod httpMethod = GenerateHttpMethod();
-                string requestUri = _bogusGenerator.Image.LoremFlickrUrl();
-                var request = new HttpRequestMessage(httpMethod, requestUri)
+                var request = new HttpRequestMessage(httpMethod, requestUrl)
                 {
                     Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
                 };
@@ -452,9 +452,24 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogHttpDependency(request, statusCode, DateTimeOffset.UtcNow, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            var requestUri = new Uri(requestUrl);
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Dependency.Type == "HTTP"
+                               && result.Dependency.Target == requestUri.Host
+                               && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}"
+                               && result.Cloud.RoleName == componentName;
+                    });
+                });
             }
         }
 
@@ -509,9 +524,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             return response.Object;
         }
 
-        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, int timeoutMinutes = 5)
+        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
         {
-            await Policy.TimeoutAsync(TimeSpan.FromMinutes(timeoutMinutes))
+            await Policy.TimeoutAsync(TimeSpan.FromMinutes(6))
                         .WrapAsync(Policy.Handle<XunitException>()
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
