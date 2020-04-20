@@ -83,6 +83,7 @@ The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Kubern
 that adds several machine information from the environment (variables).
 
 **Example**
+
 | Environment Variable   | Log Property |
 | ---------------------- | ------------ |
 | `KUBERNETES_NODE_NAME` | NodeName     |
