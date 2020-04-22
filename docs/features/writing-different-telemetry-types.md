@@ -171,6 +171,26 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
     // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
 }
 ```
+Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
+
+```csharp
+string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Catalog", "Products"},
+    { "Tenant", "Contoso"},
+};
+
+// Start measuring
+using (var measurement = DependencyMeasurement.Start("get-products"))
+{
+    // Interact with database
+    var products = await _repository.GetProducts();
+    
+    _logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement, context: telemetryContext);
+    // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
+}
+```
 
 ### Measuring custom dependencies
 
