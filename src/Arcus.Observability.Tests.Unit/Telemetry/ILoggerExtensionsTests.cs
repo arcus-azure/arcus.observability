@@ -126,6 +126,58 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyTarget_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogDependencyWithDependencyMeasurementTarget_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogServiceBusDependency_ValidArguments_Succeeds()
         {
             // Arrange
