@@ -25,7 +25,8 @@ namespace Microsoft.Extensions.Logging
         private const string DependencyFormat =
             MessagePrefixes.Dependency + " {"
             + ContextProperties.DependencyTracking.DependencyType + "} {"
-            + ContextProperties.DependencyTracking.DependencyData + "} in {"
+            + ContextProperties.DependencyTracking.DependencyData + "} named {"
+            + ContextProperties.DependencyTracking.TargetName + "} in {"
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
@@ -158,9 +159,48 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType));
             Guard.NotNull(dependencyData, nameof(dependencyData));
 
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of the dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogDependency(this ILogger logger, string dependencyType, object dependencyData, string targetName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType));
+            Guard.NotNull(dependencyData, nameof(dependencyData));
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogDependency(this ILogger logger, string dependencyType, object dependencyData, string targetName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType));
+            Guard.NotNull(dependencyData, nameof(dependencyData));
+
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, dependencyType, dependencyData, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(DependencyFormat, dependencyType, dependencyData, targetName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -256,6 +296,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
+            Guard.NotNull(logger, nameof(logger));
+
             logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
