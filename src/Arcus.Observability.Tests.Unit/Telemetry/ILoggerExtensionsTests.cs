@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -381,6 +382,105 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogSqlDependencyConnectionString_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            
+
+            // Act
+            logger.LogSqlDependency(connectionString, tableName, operationName, startTime, duration, isSuccessful);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
+            Assert.Contains(serverName, logMessage);
+            Assert.Contains(databaseName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithDependencyMeasurementConnectionString_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DependencyMeasurement.Start(operationName);
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogSqlDependency(connectionString, tableName, operationName, measurement, isSuccessful);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
+            Assert.Contains(serverName, logMessage);
+            Assert.Contains(databaseName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void LogSqlDependencyConnectionString_EmptyConnectionString_Fails(string connectionString)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act / Assert
+            Assert.Throws<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, tableName, operationName, startTime, duration, isSuccessful));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void LogSqlDependencyWithDependencyMeasurementConnectionString_EmptyConnectionString_Fails(string connectionString)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            using (var measurement = DependencyMeasurement.Start(operationName))
+            {
+                // Act / Assert
+                Assert.Throws<ArgumentException>(
+                    () => logger.LogSqlDependency(connectionString, tableName, operationName, measurement, isSuccessful));
+            }
         }
 
         [Fact]
