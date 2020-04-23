@@ -333,6 +333,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         public static void LogSqlDependency(this ILogger logger, string connectionString,  string tableName, string operationName, DateTimeOffset startTime, TimeSpan duration,  bool isSuccessful, Dictionary<string, object> context = null)
         {
+            Guard.NotNullOrEmpty(connectionString, nameof(connectionString));
             var connection = new SqlConnectionStringBuilder(connectionString);
 
             LogSqlDependency(logger, connection.DataSource, connection.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
