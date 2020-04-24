@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.ApplicationInsights;
+using Microsoft.Azure.ApplicationInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using Moq;
+using Polly;
+using Polly.Timeout;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Core;
@@ -18,6 +24,7 @@ using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog
@@ -25,6 +32,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
+        private const string TestNameKey = "TestName";
+        private const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
+
         private readonly string _instrumentationKey;
         private readonly Faker _bogusGenerator = new Faker();
 
@@ -37,99 +47,135 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
-        public void LogTrace_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        public async Task LogTrace_SinksToApplicationInsights_ResultsInTraceTelemetry()
         {
             // Arrange
+            string message = _bogusGenerator.Lorem.Sentence();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                string message = _bogusGenerator.Lorem.Sentence();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
                 logger.LogInformation("Trace message '{Sentence}' (Context: {Context})", message, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsTraceResult> results = await client.GetTraceEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.Contains(results.Value, result => result.Trace.Message.Contains(message));
+                });
             }
         }
 
         [Fact]
-        public void LogEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
+        public async Task LogEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
         {
             // Arrange
+            string eventName = _bogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-                string eventName = _bogusGenerator.Finance.AccountName();
 
                 // Act
                 logger.LogEvent(eventName, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsCustomEventResult> results = await client.GetCustomEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.Contains(results.Value, result => result.CustomEvent.Name == eventName);
+                });
             }
         }
 
         [Fact]
-        public void LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
+        public async Task LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
         {
             // Arrange
+            string metricName = _bogusGenerator.Vehicle.Fuel();
+            double metricValue = _bogusGenerator.Random.Double();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-                string metricName = _bogusGenerator.Vehicle.Fuel();
-                double metricValue = _bogusGenerator.Random.Double();
+                
+                
 
                 // Act
                 logger.LogMetric(metricName, metricValue, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    var bodySchema = new MetricsPostBodySchema(
+                        id: Guid.NewGuid().ToString(), 
+                        parameters: new MetricsPostBodySchemaParameters("customMetrics/" + metricName));
+
+                    IList<MetricsResultsItem> results = await client.GetMetricsAsync(new List<MetricsPostBodySchema> { bodySchema });
+
+                    Assert.NotEmpty(results);
+                });
             }
         }
 
         [Fact]
-        public void LogRequest_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        public async Task LogRequest_SinksToApplicationInsights_ResultsInRequestTelemetry()
         {
             // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            string host = _bogusGenerator.Company.CompanyName().Replace(" ", "");
+            string path = "/" + _bogusGenerator.Commerce.ProductName();
+            string scheme = "https";
+            HttpRequest request = CreateStubRequest(httpMethod, scheme, host, path);
+
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                HttpMethod httpMethod = GenerateHttpMethod();
-                string host = _bogusGenerator.Company.CompanyName().Replace(" ", "");
-                string path = "/" + _bogusGenerator.Commerce.ProductName();
-                HttpRequest request = CreateStubRequest(httpMethod, "https", host, path);
 
                 var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
                 HttpResponse response = CreateStubResponse(statusCode);
 
-                var duration = _bogusGenerator.Date.Timespan();
+                TimeSpan duration = _bogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
                 logger.LogRequest(request, response, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{scheme}://{host.ToLower()}{path}");
+                });
             }
         }
 
         [Fact]
-        public void LogRequestMessage_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        public async Task LogRequestMessage_SinksToApplicationInsights_ResultsInRequestTelemetry()
         {
             // Arrange
+            var requestUri = new Uri(_bogusGenerator.Internet.Url());
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 HttpMethod httpMethod = GenerateHttpMethod();
-                var requestUri = new Uri(_bogusGenerator.Internet.Url());
                 var request = new HttpRequestMessage(httpMethod, requestUri);
 
                 var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
@@ -140,22 +186,30 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogRequest(request, response, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
+                });
             }
         }
 
         [Fact]
-        public void LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
+        public async Task LogDependency_SinksToApplicationInsights_ResultsInDependencyTelemetry()
         {
             // Arrange
+            string dependencyType = "Arcus";
+            string dependencyData = _bogusGenerator.Finance.Account();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                string dependencyType = "Arcus";
-                object dependencyData = _bogusGenerator.Finance.Account();
+                
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -163,21 +217,29 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Data == dependencyData);
+                });
             }
         }
 
         [Fact]
-        public void LogServiceBusDependency_SinksToApplicationInsights_ResultsInServiceBusDependencyTelemetry()
+        public async Task LogServiceBusDependency_SinksToApplicationInsights_ResultsInServiceBusDependencyTelemetry()
         {
             // Arrange
+            string entityName = _bogusGenerator.Commerce.Product();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                string entityName = _bogusGenerator.Commerce.Product();
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -187,21 +249,30 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, telemetryContext);
 
                 // Assert
-                // Hold on till we have agreed on assertion...
+                using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+                {
+                    await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                    {
+                        EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                        Assert.NotEmpty(results.Value);
+                        Assert.Contains(results.Value, result => result.Dependency.Type == "Azure Service Bus" && result.Dependency.Target == entityName);
+                    });
+                }
             }
         }
 
         [Fact]
-        public void LogHttpDependency_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
+        public async Task LogHttpDependency_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
         {
             // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            string requestUrl = _bogusGenerator.Image.LoremFlickrUrl();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                HttpMethod httpMethod = GenerateHttpMethod();
-                string requestUri = _bogusGenerator.Image.LoremFlickrUrl();
-                var request = new HttpRequestMessage(httpMethod, requestUri)
+                
+                var request = new HttpRequestMessage(httpMethod, requestUrl)
                 {
                     Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
                 };
@@ -212,23 +283,37 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogHttpDependency(request, statusCode, startTime, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion... 
+            // Assert
+            var requestUri = new Uri(requestUrl);
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Dependency.Type == "HTTP"
+                               && result.Dependency.Target == requestUri.Host
+                               && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}";
+                    });
+                });
             }
         }
 
         [Fact]
-        public void LogSqlDependency_SinksToApplicationInsights_ResultsInSqlDependencyTelemetry()
+        public async Task LogSqlDependency_SinksToApplicationInsights_ResultsInSqlDependencyTelemetry()
         {
             // Arrange
+            string serverName = _bogusGenerator.Database.Engine();
+            string databaseName = _bogusGenerator.Database.Collation();
+            string tableName = _bogusGenerator.Database.Column();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                
-                string serverName = _bogusGenerator.Database.Engine();
-                string databaseName = _bogusGenerator.Database.Collation();
-                string tableName = _bogusGenerator.Database.Column();
+
                 string operation = _bogusGenerator.PickRandom("GET", "UPDATE", "DELETE", "CREATE");
                 bool isSuccessful = _bogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
@@ -237,43 +322,66 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogSqlDependency(serverName, databaseName, tableName, operation, isSuccessful, startTime, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Dependency.Type == "SQL"
+                               && result.Dependency.Target == serverName
+                               && result.Dependency.Name == $"SQL: {databaseName}/{tableName}";
+                    });
+                });
             }
         }
 
         [Fact]
-        public void LogEventWithComponentName_SinksToApplicationInsights_ResultsInTelemetryWithComponentName()
+        public async Task LogEventWithComponentName_SinksToApplicationInsights_ResultsInTelemetryWithComponentName()
         {
             // Arrange
+            string message = _bogusGenerator.Lorem.Sentence();
             string componentName = _bogusGenerator.Commerce.ProductName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 // Act
-                logger.LogInformation("This message will be enriched with a component name");
+                logger.LogInformation(message);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsTraceResult> results = await client.GetTraceEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
+                });
             }
         }
 
         [Fact]
-        public void LogEventWithVersion_SinksToApplicationInsights_ResultsInTelemetryWithVersion()
+        public async Task LogEventWithVersion_SinksToApplicationInsights_ResultsInTelemetryWithVersion()
         {
             // Arrange
+            var eventName = "Update version";
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithVersion()))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 // Act
-                logger.LogEvent("Update version");
-
-                // Assert
-                // Hold on till we have agreed on assertion...
+                logger.LogEvent(eventName);
             }
+
+            // Assert
+            // Hold on till we have agreed on assertion...
         }
 
         [Fact]
@@ -324,17 +432,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
-        public void LogHttpDependencyWithComponentName_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
+        public async Task LogHttpDependencyWithComponentName_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
         {
             // Arrange
             string componentName = _bogusGenerator.Commerce.ProductName();
+            HttpMethod httpMethod = GenerateHttpMethod();
+            string requestUrl = _bogusGenerator.Image.LoremFlickrUrl();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                HttpMethod httpMethod = GenerateHttpMethod();
-                string requestUri = _bogusGenerator.Image.LoremFlickrUrl();
-                var request = new HttpRequestMessage(httpMethod, requestUri)
+                var request = new HttpRequestMessage(httpMethod, requestUrl)
                 {
                     Content = new StringContent(_bogusGenerator.Lorem.Paragraph())
                 };
@@ -344,9 +452,24 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogHttpDependency(request, statusCode, DateTimeOffset.UtcNow, duration, telemetryContext);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            var requestUri = new Uri(requestUrl);
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Dependency.Type == "HTTP"
+                               && result.Dependency.Target == requestUri.Host
+                               && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}"
+                               && result.Cloud.RoleName == componentName;
+                    });
+                });
             }
         }
 
@@ -399,6 +522,25 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             response.Setup(res => res.StatusCode).Returns((int) statusCode);
 
             return response.Object;
+        }
+
+        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
+        {
+            await Policy.TimeoutAsync(TimeSpan.FromMinutes(6))
+                        .WrapAsync(Policy.Handle<XunitException>()
+                                         .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
+                        .ExecuteAsync(assertion);
+        }
+
+        private ApplicationInsightsDataClient CreateApplicationInsightsClient()
+        {
+            var clientCredentials = new ApiKeyClientCredentials(Configuration.GetValue<string>("ApplicationInsights:ApiKey"));
+            var client = new ApplicationInsightsDataClient(clientCredentials)
+            {
+                AppId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId")
+            };
+
+            return client;
         }
     }
 }
