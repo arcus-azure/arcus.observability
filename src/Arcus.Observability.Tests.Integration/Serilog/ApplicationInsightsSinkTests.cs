@@ -559,7 +559,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
         {
-            await Policy.TimeoutAsync(TimeSpan.FromMinutes(6))
+            await Policy.TimeoutAsync(TimeSpan.FromMinutes(7))
                         .WrapAsync(Policy.Handle<XunitException>()
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
