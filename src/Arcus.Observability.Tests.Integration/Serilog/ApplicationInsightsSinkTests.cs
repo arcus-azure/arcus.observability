@@ -107,8 +107,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-                
-                
 
                 // Act
                 logger.LogMetric(metricName, metricValue, telemetryContext);
@@ -124,7 +122,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                         parameters: new MetricsPostBodySchemaParameters("customMetrics/" + metricName));
 
                     IList<MetricsResultsItem> results = await client.GetMetricsAsync(new List<MetricsPostBodySchema> { bodySchema });
-
                     Assert.NotEmpty(results);
                 });
             }
