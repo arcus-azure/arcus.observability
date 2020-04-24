@@ -247,17 +247,53 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, telemetryContext);
+            }
 
-                // Assert
-                using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Dependency.Type == "Azure Service Bus" && result.Dependency.Target == entityName);
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogTableStorageDependency_SinksToApplicationInsights_ResultsInTableStorageDependencyTelemetry()
+        {
+            // Arrange
+            string componentName = _bogusGenerator.Commerce.ProductName();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
+                TimeSpan duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogTableStorageDependency(tableName, isSuccessful, startTime, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
                     {
-                        EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
-                        Assert.NotEmpty(results.Value);
-                        Assert.Contains(results.Value, result => result.Dependency.Type == "Azure Service Bus" && result.Dependency.Target == entityName);
+                        return result.Dependency.Type == "Azure Table Storage"
+                               && result.Dependency.Target == tableName
+                               && result.Cloud.RoleName == componentName;
                     });
-                }
+                });
             }
         }
 

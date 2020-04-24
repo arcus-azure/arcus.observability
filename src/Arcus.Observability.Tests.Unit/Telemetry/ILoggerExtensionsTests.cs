@@ -353,6 +353,55 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogTableStorageDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogTableStorageDependency(tableName, isSuccessful, startTime, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogTableStorageDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogTableStorageDependency(tableName, isSuccessful, measurement);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogSqlDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange

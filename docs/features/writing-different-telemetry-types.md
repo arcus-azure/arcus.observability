@@ -31,6 +31,7 @@ Dependencies allow you to track how your external dependencies are doing to give
 We provide support for the following dependencies:
 
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
+- [Azure Table Storage](#measuring-azure-table-storage-dependencies)
 - [Custom](#measuring-custom-dependencies)
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
@@ -74,6 +75,44 @@ using (var measurement = DependencyMeasurement.Start())
 ```
 
 Note that we have an `LogServiceBusTopicDependency` to log dependency logs for an Azure Service Bus Topic and an `LogServiceBusDependency` to log Azure Service Bus logs where the entity type is not known.
+
+### Measuring Azure Table Storage Dependencies
+
+We allow you to measure Azure Table Storage dependencies.
+
+Here is how you can report an Azure Table Storage dependency:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Collumn", "productID" }
+};
+
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogTableStorageDependency(tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
+// Output: "Dependency Azure Table Storage named orders in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+```
+
+Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
+
+```csharp
+var telemetryContext = new Dictionary<string, object>
+{
+    { "Collumn", "productID" }
+};
+
+// Start measuring
+using (var measurement = DependencyMeasurement.Start())
+{
+    _logger.LogTableStorageDependency(tableName: "orders", isSuccessful: true, measurement, telemetryContext);
+    // Output: "Dependency Azure Table Storage named orders in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+}
+```
 
 ### Measuring HTTP dependencies
 

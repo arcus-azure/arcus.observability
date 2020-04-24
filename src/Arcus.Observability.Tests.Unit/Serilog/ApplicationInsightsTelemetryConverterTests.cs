@@ -5,6 +5,7 @@ using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
+using Bogus;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
     [Trait("Category", "Unit")]
     public class ApplicationInsightsTelemetryConverterTests
     {
+        private readonly Faker _bogusGenerator = new Faker();
+
         [Fact]
         public void LogRequestMessage_WithRequest_CreatesRequestTelemetry()
         {
@@ -316,6 +319,52 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
                 AssertContainsTelemetryProperty(dependencyTelemetry, "EntityType", ServiceBusEntityType.Topic.ToString());
+            });
+        }
+
+        [Fact]
+        public void LogTableStorageDependency_WithTableStorageDependency_CreatesDependencyTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            var startTime = DateTimeOffset.UtcNow;
+            var duration = TimeSpan.FromSeconds(5);
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Namespace"] = "azure.tablestorage.namespace"
+            };
+            logger.LogTableStorageDependency(tableName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyType);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.TargetName);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyName);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.IsSuccessful);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyData);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
+            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
+                Assert.Equal("Azure Table Storage", dependencyTelemetry.Type);
+                Assert.Equal(tableName, dependencyTelemetry.Target);
+                Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(duration, dependencyTelemetry.Duration);
+                Assert.True(dependencyTelemetry.Success);
+
+                AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.tablestorage.namespace");
             });
         }
 

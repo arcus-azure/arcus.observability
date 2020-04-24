@@ -33,6 +33,15 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
+        private const string DependencyWithoutDataFormat =
+            MessagePrefixes.Dependency + " {"
+            + ContextProperties.DependencyTracking.DependencyType + "} named {"
+            + ContextProperties.DependencyTracking.TargetName + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
         private const string ServiceBusDependencyFormat =
             MessagePrefixes.Dependency + " {"
             + ContextProperties.DependencyTracking.DependencyType + "} {"
@@ -291,7 +300,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">Logger to use</param>
         /// <param name="entityName">Name of the Service Bus entity</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="entityType">Type of the Service Bus entity</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
@@ -300,6 +309,37 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger));
 
             logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the Table Storage dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogTableStorageDependency(this ILogger logger, string tableName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+
+            LogTableStorageDependency(logger, tableName: tableName, isSuccessful: isSuccessful, startTime: measurement.StartTime, duration: measurement.Elapsed, context: context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogTableStorageDependency(this ILogger logger, string tableName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+
+            logger.LogInformation(DependencyWithoutDataFormat, "Azure Table Storage", tableName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
