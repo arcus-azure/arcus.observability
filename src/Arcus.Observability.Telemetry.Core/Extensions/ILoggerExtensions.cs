@@ -307,6 +307,9 @@ namespace Microsoft.Extensions.Logging
         public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(entityName, nameof(entityName));
+
+            context = context ?? new Dictionary<string, object>();
 
             logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
