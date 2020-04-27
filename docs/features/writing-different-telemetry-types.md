@@ -85,7 +85,8 @@ Here is how you can report an Azure Table Storage dependency:
 ```csharp
 var telemetryContext = new Dictionary<string, object>
 {
-    { "Collumn", "productID" }
+    { "Tenant", "Contoso" },
+    { "Order", "ABC" },
 };
 
 var durationMeasurement = new Stopwatch();
