@@ -86,7 +86,7 @@ Here is how you can report a dependency call:
 var telemetryContext = new Dictionary<string, object>
 {
     { "Tenant", "Contoso" },
-    { "Order", "ABC" },
+    { "Order", "ABC" }
 };
 
 var durationMeasurement = new Stopwatch();
@@ -96,7 +96,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 _logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
 ```
 
 Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
@@ -104,14 +104,15 @@ Or alternatively one can use our `DependencyMeasurement` model to manage the tim
 ```csharp
 var telemetryContext = new Dictionary<string, object>
 {
-    { "Collumn", "productID" }
+    { "Tenant", "Contoso" },
+    { "Order", "ABC" }
 };
 
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
     _logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, measurement, telemetryContext);
-    // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+    // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
 }
 ```
 

@@ -309,31 +309,35 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Table Storage Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
-        /// <param name="tableName">Name of the Table Storage resource</param>
         /// <param name="accountName">Account of the storage resource</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the Table Storage dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogTableStorageDependency(this ILogger logger, string tableName, string accountName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogTableStorageDependency(this ILogger logger, string accountName, string tableName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
 
-            LogTableStorageDependency(logger, tableName: tableName, accountName: accountName, isSuccessful: isSuccessful, startTime: measurement.StartTime, duration: measurement.Elapsed, context: context);
+            LogTableStorageDependency(logger, accountName: accountName, tableName: tableName, isSuccessful: isSuccessful, startTime: measurement.StartTime, duration: measurement.Elapsed, context: context);
         }
 
         /// <summary>
         ///     Logs an Azure Table Storage Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
-        /// <param name="tableName">Name of the Table Storage resource</param>
         /// <param name="accountName">Account of the storage resource</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogTableStorageDependency(this ILogger logger, string tableName, string accountName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogTableStorageDependency(this ILogger logger, string accountName, string tableName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
 
             logger.LogInformation(DependencyFormat, "Azure Table Storage", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }

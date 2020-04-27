@@ -101,7 +101,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             string metricName = _bogusGenerator.Vehicle.Fuel();
-            double metricValue = _bogusGenerator.Random.Double();
+            double metricValue = 0.25;
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -561,7 +561,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
         {
-            await Policy.TimeoutAsync(TimeSpan.FromMinutes(7))
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(assertion, timeout: TimeSpan.FromMinutes(7));
+        }
+
+        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
+        {
+            await Policy.TimeoutAsync(timeout)
                         .WrapAsync(Policy.Handle<XunitException>()
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);

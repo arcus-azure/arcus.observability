@@ -675,8 +675,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
-            var path = $"/{_bogusGenerator.Name.FirstName()}";
-            var host = _bogusGenerator.Name.FirstName();
+            var path = $"/{_bogusGenerator.Lorem.Word()}";
+            var host = _bogusGenerator.Lorem.Word();
             var method = HttpMethod.Head;
             var mockRequest = new Mock<HttpRequest>();
             mockRequest.Setup(request => request.Method).Returns(method.ToString());
@@ -686,7 +686,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
             var duration = _bogusGenerator.Date.Timespan();
 
-            // Act;
+            // Act
             logger.LogRequest(mockRequest.Object, mockResponse.Object, duration);
 
             // Assert
