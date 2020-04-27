@@ -337,7 +337,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Namespace"] = "azure.tablestorage.namespace"
             };
-            logger.LogTableStorageDependency(tableName, accountName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 

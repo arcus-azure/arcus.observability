@@ -364,7 +364,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act
-            logger.LogTableStorageDependency(tableName, accountName, isSuccessful, startTime, duration);
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration);
 
             // Assert
             var logMessage = logger.WrittenMessage;
