@@ -80,7 +80,7 @@ Note that we have an `LogServiceBusTopicDependency` to log dependency logs for a
 
 We allow you to measure Azure Table Storage dependencies.
 
-Here is how you can report an Azure Table Storage dependency:
+Here is how you can report a dependency call:
 
 ```csharp
 var telemetryContext = new Dictionary<string, object>
