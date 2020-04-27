@@ -264,6 +264,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             string componentName = _bogusGenerator.Commerce.ProductName();
             string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -274,7 +275,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogTableStorageDependency(tableName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogTableStorageDependency(tableName, accountName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -287,7 +288,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                     Assert.Contains(results.Value, result =>
                     {
                         return result.Dependency.Type == "Azure Table Storage"
-                               && result.Dependency.Target == tableName
+                               && result.Dependency.Target == accountName
+                               && result.Dependency.Data == tableName
                                && result.Cloud.RoleName == componentName;
                     });
                 });

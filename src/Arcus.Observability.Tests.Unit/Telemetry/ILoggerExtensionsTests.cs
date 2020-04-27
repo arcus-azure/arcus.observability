@@ -358,18 +358,19 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act
-            logger.LogTableStorageDependency(tableName, isSuccessful, startTime, duration);
+            logger.LogTableStorageDependency(tableName, accountName, isSuccessful, startTime, duration);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(tableName, logMessage);
-            Assert.Contains(tableName, logMessage);
+            Assert.Contains(accountName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
@@ -381,6 +382,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             
             var measurement = DependencyMeasurement.Start();
@@ -389,13 +391,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogTableStorageDependency(tableName, isSuccessful, measurement);
+            logger.LogTableStorageDependency(tableName, accountName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(tableName, logMessage);
-            Assert.Contains(tableName, logMessage);
+            Assert.Contains(accountName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);

@@ -94,8 +94,8 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogTableStorageDependency(tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "Dependency Azure Table Storage named orders in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+_logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
+// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
 ```
 
 Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
@@ -109,8 +109,8 @@ var telemetryContext = new Dictionary<string, object>
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
-    _logger.LogTableStorageDependency(tableName: "orders", isSuccessful: true, measurement, telemetryContext);
-    // Output: "Dependency Azure Table Storage named orders in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
+    _logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, measurement, telemetryContext);
+    // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Collumn, productID])"
 }
 ```
 

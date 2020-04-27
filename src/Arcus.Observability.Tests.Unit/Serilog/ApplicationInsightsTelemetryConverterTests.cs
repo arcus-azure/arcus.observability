@@ -330,13 +330,14 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
             string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Namespace"] = "azure.tablestorage.namespace"
             };
-            logger.LogTableStorageDependency(tableName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogTableStorageDependency(tableName, accountName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -359,7 +360,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure Table Storage", dependencyTelemetry.Type);
-                Assert.Equal(tableName, dependencyTelemetry.Target);
+                Assert.Equal(tableName, dependencyTelemetry.Data);
+                Assert.Equal(accountName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
