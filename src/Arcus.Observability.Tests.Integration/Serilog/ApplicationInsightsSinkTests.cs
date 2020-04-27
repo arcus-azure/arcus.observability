@@ -100,7 +100,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public async Task LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
         {
             // Arrange
-            string metricName = _bogusGenerator.Vehicle.Fuel();
+            string metricName = "Threshold";
             double metricValue = 0.25;
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -275,7 +275,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogTableStorageDependency(tableName, accountName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
