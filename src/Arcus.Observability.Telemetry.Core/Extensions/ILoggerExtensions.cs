@@ -319,6 +319,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNullOrWhitespace(tableName, nameof(tableName));
             Guard.NotNullOrWhitespace(accountName, nameof(accountName));
+            Guard.NotNull(measurement, nameof(measurement));
 
             LogTableStorageDependency(logger, accountName: accountName, tableName: tableName, isSuccessful: isSuccessful, startTime: measurement.StartTime, duration: measurement.Elapsed, context: context);
         }
