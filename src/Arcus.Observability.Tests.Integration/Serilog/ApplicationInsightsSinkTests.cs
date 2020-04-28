@@ -96,7 +96,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public async Task LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
         {
             // Arrange
-            string metricName = "Threshold";
+            string metricName = "threshold";
             double metricValue = 0.25;
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -505,8 +505,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         private ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
         {
             var configuration = new LoggerConfiguration()
-                .WriteTo.AzureApplicationInsights(_instrumentationKey)
-                .WriteTo.Sink(new XunitLogEventSink(_outputWriter));
+                .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
+                .WriteTo.AzureApplicationInsights(_instrumentationKey);
             
             configureLogging?.Invoke(configuration);
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
@@ -564,7 +564,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
         {
             await Policy.TimeoutAsync(timeout)
-                        .WrapAsync(Policy.Handle<XunitException>()
+                        .WrapAsync(Policy.Handle<Exception>()
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }
