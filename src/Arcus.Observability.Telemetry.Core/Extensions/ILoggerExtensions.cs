@@ -340,7 +340,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(tableName, nameof(tableName));
             Guard.NotNullOrWhitespace(accountName, nameof(accountName));
 
-            logger.LogInformation(DependencyFormat, "Azure Table Storage", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
