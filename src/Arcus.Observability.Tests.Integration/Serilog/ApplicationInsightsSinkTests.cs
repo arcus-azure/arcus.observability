@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
-using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +12,10 @@ using Microsoft.Azure.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Moq;
 using Polly;
-using Polly.Timeout;
 using Serilog;
 using Serilog.Configuration;
-using Serilog.Core;
-using Serilog.Events;
-using Serilog.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -35,6 +29,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         private const string TestNameKey = "TestName";
         private const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
 
+        private readonly ITestOutputHelper _outputWriter;
         private readonly string _instrumentationKey;
         private readonly Faker _bogusGenerator = new Faker();
 
@@ -43,6 +38,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         /// </summary>
         public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
+            _outputWriter = outputWriter;
             _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
         }
 
@@ -132,10 +128,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             HttpMethod httpMethod = GenerateHttpMethod();
-            string host = _bogusGenerator.Company.CompanyName().Replace(" ", "");
-            string path = "/" + _bogusGenerator.Commerce.ProductName();
-            string scheme = "https";
-            HttpRequest request = CreateStubRequest(httpMethod, scheme, host, path);
+            var requestUri = new Uri(_bogusGenerator.Internet.Url());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -158,7 +152,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 {
                     EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{scheme}://{host.ToLower()}{path}");
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
         }
@@ -510,7 +504,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
         {
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
+            var configuration = new LoggerConfiguration()
+                .WriteTo.AzureApplicationInsights(_instrumentationKey)
+                .WriteTo.Sink(new XunitLogEventSink(_outputWriter));
+            
             configureLogging?.Invoke(configuration);
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
