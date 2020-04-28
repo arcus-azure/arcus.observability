@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
-using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +12,10 @@ using Microsoft.Azure.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Moq;
 using Polly;
-using Polly.Timeout;
 using Serilog;
 using Serilog.Configuration;
-using Serilog.Core;
-using Serilog.Events;
-using Serilog.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -35,6 +29,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         private const string TestNameKey = "TestName";
         private const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
 
+        private readonly ITestOutputHelper _outputWriter;
         private readonly string _instrumentationKey;
         private readonly Faker _bogusGenerator = new Faker();
 
@@ -43,6 +38,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         /// </summary>
         public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
+            _outputWriter = outputWriter;
             _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
         }
 
@@ -100,15 +96,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public async Task LogMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
         {
             // Arrange
-            string metricName = _bogusGenerator.Vehicle.Fuel();
-            double metricValue = _bogusGenerator.Random.Double();
+            string metricName = "threshold";
+            double metricValue = 0.25;
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-                
-                
 
                 // Act
                 logger.LogMetric(metricName, metricValue, telemetryContext);
@@ -124,7 +118,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                         parameters: new MetricsPostBodySchemaParameters("customMetrics/" + metricName));
 
                     IList<MetricsResultsItem> results = await client.GetMetricsAsync(new List<MetricsPostBodySchema> { bodySchema });
-
                     Assert.NotEmpty(results);
                 });
             }
@@ -135,10 +128,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             HttpMethod httpMethod = GenerateHttpMethod();
-            string host = _bogusGenerator.Company.CompanyName().Replace(" ", "");
-            string path = "/" + _bogusGenerator.Commerce.ProductName();
-            string scheme = "https";
-            HttpRequest request = CreateStubRequest(httpMethod, scheme, host, path);
+            var requestUri = new Uri(_bogusGenerator.Internet.Url());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -161,7 +152,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 {
                     EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{scheme}://{host.ToLower()}{path}");
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
         }
@@ -247,17 +238,55 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Act
                 logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, telemetryContext);
+            }
 
-                // Assert
-                using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Dependency.Type == "Azure Service Bus" && result.Dependency.Target == entityName);
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogTableStorageDependency_SinksToApplicationInsights_ResultsInTableStorageDependencyTelemetry()
+        {
+            // Arrange
+            string componentName = _bogusGenerator.Commerce.ProductName();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset(days: 0);
+                TimeSpan duration = _bogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
                     {
-                        EventsResults<EventsDependencyResult> results = await client.GetDependencyEventsAsync();
-                        Assert.NotEmpty(results.Value);
-                        Assert.Contains(results.Value, result => result.Dependency.Type == "Azure Service Bus" && result.Dependency.Target == entityName);
+                        return result.Dependency.Type == "Azure table"
+                               && result.Dependency.Target == accountName
+                               && result.Dependency.Data == tableName
+                               && result.Cloud.RoleName == componentName;
                     });
-                }
+                });
             }
         }
 
@@ -475,7 +504,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
         {
-            var configuration = new LoggerConfiguration().WriteTo.AzureApplicationInsights(_instrumentationKey);
+            var configuration = new LoggerConfiguration()
+                .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
+                .WriteTo.AzureApplicationInsights(_instrumentationKey);
+            
             configureLogging?.Invoke(configuration);
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
@@ -526,8 +558,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
         private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
         {
-            await Policy.TimeoutAsync(TimeSpan.FromMinutes(6))
-                        .WrapAsync(Policy.Handle<XunitException>()
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(assertion, timeout: TimeSpan.FromMinutes(7));
+        }
+
+        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
+        {
+            await Policy.TimeoutAsync(timeout)
+                        .WrapAsync(Policy.Handle<Exception>()
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }

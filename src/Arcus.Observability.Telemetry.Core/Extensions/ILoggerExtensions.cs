@@ -291,15 +291,56 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">Logger to use</param>
         /// <param name="entityName">Name of the Service Bus entity</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="entityType">Type of the Service Bus entity</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         public static void LogServiceBusDependency(this ILogger logger, string entityName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, ServiceBusEntityType entityType = ServiceBusEntityType.Unknown, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(entityName, nameof(entityName));
+
+            context = context ?? new Dictionary<string, object>();
 
             logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="accountName">Account of the storage resource</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the Table Storage dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogTableStorageDependency(this ILogger logger, string accountName, string tableName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
+            Guard.NotNull(measurement, nameof(measurement));
+
+            LogTableStorageDependency(logger, accountName: accountName, tableName: tableName, isSuccessful: isSuccessful, startTime: measurement.StartTime, duration: measurement.Elapsed, context: context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="accountName">Account of the storage resource</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogTableStorageDependency(this ILogger logger, string accountName, string tableName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
+
+            logger.LogInformation(DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
