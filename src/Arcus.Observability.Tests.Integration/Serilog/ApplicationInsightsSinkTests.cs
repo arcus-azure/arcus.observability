@@ -281,7 +281,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "Azure Table Storage"
+                        return result.Dependency.Type == "Azure table"
                                && result.Dependency.Target == accountName
                                && result.Dependency.Data == tableName
                                && result.Cloud.RoleName == componentName;
