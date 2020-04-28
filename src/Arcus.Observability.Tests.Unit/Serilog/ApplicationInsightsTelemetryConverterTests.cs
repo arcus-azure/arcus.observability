@@ -359,7 +359,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
-                Assert.Equal("Azure Table Storage", dependencyTelemetry.Type);
+                Assert.Equal("Azure table", dependencyTelemetry.Type);
                 Assert.Equal(tableName, dependencyTelemetry.Data);
                 Assert.Equal(accountName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
