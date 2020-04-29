@@ -455,6 +455,57 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogIotHubDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = _bogusGenerator.Commerce.ProductName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful, startTime, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(iotHubName, logMessage);
+            Assert.Contains(iotHubName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogIotHubDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = _bogusGenerator.Commerce.ProductName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful, measurement);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(iotHubName, logMessage);
+            Assert.Contains(iotHubName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogSqlDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
