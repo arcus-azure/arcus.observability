@@ -409,18 +409,18 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act
-            logger.LogEventHubsDependency(accountName, eventHubName, isSuccessful, startTime, duration);
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(accountName, logMessage);
+            Assert.Contains(namespaceName, logMessage);
             Assert.Contains(eventHubName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -433,7 +433,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             
             var measurement = DependencyMeasurement.Start();
@@ -442,12 +442,12 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogEventHubsDependency(accountName, eventHubName, isSuccessful, measurement);
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(accountName, logMessage);
+            Assert.Contains(namespaceName, logMessage);
             Assert.Contains(eventHubName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);

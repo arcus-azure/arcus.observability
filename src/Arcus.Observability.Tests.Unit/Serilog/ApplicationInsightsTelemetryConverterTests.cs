@@ -378,14 +378,14 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
             string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Host"] = "orders.servicebus.windows.net"
             };
-            logger.LogEventHubsDependency(accountName, eventHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -409,7 +409,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure Event Hubs", dependencyTelemetry.Type);
                 Assert.Equal(eventHubName, dependencyTelemetry.Target);
-                Assert.Equal(accountName, dependencyTelemetry.Data);
+                Assert.Equal(namespaceName, dependencyTelemetry.Data);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);

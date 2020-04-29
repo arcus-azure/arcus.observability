@@ -23,7 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
             string eventHubName = BogusGenerator.Commerce.ProductName();
-            string accountName = BogusGenerator.Finance.AccountName();
+            string namespaceName = BogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -34,7 +34,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogEventHubsDependency(accountName, eventHubName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -48,7 +48,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == "Azure Event Hubs"
                                && result.Dependency.Target == eventHubName
-                               && result.Dependency.Data == accountName
+                               && result.Dependency.Data == namespaceName
                                && result.Cloud.RoleName == componentName;
                     });
                 });
