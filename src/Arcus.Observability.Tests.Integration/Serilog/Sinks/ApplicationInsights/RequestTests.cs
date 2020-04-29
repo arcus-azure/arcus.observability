@@ -11,11 +11,11 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
 {
-    public class ApplicationInsightsSinkRequestTests : ApplicationInsightsSinkTests
+    public class RequestTests : ApplicationInsightsSinkTests
     {
-        public ApplicationInsightsSinkRequestTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        public RequestTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
 
