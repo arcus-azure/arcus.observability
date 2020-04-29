@@ -11,11 +11,11 @@ using Xunit;
 using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Arcus.Observability.Tests.Integration.Serilog 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
 {
-    public class ApplicationInsightsSinkEventTests : ApplicationInsightsSinkTests
+    public class EventTests : ApplicationInsightsSinkTests
     {
-        public ApplicationInsightsSinkEventTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        public EventTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
 

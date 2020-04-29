@@ -8,11 +8,11 @@ using Xunit;
 using Xunit.Abstractions;
 using LoggerEnrichmentConfigurationExtensions = Serilog.LoggerEnrichmentConfigurationExtensions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
 {
-    public class ApplicationInsightsSinkTableStorageDependencyTests : ApplicationInsightsSinkTests
+    public class TableStorageDependencyTests : ApplicationInsightsSinkTests
     {
-        public ApplicationInsightsSinkTableStorageDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        public TableStorageDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
 

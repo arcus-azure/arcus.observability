@@ -12,7 +12,7 @@ using Serilog.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest

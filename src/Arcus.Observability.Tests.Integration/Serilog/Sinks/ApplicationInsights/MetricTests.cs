@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
 {
-    public class ApplicationInsightsSinkMetricTests : ApplicationInsightsSinkTests
+    public class MetricTests : ApplicationInsightsSinkTests
     {
-        public ApplicationInsightsSinkMetricTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        public MetricTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
 
