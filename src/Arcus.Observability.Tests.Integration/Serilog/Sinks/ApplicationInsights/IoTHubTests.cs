@@ -26,7 +26,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string namespaceName = BogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
-                ILogger logger = loggerFactory.CreateLogger<Serilog.ApplicationInsightsSinkTests>();
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 bool isSuccessful = BogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = BogusGenerator.Date.RecentOffset(days: 0);
