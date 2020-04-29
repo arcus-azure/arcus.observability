@@ -371,7 +371,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogEventHubsDependency_WithTableStorageDependency_CreatesDependencyTelemetry()
+        public void LogEventHubsDependency_WithEventHubsDependency_CreatesDependencyTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
@@ -385,7 +385,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Host"] = "orders.servicebus.windows.net"
             };
-            logger.LogTableStorageDependency(accountName, eventHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogEventHubsDependency(accountName, eventHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
