@@ -340,7 +340,48 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(tableName, nameof(tableName));
             Guard.NotNullOrWhitespace(accountName, nameof(accountName));
 
+            context = context ?? new Dictionary<string, object>();
+
             logger.LogInformation(DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Event Hub Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="namespaceName">Namespace of the resource</param>
+        /// <param name="eventHubName">Name of the Event Hub resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogEventHubsDependency(this ILogger logger, string namespaceName, string eventHubName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName));
+            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName));
+
+            LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Event Hub Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="namespaceName">Namespace of the resource</param>
+        /// <param name="eventHubName">Name of the Event Hub resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogEventHubsDependency(this ILogger logger, string namespaceName, string eventHubName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName));
+            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName));
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogInformation(DependencyFormat, "Azure Event Hubs", namespaceName, eventHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>

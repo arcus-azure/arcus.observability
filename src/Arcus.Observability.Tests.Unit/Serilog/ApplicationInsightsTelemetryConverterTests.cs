@@ -371,6 +371,54 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void LogEventHubsDependency_WithEventHubsDependency_CreatesDependencyTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string eventHubName = _bogusGenerator.Commerce.ProductName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
+            var startTime = DateTimeOffset.UtcNow;
+            var duration = TimeSpan.FromSeconds(5);
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Host"] = "orders.servicebus.windows.net"
+            };
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyType);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.TargetName);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyName);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.IsSuccessful);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.DependencyData);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
+            AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
+            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
+                Assert.Equal("Azure Event Hubs", dependencyTelemetry.Type);
+                Assert.Equal(eventHubName, dependencyTelemetry.Target);
+                Assert.Equal(namespaceName, dependencyTelemetry.Data);
+                Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(duration, dependencyTelemetry.Duration);
+                Assert.True(dependencyTelemetry.Success);
+
+                AssertContainsTelemetryProperty(dependencyTelemetry, "Host", "orders.servicebus.windows.net");
+            });
+        }
+
+        [Fact]
         public void LogHttpDependency_WithHttpDependency_CreatesHttpDependencyTelemetry()
         {
             // Arrange
