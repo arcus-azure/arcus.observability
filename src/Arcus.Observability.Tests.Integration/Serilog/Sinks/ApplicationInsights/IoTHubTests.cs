@@ -23,7 +23,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
             string iotHubName = BogusGenerator.Commerce.ProductName();
-            string namespaceName = BogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -34,7 +33,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogIotHubDependency(iotHubName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -48,7 +47,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == "Azure IoT Hub"
                                && result.Dependency.Target == iotHubName
-                               && result.Dependency.Data == namespaceName
                                && result.Cloud.RoleName == componentName;
                     });
                 });

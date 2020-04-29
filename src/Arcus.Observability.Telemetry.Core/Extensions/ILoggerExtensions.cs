@@ -33,6 +33,15 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
             + ContextProperties.EventTracking.EventContext + "})";
 
+        private const string DependencyWithoutDataFormat =
+            MessagePrefixes.Dependency + " {"
+            + ContextProperties.DependencyTracking.DependencyType + "} named {"
+            + ContextProperties.DependencyTracking.TargetName + "} in {"
+            + ContextProperties.DependencyTracking.Duration + "} at {"
+            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
+            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
+            + ContextProperties.EventTracking.EventContext + "})";
+
         private const string ServiceBusDependencyFormat =
             MessagePrefixes.Dependency + " {"
             + ContextProperties.DependencyTracking.DependencyType + "} {"
@@ -388,38 +397,35 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Iot Hub Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
-        /// <param name="namespaceName">Namespace of the resource</param>
         /// <param name="iotHubName">Name of the IoT Hub resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogIotHubDependency(this ILogger logger, string namespaceName, string iotHubName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogIotHubDependency(this ILogger logger, string iotHubName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNullOrWhitespace(iotHubName, nameof(iotHubName));
-            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName));
 
-            LogIotHubDependency(logger, namespaceName, iotHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+            LogIotHubDependency(logger, iotHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
         ///     Logs an Azure Iot Hub Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
-        /// <param name="namespaceName">Namespace of the resource</param>
         /// <param name="iotHubName">Name of the Event Hub resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogIotHubDependency(this ILogger logger, string namespaceName, string iotHubName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogIotHubDependency(this ILogger logger, string iotHubName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNullOrWhitespace(iotHubName, nameof(iotHubName));
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure Iot Hub", namespaceName, iotHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(DependencyWithoutDataFormat, "Azure IoT Hub", iotHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>

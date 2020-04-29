@@ -460,13 +460,12 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string iotHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act
-            logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful, startTime, duration);
+            logger.LogIotHubDependency(iotHubName, isSuccessful, startTime, duration);
 
             // Assert
             var logMessage = logger.WrittenMessage;
@@ -484,7 +483,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string iotHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             
             var measurement = DependencyMeasurement.Start();
@@ -493,7 +491,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful, measurement);
+            logger.LogIotHubDependency(iotHubName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;

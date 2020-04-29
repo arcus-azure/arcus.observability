@@ -426,14 +426,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
             string iotHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["DeviceName"] = "Sensor #102"
             };
-            logger.LogIotHubDependency(namespaceName, iotHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogIotHubDependency(iotHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
