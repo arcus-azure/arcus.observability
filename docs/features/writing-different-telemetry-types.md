@@ -16,6 +16,10 @@ We provide the capability to track the following telemetry types on top of ILogg
 
 For most optimal output, we recommend using our [Azure Application Insights sink](/features/sinks/azure-application-insights).
 
+**We highly encourage to provide contextual information to all your telemetry** to make it more powerful and support this for all telemetry types.
+
+> :bulb: For sake of simplicity we have not included how to track contextual information, for more information see [our documentation](/features/making-telemetry-more-powerful).
+
 ## Installation
 
 This feature requires to install our NuGet package
@@ -36,6 +40,8 @@ We provide support for the following dependencies:
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
 
+Since measuring dependencies can add some noise in your code, we've introduced `DependencyMeasurement` to make it simpler. ([docs](#making-it-easier-to-measure-dependencies))
+
 ### Measuring Azure Service Bus dependencies
 
 We allow you to measure Azure Service Bus dependencies for both queues & topics.
@@ -43,35 +49,14 @@ We allow you to measure Azure Service Bus dependencies for both queues & topics.
 Here is how you can report an Azure Service Bus Queue dependency:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Namespace", "azure.servicebus.namespace" }
-};
-
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "Dependency Azure Service Bus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
-```
-
-Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
-
-```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Namespace", "azure.servicebus.namespace" }
-};
-
-// Start measuring
-using (var measurement = DependencyMeasurement.Start())
-{
-    _logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, measurement, telemetryContext);
-    // Output: "Dependency Azure Service Bus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Namespace, azure.servicebus.namespace])"
-}
+_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+// Output: "Dependency Azure Service Bus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 Note that we have an `LogServiceBusTopicDependency` to log dependency logs for an Azure Service Bus Topic and an `LogServiceBusDependency` to log Azure Service Bus logs where the entity type is not known.
@@ -83,37 +68,14 @@ We allow you to measure Azure Table Storage dependencies.
 Here is how you can report a dependency call:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Tenant", "Contoso" },
-    { "Order", "ABC" }
-};
-
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
-```
-
-Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
-
-```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Tenant", "Contoso" },
-    { "Order", "ABC" }
-};
-
-// Start measuring
-using (var measurement = DependencyMeasurement.Start())
-{
-    _logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, measurement, telemetryContext);
-    // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
-}
+_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring HTTP dependencies
@@ -121,11 +83,6 @@ using (var measurement = DependencyMeasurement.Start())
 Here is how you can report a HTTP dependency:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Tenant", "Contoso"},
-};
-
 var durationMeasurement = new Stopwatch();
 
 // Create request
@@ -140,34 +97,8 @@ var startTime = DateTimeOffset.UtcNow;
 // Send request to dependant service
 var response = await httpClient.SendAsync(request);
 
-_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed, telemetryContext);
-// Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
-```
-
-
-Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
-
-```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Tenant", "Contoso"},
-};
-
-// Create request
-var request = new HttpRequestMessage(HttpMethod.Post, "http://requestbin.net/r/ujxglouj")
-{
-    Content = new StringContent("{\"message\":\"Hello World!\"")
-};
-
-// Start measuring
-using (var measurement = DependencyMeasurement.Start())
-{
-    // Send request to dependant service
-    var response = await httpClient.SendAsync(request);
-    
-    _logger.LogHttpDependency(request, response.StatusCode, measurement, telemetryContext);
-    // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso])"
-}
+_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed);
+// Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring SQL dependencies
@@ -175,12 +106,6 @@ using (var measurement = DependencyMeasurement.Start())
 Here is how you can report a SQL dependency:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Catalog", "Products"},
-    { "Tenant", "Contoso"},
-};
-
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -190,47 +115,25 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
-// Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
+_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
-Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
 
-```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Catalog", "Products"},
-    { "Tenant", "Contoso"},
-};
-
-// Start measuring
-using (var measurement = DependencyMeasurement.Start("get-products"))
-{
-    // Interact with database
-    var products = await _repository.GetProducts();
-    
-    _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, measurement: measurement, context: telemetryContext);
-    // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
-}
-```
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
 
 ```csharp
 string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Catalog", "Products"},
-    { "Tenant", "Contoso"},
-};
+var durationMeasurement = new Stopwatch();
 
 // Start measuring
-using (var measurement = DependencyMeasurement.Start("get-products"))
-{
-    // Interact with database
-    var products = await _repository.GetProducts();
-    
-    _logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement, context: telemetryContext);
-    // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Catalog, Products], [Tenant, Contoso])"
-}
+var startTime = DateTimeOffset.UtcNow;
+durationMeasurement.Start();
+
+// Interact with database
+var products = await _repository.GetProducts();
+
+_logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
+// Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring custom dependencies
@@ -238,11 +141,7 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
 Here is how you can areport a custom depenency:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Subject", "Your order is being processed!" },
-    { "OrderId", "ABC" }
-};
+var durationMeasurement = new Stopwatch();
 
 // Start measuring
 var startTime = DateTimeOffset.UtcNow;
@@ -251,27 +150,41 @@ durationMeasurement.Start();
 string dependencyName = "SendGrid";
 object dependencyData = "http://my.sendgrid.uri/"
 
-_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
-// Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Subject, Your order is being processed!], [OrderId, ABC])"
+_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
-Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
+### Making it easier to measure dependencies
+
+Measuring dependencies means you need to keep track of how long the action took and when it started.
+
+Here's a small example:
 
 ```csharp
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Subject", "Your order is being processed!" },
-    { "OrderId", "ABC" }
-};
+var durationMeasurement = new Stopwatch();
+var startTime = DateTimeOffset.UtcNow;
+durationMeasurement.Start();
 
+// Do action
+
+/// Track dependency
+string dependencyName = "SendGrid";
+object dependencyData = "http://my.sendgrid.uri/"
+_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
+```
+
+However, by using `DependencyMeasurement.Start()` we take care of the measuring aspect:
+
+```csharp
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
+    // Do Action
+
+    // Track dependency
     string dependencyName = "SendGrid";
     object dependencyData = "http://my.sendgrid.uri/"
-
-    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, measurement: measurement, context: telemetryContext);
-    // Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: [Subject, Your order is being processed!], [OrderId, ABC])"
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 ```
 
@@ -286,20 +199,6 @@ logger.LogEvent("Order Created");
 // Output: "Events Order Created (Context: )"
 ```
 
-Contextual information is essential, that's why we provide an overload to give more information about the event:
-
-```csharp
-// Provide context around event
-var telemetryContext = new Dictionary<string, object>
-{
-    {"Customer", "Arcus"},
-    {"OrderId", "ABC"},
-};
-
-logger.LogEvent("Order Created", telemetryContext);
-// Output: "Events Order Created (Context: [Customer, Arcus], [OrderId, ABC])"
-```
-
 ### Security Events
 
 Some events are considered "security events" when they relate to possible malicious activity, authentication, input validation...
@@ -307,14 +206,8 @@ Some events are considered "security events" when they relate to possible malici
 Here is how an invalid `Order` can be reported:
 
 ```csharp
-// Provide context around security event
-var telemetryContext = new Dictionary<string, object>
-{
-    {"OrderId", "OrderId was not in correct format"}
-};
-
-loger.LogSecurityEvent("Invalid Order", telemetryContext);
-// Output: "Events Invalid Order (Context: [EventType, Security], [OrderId, OrderId was not in correct format])"
+loger.LogSecurityEvent("Invalid Order");
+// Output: "Events Invalid Order (Context: )"
 ```
 
 ## Metrics
@@ -324,18 +217,9 @@ Metrics allow you to report custom metrics which allow you to give insights on a
 Here is how you can report an `Invoice Received` metric:
 
 ```csharp
-// Provide context around metric
-var telemetryContext = new Dictionary<string, object>
-{
-    { "InvoiceId", "ABC"},
-    { "Vendor", "Contoso"},
-};
-
 logger.LogMetric("Invoice Received", 133.37, telemetryContext);
-// Output: "Metric Invoice Received: 133.37 (Context: [InvoiceId, ABC], [Vendor, Contoso])"
+// Output: "Metric Invoice Received: 133.37 (Context: )"
 ```
-
-By using contextual information, you can create powerful metrics. When writing to Application Insights, for example, which will report the `Invoice Received` metric as [multi-dimensional metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-platform-metrics#multi-dimensional-metrics) which allow you to filter the metric based on its context.
 
 ## Requests
 
@@ -351,19 +235,13 @@ if (httpContext.Request?.Headers?.ContainsKey("X-Tenant") == true)
     tenantName = httpContext.Request.Headers["X-Tenant"];
 }
 
-// Provide context around request
-var telemetryContext = new Dictionary<string, object>
-{
-    { "Tenant", tenantName},
-};
-
 var stopWatch = Stopwatch.StartNew();
 
 // Perform action that creates a response, in this case call next middleware in the chain.
 await _next(httpContext);
 
-logger.LogRequest(httpContext.Request, httpContext.Response, stopWatch.Elapsed, telemetryContext);
-// Output: "HTTP Request GET http://localhost:5000//weatherforecast completed with 200 in 00:00:00.0191554 at 03/23/2020 10:12:55 +00:00 - (Context: [Tenant, Contoso])"
+logger.LogRequest(httpContext.Request, httpContext.Response, stopWatch.Elapsed);
+// Output: "HTTP Request GET http://localhost:5000//weatherforecast completed with 200 in 00:00:00.0191554 at 03/23/2020 10:12:55 +00:00 - (Context: )"
 ```
 
 [&larr; back](/)

@@ -20,6 +20,7 @@ For more granular packages we recommend reading the documentation.
 
 # Features
 
+- [Making telemetry more powerful](/features/making-telemetry-more-powerful) by making it simple to provide contextual information
 - [Writing different telemetry types](/features/writing-different-telemetry-types) - Go beyond logs with our `ILogger` extensions for Dependencies, Events, Requests & Metrics.
 - [Correlation](/features/correlation) - A common set of correlation levels.
 - Telemetry
