@@ -95,7 +95,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
+_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed, telemetryContext);
 // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
 ```
 
@@ -111,7 +111,7 @@ var telemetryContext = new Dictionary<string, object>
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
-    _logger.LogTableStorageDependency(tableName: "orders", accountName: "orderAccount", isSuccessful: true, measurement, telemetryContext);
+    _logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, measurement, telemetryContext);
     // Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: [Tenant, Contoso], [Order, ABC])"
 }
 ```
