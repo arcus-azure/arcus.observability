@@ -319,18 +319,18 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="logger">Logger to use</param>
         /// <param name="accountName">Account of the storage resource</param>
-        /// <param name="blobName">Name of the Blob Container resource</param>
+        /// <param name="containerName">Name of the Blob Container resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogBlobStorageDependency(this ILogger logger, string accountName, string blobName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        public static void LogBlobStorageDependency(this ILogger logger, string accountName, string containerName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNullOrWhitespace(accountName, nameof(accountName));
-            Guard.NotNullOrWhitespace(blobName, nameof(blobName));
+            Guard.NotNullOrWhitespace(containerName, nameof(containerName));
             Guard.NotNull(measurement, nameof(measurement));
 
-            LogBlobStorageDependency(logger, accountName, blobName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+            LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -338,20 +338,20 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="logger">Logger to use</param>
         /// <param name="accountName">Account of the storage resource</param>
-        /// <param name="blobName">Name of the Blob Container resource</param>
+        /// <param name="containerName">Name of the Blob Container resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        public static void LogBlobStorageDependency(this ILogger logger, string accountName, string blobName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        public static void LogBlobStorageDependency(this ILogger logger, string accountName, string containerName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
             Guard.NotNullOrWhitespace(accountName, nameof(accountName));
-            Guard.NotNullOrWhitespace(blobName, nameof(blobName));
+            Guard.NotNullOrWhitespace(containerName, nameof(containerName));
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure blob", blobName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogInformation(DependencyFormat, "Azure blob", containerName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
