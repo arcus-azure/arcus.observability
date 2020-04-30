@@ -22,7 +22,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
-            string blobName = BogusGenerator.Commerce.ProductName();
+            string containerName = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
@@ -34,7 +34,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogBlobStorageDependency(accountName, blobName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -48,7 +48,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == "Azure blob"
                                && result.Dependency.Target == accountName
-                               && result.Dependency.Data == blobName
+                               && result.Dependency.Data == containerName
                                && result.Cloud.RoleName == componentName;
                     });
                 });
