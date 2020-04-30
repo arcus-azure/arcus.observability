@@ -18,7 +18,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogCosmosSqlDependency_SinksToApplicationInsights_ResultsInTableStorageDependencyTelemetry()
+        public async Task LogCosmosSqlDependency_SinksToApplicationInsights_ResultsInCosmosSqlDependencyTelemetry()
         {
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
