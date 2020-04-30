@@ -18,7 +18,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogBlobStorageDependency_SinksToApplicationInsights_ResultsInTableStorageDependencyTelemetry()
+        public async Task LogBlobStorageDependency_SinksToApplicationInsights_ResultsInBlobStorageDependencyTelemetry()
         {
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
@@ -46,7 +46,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "Azure table"
+                        return result.Dependency.Type == "Azure blob"
                                && result.Dependency.Target == accountName
                                && result.Dependency.Data == blobName
                                && result.Cloud.RoleName == componentName;
