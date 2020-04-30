@@ -7,6 +7,7 @@ using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -443,6 +444,50 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(measurement, nameof(measurement));
 
             LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a Cosmos SQL dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="accountName">Name of the storage resource</param>
+        /// <param name="database">Name of the database</param>
+        /// <param name="container">Name of the container</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency of the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogCosmosSqlDependency(this ILogger logger, string accountName, string database, string container, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
+            Guard.NotNullOrWhitespace(database, nameof(database));
+            Guard.NotNullOrWhitespace(container, nameof(container));
+
+            LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a Cosmos SQL dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="accountName">Name of the storage resource</param>
+        /// <param name="database">Name of the database</param>
+        /// <param name="container">Name of the container</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogCosmosSqlDependency(this ILogger logger, string accountName, string database, string container, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName));
+            Guard.NotNullOrWhitespace(database, nameof(database));
+            Guard.NotNullOrWhitespace(container, nameof(container));
+
+            context = context ?? new Dictionary<string, object>();
+            string data = $"{database}/{container}";
+
+            logger.LogInformation(DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime, isSuccessful, context);
         }
 
         /// <summary>

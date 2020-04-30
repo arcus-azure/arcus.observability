@@ -391,7 +391,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogTableStorageDependency(tableName, accountName, isSuccessful, measurement);
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;
@@ -498,6 +498,61 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(iotHubName, logMessage);
             Assert.Contains(iotHubName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogCosmosSqlDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(container, logMessage);
+            Assert.Contains(database, logMessage);
+            Assert.Contains(accountName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogCosmosSqlDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(container, logMessage);
+            Assert.Contains(database, logMessage);
+            Assert.Contains(accountName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
