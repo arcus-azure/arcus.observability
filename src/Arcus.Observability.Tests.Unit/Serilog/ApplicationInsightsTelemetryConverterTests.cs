@@ -329,7 +329,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
-            string blobName = _bogusGenerator.Commerce.ProductName();
+            string containerName = _bogusGenerator.Commerce.ProductName();
             string accountName = _bogusGenerator.Finance.AccountName();
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
@@ -337,7 +337,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Namespace"] = "azure.blobstorage.namespace"
             };
-            logger.LogBlobStorageDependency(accountName, blobName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -360,7 +360,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure blob", dependencyTelemetry.Type);
-                Assert.Equal(blobName, dependencyTelemetry.Data);
+                Assert.Equal(containerName, dependencyTelemetry.Data);
                 Assert.Equal(accountName, dependencyTelemetry.Target);
                 Assert.Equal(TruncateToSeconds(startTime), dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
