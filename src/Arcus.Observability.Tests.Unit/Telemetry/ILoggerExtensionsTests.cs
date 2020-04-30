@@ -353,6 +353,57 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogBlobStorageDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string containerName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, startTime, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(containerName, logMessage);
+            Assert.Contains(accountName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogBlobStorageDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string containerName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogBlobStorageDependency(containerName, accountName, isSuccessful, measurement);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(containerName, logMessage);
+            Assert.Contains(accountName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogTableStorageDependency_ValidArguments_Succeeds()
         {
             // Arrange
