@@ -357,19 +357,19 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string blobName = _bogusGenerator.Commerce.ProductName();
+            string containerName = _bogusGenerator.Commerce.ProductName();
             string accountName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act
-            logger.LogBlobStorageDependency(accountName, blobName, isSuccessful, startTime, duration);
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, startTime, duration);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(blobName, logMessage);
+            Assert.Contains(containerName, logMessage);
             Assert.Contains(accountName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -381,7 +381,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string blobName = _bogusGenerator.Commerce.ProductName();
+            string containerName = _bogusGenerator.Commerce.ProductName();
             string accountName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
             
@@ -391,12 +391,12 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogBlobStorageDependency(blobName, accountName, isSuccessful, measurement);
+            logger.LogBlobStorageDependency(containerName, accountName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;
             Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(blobName, logMessage);
+            Assert.Contains(containerName, logMessage);
             Assert.Contains(accountName, logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
