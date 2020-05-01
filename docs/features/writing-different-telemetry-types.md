@@ -34,6 +34,9 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
+- [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
+- [Azure Cosmos](#measuring-azure-cosmos-dependencies)
+- [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Azure Table Storage](#measuring-azure-table-storage-dependencies)
 - [Custom](#measuring-custom-dependencies)
@@ -41,6 +44,59 @@ We provide support for the following dependencies:
 - [SQL](#measuring-sql-dependencies)
 
 Since measuring dependencies can add some noise in your code, we've introduced `DependencyMeasurement` to make it simpler. ([docs](#making-it-easier-to-measure-dependencies))
+
+### Measuring Azure Blob Storage dependencies
+
+We allow you to measure Azure Blob Storage dependencies.
+
+Here is how you can report a dependency call:
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "images", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+// Output: "Dependency Azure blob multimedia named images in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
+
+### Measuring Azure Cosmos dependencies
+
+We allow you to measure Azure Cosmos dependencies.
+
+Here is how you can report a dependency call:
+
+** Cosmos SQL**
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogCosmosSqlDependency(accountName: "administration", database: "docs", container: "purchases", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure DocumentDB docs/purchases named administration in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
+
+### Measuring Azure IoT Hub dependencies
+
+We allow you to measure Azure IoT Hub dependencies.
+
+Here is how you can report a dependency call:
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
 
 ### Measuring Azure Service Bus dependencies
 
@@ -55,7 +111,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure Service Bus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -74,8 +130,8 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime, durationMeasurement.Elapsed);
-// Output: "Dependency Azure Table Storage orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure table orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring HTTP dependencies
@@ -97,7 +153,7 @@ var startTime = DateTimeOffset.UtcNow;
 // Send request to dependant service
 var response = await httpClient.SendAsync(request);
 
-_logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasurement.Elapsed);
+_logger.LogHttpDependency(request, statusCode: response.StatusCode, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
