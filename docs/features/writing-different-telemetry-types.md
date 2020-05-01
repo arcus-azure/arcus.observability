@@ -36,6 +36,7 @@ We provide support for the following dependencies:
 
 - [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
 - [Azure Cosmos](#measuring-azure-cosmos-dependencies)
+- [Azure Event Hubs](#measuring-azure-event-hubs-dependencies)
 - [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Azure Table Storage](#measuring-azure-table-storage-dependencies)
@@ -79,6 +80,23 @@ var startTime = DateTimeOffset.UtcNow;
 
 _logger.LogCosmosSqlDependency(accountName: "administration", database: "docs", container: "purchases", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure DocumentDB docs/purchases named administration in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
+
+### Measuring Azure Event Hubs dependencies
+
+We allow you to measure Azure Event Hubs dependencies.
+
+Here is how you can report a dependency call:
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName: "temperature", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure Event Hubs be.sensors.contoso named temerature in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring Azure IoT Hub dependencies
