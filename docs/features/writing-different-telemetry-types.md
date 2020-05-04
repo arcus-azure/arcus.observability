@@ -63,7 +63,7 @@ _logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "imag
 // Output: "Dependency Azure blob multimedia named images in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
-### Measuring Azure Cosmos dependencies
+### Measuring Azure Cosmos DB dependencies
 
 We allow you to measure Azure Cosmos dependencies.
 
