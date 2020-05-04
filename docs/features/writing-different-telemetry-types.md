@@ -69,7 +69,7 @@ We allow you to measure Azure Cosmos dependencies.
 
 Here is how you can report a dependency call:
 
-** Cosmos SQL**
+**Cosmos SQL**
 
 ```csharp
 var durationMeasurement = new Stopwatch();
