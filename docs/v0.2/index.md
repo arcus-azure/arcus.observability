@@ -6,7 +6,7 @@ redirect_from:
  - /index.html
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
+[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=0.2.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/0.2.0)
 
 # Installation
 
