@@ -12,7 +12,7 @@ layout: default
 This feature requires to install our NuGet package
 
 ```shell
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -Version 0.2.0
 ```
 
 ## What is it?

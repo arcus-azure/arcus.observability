@@ -27,7 +27,7 @@ For most optimal output, we recommend using our [Azure Application Insights sink
 This feature requires to install our NuGet package
 
 ```shell
-PM > Install-Package Arcus.Observability.Telemetry.Core
+PM > Install-Package Arcus.Observability.Telemetry.Core -Version 0.2.0
 ```
 
 ## Dependencies
@@ -36,7 +36,7 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
-![](https://img.shields.io/badge/Available%20starting-v1.0-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.2.0)
+![](https://img.shields.io/badge/Available%20starting-v0.2-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.2.0)
 
 - [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
 - [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)

@@ -17,7 +17,7 @@ layout: default
 This feature requires to install our NuGet package
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlation
+PM > Install-Package Arcus.Observability.Correlation -Version 0.1.1
 ```
 
 ## What We Provide

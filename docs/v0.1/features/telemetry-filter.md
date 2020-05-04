@@ -12,7 +12,7 @@ layout: default
 This feature requires to install our NuGet package
 
 ```shell
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Filters
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Filters -Version 0.1.0
 ```
 
 ## Telemetry Type Filter

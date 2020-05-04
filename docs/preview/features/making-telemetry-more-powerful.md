@@ -5,8 +5,6 @@ layout: default
 
 # Making telemetry more powerful
 
-![](https://img.shields.io/badge/Available%20starting-v0.1-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.1.0)
-
 ## Providing contextual information
 
 In order to make telemetry more powerful we **highly recommend providing contextual information around what the situation is of your application**. That's why every telemetry type that you can write, allows you to provide context in the form of a dictionary.

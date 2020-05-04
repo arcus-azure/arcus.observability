@@ -5,11 +5,11 @@ layout: default
 
 # Write different telemetry types
 
-![](https://img.shields.io/badge/Available%20starting-v0.1-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.1.0)
-
 Logs are a great way to gain insights, but sometimes they are not the best approach for the job.
 
 We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
+
+![](https://img.shields.io/badge/Available%20starting-v0.1-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.1.0)
 
 - [Dependencies](#dependencies)
 - [Events](#events)
@@ -36,7 +36,7 @@ Dependencies allow you to track how your external dependencies are doing to give
 
 We provide support for the following dependencies:
 
-![](https://img.shields.io/badge/Available%20starting-v1.0-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.2.0)
+![](https://img.shields.io/badge/Available%20starting-v0.2-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.2.0)
 
 - [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
 - [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)

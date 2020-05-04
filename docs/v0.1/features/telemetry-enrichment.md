@@ -19,7 +19,7 @@ We provide a variety of enrichers for Serilog:
 This feature requires to install our NuGet package
 
 ```shell
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers -Version 0.1.0
 ```
 
 ## Application Enricher
