@@ -35,7 +35,7 @@ Dependencies allow you to track how your external dependencies are doing to give
 We provide support for the following dependencies:
 
 - [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
-- [Azure Cosmos](#measuring-azure-cosmos-dependencies)
+- [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)
 - [Azure Event Hubs](#measuring-azure-event-hubs-dependencies)
 - [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
