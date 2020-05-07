@@ -5,8 +5,6 @@ layout: default
 
 # Correlation
 
-![](https://img.shields.io/badge/Available%20starting-v0.1-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.1.0)
-
 `CorrelationInfo` provides a common set of correlation levels:
 
 - Transaction Id - ID that relates different requests together into a functional transaction.

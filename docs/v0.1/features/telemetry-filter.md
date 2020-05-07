@@ -5,8 +5,6 @@ layout: default
 
 # Telemetry Filters
 
-![](https://img.shields.io/badge/Available%20starting-v0.1-green?link=https://github.com/arcus-azure/arcus.observability/releases/tag/v0.1.0)
-
 ## Installation
 
 This feature requires to install our NuGet package
