@@ -29,11 +29,6 @@ For more granular packages we recommend reading the documentation.
 - Sinks
     - [Azure Application Insights](/features/sinks/azure-application-insights) - Flow Traces, Dependencies, Events, Requests & Metrics information to Azure Application Insights
 
-## Older Versions
-
-- [v0.1](v0.1)
-- [v0.1.1](v0.1.1)
-
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.
 
