@@ -1,7 +1,6 @@
 ---
 title: "Home"
 layout: default
- - /index.html
 ---
 
 [![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=0.1.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/0.1.0)
