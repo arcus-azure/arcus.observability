@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <PackageId>Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
