@@ -701,7 +701,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         public void LogException_WithException_CreatesExceptionTelemetry()
         {
             // Arrange
-            const string eventName = "Order Invoiced";
             string platform = $"platform-id-{Guid.NewGuid()}";
             var exception = new PlatformNotSupportedException(platform);
             var spySink = new InMemoryLogSink();
