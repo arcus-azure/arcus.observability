@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
-            
+
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
