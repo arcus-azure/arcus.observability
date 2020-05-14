@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Models;
@@ -26,7 +25,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
                 logger.LogCritical(exception, exception.Message);
