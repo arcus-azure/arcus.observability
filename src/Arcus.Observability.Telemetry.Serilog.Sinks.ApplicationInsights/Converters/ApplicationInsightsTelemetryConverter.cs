@@ -13,6 +13,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class ApplicationInsightsTelemetryConverter : TelemetryConverterBase
     {
+        private readonly ExceptionTelemetryConverter _exceptionTelemetryConverter = new ExceptionTelemetryConverter();
         private readonly TraceTelemetryConverter _traceTelemetryConverter = new TraceTelemetryConverter();
         private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
         private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
@@ -34,6 +35,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="formatProvider">The instance to control formatting.</param>
         public override IEnumerable<ITelemetry> Convert(LogEvent logEvent, IFormatProvider formatProvider)
         {
+            if (logEvent.Exception != null)
+            {
+                return _exceptionTelemetryConverter.Convert(logEvent, formatProvider);
+            }
+
             if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.RequestViaHttp))
             {
                 return _requestTelemetryConverter.Convert(logEvent, formatProvider);

@@ -49,7 +49,8 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
-        public static IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> GetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
+        /// <param name="throwExceptionWhenNotFound">Indication whether or not an exception should be thrown when it's not found or return null</param>
+        public static IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> GetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey, bool throwExceptionWhenNotFound = true)
         {
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
@@ -57,7 +58,14 @@ namespace Serilog.Events
 
             if (logEventPropertyValue is DictionaryValue == false)
             {
-                throw new NotSupportedException($"Value for '{propertyKey}' is not a dictionary");
+                if (throwExceptionWhenNotFound)
+                {
+                    throw new NotSupportedException($"Value for '{propertyKey}' is not a dictionary");
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             return (logEventPropertyValue as DictionaryValue).Elements;

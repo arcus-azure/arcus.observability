@@ -36,7 +36,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
             _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
 
-            return new List<ITelemetry> {telemetryEntry};
+            return new List<ITelemetry> { telemetryEntry };
         }
 
         /// <summary>
@@ -46,12 +46,15 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="telemetry">The destination telemetry instance to add the properties to.</param>
         protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
         {
-            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext);
+            var eventContext = logEvent.Properties.GetAsDictionary(ContextProperties.EventTracking.EventContext, throwExceptionWhenNotFound: false);
 
-            foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
+            if (eventContext != null)
             {
-                var value = contextProperty.Value.ToDecentString();
-                telemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
+                foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
+                {
+                    var value = contextProperty.Value.ToDecentString();
+                    telemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);
+                }
             }
         }
 
