@@ -36,7 +36,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsExceptionResult> results = await client.GetExceptionEventsAsync(filter: OnlyLastHourFilter);
-                    Assert.Contains(results.Value, result => result.Exception.Message == exception.Message);
+                    Assert.Contains(results.Value, result => result.Exception.OuterMessage == exception.Message);
                 });
             }
         }
@@ -63,7 +63,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsExceptionResult> results = await client.GetExceptionEventsAsync(filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Exception.Message == exception.Message && result.Cloud.RoleName == componentName);
+                    Assert.Contains(results.Value, result => result.Exception.OuterMessage == exception.Message && result.Cloud.RoleName == componentName);
                 });
             }
         }
