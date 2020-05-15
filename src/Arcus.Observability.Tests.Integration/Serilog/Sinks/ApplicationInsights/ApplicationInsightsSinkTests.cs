@@ -63,7 +63,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
         {
             await Policy.TimeoutAsync(timeout)
-                        .WrapAsync(Policy.Handle<Exception>()
+                        .WrapAsync(Policy.Handle<Exception>(exception =>
+                            {
+                                _outputWriter.WriteLine($"Failed to contact Azure Application Insights. Reason: {exception.Message}");
+                                return true;
+                            })
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }

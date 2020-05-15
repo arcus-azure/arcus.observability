@@ -6,6 +6,9 @@ using GuardNet;
 // ReSharper disable once CheckNamespace
 namespace Serilog.Events
 {
+    /// <summary>
+    /// Extensions for event properties
+    /// </summary>
     public static class LogEventPropertyValueExtensions
     {
         /// <summary>
@@ -49,18 +52,39 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <param name="propertyDictionaryValues">Found information for the given property key</param>
+        public static bool TryGetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey, out IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> propertyDictionaryValues)
+        {
+            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+
+            var propertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            if (propertyValue == null || propertyValue is DictionaryValue == false)
+            {
+                propertyDictionaryValues = null;
+                return false;
+            }
+
+            propertyDictionaryValues = (propertyValue as DictionaryValue).Elements;
+            return true;
+        }
+
+        /// <summary>
+        ///     Provide a string representation for a property key
+        /// </summary>
+        /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
+        /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
+        /// <param name="propertyKey">Key of the property to return</param>
         public static IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> GetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
-            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
-
-            if (logEventPropertyValue is DictionaryValue == false)
+            var valueFound = TryGetAsDictionary(eventPropertyValues, propertyKey, out var propertyDictionaryValues);
+            if (valueFound == false)
             {
                 throw new NotSupportedException($"Value for '{propertyKey}' is not a dictionary");
             }
 
-            return (logEventPropertyValue as DictionaryValue).Elements;
+            return propertyDictionaryValues;
         }
 
         /// <summary>
