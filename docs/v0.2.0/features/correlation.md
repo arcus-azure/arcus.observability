@@ -38,9 +38,10 @@ public class Startup
     }
 }
 ```
+
 ## Custom Correlation
 
-We register two interfaces during the registration of the correlation: `ICorrealtionInfoAccessor` and `ICorrelationInfoAccessor<>`.
+We register two interfaces during the registration of the correlation: `ICorrelationInfoAccessor` and `ICorrelationInfoAccessor<>`.
 The reason is because some applications require a custom `CorrelationInfo` model, and with using the generic interface `ICorrelationInfoAccessor<>` we can support this.
 
 **Example**
@@ -56,7 +57,7 @@ public class Startup
     public void ConfigureService(IServiceCollection services)
     {
         services.AddCorrelation<OrderCorrelationInfo>();
-	}
+    }
 }
 ```
 
@@ -70,7 +71,7 @@ public class OrderService
     public OrderService(ICorrelationInfoAccessor accessor)
     {
          CorrelationInfo correlationInfo = accessor.CorrelationInfo;
-	}
+    }
 }
 ```
 
@@ -82,7 +83,7 @@ public class OrderService
     public OrderService(ICorrelationInfoAccessor<OrderCorrelationInfo> accessor)
     {
          OrderCorrelationInfo correlationInfo = accessor.CorrelationInfo;
-	}
+    }
 }
 ```
 
