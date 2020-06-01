@@ -38,6 +38,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogMetric_ValidArgumentsWithTimestamp_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string metricName = _bogusGenerator.Name.FullName();
+            double metricValue = _bogusGenerator.Random.Double();
+            DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
+
+            // Act
+            logger.LogMetric(metricName, metricValue, timestamp);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Metric, logMessage);
+            Assert.Contains(metricName, logMessage);
+            Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(timestamp.ToString(CultureInfo.InvariantCulture), logMessage);
+        }
+
+        [Fact]
         public void LogMetric_NoMetricNameWasSpecified_ThrowsException()
         {
             // Arrange

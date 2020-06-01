@@ -80,7 +80,8 @@ namespace Microsoft.Extensions.Logging
         private const string MetricFormat =
             MessagePrefixes.Metric + " {" 
             + ContextProperties.MetricTracking.MetricName + "}: {" 
-            + ContextProperties.MetricTracking.MetricValue 
+            + ContextProperties.MetricTracking.MetricValue + "} at {"
+            + ContextProperties.MetricTracking.Timestamp
             + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 
         /// <summary>
@@ -669,7 +670,25 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(MetricFormat, name, value, context);
+            LogMetric(logger, name, value, DateTimeOffset.UtcNow, context);
+        }
+
+        /// <summary>
+        ///     Logs a custom metric
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="name">Name of the metric</param>
+        /// <param name="value">Value of the metric</param>
+        /// <param name="timestamp">Timestamp of the metric</param>
+        /// <param name="context">Context that provides more insights on the event that occured</param>
+        public static void LogMetric(this ILogger logger, string name, double value, DateTimeOffset timestamp, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(name, nameof(name));
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogInformation(MetricFormat, name, value, timestamp.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>

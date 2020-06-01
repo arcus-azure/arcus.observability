@@ -21,8 +21,13 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             var metricName = logEvent.Properties.GetAsRawString(ContextProperties.MetricTracking.MetricName);
             var metricValue = logEvent.Properties.GetAsDouble(ContextProperties.MetricTracking.MetricValue);
+            var timestamp = logEvent.Properties.GetAsDateTimeOffset(ContextProperties.MetricTracking.Timestamp);
 
-            var metricTelemetry = new MetricTelemetry(metricName, metricValue);
+            var metricTelemetry = new MetricTelemetry(metricName, metricValue)
+            {
+                Timestamp = timestamp
+            };
+
             return metricTelemetry;
         }
 
@@ -34,6 +39,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             logEvent.RemovePropertyIfPresent(ContextProperties.MetricTracking.MetricName);
             logEvent.RemovePropertyIfPresent(ContextProperties.MetricTracking.MetricValue);
+            logEvent.RemovePropertyIfPresent(ContextProperties.MetricTracking.Timestamp);
         }
     }
 }
