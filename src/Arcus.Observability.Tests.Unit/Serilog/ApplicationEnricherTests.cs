@@ -40,7 +40,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             string ignoredComponentName = $"ignored-component-{Guid.NewGuid()}";
             var spy = new InMemoryLogSink();
             ILogger logger = new LoggerConfiguration()
-                .Enrich.With(new ApplicationEnricher(ignoredComponentName))
+                .Enrich.With(new ApplicationEnricher(ignoredComponentName, RoleInstance.MachineName))
                 .WriteTo.Sink(spy)
                 .CreateLogger();
 
