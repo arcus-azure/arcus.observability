@@ -6,6 +6,7 @@ using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
 using Bogus;
+using Bogus.DataSets;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
@@ -733,6 +734,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             const string metricName = "Request stream";
             const double metricValue = 0.13;
+            var timestamp = DateTimeOffset.UtcNow;
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
@@ -741,7 +743,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Capacity"] = "0.45"
             };
-            logger.LogMetric(metricName, metricValue, telemetryContext);
+            logger.LogMetric(metricName, metricValue, timestamp, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -753,12 +755,14 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Assert
             AssertDoesNotContainLogProperty(logEvent, MetricTracking.MetricName);
             AssertDoesNotContainLogProperty(logEvent, MetricTracking.MetricValue);
+            AssertDoesNotContainLogProperty(logEvent, MetricTracking.Timestamp);
             AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var metricTelemetry = Assert.IsType<MetricTelemetry>(telemetry);
                 Assert.Equal(metricName, metricTelemetry.Name);
                 Assert.Equal(metricValue, metricTelemetry.Sum);
+                Assert.Equal(TruncateToSeconds(timestamp), metricTelemetry.Timestamp);
                 AssertOperationContext(metricTelemetry, operationId);
 
                 AssertContainsTelemetryProperty(metricTelemetry, "Capacity", "0.45");

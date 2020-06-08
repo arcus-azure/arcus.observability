@@ -60,6 +60,7 @@ namespace Arcus.Observability.Telemetry.Core
         {
             public const string MetricName = "MetricName";
             public const string MetricValue = "MetricValue";
+            public const string Timestamp = "Timestamp";
         }
     }
 }
