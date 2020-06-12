@@ -1,5 +1,6 @@
 ﻿using GuardNet;
 using Serilog.Core;
+using Serilog.Enrichers;
 using Serilog.Events;
 
 namespace Arcus.Observability.Telemetry.Serilog.Enrichers
@@ -11,6 +12,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     {
         private const string ComponentName = "ComponentName";
 
+        private readonly ILogEventEnricher _machineNameEnricher = new MachineNameEnricher();
         private readonly string _componentValue;
 
         /// <summary>
@@ -31,17 +33,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            EnrichComponentName(ComponentName, _componentValue, logEvent, propertyFactory);
-        }
-
-        private static void EnrichComponentName(
-            string name,
-            string value,
-            LogEvent logEvent,
-            ILogEventPropertyFactory propertyFactory)
-        {
-            LogEventProperty property = propertyFactory.CreateProperty(name, value);
+            LogEventProperty property = propertyFactory.CreateProperty(ComponentName, _componentValue);
             logEvent.AddPropertyIfAbsent(property);
+
+            _machineNameEnricher.Enrich(logEvent, propertyFactory);
         }
     }
 }

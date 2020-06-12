@@ -23,7 +23,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
 ## Application Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
-that adds the application's component name to the log event as a log property with the name `ComponentName`.
+that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportiunity to choose the location from where the application 'instance' should be retrieved.
 
 **Example**
 Name: `ComponentName`
@@ -36,7 +36,18 @@ ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .CreateLogger();
 
-logger.Information("This event will be enriched with the application component's name");
+logger.Information("This event will be enriched with the application component's name and by default the environment's machine name");
+```
+
+Or, alternatively one can choose to use the Kubernetes information.
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithComponentName("My application component")
+    .Enrich.WithKubernetesInfo()
+    .CreateLogger();
+
+logger.Information("This event will be enriched with the application component's name and the Kubernetes information on the environment")
 ```
 
 ## Correlation Enricher

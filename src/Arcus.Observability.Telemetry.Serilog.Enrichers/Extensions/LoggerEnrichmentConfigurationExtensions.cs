@@ -24,7 +24,7 @@ namespace Serilog
 
             return enrichmentConfiguration.With<VersionEnricher>();
         }
-        
+
         /// <summary>
         /// Adds the <see cref="ApplicationEnricher"/> to the logger enrichment configuration which adds the given application's <paramref name="componentName"/>.
         /// </summary>
