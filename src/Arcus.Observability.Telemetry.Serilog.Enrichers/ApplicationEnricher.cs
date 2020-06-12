@@ -1,5 +1,4 @@
-﻿using System;
-using GuardNet;
+﻿using GuardNet;
 using Serilog.Core;
 using Serilog.Enrichers;
 using Serilog.Events;
@@ -13,33 +12,18 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     {
         private const string ComponentName = "ComponentName";
 
-        private readonly ILogEventEnricher _roleInstanceEnricher;
+        private readonly ILogEventEnricher _machineNameEnricher = new MachineNameEnricher();
         private readonly string _componentValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationEnricher"/> class.
         /// </summary>
         /// <param name="componentName">The name of the application component.</param>
-        /// <param name="roleInstance">The setting to control from where the cloud role instance should be retireved.</param>
-        public ApplicationEnricher(string componentName, RoleInstance roleInstance)
+        public ApplicationEnricher(string componentName)
         {
             Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Application component name cannot be blank");
 
             _componentValue = componentName;
-            _roleInstanceEnricher = DetermineRoleInstanceEnricher(roleInstance);
-        }
-
-        private static ILogEventEnricher DetermineRoleInstanceEnricher(RoleInstance roleInstance)
-        {
-            switch (roleInstance)
-            {
-                case RoleInstance.MachineName:
-                    return new MachineNameEnricher();
-                case RoleInstance.PodName:
-                    return new KubernetesEnricher();
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(roleInstance), roleInstance, "Unknown cloud role instance");
-            }
         }
 
         /// <summary>
@@ -49,18 +33,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            EnrichComponentName(ComponentName, _componentValue, logEvent, propertyFactory);
-            _roleInstanceEnricher.Enrich(logEvent, propertyFactory);
-        }
-
-        private static void EnrichComponentName(
-            string name,
-            string value,
-            LogEvent logEvent,
-            ILogEventPropertyFactory propertyFactory)
-        {
-            LogEventProperty property = propertyFactory.CreateProperty(name, value);
+            LogEventProperty property = propertyFactory.CreateProperty(ComponentName, _componentValue);
             logEvent.AddPropertyIfAbsent(property);
+
+            _machineNameEnricher.Enrich(logEvent, propertyFactory);
         }
     }
 }

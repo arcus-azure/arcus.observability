@@ -30,16 +30,12 @@ namespace Serilog
         /// </summary>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="componentName">The name of the application component.</param>
-        /// <param name="roleInstance">The setting to control from where the cloud role instance should be retrieved.</param>
-        public static LoggerConfiguration WithComponentName(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
-            string componentName, 
-            RoleInstance roleInstance = RoleInstance.MachineName)
+        public static LoggerConfiguration WithComponentName(this LoggerEnrichmentConfiguration enrichmentConfiguration, string componentName)
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
             Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Application component name cannot be blank");
 
-            return enrichmentConfiguration.With(new ApplicationEnricher(componentName, roleInstance));
+            return enrichmentConfiguration.With(new ApplicationEnricher(componentName));
         }
 
         /// <summary>

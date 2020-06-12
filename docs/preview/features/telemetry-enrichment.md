@@ -43,7 +43,8 @@ Or, alternatively one can choose to use the Kubernetes information.
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
-    .Enrich.WithComponentName("My application component", RoleInstance.PodName)
+    .Enrich.WithComponentName("My application component")
+    .Enrich.WithKubernetesInfo()
     .CreateLogger();
 
 logger.Information("This event will be enriched with the application component's name and the Kubernetes information on the environment")
