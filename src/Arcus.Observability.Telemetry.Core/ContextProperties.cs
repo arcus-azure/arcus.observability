@@ -35,7 +35,7 @@ namespace Arcus.Observability.Telemetry.Core
             public const string EventName = "EventName";
             
             [Obsolete("Use " + nameof(ContextProperties) + "." + nameof(TelemetryContext) + " instead")]
-            public const string EventDescription = "EventDescription";
+            public const string EventContext = "EventDescription";
         }
 
         public static class General
