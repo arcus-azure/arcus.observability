@@ -34,7 +34,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             logEvent.RemovePropertyIfPresent(ContextProperties.TelemetryContext);
 
 #pragma warning disable 618 // Until we remove the obsolete 'EventDescription'.
-            logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventDescription);
+            logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventContext);
 #pragma warning restore 618
 
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
@@ -53,7 +53,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.TelemetryContext);
 
 #pragma warning disable 618 // Until we remove obsolete 'EventDescription'.
-            AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.EventTracking.EventDescription);
+            AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.EventTracking.EventContext);
 #pragma warning restore 618
         }
 

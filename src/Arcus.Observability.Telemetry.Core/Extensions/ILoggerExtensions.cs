@@ -76,7 +76,7 @@ namespace Microsoft.Extensions.Logging
             MessagePrefixes.Event + " {" 
             + ContextProperties.EventTracking.EventName
 #pragma warning disable 618 // Use 'ContextProperties.TelemetryContext' once we remove 'EventDescription'.
-            + "} (Context: {@" + ContextProperties.EventTracking.EventDescription + "})";
+            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
 #pragma warning restore 618
 
         private const string MetricFormat =
