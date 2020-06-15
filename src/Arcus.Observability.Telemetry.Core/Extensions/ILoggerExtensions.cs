@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
             + ContextProperties.RequestTracking.RequestDuration + "} at {"
             + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.TelemetryContext + "})";
 
         private const string DependencyFormat =
             MessagePrefixes.Dependency + " {"
@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.TelemetryContext + "})";
 
         private const string DependencyWithoutDataFormat =
             MessagePrefixes.Dependency + " {"
@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.TelemetryContext + "})";
 
         private const string ServiceBusDependencyFormat =
             MessagePrefixes.Dependency + " {"
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.TelemetryContext + "})";
 
         private const string HttpDependencyFormat =
             MessagePrefixes.DependencyViaHttp + " {"
@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.DependencyTracking.Duration + "} at {"
             + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
             + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.TelemetryContext + "})";
 
         private const string SqlDependencyFormat =
             MessagePrefixes.DependencyViaSql + " {" 
@@ -70,19 +70,21 @@ namespace Microsoft.Extensions.Logging
             + "} in {" + ContextProperties.DependencyTracking.Duration
             + "} at {" + ContextProperties.DependencyTracking.StartTime
             + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
-            + "} - Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+            + "} - Context: {@" + ContextProperties.TelemetryContext + "})";
 
         private const string EventFormat = 
             MessagePrefixes.Event + " {" 
-            + ContextProperties.EventTracking.EventName 
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+            + ContextProperties.EventTracking.EventName
+#pragma warning disable 618 // Use 'ContextProperties.TelemetryContext' once we remove 'EventDescription'.
+            + "} (Context: {@" + ContextProperties.EventTracking.EventDescription + "})";
+#pragma warning restore 618
 
         private const string MetricFormat =
             MessagePrefixes.Metric + " {" 
             + ContextProperties.MetricTracking.MetricName + "}: {" 
             + ContextProperties.MetricTracking.MetricValue + "} at {"
             + ContextProperties.MetricTracking.Timestamp
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
+            + "} (Context: {@" + ContextProperties.TelemetryContext + "})";
 
         /// <summary>
         ///     Logs an HTTP request

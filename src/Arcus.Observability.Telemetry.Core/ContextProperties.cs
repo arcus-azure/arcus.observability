@@ -1,8 +1,12 @@
-﻿#pragma warning disable 1591
+﻿using System;
+
+#pragma warning disable 1591
 namespace Arcus.Observability.Telemetry.Core
 {
     public static class ContextProperties
     {
+        public const string TelemetryContext = "Context";
+
         public static class Correlation
         {
             public const string OperationId = "OperationId";
@@ -29,7 +33,9 @@ namespace Arcus.Observability.Telemetry.Core
         public static class EventTracking
         {
             public const string EventName = "EventName";
-            public const string EventContext = "EventDescription";
+            
+            [Obsolete("Use " + nameof(ContextProperties) + "." + nameof(TelemetryContext) + " instead")]
+            public const string EventDescription = "EventDescription";
         }
 
         public static class General
