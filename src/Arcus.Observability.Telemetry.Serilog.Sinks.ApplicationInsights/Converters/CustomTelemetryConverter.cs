@@ -31,12 +31,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
 
             RemoveIntermediaryProperties(logEvent);
+            logEvent.RemovePropertyIfPresent(ContextProperties.TelemetryContext);
+
+#pragma warning disable 618 // Until we remove the obsolete 'EventDescription'.
             logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventContext);
+#pragma warning restore 618
 
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
             _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
 
-            return new List<ITelemetry> {telemetryEntry};
+            return new List<ITelemetry> { telemetryEntry };
         }
 
         /// <summary>
@@ -46,10 +50,19 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="telemetry">The destination telemetry instance to add the properties to.</param>
         protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
         {
-            var eventContextFound = logEvent.Properties.TryGetAsDictionary(ContextProperties.EventTracking.EventContext, out var eventContext);
-            if (eventContextFound)
+            AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.TelemetryContext);
+
+#pragma warning disable 618 // Until we remove obsolete 'EventDescription'.
+            AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.EventTracking.EventContext);
+#pragma warning restore 618
+        }
+
+        private static void AssignContextPropertiesFromDictionaryProperty(LogEvent logEvent, ISupportProperties telemetry, string propertyName)
+        {
+            bool contextFound = logEvent.Properties.TryGetAsDictionary(propertyName, out IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> context);
+            if (contextFound)
             {
-                foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in eventContext)
+                foreach (KeyValuePair<ScalarValue, LogEventPropertyValue> contextProperty in context)
                 {
                     var value = contextProperty.Value.ToDecentString();
                     telemetry.Properties.Add(contextProperty.Key.ToDecentString(), value);

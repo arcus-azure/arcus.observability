@@ -63,7 +63,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestTime);
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
@@ -116,7 +116,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.RequestTime);
             AssertDoesNotContainLogProperty(logEvent, RequestTracking.ResponseStatusCode);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
@@ -167,7 +167,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -214,7 +214,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -261,7 +261,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -308,7 +308,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -356,7 +356,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -404,7 +404,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -452,7 +452,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -499,7 +499,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -547,7 +547,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -595,7 +595,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -643,7 +643,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.ResultCode);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.StartTime);
             AssertDoesNotContainLogProperty(logEvent, DependencyTracking.Duration);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
@@ -687,7 +687,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             // Assert
             AssertDoesNotContainLogProperty(logEvent, EventTracking.EventName);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
@@ -756,7 +756,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             AssertDoesNotContainLogProperty(logEvent, MetricTracking.MetricName);
             AssertDoesNotContainLogProperty(logEvent, MetricTracking.MetricValue);
             AssertDoesNotContainLogProperty(logEvent, MetricTracking.Timestamp);
-            AssertDoesNotContainLogProperty(logEvent, EventTracking.EventContext);
+            AssertDoesNotContainLogProperty(logEvent, ContextProperties.TelemetryContext);
             Assert.Collection(telemetries, telemetry =>
             {
                 var metricTelemetry = Assert.IsType<MetricTelemetry>(telemetry);
