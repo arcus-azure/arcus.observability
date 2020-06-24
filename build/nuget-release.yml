@@ -3,6 +3,10 @@ name: $(Package.Version)
 trigger: none
 pr: none
 
+parameters:
+  - name: 'Package.Version'
+    type: 'string'
+
 resources:
   repositories:
     - repository: templates
@@ -16,7 +20,6 @@ variables:
   - template: ./variables/build.yml
   - name: 'Repository'
     value: 'arcus-azure/arcus.observability'
-  # 'Package.Version' is added as queue-time variable on build in Azure DevOps
 
 stages:
   - stage: Build
