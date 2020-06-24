@@ -20,6 +20,8 @@ variables:
   - template: ./variables/build.yml
   - name: 'Repository'
     value: 'arcus-azure/arcus.observability'
+  - name: 'Package.Version'
+    value: ${{ parameters['Package.Version'] }}
 
 stages:
   - stage: Build
