@@ -243,7 +243,7 @@ durationMeasurement.Start();
 
 /// Track dependency
 string dependencyName = "SendGrid";
-object dependencyData = "http://my.sendgrid.uri/"
+object dependencyData = "https://my.sendgrid.uri/";
 _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 ```
 
@@ -257,8 +257,28 @@ using (var measurement = DependencyMeasurement.Start())
 
     // Track dependency
     string dependencyName = "SendGrid";
-    object dependencyData = "http://my.sendgrid.uri/"
+    object dependencyData = "https://my.sendgrid.uri/";
     _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+}
+```
+
+Failures during the interaction with the tracked dependency can be controlled by the passed-allong `boolean`:
+
+```csharp
+string dependencyName = "SendGrid";
+object dependencyData = "https://my.sendgrid.uri";
+
+try
+{
+    // Interact with SendGrid...
+    // Done!
+
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+}
+catch (Exception exception)
+{
+    _logger.LogError(exception, "Failed to interact with SendGrid");
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
 }
 ```
 

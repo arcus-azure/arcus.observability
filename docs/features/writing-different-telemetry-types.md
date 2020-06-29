@@ -262,6 +262,26 @@ using (var measurement = DependencyMeasurement.Start())
 }
 ```
 
+Failures during the interaction with the tracked dependency can be controlled by the passed-allong `boolean`:
+
+```csharp
+string dependencyName = "SendGrid";
+object dependencyData = "https://my.sendgrid.uri";
+
+try
+{
+    // Interact with SendGrid...
+    // Done!
+
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+}
+catch (Exception exception)
+{
+    _logger.LogError(exception, "Failed to interact with SendGrid");
+    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
+}
+```
+
 ## Events
 
 Events allow you to report custom events which are a great way to track business-related events.
