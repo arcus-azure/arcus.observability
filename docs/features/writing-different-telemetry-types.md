@@ -243,7 +243,7 @@ durationMeasurement.Start();
 
 /// Track dependency
 string dependencyName = "SendGrid";
-object dependencyData = "http://my.sendgrid.uri/"
+object dependencyData = "https://my.sendgrid.uri/"
 _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 ```
 
@@ -257,7 +257,7 @@ using (var measurement = DependencyMeasurement.Start())
 
     // Track dependency
     string dependencyName = "SendGrid";
-    object dependencyData = "http://my.sendgrid.uri/"
+    object dependencyData = "https://my.sendgrid.uri/"
     _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 ```
