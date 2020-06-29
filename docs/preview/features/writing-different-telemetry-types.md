@@ -258,7 +258,7 @@ using (var measurement = DependencyMeasurement.Start())
     // Track dependency
     string dependencyName = "SendGrid";
     object dependencyData = "https://my.sendgrid.uri/";
-    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 ```
 
@@ -273,12 +273,12 @@ try
     // Interact with SendGrid...
     // Done!
 
-    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 catch (Exception exception)
 {
     _logger.LogError(exception, "Failed to interact with SendGrid");
-    _logger.LogDependency("SendGrid", dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
+    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
 }
 ```
 
