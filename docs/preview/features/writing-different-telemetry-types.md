@@ -262,7 +262,7 @@ using (var measurement = DependencyMeasurement.Start())
 }
 ```
 
-Failures during the interaction with the tracked dependency can be controlled by the passed-allong `boolean`:
+Failures during the interaction with the tracked dependency can be controlled by passing `isSuccessful`:
 
 ```csharp
 string dependencyName = "SendGrid";
