@@ -579,8 +579,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubName = _bogusGenerator.Commerce.ProductName();
-            string iotHubConnectionString = $"HostName={iotHubName}";
+            string iotHubName = _bogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
+            string deviceId = _bogusGenerator.Internet.Ip();
+            string sharedAccessKey = _bogusGenerator.Random.Hash();
+            string iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -603,8 +605,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubName = _bogusGenerator.Commerce.ProductName();
-            string iotHubConnectionString = $"HostName={iotHubName}";
+            string iotHubName = _bogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
+            string deviceId = _bogusGenerator.Internet.Ip();
+            string sharedAccessKey = _bogusGenerator.Random.Hash();
+            string iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DependencyMeasurement.Start();
