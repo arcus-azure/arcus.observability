@@ -21,7 +21,6 @@
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Filters\Arcus.Observability.Telemetry.Serilog.Filters.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Enrichers\Arcus.Observability.Telemetry.Serilog.Enrichers.csproj" />
-    <ProjectReference Include="..\Arcus.Observability.Telemetry.Sql\Arcus.Observability.Telemetry.Sql.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj" />
   </ItemGroup>
 

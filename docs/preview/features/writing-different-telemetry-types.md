@@ -222,14 +222,6 @@ _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-pr
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
 
-**Installation**
-
-This feature requires to install our NuGet package
-
-```shell
-PM > Install-Package Arcus.Observability.Telemetry.Sql
-```
-
 ```csharp
 string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
 var durationMeasurement = new Stopwatch();

@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Tests.Core", "Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj", "{DC18426F-4D03-4DBD-8D92-224C026BFADC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Sql", "Arcus.Observability.Telemetry.Sql\Arcus.Observability.Telemetry.Sql.csproj", "{42511E27-A0A6-4497-B93B-46A843BF590A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcus.Observability.Telemetry.IoT", "Arcus.Observability.Telemetry.IoT\Arcus.Observability.Telemetry.IoT.csproj", "{E4A6624B-C1A4-4956-9FC2-E77D6C634717}"
 EndProject
 Global
@@ -63,10 +61,6 @@ Global
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42511E27-A0A6-4497-B93B-46A843BF590A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42511E27-A0A6-4497-B93B-46A843BF590A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42511E27-A0A6-4497-B93B-46A843BF590A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42511E27-A0A6-4497-B93B-46A843BF590A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4A6624B-C1A4-4956-9FC2-E77D6C634717}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4A6624B-C1A4-4956-9FC2-E77D6C634717}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4A6624B-C1A4-4956-9FC2-E77D6C634717}.Release|Any CPU.ActiveCfg = Release|Any CPU
