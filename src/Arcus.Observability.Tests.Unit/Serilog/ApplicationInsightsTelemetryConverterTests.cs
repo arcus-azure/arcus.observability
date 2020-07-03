@@ -481,7 +481,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["DeviceName"] = "Sensor #102"
             };
-            logger.LogIotHubDependency(iotHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
+            logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 

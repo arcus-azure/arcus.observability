@@ -103,6 +103,8 @@ _logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName
 
 We allow you to measure Azure IoT Hub dependencies.
 
+**Example**
+
 Here is how you can report a dependency call:
 
 ```csharp
@@ -113,6 +115,31 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 _logger.logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
+
+Or, alternatively you can pass allong the IoT connection string itself so the host name will be selected for you.
+
+**Installation**
+
+This feature requires to install our NuGet package
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.IoT
+```
+
+**Example**
+
+Here is how you can report a dependency call:
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
