@@ -35,4 +35,26 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 ```
 
+## FAQ
+
+### Q: Why is it mandatory to provide an instrumentation key?
+
+While the native Azure Application Insights SDK does not enforce an instrumentation key we have chosen to make it mandatory to provide one.
+
+By doing this, we allow you to fail fast and avoid running your application with a misconfigured telemetry setup. If it would be optional, you could have it running for days/weeks only to notice you are not sending any telemetry when everything is on fire and you are in the dark.
+
+If you want to optionally use our sink when there is an instrumentation key, we recommend using this simple pattern:
+
+```csharp
+var loggerConfig =  new LoggerConfiguration()
+    .MinimumLevel.Debug();
+
+if(string.IsNullOrEmpty(key) == false)
+{
+    loggerConfig.WriteTo.AzureApplicationInsights(key);
+}
+
+ILogger logger = loggerConfig.CreateLogger();
+```
+
 [&larr; back](/)
