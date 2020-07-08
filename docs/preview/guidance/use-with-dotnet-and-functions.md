@@ -23,13 +23,13 @@ Using Serilog with Azure Functions requires some guidance and we've made it a bi
 Before we get started, install our NuGet package for Azure Functions:
 
 ```
-PM > TODO @stijnmoreels
+PM > Install-Package -Name Arcus.Observability.Telemetry.AzureFunctions
 ```
 
 Once that is done, you can configure Serilog during startup as following:
 
 ```csharp
-using Arcus.TODO.@stijnmoreels;
+using Microsoft.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Arcus.Samples.AzureFunction
