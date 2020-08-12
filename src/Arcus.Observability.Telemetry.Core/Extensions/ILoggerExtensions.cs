@@ -217,6 +217,46 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        ///     Logs an Azure Search Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="searchServiceName">Name of the Azure Search service</param>
+        /// <param name="operationName">Name of the operation to execute on the Azure Search service</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogAzureSearchDependency(this ILogger logger, string searchServiceName, string operationName, bool isSuccessful, DependencyMeasurement measurement, Dictionary<string, object> context = null)
+        {
+            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName));
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName));
+
+            context = context ?? new Dictionary<string, object>();
+
+            LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Search Dependency.
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="searchServiceName">Name of the Azure Search service</param>
+        /// <param name="operationName">Name of the operation to execute on the Azure Search service</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        public static void LogAzureSearchDependency(this ILogger logger, string searchServiceName, string operationName, bool isSuccessful, DateTimeOffset startTime, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName));
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName));
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogInformation(DependencyFormat, "Azure Search", operationName, searchServiceName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+        }
+
+        /// <summary>
         ///     Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">Logger to use</param>
