@@ -38,6 +38,7 @@ We provide support for the following dependencies:
 - [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)
 - [Azure Event Hubs](#measuring-azure-event-hubs-dependencies)
 - [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
+- [Azure Search](#measuring-azure-search-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Azure Table Storage](#measuring-azure-table-storage-dependencies)
 - [Custom](#measuring-custom-dependencies)
@@ -142,6 +143,22 @@ var startTime = DateTimeOffset.UtcNow;
 _logger.logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
+
+### Measuring Azure Search dependencies
+
+We allow you to measure Azure Search depdendencies for cognetive services.
+
+Here is how you can report an Azure Search dependency:
+
+```csharp
+var durationMeasurement = new Stopwatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+_logger.LogAzureSearchDependency(searchServiceName: "orders-search", operationName: "get-orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure Search get-orders named orders-search in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 
 ### Measuring Azure Service Bus dependencies
 
