@@ -9,9 +9,31 @@ Observability with Microsoft Azure in a breeze.
 # Installation
 Easy to install it via NuGet:
 
+- **Correlation**
+
 ```shell
 PM > Install-Package Arcus.Observability.Correlation
 ```
+
+- **Telemetry**
+
+```shell
+PM > Install-Package Arcus.Obervability.Telemetry.Core
+```
+
+- **Telemetry on Azure Functions**
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.AzureFunctions
+```
+
+- **Serilog Application Insights sink**
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights
+```
+
+For a more thorough overview, we recommend reading our [documentation](#documentation).
 
 # Documentation
 All documentation can be found on [here](https://observability.arcus-azure.net/).
