@@ -55,6 +55,6 @@ For example, when using Azure Application Insights your metric will evolve from 
 
 Here we are using our multi-dimensional metric and splitting it per customer to get more detailed insights:
 
-![Multi-dimension Metric](./../media/single-dimensional-metric.png)
+![Multi-dimension Metric](./../media/multi-dimensional-metrics.png)
 
 [&larr; back](/)
