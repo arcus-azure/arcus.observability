@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Arcus.Observability.Tests.Unit.Serilog
+namespace Arcus.Observability.Tests.Core
 {
     /// <summary>
     /// Represents a logging sink that collects the emitted log events in-memory.

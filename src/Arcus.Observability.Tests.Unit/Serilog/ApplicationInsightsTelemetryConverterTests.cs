@@ -5,6 +5,7 @@ using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
+using Arcus.Observability.Tests.Core;
 using Bogus;
 using Bogus.DataSets;
 using Microsoft.ApplicationInsights.Channel;

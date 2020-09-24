@@ -36,10 +36,11 @@ ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .CreateLogger();
 
-logger.Information("This event will be enriched with the application component's name and by default the environment's machine name");
+logger.Information("Some event");
+// Output: Some event {ComponentName: My application component, MachineName: MyComputer}
 ```
 
-Or, alternatively one can choose to use the Kubernetes information.
+Or, alternatively one can choose to use the Kubernetes information which our [Application Insights](./sinks/azure-application-insights) sink will prioritize above the `MachineName` when determining the telemetry `Cloud.RoleInstance`.
 
 ```csharp
 ILogger logger = new LoggerConfiguration()
@@ -47,7 +48,24 @@ ILogger logger = new LoggerConfiguration()
     .Enrich.WithKubernetesInfo()
     .CreateLogger();
 
-logger.Information("This event will be enriched with the application component's name and the Kubernetes information on the environment")
+logger.Information("Some event");
+// Output: Some event {ComponentName: My application component, MachineName: MachineName: MyComputer, PodName: demo-app}
+```
+
+### Custom Serilog property names
+
+The application enricher allows you to specify the name of the log property that will be added to the log event during enrichment.
+By default this is set to `ComponentName`.
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithComponentName(
+        componentName: "My application component", 
+        propertyName: "MyComponentName")
+    .CreateLogger();
+
+logger.Information("Some event");
+// Output: Some event {MyComponentName: My application component, MachineName: MyComputer}
 ```
 
 ## Correlation Enricher
@@ -88,6 +106,22 @@ logger.Information("This event will be enriched with the correlation information
 // Output: This event will be enriched with the correlation information {OperationId: 52EE2C00-53EE-476E-9DAB-C1234EB4AD0B, TransactionId: 0477E377-414D-47CD-8756-BCBE3DBE3ACB}
 ```
 
+### Custom Serilog property names
+
+The correlation information enricher allows you to specify the names of the log properties that will be added to the log event during enrichment.
+This is available on all extension overloads. By default the operation ID is set to `OperationId` and the transaction ID to `TransactionId`.
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithCorrelationInfo(
+        operationIdPropertyName: "MyOperationId",
+        transactionIdPropertyName: "MyTransactionId")
+    .CreateLogger();
+
+logger.Information("Some event");
+// Output: Some event {MyOperationId: 52EE2C00-53EE-476E-9DAB-C1234EB4AD0B, MyTransactionId: 0477E377-414D-47CD-8756-BCBE3DBE3ACB}
+```
+
 ## Kubernetes Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Kubernetes](https://kubernetes.io/) [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
@@ -108,7 +142,8 @@ ILogger logger = new LoggerConfiguration()
     .Enrich.WithKubernetesInfo()
     .CreateLogger();
 
-logger.Information("This event will be enriched with the Kubernetes environment information");
+logger.Information("Some event");
+// Output: Some event {NodeName: demo-cluster, PodName: demo-app, Namespace: demo}
 ```
 
 Here is an example of a Kubernetes YAML that provides the required environment variables:
@@ -157,6 +192,23 @@ spec:
              fieldPath: metadata.namespace
 ```
 
+### Custom Serilog property names
+
+The Kubernetes enricher allows you to specify the names of the log properties that will be added to the log event during enrichment.
+By default the node name is set to `NodeName`, the pod name to `PodName`, and the namespace to `Namespace`.
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithKubernetesInfo(
+        nodeNamePropertyName: "MyNodeName",
+        podNamePropertyName: "MyPodName",
+        namespacePropertyName: "MyNamespace")
+    .CreateLogger();
+
+logger.Information("Some event");
+// Output: Some event {MyNodeName: demo-cluster, MyPodName: demo-app, MyNamespace: demo}
+```
+
 ## Version Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
@@ -173,7 +225,22 @@ ILogger logger = new LoggerConfiguration()
     .Enrich.WithVersion()
     .CreateLogger();
 
-logger.Information("This event will be enriched with the runtime assembly product version");
+logger.Information("Some event");
+// Output: Some event {version: 1.0.0-preview}
+```
+
+### Custom Serilog property names
+
+The version enricher allows you to specify the name of the property that will be added to the log event during enrichement.
+By default this is set to `version`.
+
+```csharp
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithVersion(propertyName: "MyVersion")
+    .CreateLogger();
+
+logger.Information("Some event");
+// Output: Some event {MyVersion: 1.0.0-preview}
 ```
 
 [&larr; back](/)

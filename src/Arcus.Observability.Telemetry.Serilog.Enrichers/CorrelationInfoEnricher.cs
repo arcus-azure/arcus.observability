@@ -12,13 +12,37 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// </summary>
     public class CorrelationInfoEnricher<TCorrelationInfo> : ILogEventEnricher where TCorrelationInfo : CorrelationInfo
     {
+        private readonly string _operationIdPropertyName, _transactionIdPropertyName;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> class.
         /// </summary>
         /// <param name="correlationInfoAccessor">The accessor implementation for the custom <see cref="CorrelationInfo"/> model.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         public CorrelationInfoEnricher(ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor)
+            : this(correlationInfoAccessor, ContextProperties.Correlation.OperationId, ContextProperties.Correlation.TransactionId)
         {
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> class.
+        /// </summary>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the custom <see cref="CorrelationInfo"/> model.</param>
+        /// <param name="operationIdPropertyName">The name of the property to enrich the log event with the correlation operation ID.</param>
+        /// <param name="transactionIdPropertyName">The name of the property to enrich the log event with the correlation transaction ID.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
+        public CorrelationInfoEnricher(
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor, 
+            string operationIdPropertyName,
+            string transactionIdPropertyName)
+        {
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to enrich the log events with correlation information");
+            Guard.NotNullOrWhitespace(operationIdPropertyName, nameof(operationIdPropertyName), "Requires a property name to enrich the log event with the correlation operation ID");
+            Guard.NotNullOrWhitespace(transactionIdPropertyName, nameof(transactionIdPropertyName), "Requires a property name to enrich the log event with the correlation transaction ID");
+
+            _operationIdPropertyName = operationIdPropertyName;
+            _transactionIdPropertyName = transactionIdPropertyName;
 
             CorrelationInfoAccessor = correlationInfoAccessor;
         }
@@ -57,13 +81,13 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         {
             if (!String.IsNullOrEmpty(correlationInfo.OperationId))
             {
-                LogEventProperty property = propertyFactory.CreateProperty(ContextProperties.Correlation.OperationId, correlationInfo.OperationId);
+                LogEventProperty property = propertyFactory.CreateProperty(_operationIdPropertyName, correlationInfo.OperationId);
                 logEvent.AddPropertyIfAbsent(property);
             }
 
             if (!String.IsNullOrEmpty(correlationInfo.TransactionId))
             {
-                LogEventProperty property = propertyFactory.CreateProperty(ContextProperties.Correlation.TransactionId, correlationInfo.TransactionId);
+                LogEventProperty property = propertyFactory.CreateProperty(_transactionIdPropertyName, correlationInfo.TransactionId);
                 logEvent.AddPropertyIfAbsent(property);
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
+using Arcus.Observability.Tests.Core;
 using Serilog;
 using Serilog.Events;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spy = new InMemoryLogSink();
-            var configuration = 
+            LoggerConfiguration configuration = 
                 new LoggerConfiguration()
                     .WriteTo.Sink(spy)
                     .Enrich.WithVersion();
@@ -27,9 +28,50 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Assert
             LogEvent emit = Assert.Single(spy.CurrentLogEmits);
             Assert.NotNull(emit);
-            var property = Assert.Single(emit.Properties);
-            Assert.Equal("version", property.Key);
-            Assert.True(Version.TryParse(property.Value.ToString().Trim('\"'), out Version result));
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal("version", key);
+            Assert.True(Version.TryParse(value.ToString().Trim('\"'), out Version result));
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomPropertyName_HasCustomVersionProperty()
+        {
+            // Arrange
+            string propertyName = $"my-version-{Guid.NewGuid():N}";
+            var spy = new InMemoryLogSink();
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(propertyName)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event should contain a custom version property when written to the sink");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(propertyName, key);
+            Assert.True(Version.TryParse(value.ToString().Trim('\"'), out Version result));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void WithVersion_WithBlankPropertyName_Throws(string propertyName)
+        {
+            // Arrange
+            var configuration = new LoggerConfiguration();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => configuration.Enrich.WithVersion(propertyName));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void CreatesEnricher_WithBlankPropertyName_Throws(string propertyName)
+        {
+            Assert.ThrowsAny<ArgumentException>(() => new VersionEnricher(propertyName));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using GuardNet;
+﻿using System;
+using GuardNet;
 using Serilog.Core;
 using Serilog.Enrichers;
 using Serilog.Events;
@@ -10,20 +11,33 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// </summary>
     public class ApplicationEnricher : ILogEventEnricher
     {
-        private const string ComponentName = "ComponentName";
+        internal const string ComponentName = "ComponentName";
 
         private readonly ILogEventEnricher _machineNameEnricher = new MachineNameEnricher();
-        private readonly string _componentValue;
+        private readonly string _componentValue, _propertyName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationEnricher"/> class.
         /// </summary>
         /// <param name="componentName">The name of the application component.</param>
-        public ApplicationEnricher(string componentName)
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> is blank.</exception>
+        public ApplicationEnricher(string componentName) : this(componentName, ComponentName)
         {
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Application component name cannot be blank");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationEnricher"/> class.
+        /// </summary>
+        /// <param name="componentName">The name of the application component.</param>
+        /// <param name="propertyName">The name of the property to enrich the log event with the <paramref name="componentName"/>.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> or <paramref name="propertyName"/> is blank.</exception>
+        public ApplicationEnricher(string componentName, string propertyName)
+        {
+            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank application component name");
+            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
 
             _componentValue = componentName;
+            _propertyName = propertyName;
         }
 
         /// <summary>
@@ -33,7 +47,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            LogEventProperty property = propertyFactory.CreateProperty(ComponentName, _componentValue);
+            LogEventProperty property = propertyFactory.CreateProperty(_propertyName, _componentValue);
             logEvent.AddPropertyIfAbsent(property);
 
             _machineNameEnricher.Enrich(logEvent, propertyFactory);
