@@ -14,18 +14,39 @@ namespace Serilog
     public static class LoggerEnrichmentConfigurationExtensions
     {
         /// <summary>
-        /// Adds the <see cref="VersionEnricher"/> to the logger enrichment configuration which adds the current runtime version (i.e. 'version' = '1.0.0').
+        /// Adds the <see cref="VersionEnricher"/> to the logger enrichment configuration which adds the current runtime version (i.e. 'version' = '1.0.0') of the assembly.
         /// </summary>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="propertyName">The name of the property to enrich the log event with the current runtime version.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the process executable in the default application domain cannot be retrieved.</exception>
         public static LoggerConfiguration WithVersion(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName = VersionEnricher.DefaultPropertyName)
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
             Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
 
             return enrichmentConfiguration.With(new VersionEnricher(propertyName));
+        }
+
+        /// <summary>
+        /// Adds the <see cref="VersionEnricher"/> to the logger enrichment configuration which adds the current application version retrieved via the given <paramref name="appVersion"/>.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="appVersion">The instance to retrieve the current application version.</param>
+        /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="appVersion"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+        public static LoggerConfiguration WithVersion(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            IAppVersion appVersion,
+            string propertyName = VersionEnricher.DefaultPropertyName)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
+            Guard.NotNull(appVersion, nameof(appVersion), "Requires an application version implementation to enrich the log event with the application version");
+            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+
+            return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
         }
 
         /// <summary>

@@ -212,7 +212,7 @@ logger.Information("Some event");
 ## Version Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
-that adds the current runtime assembly version of the product to the log event as a log property with the name `version`.
+that adds (by default) the current runtime assembly version of the product to the log event as a log property with the name `version`.
 
 **Example**
 Name: `version`
@@ -227,6 +227,21 @@ ILogger logger = new LoggerConfiguration()
 
 logger.Information("Some event");
 // Output: Some event {version: 1.0.0-preview}
+```
+
+### Custom application version
+
+The version enricher allows you to specify an `IAppVersion` instance that retrieves your custom application version, which will be used during enrichement.
+By default this is set to the version of the current executing assembly.
+
+```csharp
+IAppVersion appVersion = new MyCustomAppVersion("v0.1.0");
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithVersion(appVersion)
+    .CreateLogger();
+
+logger.Information("Some event");
+// Output: Some event {version: v0.1.0}
 ```
 
 ### Custom Serilog property names
