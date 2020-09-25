@@ -9,7 +9,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <seealso cref="IAppVersion"/>
     public class AssemblyAppVersion : IAppVersion
     {
-        private readonly Assembly _executingAssembly;
+        private readonly Lazy<string> _assemblyVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyAppVersion"/> class.
@@ -18,13 +18,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         public AssemblyAppVersion()
         {
             var executingAssembly = Assembly.GetEntryAssembly();
-            if (executingAssembly == null)
+            if (executingAssembly is null)
             {
                 throw new InvalidOperationException(
                     "Cannot enrich the log events with a 'Version' because the version of the current executing runtime couldn't be determined");
             }
-
-            _executingAssembly = executingAssembly;
+            
+            _assemblyVersion = new Lazy<string>(() => 
+                executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                    ?? executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
+                    ?? executingAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
         }
 
         /// <summary>
@@ -32,9 +35,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// </summary>
         public string GetVersion()
         {
-            return _executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                ?? _executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
-                ?? _executingAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+            return _assemblyVersion.Value;
         }
     }
 }
