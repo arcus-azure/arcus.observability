@@ -20,7 +20,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var service = serviceProvider.GetRequiredService<IAppVersion>();
             Assert.NotNull(service);
-            Assert.IsType<StubAppVersion>(service);
+            Assert.IsType<DummyAppVersion>(service);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var service = serviceProvider.GetRequiredService<IAppVersion>();
             Assert.NotNull(service);
-            Assert.IsType<StubAppVersion>(service);
+            Assert.IsType<DummyAppVersion>(service);
         }
 
         [Fact]
