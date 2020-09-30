@@ -3,7 +3,7 @@ title: "Home"
 layout: default
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=0.3.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/0.3.0)
+[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=0.4.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/0.4.0)
 
 # Installation
 
@@ -37,6 +37,7 @@ This is licensed under The MIT License (MIT). Which means that you can use, copy
 
 # Older Versions
 
+- [v0.3.0](../v0.3.0)
 - [v0.2.0](../v0.2.0)
 - [v0.1.1](../v0.1.1)
 - [v0.1.0](../v0.1.0)

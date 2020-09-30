@@ -1,7 +1,6 @@
 ---
 title: "Home"
 layout: default
-permalink: /
 redirect_from:
  - /index.html
 ---
@@ -40,6 +39,7 @@ This is licensed under The MIT License (MIT). Which means that you can use, copy
 
 # Older Versions
 
+- [v0.3.0](v0.3.0)
 - [v0.2.0](v0.2.0)
 - [v0.1.1](v0.1.1)
 - [v0.1.0](v0.1.0)
