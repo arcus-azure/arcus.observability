@@ -244,7 +244,7 @@ logger.Information("Some event");
 // Output: Some event {version: v0.1.0}
 ```
 
-Or alternatively, you can choose to register the application version yourself.
+Or alternatively, you can choose to register the application version so you can use it in your application as well.
 
 ```csharp
 public void ConfigureServivces(IServiceCollection services)
