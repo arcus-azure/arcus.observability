@@ -3,6 +3,7 @@ using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using GuardNet;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog.Configuration;
 
 // ReSharper disable once CheckNamespace
@@ -46,6 +47,27 @@ namespace Serilog
             Guard.NotNull(appVersion, nameof(appVersion), "Requires an application version implementation to enrich the log event with the application version");
             Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
 
+            return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
+        }
+
+        /// <summary>
+        /// Adds the <see cref="VersionEnricher"/> to the logger enrichment configuration which adds the current application version retrieved via the given <paramref name="serviceProvider"/>.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="serviceProvider">The instance to retrieve the current application version.</param>
+        /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="serviceProvider"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+        public static LoggerConfiguration WithVersion(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            IServiceProvider serviceProvider,
+            string propertyName = VersionEnricher.DefaultPropertyName)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
+            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppVersion)}' implementations");
+            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+
+            IAppVersion appVersion = serviceProvider.GetService<IAppVersion>() ?? new AssemblyAppVersion();
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
         }
 

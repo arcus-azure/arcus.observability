@@ -1,6 +1,8 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
+using Arcus.Observability.Tests.Unit.Telemetry;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Serilog;
 using Serilog.Events;
@@ -108,6 +110,89 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Equal(expected, value.ToDecentString());
         }
 
+        [Fact]
+        public void LogEvent_WithCustomRegisteredAppVersion_UsesCustomAppVersion()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var expected = $"version-{Guid.NewGuid()}";
+            var services = new ServiceCollection();
+            services.AddAppVersion(provider => new StubAppVersion(expected));
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will be enriched by the registered stubbed app version");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(VersionEnricher.DefaultPropertyName, key);
+            Assert.Equal(expected, value.ToDecentString());
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomAppVersionType_UsesCustomAppVersion()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var appVersion = new AssemblyAppVersion();
+            string expected = appVersion.GetVersion();
+            var services = new ServiceCollection();
+            services.AddAppVersion<AssemblyAppVersion>();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will be enriched by the registered app version");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(VersionEnricher.DefaultPropertyName, key);
+            Assert.Equal(expected, value.ToDecentString());
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomRegisteredAppVersionAndCustomPropertyName_UsesCustomAppVersion()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var propertyName = $"property-name-{Guid.NewGuid()}";
+            var expected = $"version-{Guid.NewGuid()}";
+            var services = new ServiceCollection();
+            services.AddAppVersion(provider => new StubAppVersion(expected));
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider, propertyName)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will be enriched by the registered stubbed app version on the custom property name");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(propertyName, key);
+            Assert.Equal(expected, value.ToDecentString());
+        }
+
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogEvent_WithCustomAppVersionReturningBlankVersion_DoesntAddVersionProperty(string version)
@@ -154,6 +239,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.ThrowsAny<ArgumentException>(() => configuration.Enrich.WithVersion(appVersion, propertyName));
         }
 
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void WithVersion_WithServiceProviderAndBlankPropertyName_Throws(string propertyName)
+        {
+            // Arrange
+            var configuration = new LoggerConfiguration();
+            var services = new ServiceCollection();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => configuration.Enrich.WithVersion(serviceProvider, propertyName));
+        }
+
         [Fact]
         public void WithVersion_WithoutAppVersion_Throws()
         {
@@ -174,6 +272,28 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => configuration.Enrich.WithVersion(appVersion: null, propertyName: "some-property-name"));
+        }
+
+        [Fact]
+        public void WithVersion_WithoutServiceProvider_Throws()
+        {
+            // Arrange
+            var configuration = new LoggerConfiguration();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => configuration.Enrich.WithVersion(serviceProvider: null));
+        }
+
+        [Fact]
+        public void WithVersion_WithoutServiceProviderAndPropertyName_Throws()
+        {
+            // Arrange
+            var configuration = new LoggerConfiguration();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => configuration.Enrich.WithVersion(serviceProvider: null, propertyName: "some-property-name"));
         }
 
         [Theory]

@@ -244,6 +244,32 @@ logger.Information("Some event");
 // Output: Some event {version: v0.1.0}
 ```
 
+Or alternatively, you can choose to register the application version so you can use it in your application as well.
+
+```csharp
+public void ConfigureServivces(IServiceCollection services)
+{
+    // Register the `MyApplicationVersion` instance to the registered services (using empty constructor).
+    services.AddAppVersion<MyApplicationVersion>();
+
+    // Register the `MyApplicationVersion` instance using the service provider.
+    services.AddAppVersion(serviceProvider => 
+    {
+        var logger = serviceProvider.GetRequiredService<ILogger<MyApplicationVersion>>();
+        return new MyApplicationVersion(logger);
+    });
+}
+```
+
+Once the application version is registered, you can pass along the `IServiceProvider` instead to the Serilog configuration.
+
+```csharp
+IServiceProvider serviceProvider = ...
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithVersion(serviceProvider)
+    .CreateLogger();
+```
+
 ### Custom Serilog property names
 
 The version enricher allows you to specify the name of the property that will be added to the log event during enrichement.
