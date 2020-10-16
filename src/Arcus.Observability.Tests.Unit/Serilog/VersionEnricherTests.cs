@@ -1,18 +1,26 @@
 ﻿using System;
+using System.Reflection;
+using System.Reflection.Emit;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
+using Arcus.Observability.Tests.Unit.Serilog;
 using Arcus.Observability.Tests.Unit.Telemetry;
+using Bogus;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 
+[assembly: AssemblyFileVersion(VersionEnricherTests.AssemblyVersion)]
+
 namespace Arcus.Observability.Tests.Unit.Serilog
 {
     [Trait(name: "Category", value: "Unit")]
     public class VersionEnricherTests
     {
+        public const string AssemblyVersion = "1.23.0";
+
         [Fact]
         public void LogEvent_WithVersionEnricher_HasVersionProperty()
         {
@@ -163,6 +171,85 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
             Assert.Equal(VersionEnricher.DefaultPropertyName, key);
             Assert.Equal(expected, value.ToDecentString());
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomGenericConsumerType_UsesConsumerTypeForAssemblyAppVersion()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var services = new ServiceCollection();
+            services.AddAssemblyAppVersion<VersionEnricherTests>();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will be enriched with a assembly version from a custom consumer type");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(VersionEnricher.DefaultPropertyName, key);
+            Assert.Equal(AssemblyVersion, value.ToDecentString());
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomConsumerType_UsesConsumerTypeForAssemblyAppVersion()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var services = new ServiceCollection();
+            services.AddAssemblyAppVersion(typeof(VersionEnricherTests));
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will be enriched with a assembly version from a custom consumer type");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            (string key, LogEventPropertyValue value) = Assert.Single(emit.Properties);
+            Assert.Equal(VersionEnricher.DefaultPropertyName, key);
+            Assert.Equal(AssemblyVersion, value.ToDecentString());
+        }
+
+        [Fact]
+        public void LogEvent_WithCustomConsumerTypeWithoutAssemblyVersion_SkipsApplicationVersionEnrichment()
+        {
+            // Arrange
+            var spy = new InMemoryLogSink();
+            var services = new ServiceCollection();
+            
+            var stubbedType = new Mock<Type>();
+            stubbedType.Setup(t => t.Assembly).Returns(Mock.Of<Assembly>());
+            services.AddAssemblyAppVersion(stubbedType.Object);
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger =
+                new LoggerConfiguration()
+                    .WriteTo.Sink(spy)
+                    .Enrich.WithVersion(serviceProvider)
+                    .CreateLogger();
+
+            // Act
+            logger.Information("This log event will not be enriched with a assembly version because custom consumer type doesn't have a assembly version attribute");
+
+            // Assert
+            LogEvent emit = Assert.Single(spy.CurrentLogEmits);
+            Assert.NotNull(emit);
+            Assert.Empty(emit.Properties);
         }
 
         [Fact]

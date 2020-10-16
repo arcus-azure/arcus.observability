@@ -234,6 +234,18 @@ logger.Information("Some event");
 The version enricher allows you to specify an `IAppVersion` instance that retrieves your custom application version, which will be used during enrichement.
 By default this is set to the version of the current executing assembly.
 
+**Assembly version as application version**
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // Register the `AssemblyAppVersion` instance to retrieve the application version from the assembly where the passed-along `Startup` type is located.
+    services.AddAssemblyAppVersion<Startup>();
+}
+```
+
+**User-provided version**
+
 ```csharp
 IAppVersion appVersion = new MyCustomAppVersion("v0.1.0");
 ILogger logger = new LoggerConfiguration()
