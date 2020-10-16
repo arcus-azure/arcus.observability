@@ -57,7 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The collection of registered services to add the <see cref="IAppVersion"/> implementation to.</param>
         /// <param name="consumerType">Some random consumer type to have access to the assembly of the executing project.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> or <paramref name="consumerType"/> is <c>null</c>.</exception>
         public static IServiceCollection AddAssemblyAppVersion(this IServiceCollection services, Type consumerType)
         {
             Guard.NotNull(services, nameof(services), $"Requires a collection of services to add the assembly version '{nameof(IAppVersion)}' implementation");
