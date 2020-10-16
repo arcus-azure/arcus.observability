@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Enrichers
 {
@@ -24,10 +25,20 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
                     "Cannot enrich the log events with a 'Version' because the version of the current executing runtime couldn't be determined");
             }
             
-            _assemblyVersion = new Lazy<string>(() => 
-                executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                    ?? executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
-                    ?? executingAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
+            _assemblyVersion = new Lazy<string>(() => GetAssemblyVersion(executingAssembly));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssemblyAppVersion"/> class.
+        /// </summary>
+        /// <param name="consumerType">Some random consumer type to have access to the assembly of the executing project.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="consumerType"/> is <c>null</c>.</exception>
+        public AssemblyAppVersion(Type consumerType)
+        {
+            Guard.NotNull(consumerType, nameof(consumerType), "Requires a consumer type to retrieve the assembly where the project runs");
+
+            Assembly executingAssembly = consumerType.Assembly;
+            _assemblyVersion = new Lazy<string>(() => GetAssemblyVersion(executingAssembly));
         }
 
         /// <summary>
@@ -36,6 +47,13 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         public string GetVersion()
         {
             return _assemblyVersion.Value;
+        }
+
+        private static string GetAssemblyVersion(Assembly executingAssembly)
+        {
+            return executingAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                   ?? executingAssembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version
+                   ?? executingAssembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
         }
     }
 }
