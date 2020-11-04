@@ -264,8 +264,6 @@ _logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccess
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
-
-
 ### Measuring custom dependencies
 
 Here is how you can areport a custom depenency:
