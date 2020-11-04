@@ -1170,6 +1170,62 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogRequest_RequestWithSchemeWithWhitespaceWasSpecifiedWhenPassingResponseStatusCode_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var saboteurRequest = new Mock<HttpRequest>();
+            saboteurRequest.Setup(r => r.Host).Returns(new HostString("hostname"));
+            saboteurRequest.Setup(r => r.Scheme).Returns("scheme with spaces");
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogRequest(saboteurRequest.Object, statusCode, duration));
+        }
+
+        [Fact]
+        public void LogRequest_RequestWithoutHostWasSpecifiedWhenPassingResponseStatusCode_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var saboteurRequest = new Mock<HttpRequest>();
+            saboteurRequest.Setup(r => r.Host).Returns(new HostString());
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogRequest(saboteurRequest.Object, statusCode, duration));
+        }
+
+        [Fact]
+        public void LogRequest_RequestWithHostWithWhitespaceWasSpecifiedWhenPassingResponseStatusCode_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var saboteurRequest = new Mock<HttpRequest>();
+            saboteurRequest.Setup(r => r.Host).Returns(new HostString("host with spaces"));
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogRequest(saboteurRequest.Object, statusCode, duration));
+        }
+
+        [Fact]
+        public void LogRequest_NoRequestWasSpecifiedWhenPassingResponseStatusCode_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            HttpRequest request = null;
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentNullException>(() => logger.LogRequest(request, statusCode, duration));
+        }
+
+        [Fact]
         public void LogRequest_NoResponseWasSpecified_ThrowsException()
         {
             // Arrange

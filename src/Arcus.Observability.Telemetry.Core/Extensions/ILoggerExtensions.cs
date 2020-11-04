@@ -103,7 +103,6 @@ namespace Microsoft.Extensions.Logging
             Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
             Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
 
-
             LogRequest(logger, request, response.StatusCode, duration, context);
         }
 
