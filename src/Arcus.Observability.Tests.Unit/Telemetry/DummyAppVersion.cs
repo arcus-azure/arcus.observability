@@ -1,5 +1,5 @@
 ﻿using System;
-using Arcus.Observability.Telemetry.Serilog.Enrichers;
+using Arcus.Observability.Telemetry.Core;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry
 {
