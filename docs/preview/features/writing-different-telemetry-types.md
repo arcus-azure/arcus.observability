@@ -239,6 +239,16 @@ _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-pr
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
 
+**Installation**
+
+This feature requires to install our NuGet package
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.Sql
+```
+
+**Example**
+
 ```csharp
 string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
 var durationMeasurement = new Stopwatch();
@@ -253,6 +263,8 @@ var products = await _repository.GetProducts();
 _logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
+
+
 
 ### Measuring custom dependencies
 
