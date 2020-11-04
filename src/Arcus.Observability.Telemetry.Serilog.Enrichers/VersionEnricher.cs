@@ -1,4 +1,5 @@
 ﻿using System;
+using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Serilog.Core;
 using Serilog.Events;

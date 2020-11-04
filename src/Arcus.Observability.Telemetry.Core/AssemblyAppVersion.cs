@@ -2,7 +2,7 @@
 using System.Reflection;
 using GuardNet;
 
-namespace Arcus.Observability.Telemetry.Serilog.Enrichers
+namespace Arcus.Observability.Telemetry.Core
 {
     /// <summary>
     /// Represents an <see cref="IAppVersion"/> implementation that uses the assembly version as application version.

@@ -1,7 +1,7 @@
-﻿namespace Arcus.Observability.Telemetry.Serilog.Enrichers
+﻿namespace Arcus.Observability.Telemetry.Core
 {
     /// <summary>
-    /// Represents a way to retrieve the version of an application during the enrichment in the <see cref="VersionEnricher"/>.
+    /// Represents a way to retrieve the version of an application during the enrichment.
     /// </summary>
     public interface IAppVersion
     {
