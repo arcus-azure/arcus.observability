@@ -103,13 +103,8 @@ namespace Microsoft.Extensions.Logging
             Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
             Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
 
-            context = context ?? new Dictionary<string, object>();
 
-            int statusCode = response.StatusCode;
-            PathString resourcePath = request.Path;
-            string host = $"{request.Scheme}://{request.Host}";
-
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            LogRequest(logger, request, response.StatusCode, duration, context);
         }
 
         /// <summary>
@@ -152,14 +147,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
             Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
             Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
-
-            context = context ?? new Dictionary<string, object>();
-
-            var statusCode = (int)response.StatusCode;
-            PathString resourcePath = request.RequestUri.AbsolutePath;
-            string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
-
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            
+            LogRequest(logger, request, response.StatusCode, duration, context);
         }
 
         /// <summary>
