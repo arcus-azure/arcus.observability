@@ -102,13 +102,31 @@ namespace Microsoft.Extensions.Logging
             Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
             Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
 
+            LogRequest(logger, request, response.StatusCode, duration, context);
+        }
+
+        /// <summary>
+        ///     Logs an HTTP request
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="request">Request that was done</param>
+        /// <param name="responseStatusCode">HTTP status code returned by the service</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
+        public static void LogRequest(this ILogger logger, HttpRequest request, int responseStatusCode, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNull(request, nameof(request));
+            Guard.For<ArgumentException>(() => request.Scheme != null && request.Scheme.Contains(" "), "HTTP request scheme cannot contain whitespace");
+            Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
+            Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
+
             context = context ?? new Dictionary<string, object>();
 
-            int statusCode = response.StatusCode;
             PathString resourcePath = request.Path;
             string host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -127,10 +145,29 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
             Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
             Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
+            
+            LogRequest(logger, request, response.StatusCode, duration, context);
+        }
+
+        /// <summary>
+        ///     Logs an HTTP request
+        /// </summary>
+        /// <param name="logger">Logger to use</param>
+        /// <param name="request">Request that was done</param>
+        /// <param name="responseStatusCode">HTTP status code returned by the service</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
+        public static void LogRequest(this ILogger logger, HttpRequestMessage request, HttpStatusCode responseStatusCode, TimeSpan duration, Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger));
+            Guard.NotNull(request, nameof(request));
+            Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
+            Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
+            Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
 
             context = context ?? new Dictionary<string, object>();
 
-            var statusCode = (int) response.StatusCode;
+            var statusCode = (int)responseStatusCode;
             PathString resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 

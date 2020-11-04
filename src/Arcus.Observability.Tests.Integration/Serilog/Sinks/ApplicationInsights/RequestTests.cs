@@ -20,7 +20,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogRequest_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        public async Task LogRequest_SinksToApplicationInsightsWithResponse_ResultsInRequestTelemetry()
         {
             // Arrange
             HttpMethod httpMethod = GenerateHttpMethod();
@@ -54,7 +54,39 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogRequestMessage_SinksToApplicationInsights_ResultsInRequestTelemetry()
+        public async Task LogRequest_SinksToApplicationInsightsWithResponseStatusCode_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.Url());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, (int)statusCode, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponse_ResultsInRequestTelemetry()
         {
             // Arrange
             var requestUri = new Uri(BogusGenerator.Internet.Url());
@@ -73,6 +105,38 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 // Act
                 logger.LogRequest(request, response, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.GetRequestEventsAsync(filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseStatusCode_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            var requestUri = new Uri(BogusGenerator.Internet.Url());
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                HttpMethod httpMethod = GenerateHttpMethod();
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+
+                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+                var duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, statusCode, duration, telemetryContext);
             }
 
             // Assert
