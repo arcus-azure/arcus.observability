@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
-using Microsoft.Azure.ApplicationInsights;
-using Microsoft.Azure.ApplicationInsights.Models;
+using Microsoft.Azure.ApplicationInsights.Query;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Polly;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +41,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsCustomEventResult> results = await client.GetCustomEventsAsync(filter: OnlyLastHourFilter);
+                    EventsResults<EventsCustomEventResult> results = await client.Events.GetCustomEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.Contains(results.Value, result => result.CustomEvent.Name == eventName);
                 });
             }
@@ -63,7 +66,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsTraceResult> results = await client.GetTraceEventsAsync(filter: OnlyLastHourFilter);
+                    EventsResults<EventsTraceResult> results = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
                 });
@@ -84,31 +87,59 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             }
 
             // Assert
-            // Hold on till we have agreed on assertion...
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsCustomEventResult> events = await client.Events.GetCustomEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.Contains(events.Value, ev =>
+                    {
+                        return ev.CustomEvent.Name == eventName
+                               && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
+                               && !String.IsNullOrWhiteSpace(actualVersion);
+                    });
+                });
+            }
         }
 
         [Fact]
-        public void LogEventWithCorrelationInfo_SinksToApplicationInsights_ResultsInTelemetryWithCorrelationInfo()
+        public async Task LogEventWithCorrelationInfo_SinksToApplicationInsights_ResultsInTelemetryWithCorrelationInfo()
         {
             // Arrange
+            var message = "Message 1/2 that will be correlated";
+            
             string operationId = $"operation-{Guid.NewGuid()}";
             string transactionId = $"transaction-{Guid.NewGuid()}";
+            
             DefaultCorrelationInfoAccessor.Instance.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId));
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo()))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 // Act
-                logger.LogInformation("Message 1/2 that will be correlated");
-                logger.LogInformation("Message 2/2 that will be correlated");
+                logger.LogInformation(message);
+            }
 
-                // Assert
-                // Hold on till we have agreed on assertion...
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.Contains(traceEvents.Value, trace =>
+                    {
+                        return message == trace.Trace.Message
+                               && trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId)
+                               && operationId == actualOperationId
+                               && trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId)
+                               && transactionId == actualTransactionId;
+                    });
+                });
             }
         }
 
         [Fact]
-        public void LogEventWithKubernetesInfo_SinksToApplicationInsights_ResultsInTelemetryWithKubernetesInfo()
+        public async Task LogEventWithKubernetesInfo_SinksToApplicationInsights_ResultsInTelemetryWithKubernetesInfo()
         {
             // Arrange
             const string kubernetesNodeName = "KUBERNETES_NODE_NAME",
@@ -118,6 +149,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string nodeName = $"node-{Guid.NewGuid()}";
             string podName = $"pod-{Guid.NewGuid()}";
             string @namespace = $"namespace-{Guid.NewGuid()}";
+            var message = "This message will have Kubernetes information";
 
             using (TemporaryEnvironmentVariable.Create(kubernetesNodeName, nodeName))
             using (TemporaryEnvironmentVariable.Create(kubernetesPodName, podName))
@@ -127,10 +159,26 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 // Act
-                logger.LogInformation("This message will have Kubernetes information");
-                
-                // Assert
-                // Hold on till we have agreed on assertion...
+                logger.LogInformation(message);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.Contains(traceEvents.Value, trace =>
+                    {
+                        return message == trace.Trace.Message
+                               && trace.CustomDimensions.TryGetValue(kubernetesNodeName, out string actualNodeName)
+                               && nodeName == actualNodeName
+                               && trace.CustomDimensions.TryGetValue(kubernetesPodName, out string actualPodName)
+                               && podName == actualPodName
+                               && trace.CustomDimensions.TryGetValue(kubernetesNamespace, out string actualNamespace)
+                               && @namespace == actualNamespace;
+                    });
+                });
             }
         }
     }

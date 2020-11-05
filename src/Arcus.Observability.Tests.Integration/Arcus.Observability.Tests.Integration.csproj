@@ -13,7 +13,7 @@
     <PackageReference Include="Arcus.Testing.Logging" Version="0.1.0" />
     <PackageReference Include="Bogus" Version="29.0.1" />
     <PackageReference Include="Guard.Net" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Azure.ApplicationInsights" Version="0.9.0-preview" />
+    <PackageReference Include="Microsoft.Azure.ApplicationInsights.Query" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="Polly" Version="7.2.0" />

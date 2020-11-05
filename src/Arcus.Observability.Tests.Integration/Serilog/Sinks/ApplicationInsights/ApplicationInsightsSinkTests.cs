@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Bogus;
 using Microsoft.Azure.ApplicationInsights;
+using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -31,7 +32,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             _outputWriter = outputWriter;
             _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+            
+            ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
         }
+
+        /// <summary>
+        /// Gets the ID of the application that has access to the Azure Application Insights resource.
+        /// </summary>
+        protected string ApplicationId { get; }
 
         protected ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
         {
@@ -75,10 +83,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         protected ApplicationInsightsDataClient CreateApplicationInsightsClient()
         {
             var clientCredentials = new ApiKeyClientCredentials(Configuration.GetValue<string>("ApplicationInsights:ApiKey"));
-            var client = new ApplicationInsightsDataClient(clientCredentials)
-            {
-                AppId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId")
-            };
+            var client = new ApplicationInsightsDataClient(clientCredentials);
 
             return client;
         }
