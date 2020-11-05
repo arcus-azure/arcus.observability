@@ -142,18 +142,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogEventWithKubernetesInfo_SinksToApplicationInsights_ResultsInTelemetryWithKubernetesInfo()
         {
             // Arrange
-            const string kubernetesNodeName = "KUBERNETES_NODE_NAME",
-                         kubernetesPodName = "KUBERNETES_POD_NAME",
-                         kubernetesNamespace = "KUBERNETES_NAMESPACE";
-
             string nodeName = $"node-{Guid.NewGuid()}";
             string podName = $"pod-{Guid.NewGuid()}";
             string @namespace = $"namespace-{Guid.NewGuid()}";
             var message = "This message will have Kubernetes information";
 
-            using (TemporaryEnvironmentVariable.Create(kubernetesNodeName, nodeName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesPodName, podName))
-            using (TemporaryEnvironmentVariable.Create(kubernetesNamespace, @namespace))
+            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NodeNameVariable, nodeName))
+            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.PodNameVariable, podName))
+            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NamespaceVariable, @namespace))
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithKubernetesInfo()))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -171,11 +167,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(traceEvents.Value, trace =>
                     {
                         return message == trace.Trace.Message
-                               && trace.CustomDimensions.TryGetValue(kubernetesNodeName, out string actualNodeName)
+                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.NodeName, out string actualNodeName)
                                && nodeName == actualNodeName
-                               && trace.CustomDimensions.TryGetValue(kubernetesPodName, out string actualPodName)
+                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.PodName, out string actualPodName)
                                && podName == actualPodName
-                               && trace.CustomDimensions.TryGetValue(kubernetesNamespace, out string actualNamespace)
+                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.Namespace, out string actualNamespace)
                                && @namespace == actualNamespace;
                     });
                 });
