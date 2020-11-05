@@ -1,4 +1,5 @@
 ﻿using System;
+using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using GuardNet;
 

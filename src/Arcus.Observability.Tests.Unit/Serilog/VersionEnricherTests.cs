@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using System.Reflection.Emit;
+using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
 using Arcus.Observability.Tests.Unit.Serilog;
 using Arcus.Observability.Tests.Unit.Telemetry;
-using Bogus;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Serilog;
