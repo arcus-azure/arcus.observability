@@ -11,9 +11,20 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// </summary>
     public class KubernetesEnricher : ILogEventEnricher
     {
-        private const string NodeNameVariable = "KUBERNETES_NODE_NAME",
-                             PodNameVariable = "KUBERNETES_POD_NAME",
-                             NamespaceVariable = "KUBERNETES_NAMESPACE";
+        /// <summary>
+        /// Gets the default Kubernetes node name environment variable name.
+        /// </summary>
+        public const string NodeNameVariable = "KUBERNETES_NODE_NAME";
+
+        /// <summary>
+        /// Gets the default Kubernetes pod name environment variable name.
+        /// </summary>
+        public const string PodNameVariable = "KUBERNETES_POD_NAME";
+
+        /// <summary>
+        /// Gets the default Kubernetes namespace environment variable name.
+        /// </summary>
+        public const string NamespaceVariable = "KUBERNETES_NAMESPACE";
 
         private readonly string _nodeNamePropertyName, _podNamePropertyName, _namespacePropertyName;
 
