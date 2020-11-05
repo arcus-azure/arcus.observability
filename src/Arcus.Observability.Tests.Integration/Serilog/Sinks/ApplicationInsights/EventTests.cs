@@ -106,8 +106,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogEventWithCorrelationInfo_SinksToApplicationInsights_ResultsInTelemetryWithCorrelationInfo()
         {
             // Arrange
-            var message = "Message 1/2 that will be correlated";
-            
+            string message = "Message that will be correlated";
             string operationId = $"operation-{Guid.NewGuid()}";
             string transactionId = $"transaction-{Guid.NewGuid()}";
             
