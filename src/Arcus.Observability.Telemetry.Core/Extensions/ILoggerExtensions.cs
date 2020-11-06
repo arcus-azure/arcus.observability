@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             string host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
-            logger.LogInformation(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, dependencyType, dependencyData, targetName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, dependencyType, dependencyData, targetName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure Search", operationName, searchServiceName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure Search", operationName, searchServiceName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -390,7 +390,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure blob", containerName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure blob", containerName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyFormat, "Azure Event Hubs", namespaceName, eventHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure Event Hubs", namespaceName, eventHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(DependencyWithoutDataFormat, "Azure IoT Hub", iotHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(DependencyWithoutDataFormat, "Azure IoT Hub", iotHubName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -605,7 +605,7 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
             string data = $"{database}/{container}";
 
-            logger.LogInformation(DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime, isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime, isSuccessful, context);
         }
 
         /// <summary>
@@ -630,7 +630,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
-            logger.LogInformation(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -678,7 +678,7 @@ namespace Microsoft.Extensions.Logging
 
             string dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogInformation(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+            logger.LogWarning(SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
@@ -694,7 +694,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(EventFormat, name, context);
+            logger.LogWarning(EventFormat, name, context);
         }
 
         /// <summary>
@@ -729,7 +729,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogInformation(MetricFormat, name, value, timestamp.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(MetricFormat, name, value, timestamp.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
