@@ -3,14 +3,14 @@ title: "Home"
 layout: default
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
+[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=1.0.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/1.0.0)
 
 # Installation
 
 The Arcus.Observability.Correlation can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlation
+PM > Install-Package Arcus.Observability.Correlation -Version 1.0.0
 ```
 
 For more granular packages we recommend reading the documentation.
