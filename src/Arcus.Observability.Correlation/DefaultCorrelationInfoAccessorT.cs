@@ -8,7 +8,7 @@ namespace Arcus.Observability.Correlation
     public class DefaultCorrelationInfoAccessor<TCorrelationInfo> : ICorrelationInfoAccessor<TCorrelationInfo> 
         where TCorrelationInfo : CorrelationInfo 
     {
-        private static readonly AsyncLocal<TCorrelationInfo> CorrelationInfoLocalData = new AsyncLocal<TCorrelationInfo>();
+        private TCorrelationInfo _correlationInfo;
 
         /// <summary>
         /// Prevents a new instance of the <see cref="DefaultCorrelationInfoAccessor"/> class from being created.
@@ -22,7 +22,7 @@ namespace Arcus.Observability.Correlation
         /// </summary>
         public TCorrelationInfo GetCorrelationInfo()
         {
-            return CorrelationInfoLocalData.Value;
+            return _correlationInfo;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Arcus.Observability.Correlation
         /// <param name="correlationInfo">The correlation model to set.</param>
         public void SetCorrelationInfo(TCorrelationInfo correlationInfo)
         {
-            CorrelationInfoLocalData.Value = correlationInfo;
+            Interlocked.Exchange(ref _correlationInfo, correlationInfo);
         }
 
         /// <summary>
