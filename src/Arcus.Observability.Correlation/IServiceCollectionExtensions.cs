@@ -8,6 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Extensions to set correlation access information on the <see cref="IServiceCollection"/>.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public static class IServiceCollectionExtensions
     {
         /// <summary>
