@@ -122,6 +122,7 @@ namespace Serilog
         /// <param name="transactionIdPropertyName">The name of the property to enrich the log event with the correlation transaction ID.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(WithCorrelationInfo) + " overload with providing your own default correlation accessor")]
         public static LoggerConfiguration WithCorrelationInfo(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
@@ -142,6 +143,7 @@ namespace Serilog
         /// <param name="transactionIdPropertyName">The name of the property to enrich the log event with the correlation transaction ID.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(WithCorrelationInfo) + " overload with providing your own default correlation accessor")]
         public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
