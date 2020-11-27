@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Arcus.Observability.Correlation
 {
@@ -8,12 +9,12 @@ namespace Arcus.Observability.Correlation
     public class DefaultCorrelationInfoAccessor<TCorrelationInfo> : ICorrelationInfoAccessor<TCorrelationInfo> 
         where TCorrelationInfo : CorrelationInfo 
     {
-        private static readonly AsyncLocal<TCorrelationInfo> CorrelationInfoLocalData = new AsyncLocal<TCorrelationInfo>();
+        private TCorrelationInfo _correlationInfo;
 
         /// <summary>
         /// Prevents a new instance of the <see cref="DefaultCorrelationInfoAccessor"/> class from being created.
         /// </summary>
-        private protected DefaultCorrelationInfoAccessor()
+        public DefaultCorrelationInfoAccessor()
         {
         }
 
@@ -22,7 +23,7 @@ namespace Arcus.Observability.Correlation
         /// </summary>
         public TCorrelationInfo GetCorrelationInfo()
         {
-            return CorrelationInfoLocalData.Value;
+            return _correlationInfo;
         }
 
         /// <summary>
@@ -31,12 +32,13 @@ namespace Arcus.Observability.Correlation
         /// <param name="correlationInfo">The correlation model to set.</param>
         public void SetCorrelationInfo(TCorrelationInfo correlationInfo)
         {
-            CorrelationInfoLocalData.Value = correlationInfo;
+            Interlocked.Exchange(ref _correlationInfo, correlationInfo);
         }
 
         /// <summary>
         /// Gets the default instance for the <see cref="DefaultCorrelationInfoAccessor{TCorrelation}"/> class.
         /// </summary>
+        [Obsolete("Create a new instance instead of using this static value")]
         public static DefaultCorrelationInfoAccessor<TCorrelationInfo> Instance { get; } = new DefaultCorrelationInfoAccessor<TCorrelationInfo>();
     }
 }

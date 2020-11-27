@@ -86,8 +86,9 @@ Value: `0477E377-414D-47CD-8756-BCBE3DBE3ACB`
 **Usage**
 
 ```csharp
+IServiceProvider serviceProvider = ...
 ILogger logger = new LoggerConfiguration()
-    .Enrich.WithCorrelationInfo()
+    .Enrich.WithCorrelationInfo(serviceProvider)
     .CreateLogger();
 
 logger.Information("This event will be enriched with the correlation information");
@@ -112,8 +113,10 @@ The correlation information enricher allows you to specify the names of the log 
 This is available on all extension overloads. By default the operation ID is set to `OperationId` and the transaction ID to `TransactionId`.
 
 ```csharp
+IServiceProvider serviceProvider = ...
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithCorrelationInfo(
+        serviceProvider,
         operationIdPropertyName: "MyOperationId",
         transactionIdPropertyName: "MyTransactionId")
     .CreateLogger();
