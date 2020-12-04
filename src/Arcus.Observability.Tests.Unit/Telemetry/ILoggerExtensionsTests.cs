@@ -199,6 +199,124 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogAzureKeyVaultDependency_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string vaultUri = $"https://{_bogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, operationName, isSuccessful, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(vaultUri, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependencyDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string vaultUri = $"https://{_bogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DependencyMeasurement measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, operationName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(vaultUri, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(startTime.ToString(CultureInfo.InvariantCulture), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependency_WithoutVaultUri_Fails(string vaultUri)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency(vaultUri, "get secret", isSuccessful: true, DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5)));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependency_WithoutOperationName_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", operationName, isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(value: 5)));
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependency_WithoutMatchingVaultUri_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "get secret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(5)));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithoutVaultUri_Fails(string vaultUri)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency(vaultUri, "get secret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependency_WithoutOperationNameDependencyMeasurement_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", operationName, isSuccessful: true, measurement: DependencyMeasurement.Start()));
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithoutMatchingVaultUri_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "get secret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
+        }
+
+        [Fact]
         public void LogAzureSearchDependency_ValidArguments_Succeeds()
         {
             // Arrange

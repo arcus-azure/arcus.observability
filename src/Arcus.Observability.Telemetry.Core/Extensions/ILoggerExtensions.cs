@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
@@ -84,6 +85,10 @@ namespace Microsoft.Extensions.Logging
             + ContextProperties.MetricTracking.MetricValue + "} at {"
             + ContextProperties.MetricTracking.Timestamp
             + "} (Context: {@" + ContextProperties.TelemetryContext + "})";
+
+        private const string KeyVaultUriPattern = "^https:\\/\\/[0-9a-zA-Z\\-]{3,24}\\.vault.azure.net(\\/)?$";
+
+        private static readonly Regex KeyVaultUriRegex = new Regex(KeyVaultUriPattern, RegexOptions.Compiled);
 
         /// <summary>
         ///     Logs an HTTP request
@@ -250,6 +255,69 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
 
             logger.LogWarning(DependencyFormat, dependencyType, dependencyData, targetName, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Key Vault dependency.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
+        /// <param name="operationName">The kind of operation which gets to be executed on the Azure Key Vault.</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="operationName"/> is blank.</exception>
+        public static void LogAzureKeyVaultDependency(
+            this ILogger logger,
+            string vaultUri,
+            string operationName,
+            bool isSuccessful,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
+            Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name of the operation executed on Azure Key Vault");
+            Guard.For<UriFormatException>(
+                () => !KeyVaultUriRegex.IsMatch(vaultUri),
+                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+
+            context = context ?? new Dictionary<string, object>();
+            LogAzureKeyVaultDependency(logger, vaultUri, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Key Vault dependency.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
+        /// <param name="operationName">The kind of operation which gets to be executed on the Azure Key Vault.</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="operationName"/> is blank.</exception>
+        public static void LogAzureKeyVaultDependency(
+            this ILogger logger,
+            string vaultUri,
+            string operationName,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
+            Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name of the operation executed on Azure Key Vault");
+            Guard.For<UriFormatException>(
+                () => !KeyVaultUriRegex.IsMatch(vaultUri),
+                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogWarning(DependencyFormat, "Azure key vault", operationName, vaultUri, duration, startTime.ToString(CultureInfo.InvariantCulture), isSuccessful, context);
         }
 
         /// <summary>
