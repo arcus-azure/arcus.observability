@@ -279,7 +279,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
 
             // Act / Assert
-            Assert.ThrowsAny<FormatException>(
+            Assert.Throws<FormatException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(value: 5)));
         }
 
@@ -290,7 +290,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
 
             // Act / Assert
-            Assert.ThrowsAny<UriFormatException>(
+            Assert.Throws<UriFormatException>(
                 () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(5)));
         }
 
@@ -326,7 +326,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
 
             // Act / Assert
-            Assert.ThrowsAny<FormatException>(
+            Assert.Throws<FormatException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DependencyMeasurement.Start()));
         }
 
@@ -337,7 +337,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
 
             // Act / Assert
-            Assert.ThrowsAny<UriFormatException>(
+            Assert.Throws<UriFormatException>(
                 () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
         }
 
