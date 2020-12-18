@@ -10,16 +10,6 @@ namespace Microsoft.Extensions.Logging
 {
     public static class ILoggerExtensions
     {
-        private const string RequestFormat =
-            MessagePrefixes.RequestViaHttp + " {"
-            + ContextProperties.RequestTracking.RequestMethod + "} {"
-            + ContextProperties.RequestTracking.RequestHost + "}/{" 
-            + ContextProperties.RequestTracking.RequestUri + "} completed with {"
-            + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
-            + ContextProperties.RequestTracking.RequestDuration + "} at {"
-            + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
         // <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -61,7 +51,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
     }
 }

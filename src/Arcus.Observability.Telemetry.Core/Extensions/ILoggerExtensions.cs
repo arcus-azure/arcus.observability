@@ -11,16 +11,6 @@ namespace Microsoft.Extensions.Logging
 {
     public static class ILoggerExtensions
     {
-        private const string RequestFormat =
-            MessagePrefixes.RequestViaHttp + " {"
-            + ContextProperties.RequestTracking.RequestMethod + "} {"
-            + ContextProperties.RequestTracking.RequestHost + "}/{" 
-            + ContextProperties.RequestTracking.RequestUri + "} completed with {"
-            + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
-            + ContextProperties.RequestTracking.RequestDuration + "} at {"
-            + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
         private const string DependencyFormat =
             MessagePrefixes.Dependency + " {"
             + ContextProperties.DependencyTracking.DependencyType + "} {"
@@ -126,7 +116,7 @@ namespace Microsoft.Extensions.Logging
             string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
-            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
