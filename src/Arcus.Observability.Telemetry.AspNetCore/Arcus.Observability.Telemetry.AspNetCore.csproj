@@ -2,25 +2,36 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.Core</PackageId>
+    <PackageId>Arcus.Observability.Telemetry.AspNetCore</PackageId>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
-    <Description>Provides capability to improve telemetry with Serilog in applications</Description>
+    <Description>Provides capability to improve ASP.NET Core telemetry with Serilog in applications</Description>
     <Copyright>Copyright (c) Arcus</Copyright>
     <PackageLicenseUrl>https://github.com/arcus-azure/arcus.observability/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/arcus-azure/arcus.observability</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/arcus-azure/arcus/master/media/arcus.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Azure;Observability;Telemetry;Serilog</PackageTags>
+    <PackageTags>Azure;Observability;Telemetry;Serilog;ASP.NET;Core</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Arcus.Observability.Telemetry.Core</AssemblyName>
-    <RootNamespace>Arcus.Observability.Telemetry.Core</RootNamespace>
+    <AssemblyName>Arcus.Observability.Telemetry.AspNetCore</AssemblyName>
+    <RootNamespace>Arcus.Observability.Telemetry.AspNetCore</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+    <ProjectReference Include="../Arcus.Observability.Telemetry.Core/Arcus.Observability.Telemetry.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Guard.Net" Version="1.2.0" />
   </ItemGroup>
 
