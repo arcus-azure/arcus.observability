@@ -23,7 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             string vaultUri = $"https://{BogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
-            string operationName = "get secret";
+            string secretName = "MySecret";
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogAzureKeyVaultDependency(vaultUri, operationName, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -49,7 +49,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == "Azure key vault"
                                && result.Dependency.Target == vaultUri
-                               && result.Dependency.Data == operationName;
+                               && result.Dependency.Data == secretName;
                     });
                 });
             }
