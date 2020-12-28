@@ -5,75 +5,17 @@ using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
+using static Arcus.Observability.Telemetry.Core.MessageFormats;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
     public static class ILoggerExtensions
     {
-        private const string DependencyFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} {"
-            + ContextProperties.DependencyTracking.DependencyData + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string DependencyWithoutDataFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string ServiceBusDependencyFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} {"
-            + ContextProperties.DependencyTracking.ServiceBus.EntityType + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string HttpDependencyFormat =
-            MessagePrefixes.DependencyViaHttp + " {"
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
-            + ContextProperties.DependencyTracking.ResultCode + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string SqlDependencyFormat =
-            MessagePrefixes.DependencyViaSql + " {" 
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName
-            + "} for operation {" + ContextProperties.DependencyTracking.DependencyData
-            + "} in {" + ContextProperties.DependencyTracking.Duration
-            + "} at {" + ContextProperties.DependencyTracking.StartTime
-            + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
-            + "} - Context: {@" + ContextProperties.TelemetryContext + "})";
-
-        private const string EventFormat = 
-            MessagePrefixes.Event + " {" 
-            + ContextProperties.EventTracking.EventName
-#pragma warning disable 618 // Use 'ContextProperties.TelemetryContext' once we remove 'EventDescription'.
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
-#pragma warning restore 618
-
-        private const string MetricFormat =
-            MessagePrefixes.Metric + " {" 
-            + ContextProperties.MetricTracking.MetricName + "}: {" 
-            + ContextProperties.MetricTracking.MetricValue + "} at {"
-            + ContextProperties.MetricTracking.Timestamp
-            + "} (Context: {@" + ContextProperties.TelemetryContext + "})";
-
         /// <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -109,14 +51,14 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
             Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
             Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
-
+            
             context = context ?? new Dictionary<string, object>();
 
             var statusCode = (int)responseStatusCode;
             string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
         }
 
         /// <summary>
@@ -639,7 +581,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(EventFormat, name, context);
+            logger.LogWarning(OldEventFormat, name, context);
         }
 
         /// <summary>
