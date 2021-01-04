@@ -160,7 +160,7 @@ var durationMeasurement = new StopWatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-logger.AzureKeyVaultDependency(vaultUri: "https://my-secret-store.vault.azure.net", operationName: "get secret", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.AzureKeyVaultDependency(vaultUri: "https://my-secret-store.vault.azure.net", secretName: "ServiceBus-ConnectionString", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure key vault get secret named https://my-secret-store.vault.azure.net in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
