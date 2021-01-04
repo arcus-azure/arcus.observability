@@ -38,6 +38,7 @@ We provide support for the following dependencies:
 - [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)
 - [Azure Event Hubs](#measuring-azure-event-hubs-dependencies)
 - [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
+- [Azure Key Vault](#measuring-azure-key-vault-dependencies)
 - [Azure Search](#measuring-azure-search-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Azure Table Storage](#measuring-azure-table-storage-dependencies)
@@ -60,7 +61,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "images", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "images", isSuccessful: true, startTime, durationMeasurement.Elapsed);
 // Output: "Dependency Azure blob multimedia named images in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -79,7 +80,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogCosmosSqlDependency(accountName: "administration", database: "docs", container: "purchases", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogCosmosSqlDependency(accountName: "administration", database: "docs", container: "purchases", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure DocumentDB docs/purchases named administration in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -96,7 +97,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName: "temperature", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName: "temperature", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure Event Hubs be.sensors.contoso named temerature in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -115,7 +116,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -140,8 +141,27 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
+
+### Measuring Azure Key Vault dependencies
+
+We allow you to measure Azure Key vault dependencies.
+
+**Example**
+
+Here is how you can report a dependency call:
+
+```csharp
+var durationMeasurement = new StopWatch();
+
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+logger.AzureKeyVaultDependency(vaultUri: "https://my-secret-store.vault.azure.net", secretName: "ServiceBus-ConnectionString", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: "Dependency Azure key vault get secret named https://my-secret-store.vault.azure.net in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring Azure Search dependencies
@@ -157,7 +177,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogAzureSearchDependency(searchServiceName: "orders-search", operationName: "get-orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogAzureSearchDependency(searchServiceName: "orders-search", operationName: "get-orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure Search get-orders named orders-search in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 
 ### Measuring Azure Service Bus dependencies
@@ -173,7 +193,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure Service Bus Queue named ordersqueue in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -192,7 +212,7 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-_logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure table orders named orderAccount in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -215,7 +235,7 @@ var startTime = DateTimeOffset.UtcNow;
 // Send request to dependant service
 var response = await httpClient.SendAsync(request);
 
-_logger.LogHttpDependency(request, statusCode: response.StatusCode, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogHttpDependency(request, statusCode: response.StatusCode, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "HTTP Dependency requestbin.net for POST /r/ujxglouj completed with 200 in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
@@ -233,7 +253,7 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-_logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
@@ -260,7 +280,7 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-_logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
+logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
 // Output: "SQL Dependency sample-server for sample-database/my-table for operation get-products in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
@@ -278,7 +298,7 @@ durationMeasurement.Start();
 string dependencyName = "SendGrid";
 object dependencyData = "http://my.sendgrid.uri/"
 
-_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency SendGrid http://my.sendgrid.uri/ in 00:00:01.2396312 at 03/23/2020 09:32:02 +00:00 (Successful: True - Context: )"
 ```
 
@@ -298,7 +318,7 @@ durationMeasurement.Start();
 /// Track dependency
 string dependencyName = "SendGrid";
 object dependencyData = "https://my.sendgrid.uri/";
-_logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
+logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 ```
 
 However, by using `DependencyMeasurement.Start()` we take care of the measuring aspect:
@@ -312,7 +332,7 @@ using (var measurement = DependencyMeasurement.Start())
     // Track dependency
     string dependencyName = "SendGrid";
     object dependencyData = "https://my.sendgrid.uri/";
-    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 ```
 
@@ -327,12 +347,12 @@ try
     // Interact with SendGrid...
     // Done!
 
-    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
 }
 catch (Exception exception)
 {
-    _logger.LogError(exception, "Failed to interact with SendGrid");
-    _logger.LogDependency(dependencyName, dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
+    logger.LogError(exception, "Failed to interact with SendGrid");
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
 }
 ```
 
