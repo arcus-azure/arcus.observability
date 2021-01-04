@@ -103,7 +103,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string dependencyType = _bogusGenerator.Name.FullName();
-            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -127,7 +127,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string dependencyType = _bogusGenerator.Lorem.Word();
-            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -153,7 +153,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string dependencyType = _bogusGenerator.Name.FullName();
-            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             string targetName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
@@ -178,7 +178,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             string dependencyType = _bogusGenerator.Lorem.Word();
-            string dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             string targetName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
@@ -205,7 +205,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string vaultUri = $"https://{_bogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
+            var vaultUri = "https://myvault.vault.azure.net";
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -228,7 +228,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string vaultUri = $"https://{_bogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
+            var vaultUri = "https://myvault.vault.azure.net";
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             DependencyMeasurement measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -775,7 +775,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string iotHubName = _bogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
             string deviceId = _bogusGenerator.Internet.Ip();
             string sharedAccessKey = _bogusGenerator.Random.Hash();
-            string iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
+            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
@@ -801,7 +801,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string iotHubName = _bogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
             string deviceId = _bogusGenerator.Internet.Ip();
             string sharedAccessKey = _bogusGenerator.Random.Hash();
-            string iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
+            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DependencyMeasurement.Start();
@@ -916,7 +916,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
             string serverName = _bogusGenerator.Name.FullName();
             string databaseName = _bogusGenerator.Name.FullName();
-            string connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
             string tableName = _bogusGenerator.Name.FullName();
             string operationName = _bogusGenerator.Name.FullName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
@@ -946,7 +946,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var logger = new TestLogger();
             string serverName = _bogusGenerator.Name.FullName();
             string databaseName = _bogusGenerator.Name.FullName();
-            string connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
             string tableName = _bogusGenerator.Name.FullName();
             string operationName = _bogusGenerator.Name.FullName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
@@ -1081,8 +1081,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
-            HttpStatusCode statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             var duration = _bogusGenerator.Date.Timespan();
 
@@ -1135,7 +1135,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             HttpRequestMessage request = null;
-            HttpStatusCode statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             var duration = _bogusGenerator.Date.Timespan();
 
