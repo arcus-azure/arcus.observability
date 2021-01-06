@@ -19,10 +19,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogAzureKeyVaultDependency_SinksToApplicationInsights_ResutsInAzureKeyVaultDependencyTelemetry()
+        public async Task LogAzureKeyVaultDependency_SinksToApplicationInsights_ResultsInAzureKeyVaultDependencyTelemetry()
         {
             // Arrange
-            string vaultUri = $"https://{BogusGenerator.Commerce.ProductName().Replace(" ", "")}.vault.azure.net";
+            string vaultUri = "https://myvault.vault.azure.net";
             string secretName = "MySecret";
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())

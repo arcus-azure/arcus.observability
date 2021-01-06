@@ -6,135 +6,22 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
-using Microsoft.AspNetCore.Http;
+using static Arcus.Observability.Telemetry.Core.MessageFormats;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
     public static class ILoggerExtensions
     {
-        private const string RequestFormat =
-            MessagePrefixes.RequestViaHttp + " {"
-            + ContextProperties.RequestTracking.RequestMethod + "} {"
-            + ContextProperties.RequestTracking.RequestHost + "}/{" 
-            + ContextProperties.RequestTracking.RequestUri + "} completed with {"
-            + ContextProperties.RequestTracking.ResponseStatusCode + "} in {"
-            + ContextProperties.RequestTracking.RequestDuration + "} at {"
-            + ContextProperties.RequestTracking.RequestTime + "} - (Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string DependencyFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} {"
-            + ContextProperties.DependencyTracking.DependencyData + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string DependencyWithoutDataFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string ServiceBusDependencyFormat =
-            MessagePrefixes.Dependency + " {"
-            + ContextProperties.DependencyTracking.DependencyType + "} {"
-            + ContextProperties.DependencyTracking.ServiceBus.EntityType + "} named {"
-            + ContextProperties.DependencyTracking.TargetName + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string HttpDependencyFormat =
-            MessagePrefixes.DependencyViaHttp + " {"
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName + "} completed with {"
-            + ContextProperties.DependencyTracking.ResultCode + "} in {"
-            + ContextProperties.DependencyTracking.Duration + "} at {"
-            + ContextProperties.DependencyTracking.StartTime + "} (Successful: {"
-            + ContextProperties.DependencyTracking.IsSuccessful + "} - Context: {@"
-            + ContextProperties.TelemetryContext + "})";
-
-        private const string SqlDependencyFormat =
-            MessagePrefixes.DependencyViaSql + " {" 
-            + ContextProperties.DependencyTracking.TargetName + "} for {"
-            + ContextProperties.DependencyTracking.DependencyName
-            + "} for operation {" + ContextProperties.DependencyTracking.DependencyData
-            + "} in {" + ContextProperties.DependencyTracking.Duration
-            + "} at {" + ContextProperties.DependencyTracking.StartTime
-            + "} (Successful: {" + ContextProperties.DependencyTracking.IsSuccessful
-            + "} - Context: {@" + ContextProperties.TelemetryContext + "})";
-
-        private const string EventFormat = 
-            MessagePrefixes.Event + " {" 
-            + ContextProperties.EventTracking.EventName
-#pragma warning disable 618 // Use 'ContextProperties.TelemetryContext' once we remove 'EventDescription'.
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
-#pragma warning restore 618
-
-        private const string MetricFormat =
-            MessagePrefixes.Metric + " {" 
-            + ContextProperties.MetricTracking.MetricName + "}: {" 
-            + ContextProperties.MetricTracking.MetricValue + "} at {"
-            + ContextProperties.MetricTracking.Timestamp
-            + "} (Context: {@" + ContextProperties.TelemetryContext + "})";
-
         private const string KeyVaultUriPattern = "^https:\\/\\/[0-9a-zA-Z\\-]{3,24}\\.vault.azure.net(\\/)?$",
                              SecretNamePattern = "^[a-zA-Z][a-zA-Z0-9\\-]{0,126}$";
         
         private static readonly Regex KeyVaultUriRegex = new Regex(KeyVaultUriPattern, RegexOptions.Compiled),
                                       SecretNameRegex = new Regex(SecretNamePattern, RegexOptions.Compiled);
-
-        /// <summary>
-        ///     Logs an HTTP request
-        /// </summary>
-        /// <param name="logger">Logger to use</param>
-        /// <param name="request">Request that was done</param>
-        /// <param name="response">Response that will be sent out</param>
-        /// <param name="duration">Duration of the operation</param>
-        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
-        public static void LogRequest(this ILogger logger, HttpRequest request, HttpResponse response, TimeSpan duration, Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger));
-            Guard.NotNull(request, nameof(request));
-            Guard.NotNull(response, nameof(response));
-            Guard.For<ArgumentException>(() => request.Scheme != null && request.Scheme.Contains(" "), "HTTP request scheme cannot contain whitespace");
-            Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
-            Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
-
-            LogRequest(logger, request, response.StatusCode, duration, context);
-        }
-
-        /// <summary>
-        ///     Logs an HTTP request
-        /// </summary>
-        /// <param name="logger">Logger to use</param>
-        /// <param name="request">Request that was done</param>
-        /// <param name="responseStatusCode">HTTP status code returned by the service</param>
-        /// <param name="duration">Duration of the operation</param>
-        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
-        public static void LogRequest(this ILogger logger, HttpRequest request, int responseStatusCode, TimeSpan duration, Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger));
-            Guard.NotNull(request, nameof(request));
-            Guard.For<ArgumentException>(() => request.Scheme != null && request.Scheme.Contains(" "), "HTTP request scheme cannot contain whitespace");
-            Guard.For<ArgumentException>(() => !request.Host.HasValue, "HTTP request host requires a value");
-            Guard.For<ArgumentException>(() => request.Host.ToString()?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
-
-            context = context ?? new Dictionary<string, object>();
-
-            PathString resourcePath = request.Path;
-            string host = $"{request.Scheme}://{request.Host}";
-
-            logger.LogWarning(RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
-        }
 
         /// <summary>
         ///     Logs an HTTP request
@@ -171,11 +58,11 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request.RequestUri, nameof(request.RequestUri));
             Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "HTTP request scheme cannot contain whitespace");
             Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "HTTP request host name cannot contain whitespace");
-
+            
             context = context ?? new Dictionary<string, object>();
 
             var statusCode = (int)responseStatusCode;
-            PathString resourcePath = request.RequestUri.AbsolutePath;
+            string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
             logger.LogWarning(RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
@@ -774,7 +661,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(EventFormat, name, context);
+            logger.LogWarning(OldEventFormat, name, context);
         }
 
         /// <summary>

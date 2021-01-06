@@ -393,6 +393,16 @@ logger.LogMetric("Invoice Received", 133.37, telemetryContext);
 
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
 
+**Installation**
+
+If you want to track the `HttpRequest` and `HttpResponse` of an ASP.NET Core project, you'll have to install an additional package to include these ASP.NET Core dependencies:
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.AspNetCore
+```
+
+**Example**
+
 Here is how you can keep track of requests:
 
 ```csharp
