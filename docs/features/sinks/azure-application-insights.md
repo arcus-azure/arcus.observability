@@ -59,7 +59,9 @@ ILogger logger = loggerConfig.CreateLogger();
 
 ### Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?
 
-The Application Insights instrumentation key is typically available via the configuration or via an `ISecreteProvider`.  It's best if the Logger is created and assigned to the Serilog `Log.Logger` as soon as possible.  The easiest place to do that in an ASP.NET application  is in the `ConfigureServices` method of the `Program` class.
+The Azure Application Insights instrumentation key is typically available via the configuration or `ISecreteProvider`.  It's best if the logger is created and assigned to the Serilog `Log.Logger` as soon as possible.
+
+The easiest place to do that in an ASP.NET application is in the `ConfigureServices` method of the `Program` class.
 
 Another place where the logger can be initialized is in the `ConfigureAppConfiguration` method of the `IHostBuilder`:
 
