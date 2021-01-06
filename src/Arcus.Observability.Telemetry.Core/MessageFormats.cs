@@ -75,17 +75,6 @@ namespace Arcus.Observability.Telemetry.Core
         /// <summary>
         /// Gets the message format to log events; compatible with Application Insights 'Events'.
         /// </summary>
-        [Obsolete("Use the " + nameof(EventFormat) + " instead")]
-        public const string OldEventFormat = 
-            MessagePrefixes.Event + " {" 
-            + ContextProperties.EventTracking.EventName
-#pragma warning disable 618 // Use 'ContextProperties.TelemetryContext' once we remove 'EventDescription'.
-            + "} (Context: {@" + ContextProperties.EventTracking.EventContext + "})";
-#pragma warning restore 618
-
-        /// <summary>
-        /// Gets the message format to log events; compatible with Application Insights 'Events'.
-        /// </summary>
         public const string EventFormat = 
             MessagePrefixes.Event + " {" 
             + ContextProperties.EventTracking.EventName

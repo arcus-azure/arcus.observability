@@ -653,7 +653,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="logger">Logger to use</param>
         /// <param name="name">Name of the event</param>
-        /// <param name="context">Context that provides more insights on the event that occured</param>
+        /// <param name="context">Context that provides more insights on the event that occurred</param>
         public static void LogEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
@@ -661,7 +661,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(OldEventFormat, name, context);
+            logger.LogWarning(EventFormat, name, context);
         }
 
         /// <summary>
@@ -670,7 +670,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">Logger to use</param>
         /// <param name="name">Name of the metric</param>
         /// <param name="value">Value of the metric</param>
-        /// <param name="context">Context that provides more insights on the event that occured</param>
+        /// <param name="context">Context that provides more insights on the event that occurred</param>
         public static void LogMetric(this ILogger logger, string name, double value, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
@@ -688,7 +688,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="name">Name of the metric</param>
         /// <param name="value">Value of the metric</param>
         /// <param name="timestamp">Timestamp of the metric</param>
-        /// <param name="context">Context that provides more insights on the event that occured</param>
+        /// <param name="context">Context that provides more insights on the event that occurred</param>
         public static void LogMetric(this ILogger logger, string name, double value, DateTimeOffset timestamp, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
@@ -704,7 +704,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="name">The user message written.</param>
-        /// <param name="context">The context that provides more insights on the event that occured.</param>
+        /// <param name="context">The context that provides more insights on the event that occurred.</param>
         public static void LogSecurityEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger));
