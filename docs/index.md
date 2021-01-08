@@ -1,7 +1,6 @@
 ---
 title: "Home"
 layout: default
-layout: default
 redirect_from:
  - /index.html
 ---
