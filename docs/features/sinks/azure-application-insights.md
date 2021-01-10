@@ -59,65 +59,26 @@ ILogger logger = loggerConfig.CreateLogger();
 
 ### Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?
 
-The Azure Application Insights instrumentation key is typically available via the configuration or `ISecreteProvider`.  It's best if the logger is created and assigned to the Serilog `Log.Logger` as soon as possible.
-
-The easiest place to do that in an ASP.NET application is in the `ConfigureServices` method of the `Program` class.
-
-Another place where the logger can be initialized is in the `ConfigureAppConfiguration` method of the `IHostBuilder`:
+Simply use the `UseSerilog` extension method on `IHostBuilder` which accepts an `Action<HostBuilderContext, IServiceProvider, LoggerConfiguration>`.  This Action gives you access to the configuration and the configured services:
 
 ```csharp
 var host = Host.CreateDefaultBuilder()
                .ConfigureAppConfiguration((context, configBuilder) =>
                {
-                   var config = configBuilder.Build();
-
-                   var instrumentationKey = config["ApplicationInsights:InstrumentationKey"];
-
-                   var logConfiguration = new LoggerConfiguration()
-                                           .Enrich.FromLogContext()
-                                           .WriteTo.Console();
-
-                    var appInsightsInstrumentationKey = builtConfig["ApplicationInsights:InstrumentationKey"];
-
-                    if (!String.IsNullOrWhiteSpace(appInsightsInstrumentationKey))
-                    {
-                        logConfiguration.WriteTo.AzureApplicationInsights(appInsightsInstrumentationKey);
-                    }
-
-                    Log.Logger = logConfiguration.CreateLogger();
+                   // App specific configuration
                })
-               .UseSerilog()
-               .Build();
-```
-
-Or, if the Application Insights' instrumentation key is stored in a secretstore and you're making use of Arcus.Security:
-
-```csharp
-var host = Host.CreateDefaultBuilder()
-               .ConfigureSecretStore((context, config, builder) =>
+               .UseSerilog((context, serviceProvider, loggerConfig) =>
                {
-                   // Configure the secretstore here
-               })
-               .ConfigureServices((context, services) =>
-               {
-                   var serviceProvider = services.BuildServiceProvider();
+                    loggerConf.Enrich.FromLogContext()
+                              .WriteTo.Console();
 
-                   var secretProvider = services.GetService<ISecretProvider>();
+                    string instrumentationKey = context.Configuration["ApplicationInsights:InstrumentationKey"];
 
-                   var instrumentationKey = secretProvider.GetRawSecretAsync("ApplicationInsights:InstrumentationKey").GetAwaiter().GetResult();
-
-                   var logConfiguration = new LoggerConfiguration()
-                                           .Enrich.FromLogContext()
-                                           .WriteTo.Console();
-
-                    if (!String.IsNullOrWhiteSpace(appInsightsInstrumentationKey))
+                    if (!String.IsNullOrWhiteSpace(instrumentationKey))
                     {
-                        logConfiguration.WriteTo.AzureApplicationInsights(appInsightsInstrumentationKey);
+                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
                     }
-
-                    Log.Logger = logConfiguration.CreateLogger();
                })
-               .UseSerilog()
                .Build();
 ```
 
