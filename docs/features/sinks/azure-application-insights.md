@@ -62,6 +62,10 @@ ILogger logger = loggerConfig.CreateLogger();
 Simply use the `UseSerilog` extension method on `IHostBuilder` which accepts an `Action<HostBuilderContext, IServiceProvider, LoggerConfiguration>`.  This Action gives you access to the configuration and the configured services:
 
 ```csharp
+using Serilog.Configuration;
+
+...
+
 var host = Host.CreateDefaultBuilder()
                .ConfigureAppConfiguration((context, configBuilder) =>
                {
@@ -73,6 +77,36 @@ var host = Host.CreateDefaultBuilder()
                               .WriteTo.Console();
 
                     string instrumentationKey = context.Configuration["ApplicationInsights:InstrumentationKey"];
+
+                    if (!String.IsNullOrWhiteSpace(instrumentationKey))
+                    {
+                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
+                    }
+               })
+               .Build();
+```
+
+If the InstrumentationKey is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus.Security](https://github.com/arcus-azure/arcus.security) can be used to retrieve the InstrumentationKey.
+
+```csharp
+using Serilog.Configuration;
+using Arcus.Security.Core;
+
+...
+
+var host = Host.CreateDefaultBuilder()
+               .ConfigureSecretStore((context, config, builder) =>
+               {
+                   // Configure the secretstore here
+               })
+               .UseSerilog((context, serviceProvider, loggerConfig) =>
+               {
+                    loggerConf.Enrich.FromLogContext()
+                              .WriteTo.Console();
+
+                    var secretProvider = serviceProvider.GetService<ISecretProvider>();
+
+                    var instrumentationKey = secretProvider.GetRawSecretAsync("ApplicationInsights:InstrumentationKey").GetAwaiter().GetResult();
 
                     if (!String.IsNullOrWhiteSpace(instrumentationKey))
                     {
