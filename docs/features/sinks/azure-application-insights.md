@@ -86,7 +86,7 @@ var host = Host.CreateDefaultBuilder()
                .Build();
 ```
 
-If the InstrumentationKey is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus.Security](https://github.com/arcus-azure/arcus.security) can be used to retrieve the InstrumentationKey.
+If the InstrumentationKey is stored as a secret in -for instance- Azure Key Vault, the `ISecretProvider` from [Arcus Security](https://github.com/arcus-azure/arcus.security) can be used to retrieve the instrumentationKey.
 
 ```csharp
 using Serilog.Configuration;
