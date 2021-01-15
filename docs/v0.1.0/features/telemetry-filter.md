@@ -18,6 +18,11 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Filters -Version 0.1.
 This [Serilog filter](https://github.com/serilog/serilog/wiki/Enrichment) allows you to filter out different a specific type of telemetry.
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Filters;
+using Serilog.Core;
+using Serilog.Configuration;
+
 ILogger logger = new LoggerConfiguration()
     .WriteTo.AzureApplicationInsights("<key>")
     .Filter.With(TelemetryTypeFilter.On(TelemetryType.Events))

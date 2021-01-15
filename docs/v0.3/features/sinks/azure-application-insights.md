@@ -20,6 +20,9 @@ The Azure Application Insights sink is an extension of the [official Application
 You can easily configure the sink by providing the Azure Application Insights key:
 
 ```csharp
+using Serilog;
+using Serilog.Configuration;
+
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.AzureApplicationInsights("<key>")
@@ -29,6 +32,9 @@ ILogger logger = new LoggerConfiguration()
 Alternatively, you can override the default minimum log level to reduce amount of telemetry being tracked :
 
 ```csharp
+using Serilog;
+using Serilog.Configuration;
+
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.AzureApplicationInsights("<key>", restrictedToMinimumLevel: LogEventLevel.Warning)

@@ -28,13 +28,18 @@ It uses the the Microsoft dependency injection mechanism to register an `ICorrel
 **Example**
 
 ```csharp
-public class Startup
+using Arcus.Observability.Correlation;
+
+namespace Application
 {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        // Adds operation and transaction correlation to the application,
-        // using the `DefaultCorrelationInfoAccessor` as `ICorrelationInfoAccessor` that stores the `CorrelationInfo` model internally.
-        services.AddCorrelation();
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Adds operation and transaction correlation to the application,
+            // using the `DefaultCorrelationInfoAccessor` as `ICorrelationInfoAccessor` that stores the `CorrelationInfo` model internally.
+            services.AddCorrelation();
+        }
     }
 }
 ```
@@ -47,16 +52,22 @@ The reason is because some applications require a custom `CorrelationInfo` model
 **Example**
 
 ```csharp
-public class OrderCorrelationInfo : CorrelationInfo
-{
-    public string OrderId { get; }
-}
+using Microsoft.Extensions.DependencyInjection;
+using Arcus.Observability.Correlation;
 
-public class Startup
+namespace Application
 {
-    public void ConfigureService(IServiceCollection services)
+    public class OrderCorrelationInfo : CorrelationInfo
     {
-        services.AddCorrelation<OrderCorrelationInfo>();
+        public string OrderId { get; }
+    }
+
+    public class Startup
+    {
+        public void ConfigureService(IServiceCollection services)
+        {
+            services.AddCorrelation<OrderCorrelationInfo>();
+        }
     }
 }
 ```
@@ -66,11 +77,16 @@ public class Startup
 When a part of the application needs access to the correlation information, you can inject one of the two interfaces:
 
 ```csharp
-public class OrderService
+using Arcus.Observability.Correlation;
+
+namespace Application
 {
-    public OrderService(ICorrelationInfoAccessor accessor)
+    public class OrderService
     {
-         CorrelationInfo correlationInfo = accessor.CorrelationInfo;
+        public OrderService(ICorrelationInfoAccessor accessor)
+        {
+             CorrelationInfo correlationInfo = accessor.CorrelationInfo;
+        }
     }
 }
 ```
@@ -78,11 +94,16 @@ public class OrderService
 Or, alternatively when using custom correlation:
 
 ```csharp
-public class OrderService
+using Arcus.Observability.Correlation;
+
+namespace Application
 {
-    public OrderService(ICorrelationInfoAccessor<OrderCorrelationInfo> accessor)
+    public class OrderService
     {
-         OrderCorrelationInfo correlationInfo = accessor.CorrelationInfo;
+        public OrderService(ICorrelationInfoAccessor<OrderCorrelationInfo> accessor)
+        {
+             OrderCorrelationInfo correlationInfo = accessor.CorrelationInfo;
+        }
     }
 }
 ```
@@ -143,29 +164,44 @@ We also provide a way to provide custom configuration options when the applicati
 For example, with a custom correlation model:
 
 ```csharp
-public class OrderCorrelationInfo : CorrelationInfo
+using Arcus.Observability.Correlation;
+
+namespace Application
 {
-    public string OrderId { get; }
+    public class OrderCorrelationInfo : CorrelationInfo
+    {
+        public string OrderId { get; }
+    }
 }
 ```
 
 We could introduce an `OrderCorrelationInfoOptions` model:
 
 ```csharp
-public class OrderCorrelationInfoOptions : CorrelationInfoOptions
+using Arcus.Observability.Correlation;
+
+namespace Application
 {
-    public bool IncludeOrderId { get; set; }
+    public class OrderCorrelationInfoOptions : CorrelationInfoOptions
+    {
+        public bool IncludeOrderId { get; set; }
+    }
 }
 ```
 
 This custom options model can then be included when registering the correlation:
 
 ```csharp
-public class Startup
+using Microsoft.Excentions.DependencyInjection;
+
+namespace Application
 {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        services.AddCorrelation<OrderCorrelationInfo, OrderCorrelationInfoOptions>(options => options.IncludeOrderId = true);
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddCorrelation<OrderCorrelationInfo, OrderCorrelationInfoOptions>(options => options.IncludeOrderId = true);
+        }
     }
 }
 ```

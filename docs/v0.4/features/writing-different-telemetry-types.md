@@ -54,6 +54,8 @@ We allow you to measure Azure Blob Storage dependencies.
 Here is how you can report a dependency call:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -73,6 +75,8 @@ Here is how you can report a dependency call:
 **Cosmos SQL**
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -90,6 +94,8 @@ We allow you to measure Azure Event Hubs dependencies.
 Here is how you can report a dependency call:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -109,6 +115,8 @@ We allow you to measure Azure IoT Hub dependencies.
 Here is how you can report a dependency call:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -134,6 +142,8 @@ PM > Install-Package Arcus.Observability.Telemetry.IoT
 Here is how you can report a dependency call:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -151,6 +161,8 @@ We allow you to measure Azure Search depdendencies for cognetive services.
 Here is how you can report an Azure Search dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -167,6 +179,8 @@ We allow you to measure Azure Service Bus dependencies for both queues & topics.
 Here is how you can report an Azure Service Bus Queue dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -186,6 +200,8 @@ We allow you to measure Azure Table Storage dependencies.
 Here is how you can report a dependency call:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -201,6 +217,8 @@ _logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "order
 Here is how you can report a HTTP dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Create request
@@ -224,6 +242,8 @@ _logger.LogHttpDependency(request, statusCode: response.StatusCode, startTime: s
 Here is how you can report a SQL dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -240,6 +260,8 @@ _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-pr
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
 var durationMeasurement = new Stopwatch();
 
@@ -259,6 +281,8 @@ _logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccess
 Here is how you can areport a custom depenency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -279,6 +303,8 @@ Measuring dependencies means you need to keep track of how long the action took 
 Here's a small example:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var durationMeasurement = new Stopwatch();
 var startTime = DateTimeOffset.UtcNow;
 durationMeasurement.Start();
@@ -294,6 +320,9 @@ _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime:
 However, by using `DependencyMeasurement.Start()` we take care of the measuring aspect:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 // Start measuring
 using (var measurement = DependencyMeasurement.Start())
 {
@@ -309,6 +338,8 @@ using (var measurement = DependencyMeasurement.Start())
 Failures during the interaction with the tracked dependency can be controlled by passing `isSuccessful`:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 string dependencyName = "SendGrid";
 object dependencyData = "https://my.sendgrid.uri";
 
@@ -333,6 +364,8 @@ Events allow you to report custom events which are a great way to track business
 Here is how you can report an `Order Created` event:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 logger.LogEvent("Order Created");
 // Output: "Events Order Created (Context: )"
 ```
@@ -344,6 +377,8 @@ Some events are considered "security events" when they relate to possible malici
 Here is how an invalid `Order` can be reported:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 loger.LogSecurityEvent("Invalid Order");
 // Output: "Events Invalid Order (Context: )"
 ```
@@ -355,6 +390,8 @@ Metrics allow you to report custom metrics which allow you to give insights on a
 Here is how you can report an `Invoice Received` metric:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 logger.LogMetric("Invoice Received", 133.37, telemetryContext);
 // Output: "Metric Invoice Received: 133.37 (Context: )"
 ```
@@ -366,6 +403,8 @@ Requests allow you to keep track of the HTTP requests that are performed against
 Here is how you can keep track of requests:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Determine calling tenant
 string tenantName = "Unknown";
 if (httpContext.Request?.Headers?.ContainsKey("X-Tenant") == true)

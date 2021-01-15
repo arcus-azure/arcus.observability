@@ -42,6 +42,8 @@ We allow you to measure Azure Service Bus dependencies for both queues & topics.
 Here is how you can report an Azure Service Bus Queue dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Namespace", "azure.servicebus.namespace" }
@@ -60,6 +62,9 @@ _logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: tru
 Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Namespace", "azure.servicebus.namespace" }
@@ -80,6 +85,8 @@ Note that we have an `LogServiceBusTopicDependency` to log dependency logs for a
 Here is how you can report a HTTP dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Tenant", "Contoso"},
@@ -107,6 +114,9 @@ _logger.LogHttpDependency(request, response.StatusCode, startTime, durationMeasu
 Or alternatively one can use our `DependencyMeasurement` model to manage the timing for you:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Tenant", "Contoso"},
@@ -134,6 +144,8 @@ using (var measurement = DependencyMeasurement.Start())
 Here is how you can report a SQL dependency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Catalog", "Products"},
@@ -155,6 +167,9 @@ _logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-pr
 Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Catalog", "Products"},
@@ -177,6 +192,8 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
 Here is how you can areport a custom depenency:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Subject", "Your order is being processed!" },
@@ -197,6 +214,9 @@ _logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime:
 Or alternatively, one can use our `DependencyMeasurement` model to manage the timing for you:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Subject", "Your order is being processed!" },
@@ -221,6 +241,8 @@ Events allow you to report custom events which are a great way to track business
 Here is how you can report an `Order Created` event:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 logger.LogEvent("Order Created");
 // Output: "Events Order Created (Context: )"
 ```
@@ -228,6 +250,8 @@ logger.LogEvent("Order Created");
 Contextual information is essential, that's why we provide an overload to give more information about the event:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Provide context around event
 var telemetryContext = new Dictionary<string, object>
 {
@@ -246,6 +270,8 @@ Some events are considered "security events" when they relate to possible malici
 Here is how an invalid `Order` can be reported:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Provide context around security event
 var telemetryContext = new Dictionary<string, object>
 {
@@ -263,6 +289,8 @@ Metrics allow you to report custom metrics which allow you to give insights on a
 Here is how you can report an `Invoice Received` metric:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Provide context around metric
 var telemetryContext = new Dictionary<string, object>
 {
@@ -283,6 +311,8 @@ Requests allow you to keep track of the HTTP requests that are performed against
 Here is how you can keep track of requests:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Determine calling tenant
 string tenantName = "Unknown";
 if (httpContext.Request?.Headers?.ContainsKey("X-Tenant") == true)

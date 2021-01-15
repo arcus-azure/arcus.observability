@@ -32,6 +32,8 @@ Value: `My application component`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .CreateLogger();
@@ -43,6 +45,8 @@ logger.Information("Some event");
 Or, alternatively one can choose to use the Kubernetes information which our [Application Insights](./sinks/azure-application-insights) sink will prioritize above the `MachineName` when determining the telemetry `Cloud.RoleInstance`.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .Enrich.WithKubernetesInfo()
@@ -58,6 +62,8 @@ The application enricher allows you to specify the name of the log property that
 By default this is set to `ComponentName`.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName(
         componentName: "My application component", 
@@ -86,6 +92,8 @@ Value: `0477E377-414D-47CD-8756-BCBE3DBE3ACB`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithCorrelationInfo()
     .CreateLogger();
@@ -96,6 +104,9 @@ logger.Information("This event will be enriched with the correlation information
 Or alternatively, with a custom `ICorrelationInfoAccessor`:
 
 ```csharp
+using Arcus.Observability.Correlation;
+using Serilog;
+
 ICorrelationInfoAccessor myCustomAccessor = ...
 
 ILogger logger = new LoggerConfiguration()
@@ -112,6 +123,8 @@ The correlation information enricher allows you to specify the names of the log 
 This is available on all extension overloads. By default the operation ID is set to `OperationId` and the transaction ID to `TransactionId`.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithCorrelationInfo(
         operationIdPropertyName: "MyOperationId",
@@ -138,6 +151,8 @@ that adds several machine information from the environment (variables).
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithKubernetesInfo()
     .CreateLogger();
@@ -198,6 +213,8 @@ The Kubernetes enricher allows you to specify the names of the log properties th
 By default the node name is set to `NodeName`, the pod name to `PodName`, and the namespace to `Namespace`.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithKubernetesInfo(
         nodeNamePropertyName: "MyNodeName",
@@ -221,6 +238,8 @@ Value: `1.0.0-preview`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithVersion()
     .CreateLogger();
@@ -235,6 +254,9 @@ The version enricher allows you to specify an `IAppVersion` instance that retrie
 By default this is set to the version of the current executing assembly.
 
 ```csharp
+using Arcus.Observability.Telemetry.Serilog.Enrichers;
+using Serilog;
+
 IAppVersion appVersion = new MyCustomAppVersion("v0.1.0");
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithVersion(appVersion)
@@ -250,6 +272,8 @@ The version enricher allows you to specify the name of the property that will be
 By default this is set to `version`.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithVersion(propertyName: "MyVersion")
     .CreateLogger();
