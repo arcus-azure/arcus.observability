@@ -32,6 +32,8 @@ Value: `My application component`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .CreateLogger();
@@ -42,6 +44,8 @@ logger.Information("This event will be enriched with the application component's
 Or, alternatively one can choose to use the Kubernetes information.
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithComponentName("My application component")
     .Enrich.WithKubernetesInfo()
@@ -68,6 +72,8 @@ Value: `0477E377-414D-47CD-8756-BCBE3DBE3ACB`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithCorrelationInfo()
     .CreateLogger();
@@ -78,6 +84,9 @@ logger.Information("This event will be enriched with the correlation information
 Or alternatively, with a custom `ICorrelationInfoAccessor`:
 
 ```csharp
+using Arcus.Observability.Correlation;
+using Serilog;
+
 ICorrelationInfoAccessor myCustomAccessor = ...
 
 ILogger logger = new LoggerConfiguration()
@@ -104,6 +113,8 @@ that adds several machine information from the environment (variables).
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithKubernetesInfo()
     .CreateLogger();
@@ -169,6 +180,8 @@ Value: `1.0.0-preview`
 **Usage**
 
 ```csharp
+using Serilog;
+
 ILogger logger = new LoggerConfiguration()
     .Enrich.WithVersion()
     .CreateLogger();

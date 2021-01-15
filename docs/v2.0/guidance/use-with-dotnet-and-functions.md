@@ -67,6 +67,10 @@ namespace Arcus.Samples.AzureFunction
 Here is an example of how you can use ILogger to write multi-dimensional metrics with Arcus. If Serilog would not be setup correctly (see above), it would only report the metric without the dimensions.
 
 ```csharp
+using Microsoft.Azure.Databricks.Client;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 public class DockerHubMetricScraperFunction
 {
     private readonly DockerHubClient _dockerHubClient;

@@ -10,6 +10,8 @@ layout: default
 In order to make telemetry more powerful we **highly recommend providing contextual information around what the situation is of your application**. That's why every telemetry type that you can write, allows you to provide context in the form of a dictionary.
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 // Provide context around event
 var telemetryContext = new Dictionary<string, object>
 {
@@ -30,6 +32,8 @@ We support this for all [telemetry types that you can write](/features/writing-d
 Let's use an example - When measuring a metric you get an understanding of the count, in our case the number of orders received:
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 logger.LogMetric("Orders Received", 133);
 // Log output: "Metric Orders Received: 133 (Context: )"
 ```
@@ -40,6 +44,8 @@ If we output this to Azure Application Insights as a metric similar to our examp
 However, you can very easily provide additional context, allowing you to get an understanding of the number of orders received and annotate it with the vendor information.
 
 ```csharp
+using Microsoft.Extensions.Logging;
+
 var telemetryContext = new Dictionary<string, object>
 {
     { "Customer", "Contoso"},
