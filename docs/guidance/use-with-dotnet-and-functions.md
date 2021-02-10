@@ -38,8 +38,8 @@ namespace Arcus.Samples.AzureFunction
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var serviceProvider = builder.Services.BuildServiceProvider();
-            var config = serviceProvider.GetRequiredService<IConfiguration>();
+            var config = builder.GetContext().Configuration;
+
             var instrumentationKey = config.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
 
             var logger = new LoggerConfiguration()
