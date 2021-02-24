@@ -30,7 +30,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 bool isSuccessful = BogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset(days: 0);
+                DateTimeOffset startTime = DateTimeOffset.Now; // BogusGenerator.Date.RecentOffset(days: 0);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
@@ -43,7 +43,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsDependencyResult> results = await client.Events.GetDependencyEventsAsync(ApplicationId);
+                    EventsResults<EventsDependencyResult> results = 
+                        await client.Events.GetDependencyEventsAsync(ApplicationId,
+                            timespan: "PT15M");
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
