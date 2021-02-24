@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +9,8 @@ namespace Microsoft.Extensions.Logging
 {
     public static class ILoggerExtensions
     {
+        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fff zzz";
+
         // <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -51,7 +52,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(InvariantDateTimeWithMillisecondsFormat), context);
         }
     }
 }
