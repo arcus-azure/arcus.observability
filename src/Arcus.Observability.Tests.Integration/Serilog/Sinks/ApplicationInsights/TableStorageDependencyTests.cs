@@ -42,7 +42,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsDependencyResult> results = 
-                        await client.Events.GetDependencyEventsAsync(ApplicationId, "PT10M");
+                        await client.Events.GetDependencyEventsAsync(ApplicationId, "PT30M");
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
