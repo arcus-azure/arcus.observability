@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
         private static readonly Regex KeyVaultUriRegex = new Regex(KeyVaultUriPattern, RegexOptions.Compiled),
                                       SecretNameRegex = new Regex(SecretNamePattern, RegexOptions.Compiled);
 
-        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fff";
+        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fff zzz";
 
         /// <summary>
         ///     Logs an HTTP request
@@ -573,7 +573,7 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
             string data = $"{database}/{container}";
 
-            logger.LogWarning(DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime, isSuccessful, context);
+            logger.LogWarning(DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime.ToString(InvariantDateTimeWithMillisecondsFormat), isSuccessful, context);
         }
 
         /// <summary>
