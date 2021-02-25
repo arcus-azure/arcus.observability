@@ -17,7 +17,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 {
     public class LogEventPropertyValueExtensionsTests
     {
-
         [Fact]
         public void CanCorrectlyParseDateTimeWithTicksFromString()
         {
