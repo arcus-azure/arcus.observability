@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public static class ILoggerExtensions
     {
-        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fff zzz";
+        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
 
         /// <summary>
         ///     Logs an HTTP request

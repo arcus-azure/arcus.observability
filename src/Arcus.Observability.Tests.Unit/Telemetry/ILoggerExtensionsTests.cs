@@ -20,7 +20,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
     {
         private readonly Faker _bogusGenerator = new Faker();
 
-        private string ExpectedDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fff zzz";
+        private string ExpectedDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
 
         [Fact]
         public void LogMetric_ValidArguments_Succeeds()

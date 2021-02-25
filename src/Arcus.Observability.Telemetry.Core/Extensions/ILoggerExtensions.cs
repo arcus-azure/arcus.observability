@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
         private static readonly Regex KeyVaultUriRegex = new Regex(KeyVaultUriPattern, RegexOptions.Compiled),
                                       SecretNameRegex = new Regex(SecretNamePattern, RegexOptions.Compiled);
 
-        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fff zzz";
+        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
 
         /// <summary>
         ///     Logs an HTTP request
