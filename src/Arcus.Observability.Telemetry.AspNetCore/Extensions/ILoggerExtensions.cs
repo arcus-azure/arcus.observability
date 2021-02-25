@@ -12,8 +12,6 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public static class ILoggerExtensions
     {
-        private static string InvariantDateTimeWithMillisecondsFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
-
         /// <summary>
         ///     Logs an HTTP request
         /// </summary>
@@ -55,7 +53,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(InvariantDateTimeWithMillisecondsFormat), context);
+            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat), context);
         }
     }
 }
