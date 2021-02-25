@@ -274,7 +274,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal(dependencyType, dependencyTelemetry.Type);
                 Assert.Equal(dependencyData.ToString(), dependencyTelemetry.Data);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -321,7 +321,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(entityName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -368,7 +368,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(queueName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -415,7 +415,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
                 Assert.Equal(topicName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -464,7 +464,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("Azure blob", dependencyTelemetry.Type);
                 Assert.Equal(containerName, dependencyTelemetry.Data);
                 Assert.Equal(accountName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -512,7 +512,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("Azure table", dependencyTelemetry.Type);
                 Assert.Equal(tableName, dependencyTelemetry.Data);
                 Assert.Equal(accountName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -560,7 +560,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("Azure Event Hubs", dependencyTelemetry.Type);
                 Assert.Equal(eventHubName, dependencyTelemetry.Target);
                 Assert.Equal(namespaceName, dependencyTelemetry.Data);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -606,7 +606,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
                 Assert.Equal("Azure IoT Hub", dependencyTelemetry.Type);
                 Assert.Equal(iotHubName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -655,7 +655,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("Azure DocumentDB", dependencyTelemetry.Type);
                 Assert.Equal($"{database}/{container}", dependencyTelemetry.Data);
                 Assert.Equal(accountName, dependencyTelemetry.Target);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.True(dependencyTelemetry.Success);
 
@@ -704,7 +704,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("localhost", dependencyTelemetry.Target);
                 Assert.Equal("GET /api/v1/health", dependencyTelemetry.Name);
                 Assert.Null(dependencyTelemetry.Data);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Equal("200", dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
@@ -752,7 +752,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal("Server", dependencyTelemetry.Target);
                 Assert.Equal("Database/Users", dependencyTelemetry.Name);
                 Assert.Equal("GET", dependencyTelemetry.Data);
-                Assert.Equal(TruncateToMilliseconds(startTime), dependencyTelemetry.Timestamp);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Null(dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
@@ -863,7 +863,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var metricTelemetry = Assert.IsType<MetricTelemetry>(telemetry);
                 Assert.Equal(metricName, metricTelemetry.Name);
                 Assert.Equal(metricValue, metricTelemetry.Sum);
-                Assert.Equal(TruncateToMilliseconds(timestamp), metricTelemetry.Timestamp);
+                Assert.Equal(timestamp, metricTelemetry.Timestamp);
                 AssertOperationContext(metricTelemetry, operationId);
 
                 AssertContainsTelemetryProperty(metricTelemetry, "Capacity", "0.45");
@@ -984,12 +984,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         private static void AssertContainsTelemetryProperty(ISupportProperties telemetry, string key, string value)
         {
             Assert.Contains(telemetry.Properties, prop => prop.Equals(new KeyValuePair<string, string>(key, value)));
-        }
-
-        private static DateTimeOffset TruncateToMilliseconds(DateTimeOffset dateTimeOffset)
-        {
-            return new DateTimeOffset(
-                dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day, dateTimeOffset.Hour, dateTimeOffset.Minute, dateTimeOffset.Second, dateTimeOffset.Millisecond, dateTimeOffset.Offset);
         }
     }
 }
