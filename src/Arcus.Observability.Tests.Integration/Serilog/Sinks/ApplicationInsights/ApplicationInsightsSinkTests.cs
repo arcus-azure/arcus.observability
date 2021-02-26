@@ -76,7 +76,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                                 _outputWriter.WriteLine($"Failed to contact Azure Application Insights. Reason: {exception.Message}");
                                 return true;
                             })
-                                         .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
+                                         .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(3)))
                         .ExecuteAsync(assertion);
         }
 

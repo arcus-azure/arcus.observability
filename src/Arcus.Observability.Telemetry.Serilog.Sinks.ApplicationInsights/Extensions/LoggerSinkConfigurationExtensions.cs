@@ -12,7 +12,7 @@ namespace Serilog.Configuration
         ///     Insights.
         /// </summary>
         /// <remarks>
-        ///     Supported telemetry types are Traces, Dependencies, Events, Requests & Metrics for which we provide extensions on
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on
         ///     <see cref="ILogger" />
         /// </remarks>
         /// <param name="loggerSinkConfiguration">The logger configuration.</param>

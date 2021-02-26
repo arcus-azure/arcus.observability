@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +7,12 @@ using Microsoft.AspNetCore.Http;
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
+    /// </summary>
     public static class ILoggerExtensions
     {
-        // <summary>
+        /// <summary>
         ///     Logs an HTTP request
         /// </summary>
         /// <param name="logger">Logger to use</param>
@@ -51,7 +53,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(CultureInfo.InvariantCulture), context);
+            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat), context);
         }
     }
 }
