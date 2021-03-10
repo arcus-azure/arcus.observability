@@ -40,7 +40,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception);
 
             Type exceptionType = logEvent.Exception.GetType();
-            PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public);
+            PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (PropertyInfo exceptionProperty in exceptionProperties)
             {
                 string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
