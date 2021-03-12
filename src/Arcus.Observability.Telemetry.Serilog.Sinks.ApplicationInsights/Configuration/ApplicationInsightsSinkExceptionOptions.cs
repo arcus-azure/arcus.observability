@@ -11,6 +11,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
     {
         private static readonly Regex PropertyFormatRegex = new Regex(@"[\{\{0\}\}]", RegexOptions.Compiled);
         private string _propertyFormat = "Exception-{0}";
+
+        /// <summary>
+        /// Gets or sets the flag indicating whether or not the properties of the exception should be included as custom dimensions in the exception tracking.
+        /// </summary>
+        /// <remarks>
+        ///     Only the current-level properties are considered during the exception tracking; inherited properties will be excluded.
+        /// </remarks>
+        public bool IncludeProperties { get; set; } = false;
         
         /// <summary>
         /// <para>Gets or sets the string format to track (public) exception properties.</para>

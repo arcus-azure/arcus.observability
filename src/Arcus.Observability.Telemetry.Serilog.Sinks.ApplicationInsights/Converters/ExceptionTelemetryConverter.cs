@@ -39,13 +39,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             
             var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception);
 
-            Type exceptionType = logEvent.Exception.GetType();
-            PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (PropertyInfo exceptionProperty in exceptionProperties)
+            if (_options.IncludeProperties)
             {
-                string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
-                var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
-                exceptionTelemetry.Properties[key] = value;
+                Type exceptionType = logEvent.Exception.GetType();
+                PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                foreach (PropertyInfo exceptionProperty in exceptionProperties)
+                {
+                    string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
+                    var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
+                    exceptionTelemetry.Properties[key] = value;
+                }
             }
             
             return exceptionTelemetry;

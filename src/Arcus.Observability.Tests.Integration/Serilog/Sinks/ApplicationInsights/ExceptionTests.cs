@@ -17,7 +17,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public ExceptionTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
-
+        
         [Fact]
         public async Task LogException_SinksToApplicationInsights_ResultsInExceptionTelemetry()
         {
@@ -26,6 +26,36 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                // Act
+                logger.LogCritical(exception, exception.Message);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Exception.OuterMessage == exception.Message
+                               && result.CustomDimensions.Keys.Contains($"Exception-{nameof(TestException.SpyProperty)}") == false;
+                    });
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogException_SinksToApplicationInsightsWithIncludedProperties_ResultsInExceptionTelemetry()
+        {
+            // Arrange
+            string message = BogusGenerator.Lorem.Sentence();
+            string expectedProperty = BogusGenerator.Lorem.Word();
+            var exception = new TestException(message) { SpyProperty = expectedProperty };
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Exception.IncludeProperties = true))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -57,7 +87,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
             string propertyFormat = "Exception.{0}";
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Exception.PropertyFormat = propertyFormat))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options =>
+            {
+                options.Exception.IncludeProperties = true;
+                options.Exception.PropertyFormat = propertyFormat;
+            }))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
