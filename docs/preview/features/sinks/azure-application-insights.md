@@ -47,10 +47,11 @@ The Azure Application Insights sink has some additional configuration which can 
 
 ### Exceptions
 
-#### Property format
+#### Properties
 
-When tracking exceptions, all the public properties of the exception will be included as [custom dimensions](https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#custom-measurements-and-properties-in-analytics).
+When tracking exceptions, one can opt-in to track all the public properties of the exception which will be included as [custom dimensions](https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#custom-measurements-and-properties-in-analytics).
 These public properties are formatted with the following pattern: `Exception-{0}` where `{0}` is the place where the public property's name is inserted. 
+
 The value of the property will be the value of the custom dimension so that the custom dimension will be in the form `"Exception-{your-property-name}" = "your-property-value"`.
 
 This property format pattern can be configured, like shown in the following example:
@@ -60,7 +61,14 @@ using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
-    .WriteTo.AzureApplicationInsights("<key>", options => options.Exception.PropertyFormat = "CustomException.{0}")
+    .WriteTo.AzureApplicationInsights("<key>", options =>
+    {
+        // Opt-in to track all the first-level exception properties; inherited properties will not be included.
+        options.Exception.IncludeProperties = true;
+
+        // Property format to track the exception's properties (default: `"Exception-{0}"`)
+        options.Exception.PropertyFormat = "CustomException.{0}");
+    })
     .CreateLogger();
 ```
 
