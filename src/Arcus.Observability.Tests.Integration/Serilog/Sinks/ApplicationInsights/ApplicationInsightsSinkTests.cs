@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Bogus;
 using Microsoft.Azure.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Query;
@@ -41,11 +42,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// </summary>
         protected string ApplicationId { get; }
 
-        protected ILoggerFactory CreateLoggerFactory(Action<LoggerConfiguration> configureLogging = null)
+        /// <summary>
+        /// Creates an <see cref="ILoggerFactory"/> instance that will create <see cref="Microsoft.Extensions.Logging.ILogger"/> instances that writes to Azure Application Insights.
+        /// </summary>
+        /// <param name="configureLogging">The optional function to configure additional logging features.</param>
+        /// <param name="configureOptions">The optional function to configure additional properties while writing to Azure Application Insights.</param>
+        protected ILoggerFactory CreateLoggerFactory(
+            Action<LoggerConfiguration> configureLogging = null,
+            Action<ApplicationInsightsSinkOptions> configureOptions = null)
         {
             var configuration = new LoggerConfiguration()
                 .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                .WriteTo.AzureApplicationInsights(_instrumentationKey);
+                .WriteTo.AzureApplicationInsights(_instrumentationKey, configureOptions);
             
             configureLogging?.Invoke(configuration);
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));

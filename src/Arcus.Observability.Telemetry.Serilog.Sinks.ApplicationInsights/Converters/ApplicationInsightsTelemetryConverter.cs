@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters.Dependencies;
+using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Serilog.Events;
 using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
@@ -13,7 +15,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class ApplicationInsightsTelemetryConverter : TelemetryConverterBase
     {
-        private readonly ExceptionTelemetryConverter _exceptionTelemetryConverter = new ExceptionTelemetryConverter();
+        private readonly ExceptionTelemetryConverter _exceptionTelemetryConverter;
         private readonly TraceTelemetryConverter _traceTelemetryConverter = new TraceTelemetryConverter();
         private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
         private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
@@ -28,6 +30,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         private readonly SqlDependencyTelemetryConverter _sqlDependencyTelemetryConverter =
             new SqlDependencyTelemetryConverter();
 
+        private ApplicationInsightsTelemetryConverter(ApplicationInsightsSinkOptions options)
+        {
+            Guard.NotNull(options, nameof(options), "Requires a set of options to influence how to track to Application Insights");
+            _exceptionTelemetryConverter = new ExceptionTelemetryConverter(options.Exception);
+        }
+        
         /// <summary>
         ///     Convert the given <paramref name="logEvent"/> to a series of <see cref="ITelemetry"/> instances.
         /// </summary>
@@ -78,7 +86,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// </summary>
         public static ApplicationInsightsTelemetryConverter Create()
         {
-            return new ApplicationInsightsTelemetryConverter();
+            return Create(new ApplicationInsightsSinkOptions());
+        }
+
+        /// <summary>
+        /// Create an instance of the <see cref="ApplicationInsightsTelemetryConverter"/> class.
+        /// </summary>
+        /// <param name="options">The optional user-defined configuration options to influence the tracking behavior to Azure Application Insights.</param>
+        public static ApplicationInsightsTelemetryConverter Create(ApplicationInsightsSinkOptions options)
+        {
+            return new ApplicationInsightsTelemetryConverter(options ?? new ApplicationInsightsSinkOptions());
         }
     }
 }
