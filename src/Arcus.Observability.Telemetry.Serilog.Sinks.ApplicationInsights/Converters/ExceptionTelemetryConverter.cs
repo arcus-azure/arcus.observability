@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
@@ -41,17 +42,23 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             if (_options.IncludeProperties)
             {
-                Type exceptionType = logEvent.Exception.GetType();
-                PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                foreach (PropertyInfo exceptionProperty in exceptionProperties)
-                {
-                    string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
-                    var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
-                    exceptionTelemetry.Properties[key] = value;
-                }
+                EnrichWithExceptionProperties(logEvent, exceptionTelemetry);
             }
             
             return exceptionTelemetry;
+        }
+
+        private void EnrichWithExceptionProperties(LogEvent logEvent, ExceptionTelemetry exceptionTelemetry)
+        {
+            Type exceptionType = logEvent.Exception.GetType();
+            PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            
+            foreach (PropertyInfo exceptionProperty in exceptionProperties)
+            {
+                string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
+                var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
+                exceptionTelemetry.Properties[key] = value;
+            }
         }
     }
 }
