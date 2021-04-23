@@ -18,9 +18,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
     [Trait("Category", "Unit")]
     public class ILoggerExtensionsTests
     {
+        private const string ExpectedDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
+        
         private readonly Faker _bogusGenerator = new Faker();
-
-        private string ExpectedDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffffff zzz";
 
         [Fact]
         public void LogMetric_ValidArguments_Succeeds()
@@ -124,6 +124,51 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependency_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration));
+        }
+        
+        [Fact]
+        public void LogDependency_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration));
+        }
+        
+        [Fact]
+        public void LogDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
         public void LogDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -147,6 +192,49 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+        
+        [Fact]
+        public void LogDependencyWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement: null));
+        }
+        
+        [Fact]
+        public void LogDependencyWithDependencyMeasurement_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement));
+        }
+        
+        [Fact]
+        public void LogDependencyWithDependencyMeasurement_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement));
         }
 
         [Fact]
@@ -172,6 +260,70 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+        
+        [Fact]
+        public void LogDependencyTarget_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
+        public void LogDependencyTarget_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
+        public void LogDependencyTarget_WithoutTarget_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = null;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
+        public void LogDependencyTarget_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -200,6 +352,52 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
         }
+        
+        [Fact]
+        public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: null));
+        }
 
         [Theory]
         [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
@@ -214,31 +412,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Act
             logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration);
-
-            // Assert
-            string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
-            Assert.Contains(vaultUri, logMessage);
-            Assert.Contains(secretName, logMessage);
-            Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-        }
-
-        [Theory]
-        [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
-        public void LogAzureKeyVaultDependency_WithValidSecretNameDependencyMeasurement_Succeeds(string secretName)
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var vaultUri = "https://myvault.vault.azure.net";
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DependencyMeasurement measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, measurement);
 
             // Assert
             string logMessage = logger.WrittenMessage;
@@ -272,7 +445,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(value: 5)));
         }
-        
+
         [Theory]
         [ClassData(typeof(InvalidAzureKeyVaultSecretNames))]
         public void LogAzureKeyVaultDependency_WithInvalidSecretName_Fails(string secretName)
@@ -294,6 +467,43 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.Throws<UriFormatException>(
                 () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(5)));
+        }
+        
+        [Fact]
+        public void LogAzureKeyVaultDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+            
+            // Act / Assert
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", "MySecret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: duration));
+        }
+
+        [Theory]
+        [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
+        public void LogAzureKeyVaultDependency_WithValidSecretNameDependencyMeasurement_Succeeds(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var vaultUri = "https://myvault.vault.azure.net";
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DependencyMeasurement measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
+            Assert.Contains(vaultUri, logMessage);
+            Assert.Contains(secretName, logMessage);
+            Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
         }
 
         [Theory]
@@ -368,6 +578,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogAzureSearchDependencyWithDependencyMeasurement_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.Product();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration));
+        }
+        
+        [Fact]
         public void LogAzureSearchDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -415,6 +640,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
+            string entityName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, entityType));
         }
 
         [Fact]
@@ -467,6 +707,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogServiceBusQueueDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
         public void LogServiceBusQueueDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -512,6 +766,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+        
+        [Fact]
+        public void LogServiceBusTopicDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+            var startTime = DateTimeOffset.UtcNow;
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -568,6 +836,23 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogSqlDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
         public void LogBlobStorageDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -589,6 +874,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+        }
+        
+        [Fact]
+        public void LogBlobStorageDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string containerName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -643,6 +943,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogTableStorageDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
         public void LogTableStorageDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -691,6 +1006,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogEventHubsDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventHubName = _bogusGenerator.Commerce.ProductName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -744,6 +1074,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogIoTHubDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful: isSuccessful, startTime: startTime, duration: duration));
+        }
+
+        [Fact]
         public void LogIotHubDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -793,6 +1137,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+        }
+        
+        [Fact]
+        public void LogIoTHubConnectionStringDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = _bogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
+            string deviceId = _bogusGenerator.Internet.Ip();
+            string sharedAccessKey = _bogusGenerator.Random.Hash();
+            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful: isSuccessful, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -848,6 +1210,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogCosmosSqlDependency_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -924,7 +1302,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             var duration = _bogusGenerator.Date.Timespan();
-            
 
             // Act
             logger.LogSqlDependency(connectionString, tableName, operationName, startTime, duration, isSuccessful);
@@ -942,7 +1319,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogSqlDependencyWithDependencyMeasurementConnectionString_ValidArguments_Succeeds()
+        public void LogSqlDependencyConnectionString_WithNegativeDuration_Fails()
         {
             // Arrange
             var logger = new TestLogger();
@@ -952,25 +1329,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string tableName = _bogusGenerator.Name.FullName();
             string operationName = _bogusGenerator.Name.FullName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
 
-            var measurement = DependencyMeasurement.Start(operationName);
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogSqlDependency(connectionString, tableName, operationName, measurement, isSuccessful);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
-            Assert.Contains(serverName, logMessage);
-            Assert.Contains(databaseName, logMessage);
-            Assert.Contains(tableName, logMessage);
-            Assert.Contains(operationName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
+                // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(connectionString, tableName, operationName, startTime, duration, isSuccessful));
         }
 
         [Theory]
@@ -1079,6 +1442,38 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogSqlDependencyWithDependencyMeasurementConnectionString_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DependencyMeasurement.Start(operationName);
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogSqlDependency(connectionString, tableName, operationName, measurement, isSuccessful);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
+            Assert.Contains(serverName, logMessage);
+            Assert.Contains(databaseName, logMessage);
+            Assert.Contains(tableName, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogHttpDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1104,31 +1499,17 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogHttpDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        public void LogHttpDependency_WithNegativeDuration_Fails()
         {
             // Arrange
             var logger = new TestLogger();
             var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
             var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
 
-            using (var measurement = DependencyMeasurement.Start())
-            {
-                DateTimeOffset startTime = measurement.StartTime;
-
-                // Act
-                logger.LogHttpDependency(request, statusCode, measurement);
-
-                // Assert
-                var logMessage = logger.WrittenMessage;
-                Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
-                Assert.Contains(request.RequestUri.Host, logMessage);
-                Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
-                Assert.Contains(request.Method.ToString(), logMessage);
-                Assert.Contains(((int)statusCode).ToString(), logMessage);
-                Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
-                var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
-                Assert.Contains($"Successful: {isSuccessful}", logMessage); 
-            }
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, startTime, duration));
         }
 
         [Fact]
@@ -1143,6 +1524,34 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Act & Arrange
             Assert.Throws<ArgumentNullException>(() => logger.LogHttpDependency(request, statusCode, startTime, duration));
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, measurement);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
+            Assert.Contains(request.RequestUri.Host, logMessage);
+            Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
+            Assert.Contains(request.Method.ToString(), logMessage);
+            Assert.Contains(((int) statusCode).ToString(), logMessage);
+            Assert.Contains(startTime.ToString(ExpectedDateTimeFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            var isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
+            Assert.Contains($"Successful: {isSuccessful}", logMessage);
         }
 
         [Fact]
@@ -1202,52 +1611,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogRequestMessage_ValidArgumentsIncludingResponse_Succeeds()
+        public void LogRequest_WithNegativeDuration_Fails()
         {
             // Arrange
             var logger = new TestLogger();
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
-            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Lorem.Word()}";
+            var host = _bogusGenerator.Lorem.Word();
             var method = HttpMethod.Head;
-            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
-            var response = new HttpResponseMessage(statusCode);
-            var duration = _bogusGenerator.Date.Timespan();
+            var mockRequest = new Mock<HttpRequest>();
+            mockRequest.Setup(request => request.Method).Returns(method.ToString());
+            mockRequest.Setup(request => request.Host).Returns(new HostString(host));
+            mockRequest.Setup(request => request.Path).Returns(path);
+            var mockResponse = new Mock<HttpResponse>();
+            mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
+            TimeSpan duration = GeneratePositiveDuration().Negate();
 
-            // Act;
-            logger.LogRequest(request, response, duration);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
-            Assert.Contains(path, logMessage);
-            Assert.Contains(host, logMessage);
-            Assert.Contains(((int)statusCode).ToString(), logMessage);
-            Assert.Contains(method.ToString(), logMessage);
-        }
-
-        [Fact]
-        public void LogRequestMessage_ValidArgumentsIncludingResponseStatusCode_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
-            var host = _bogusGenerator.Name.FirstName().ToLower();
-            var method = HttpMethod.Head;
-            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
-            var duration = _bogusGenerator.Date.Timespan();
-
-            // Act;
-            logger.LogRequest(request, statusCode, duration);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
-            Assert.Contains(path, logMessage);
-            Assert.Contains(host, logMessage);
-            Assert.Contains(((int)statusCode).ToString(), logMessage);
-            Assert.Contains(method.ToString(), logMessage);
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(mockRequest.Object, mockResponse.Object, duration));
         }
 
         [Fact]
@@ -1305,6 +1686,23 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             var logger = new TestLogger();
             var statusCode = (int)_bogusGenerator.PickRandom<HttpStatusCode>();
+            HttpRequest request = null;
+            var mockResponse = new Mock<HttpResponse>();
+            mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentNullException>(() => logger.LogRequest(request, mockResponse.Object, duration));
+        }
+        
+        [Fact]
+        public void LogRequest_OutsideResponseStatusCodeRange_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = _bogusGenerator.PickRandom(
+                _bogusGenerator.Random.Int(max: -1), 
+                _bogusGenerator.Random.Int(min: 1000));
             HttpRequest request = null;
             var mockResponse = new Mock<HttpResponse>();
             mockResponse.Setup(response => response.StatusCode).Returns(statusCode);
@@ -1371,6 +1769,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogRequest_OutsideResponseStatusCodeRangeWhenPassingResponseStatusCode_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new Mock<HttpRequest>();
+            var statusCode = _bogusGenerator.PickRandom(
+                _bogusGenerator.Random.Int(max: -1), 
+                _bogusGenerator.Random.Int(min: 1000));
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogRequest(request.Object, statusCode, duration));
+        }
+        
+        [Fact]
         public void LogRequest_NoResponseWasSpecified_ThrowsException()
         {
             // Arrange
@@ -1390,14 +1803,86 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogSecurityEvent_WithNoEventName_ThrowsException()
+        public void LogRequestMessage_ValidArgumentsIncludingResponse_Succeeds()
         {
             // Arrange
             var logger = new TestLogger();
-            string eventName = null;
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
+            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var method = HttpMethod.Head;
+            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
+            var response = new HttpResponseMessage(statusCode);
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act;
+            logger.LogRequest(request, response, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
+            Assert.Contains(path, logMessage);
+            Assert.Contains(host, logMessage);
+            Assert.Contains(((int)statusCode).ToString(), logMessage);
+            Assert.Contains(method.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogRequestMessage_ValidArgumentsIncludingResponseStatusCode_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
+            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var method = HttpMethod.Head;
+            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
+            var duration = _bogusGenerator.Date.Timespan();
+
+            // Act;
+            logger.LogRequest(request, statusCode, duration);
+
+            // Assert
+            var logMessage = logger.WrittenMessage;
+            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
+            Assert.Contains(path, logMessage);
+            Assert.Contains(host, logMessage);
+            Assert.Contains(((int)statusCode).ToString(), logMessage);
+            Assert.Contains(method.ToString(), logMessage);
+        }
+
+        [Fact]
+        public void LogRequestMessage_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
+            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var method = HttpMethod.Head;
+            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, duration));
+        }
+        
+        [Fact]
+        public void LogRequestMessage_OutsideResponseStatusCodeRange_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = (HttpStatusCode) _bogusGenerator.PickRandom(
+                _bogusGenerator.Random.Int(max: -1), 
+                _bogusGenerator.Random.Int(min: 1000));
+            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
+            var host = _bogusGenerator.Name.FirstName().ToLower();
+            var method = HttpMethod.Head;
+            var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => logger.LogSecurityEvent(eventName));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, duration));
         }
 
         [Fact]
@@ -1437,6 +1922,28 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(message, logMessage);
             Assert.Contains("[EventType, Security]", logMessage);
             Assert.Contains("[Property, something was wrong with this Property]", logMessage);
+        }
+
+        [Fact]
+        public void LogSecurityEvent_WithNoEventName_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventName = null;
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => logger.LogSecurityEvent(eventName));
+        }
+
+        private TimeSpan GeneratePositiveDuration()
+        {
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            if (duration < TimeSpan.Zero)
+            {
+                return duration.Negate();
+            }
+
+            return duration;
         }
     }
 }
