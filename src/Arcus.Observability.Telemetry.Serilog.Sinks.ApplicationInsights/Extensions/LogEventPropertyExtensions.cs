@@ -152,7 +152,6 @@ namespace Serilog.Events
             }
 
             return double.Parse(rawDouble, CultureInfo.InvariantCulture);
-
         }
         
         /// <summary>
