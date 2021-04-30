@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
 using Microsoft.AspNetCore.Http;
 
@@ -74,7 +75,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, request.Method, host, resourcePath, responseStatusCode, duration, DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat), context);
+            logger.LogWarning(MessageFormats.RequestFormat, new RequestLogEntry(request.Method, host, resourcePath, responseStatusCode, duration, context));
         }
     }
 }

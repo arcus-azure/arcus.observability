@@ -64,7 +64,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "images", isSuccessful: true, startTime, durationMeasurement.Elapsed);
-// Output: "Dependency Azure blob multimedia named images in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+// Output: "Dependency DependencyLogTarget {DependencyType: Azure blob multimedia named images in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring Azure Cosmos DB dependencies

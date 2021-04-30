@@ -9,10 +9,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     public class HttpDependencyTelemetryConverter : DependencyTelemetryConverter
     {
         /// <summary>
-        ///     Gets the custom dependency type name from the given <paramref name="logEvent"/> to use in an <see cref="DependencyTelemetry"/> instance.
+        ///     Gets the custom dependency type name from the given <paramref name="logEntry"/> to use in an <see cref="DependencyTelemetry"/> instance.
         /// </summary>
-        /// <param name="logEvent">The logged event.</param>
-        protected override string GetDependencyType(LogEvent logEvent)
+        /// <param name="logEntry">The logged event.</param>
+        protected override string GetDependencyType(StructureValue logEntry)
         {
             return DependencyType.Http.ToString();
         }

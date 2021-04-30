@@ -1531,7 +1531,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.Url());
+            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
             var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
