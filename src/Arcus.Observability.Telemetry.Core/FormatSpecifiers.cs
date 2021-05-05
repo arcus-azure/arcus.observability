@@ -1,5 +1,8 @@
 ﻿namespace Arcus.Observability.Telemetry.Core
 {
+    /// <summary>
+    /// Represents the all formatting used when logging telemetry instances.
+    /// </summary>
     public static class FormatSpecifiers
     {
         /// <summary>

@@ -15,6 +15,7 @@ namespace Arcus.Observability.Telemetry.Core
 
         public static class DependencyTracking
         {
+            public const string DependencyLogEntry = "Dependency";
             public const string DependencyType = "DependencyType";
             public const string TargetName = "DependencyTargetName";
             public const string DependencyName = "DependencyName";
@@ -32,6 +33,7 @@ namespace Arcus.Observability.Telemetry.Core
 
         public static class EventTracking
         {
+            public const string EventLogEntry = "Event";
             public const string EventName = "EventName";
             
             [Obsolete("Use " + nameof(ContextProperties) + "." + nameof(TelemetryContext) + " instead")]
@@ -54,6 +56,7 @@ namespace Arcus.Observability.Telemetry.Core
 
         public static class RequestTracking
         {
+            public const string RequestLogEntry = "Request";
             public const string RequestMethod = "RequestMethod";
             public const string RequestHost = "RequestHost";
             public const string RequestUri = "RequestUri";
@@ -64,6 +67,7 @@ namespace Arcus.Observability.Telemetry.Core
 
         public static class MetricTracking
         {
+            public const string MetricLogEntry = "Metric";
             public const string MetricName = "MetricName";
             public const string MetricValue = "MetricValue";
             public const string Timestamp = "Timestamp";

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using GuardNet;
 
 // ReSharper disable once CheckNamespace
@@ -11,6 +12,8 @@ namespace Serilog.Events
     /// </summary>
     public static class LogEventPropertyValueExtensions
     {
+        private static readonly StructureValue EmptyStructureValue = new StructureValue(new LogEventProperty[0]);
+        
         /// <summary>
         ///     Provide a string representation for a property key
         /// </summary>
@@ -149,6 +152,33 @@ namespace Serilog.Events
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
             var value = bool.Parse(logEventPropertyValue);
             return value;
+        }
+        
+        /// <summary>
+        /// Provide a <see cref="StructureValue"/> representation for a property value associated with the <paramref name="propertyKey"/>.
+        /// </summary>
+        /// <param name="properties">The series of log properties, containing a <see cref="StructureValue"/> with the <paramref name="propertyKey"/>.</param>
+        /// <param name="propertyKey">The key that is associated with the property value that's an <see cref="StructureValue"/>.</param>
+        /// <returns>
+        ///     An <see cref="StructureValue"/> that contains its own name-value pair collection of the log event; an empty collection instead.
+        /// </returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
+        public static StructureValue GetAsStructureValue(this IReadOnlyDictionary<string, LogEventPropertyValue> properties, string propertyKey)
+        {
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve the structure value from the log event");
+            
+            if (properties is null)
+            {
+                return EmptyStructureValue;
+            }
+            
+            if (properties.TryGetValue(propertyKey, out LogEventPropertyValue propertyValue)
+                && propertyValue is StructureValue value)
+            {
+                return value;
+            }
+
+            return EmptyStructureValue;
         }
 
         /// <summary>

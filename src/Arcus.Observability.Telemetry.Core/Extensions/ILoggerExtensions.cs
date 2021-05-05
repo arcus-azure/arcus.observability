@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
 using static Arcus.Observability.Telemetry.Core.MessageFormats;
 
@@ -100,8 +101,7 @@ namespace Microsoft.Extensions.Logging
             string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
-            logger.LogWarning(
-                RequestFormat, request.Method, host, resourcePath, statusCode, duration, DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat), context);
+            logger.LogWarning(RequestFormat, new RequestLogEntry(request.Method.ToString(), host, resourcePath, statusCode, duration, context));
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyType">Custom type of dependency</param>
         /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -140,7 +140,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyType">Custom type of dependency</param>
         /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">
@@ -173,7 +173,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="targetName">Name of the dependency target</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -204,7 +204,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="targetName">Name of dependency target</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">
@@ -229,8 +229,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyFormat, dependencyType, dependencyData, targetName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType, 
+                dependencyName: null, 
+                dependencyData: dependencyData, 
+                targetName: targetName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null,
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -306,8 +314,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
             
-            logger.LogWarning(
-                DependencyFormat, "Azure key vault", secretName, vaultUri, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure key vault", 
+                dependencyName: null, 
+                dependencyData: secretName, 
+                targetName: vaultUri, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null,
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -367,8 +383,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyFormat, "Azure Search", operationName, searchServiceName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure Search", 
+                dependencyName: null, 
+                dependencyData: operationName, 
+                targetName: searchServiceName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null, 
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -524,9 +548,18 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus operation");
             
             context = context ?? new Dictionary<string, object>();
+            context[ContextProperties.DependencyTracking.ServiceBus.EntityType] = entityType;
 
-            logger.LogWarning(
-                ServiceBusDependencyFormat, "Azure Service Bus", entityType, entityName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure Service Bus", 
+                dependencyName: null, 
+                dependencyData: null, 
+                targetName: entityName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null,
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -585,8 +618,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyFormat, "Azure blob", containerName, accountName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure blob", 
+                dependencyName: null, 
+                dependencyData: containerName, 
+                targetName: accountName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null,
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -645,8 +686,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyFormat, "Azure table", tableName, accountName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure table",
+                dependencyName: null,
+                dependencyData: tableName,
+                targetName: accountName,
+                duration: duration,
+                startTime: startTime,
+                resultCode: null,
+                isSuccessful: isSuccessful,
+                context: context));
         }
 
         /// <summary>
@@ -705,8 +754,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyFormat, "Azure Event Hubs", namespaceName, eventHubName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure Event Hubs",
+                dependencyName: null,
+                dependencyData: namespaceName,
+                targetName: eventHubName,
+                duration: duration,
+                startTime: startTime,
+                resultCode: null,
+                isSuccessful: isSuccessful,
+                context: context));
         }
 
         /// <summary>
@@ -759,8 +816,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(
-                DependencyWithoutDataFormat, "Azure IoT Hub", iotHubName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure IoT Hub", 
+                dependencyName: null, 
+                dependencyData: null, 
+                targetName: iotHubName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null, 
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -826,8 +891,17 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
             string data = $"{database}/{container}";
 
-            logger.LogWarning(
-                DependencyFormat, "Azure DocumentDB", data, accountName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure DocumentDB", 
+                dependencyName: null, 
+                dependencyData: data, 
+                targetName: accountName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null, 
+                isSuccessful: 
+                isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -896,8 +970,16 @@ namespace Microsoft.Extensions.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
 
-            logger.LogWarning(
-                HttpDependencyFormat, targetName, dependencyName, (int) statusCode, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(HttpDependencyFormat, new DependencyLogEntry(
+                dependencyType: "Http",
+                dependencyName: dependencyName, 
+                dependencyData: null,
+                targetName: targetName,
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: (int) statusCode, 
+                isSuccessful: isSuccessful,
+                context: context));
         }
 
         /// <summary>
@@ -969,8 +1051,16 @@ namespace Microsoft.Extensions.Logging
 
             string dependencyName = $"{databaseName}/{tableName}";
 
-            logger.LogWarning(
-                SqlDependencyFormat, serverName, dependencyName, operationName, duration, startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), isSuccessful, context);
+            logger.LogWarning(SqlDependencyFormat, new DependencyLogEntry(
+                dependencyType: "Sql",
+                targetName: serverName,
+                dependencyName: dependencyName, 
+                dependencyData: operationName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null,
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -988,7 +1078,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(EventFormat, name, context);
+            logger.LogWarning(EventFormat, new EventLogEntry(name, context));
         }
 
         /// <summary>
@@ -1027,7 +1117,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(MetricFormat, name, value, timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat), context);
+            logger.LogWarning(MetricFormat, new MetricLogEntry(name, value, timestamp, context));
         }
 
         /// <summary>
