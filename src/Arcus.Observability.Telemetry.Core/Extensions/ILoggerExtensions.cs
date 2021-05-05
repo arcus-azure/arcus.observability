@@ -816,7 +816,16 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
-            logger.LogWarning(DependencyFormat, new DependencyLogEntry("Azure IoT Hub", dependencyName: null, dependencyData: null, targetName: iotHubName, duration: duration, startTime: startTime, resultCode: null, isSuccessful: isSuccessful, context: context));
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure IoT Hub", 
+                dependencyName: null, 
+                dependencyData: null, 
+                targetName: iotHubName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null, 
+                isSuccessful: isSuccessful, 
+                context: context));
         }
 
         /// <summary>
@@ -882,7 +891,17 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
             string data = $"{database}/{container}";
 
-            logger.LogWarning(DependencyFormat, new DependencyLogEntry("Azure DocumentDB", dependencyName: null, dependencyData: data, targetName: accountName, duration: duration, startTime: startTime, resultCode: null, isSuccessful: isSuccessful, context: context));
+            logger.LogWarning(DependencyFormat, new DependencyLogEntry(
+                dependencyType: "Azure DocumentDB", 
+                dependencyName: null, 
+                dependencyData: data, 
+                targetName: accountName, 
+                duration: duration, 
+                startTime: startTime, 
+                resultCode: null, 
+                isSuccessful: 
+                isSuccessful, 
+                context: context));
         }
 
         /// <summary>
