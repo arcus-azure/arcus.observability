@@ -99,7 +99,7 @@ namespace Serilog.Events
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
         /// <exception cref="FormatException">
-        ///     Thrown when the Serilog property value cannot be parsed correctly to the provided <typeparamref name="TEnum"/> enumeration type.
+        ///     Thrown when the Serilog property value cannot be parsed correctly because the <typeparamref name="TEnum"/> does not present an enumeration type.
         /// </exception>
         /// <returns>
         ///     The parsed representation of the Serilog property value as the provided <typeparamref name="TEnum"/> enumeration type; <c>null</c> otherwise.

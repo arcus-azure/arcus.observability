@@ -71,7 +71,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isEnabled = filter.IsEnabled(logEvent);
             
             // Assert
-            Assert.True(isEnabled);
+            Assert.False(isEnabled);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isEnabled = filter.IsEnabled(logEvent);
             
             // Assert
-            Assert.True(isEnabled);
+            Assert.False(isEnabled);
         }
 
         [Theory]

@@ -92,18 +92,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Extensions
         }
 
         [Fact]
-        public void GetAsEnum_WithoutParsablePropertyValue_Fails()
+        public void GetAsEnum_WithoutEnumType_Fails()
         {
             // Arrange
             string propertyKey = _bogusGenerator.Random.Word();
+            TelemetryType telemetryType = _bogusGenerator.Random.Enum<TelemetryType>();
             var properties = new ReadOnlyDictionary<string, LogEventPropertyValue>(
                 new Dictionary<string, LogEventPropertyValue>
                 {
-                    [propertyKey] = new ScalarValue(_bogusGenerator.Random.Word())
+                    [propertyKey] = new ScalarValue(telemetryType)
                 });
             
             // Act / Assert
-            Assert.ThrowsAny<FormatException>(() => properties.GetAsEnum<TelemetryType>(propertyKey));
+            Assert.ThrowsAny<FormatException>(() => properties.GetAsEnum<TimeSpan>(propertyKey));
         }
         
         [Fact]
