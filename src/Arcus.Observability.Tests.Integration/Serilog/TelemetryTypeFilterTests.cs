@@ -427,7 +427,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
 
-            
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
