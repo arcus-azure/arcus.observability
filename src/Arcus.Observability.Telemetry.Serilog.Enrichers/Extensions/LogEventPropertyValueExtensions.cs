@@ -96,17 +96,38 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
+        /// <exception cref="FormatException">
+        ///     Thrown when the Serilog property value cannot be parsed correctly to the provided <typeparamref name="TEnum"/> enumeration type.
+        /// </exception>
+        /// <returns>
+        ///     The parsed representation of the Serilog property value as the provided <typeparamref name="TEnum"/> enumeration type; <c>null</c> otherwise.
+        /// </returns>
         public static TEnum? GetAsEnum<TEnum>(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
             where TEnum : struct
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues), "Requires a series of event properties to retrieve a Serilog event property as a enumeration representation");
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a enumeration representation");
 
-            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
-            var rawEnum = logEventPropertyValue?.ToDecentString();
-
-            if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            if (logEventPropertyValue is null)
             {
-                return enumRepresentation;
+                return null;
+            }
+            
+            string rawEnum = logEventPropertyValue.ToDecentString();
+            
+            try
+            {
+                if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
+                {
+                    return enumRepresentation;
+                }
+            }
+            catch (ArgumentException exception)
+            {
+                throw new FormatException("Cannot correctly parse the incoming Serilog property value to an enumeration", exception);
             }
 
             return null;

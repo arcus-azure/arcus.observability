@@ -48,6 +48,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             RequestDuration = duration;
             RequestTime = DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat);
             Context = context;
+            Context[ContextProperties.General.TelemetryType] = TelemetryType.Request;
         }
 
         /// <summary>

@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
             
             context = context ?? new Dictionary<string, object>();
-
+            
             var statusCode = (int)responseStatusCode;
             string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
@@ -382,7 +382,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
             
             context = context ?? new Dictionary<string, object>();
-
+            
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Search", 
                 dependencyName: null, 

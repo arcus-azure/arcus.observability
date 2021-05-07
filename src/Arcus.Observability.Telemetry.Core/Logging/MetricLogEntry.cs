@@ -27,6 +27,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             MetricValue = value;
             Timestamp = timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat);
             Context = context ?? new Dictionary<string, object>();
+            Context[ContextProperties.General.TelemetryType] = TelemetryType.Metrics;
         }
 
         /// <summary>
