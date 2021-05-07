@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters.Dependencies;
 using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Serilog.Events;
@@ -20,15 +20,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
         private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
         private readonly RequestTelemetryConverter _requestTelemetryConverter = new RequestTelemetryConverter();
-        
-        private readonly CustomDependencyTelemetryConverter _customDependencyTelemetryConverter = 
-            new CustomDependencyTelemetryConverter();
-
-        private readonly HttpDependencyTelemetryConverter _httpDependencyTelemetryConverter =
-            new HttpDependencyTelemetryConverter();
-
-        private readonly SqlDependencyTelemetryConverter _sqlDependencyTelemetryConverter =
-            new SqlDependencyTelemetryConverter();
+        private readonly DependencyTelemetryConverter _dependencyTelemetryConverter = new DependencyTelemetryConverter();
 
         private ApplicationInsightsTelemetryConverter(ApplicationInsightsSinkOptions options)
         {
@@ -48,32 +40,22 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 return _exceptionTelemetryConverter.Convert(logEvent, formatProvider);
             }
 
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.RequestViaHttp))
+            if (logEvent.Properties.ContainsKey(ContextProperties.RequestTracking.RequestLogEntry))
             {
                 return _requestTelemetryConverter.Convert(logEvent, formatProvider);
             }
 
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.Dependency))
+            if (logEvent.Properties.ContainsKey(ContextProperties.DependencyTracking.DependencyLogEntry))
             {
-                return _customDependencyTelemetryConverter.Convert(logEvent, formatProvider);
+                return _dependencyTelemetryConverter.Convert(logEvent, formatProvider);
             }
 
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.DependencyViaHttp))
-            {
-                return _httpDependencyTelemetryConverter.Convert(logEvent, formatProvider);
-            }
-
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.DependencyViaSql))
-            {
-                return _sqlDependencyTelemetryConverter.Convert(logEvent, formatProvider);
-            }
-
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.Event))
+            if (logEvent.Properties.ContainsKey(ContextProperties.EventTracking.EventLogEntry))
             {
                 return _eventTelemetryConverter.Convert(logEvent, formatProvider);
             }
 
-            if (logEvent.MessageTemplate.Text.StartsWith(MessagePrefixes.Metric))
+            if (logEvent.Properties.ContainsKey(ContextProperties.MetricTracking.MetricLogEntry))
             {
                 return _metricTelemetryConverter.Convert(logEvent, formatProvider);
             }
