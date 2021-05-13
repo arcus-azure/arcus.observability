@@ -29,7 +29,7 @@ namespace Arcus.Observability.Telemetry.Core
         Events = 4,
         
         /// <summary>
-        /// Specifies the type of logged telemetry as value metrics.
+        /// Specifies the type of logged telemetry as metrics.
         /// </summary>
         Metrics = 8
     }
