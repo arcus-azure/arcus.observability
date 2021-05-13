@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Filters;
@@ -61,23 +62,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         public void LogEventWithoutTelemetry_DoesntFilterAnything_Succeeds()
         {
             // Arrange
-            DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
-            var level = _bogusGenerator.Random.Enum<LogEventLevel>();
-            var telemetryType = _bogusGenerator.Random.Enum<TelemetryType>();
-            var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, Enumerable.Empty<LogEventProperty>());
-            var filter = TelemetryTypeFilter.On(telemetryType);
-            
-            // Act
-            bool isEnabled = filter.IsEnabled(logEvent);
-            
-            // Assert
-            Assert.False(isEnabled);
-        }
-
-        [Fact]
-        public void LogEventWithoutValidTelemetry_DoesntFilterAnything_Succeeds()
-        {
-            // Assert
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
             var level = _bogusGenerator.Random.Enum<LogEventLevel>();
             var telemetryType = _bogusGenerator.Random.Enum<TelemetryType>();
