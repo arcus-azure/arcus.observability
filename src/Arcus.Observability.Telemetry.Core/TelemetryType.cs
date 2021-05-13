@@ -3,8 +3,8 @@
 namespace Arcus.Observability.Telemetry.Core
 {
     /// <summary>
-    /// Represents the supported types of telemetry available to track during extensions on the <see cref="ILogger"/>.
-    /// Compatible with Azure Application Insights.
+    /// <para>Represents the supported types of telemetry available to track during extensions on the <see cref="ILogger"/>.</para>
+    /// <para>Also compatible (but not limited to) with Azure Application Insights (see: <see href="https://observability.arcus-azure.net/features/sinks/azure-application-insights" /> for more information).</para>
     /// </summary>
     public enum TelemetryType
     {
