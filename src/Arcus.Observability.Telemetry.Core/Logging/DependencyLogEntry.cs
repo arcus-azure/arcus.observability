@@ -49,6 +49,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             StartTime = startTime.ToString(FormatSpecifiers.InvariantTimestampFormat);
             Duration = duration;
             Context = context;
+            Context[ContextProperties.General.TelemetryType] = TelemetryType.Dependency;
         }
 
         /// <summary>
