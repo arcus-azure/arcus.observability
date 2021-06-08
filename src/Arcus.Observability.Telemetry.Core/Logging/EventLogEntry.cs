@@ -22,6 +22,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
 
             EventName = name;
             Context = context ?? new Dictionary<string, object>();
+            Context[ContextProperties.General.TelemetryType] = TelemetryType.Events;
         }
 
         /// <summary>
