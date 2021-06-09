@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
+using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
 
@@ -19,29 +21,36 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <returns>Telemetry entry to emit to Azure Application Insights</returns>
         protected override DependencyTelemetry CreateTelemetryEntry(LogEvent logEvent, IFormatProvider formatProvider)
         {
-            var target = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.TargetName);
-            var dependencyName = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.DependencyName);
-            var data = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.DependencyData);
-            var startTime = logEvent.Properties.GetAsDateTimeOffset(ContextProperties.DependencyTracking.StartTime);
-            var duration = logEvent.Properties.GetAsTimeSpan(ContextProperties.DependencyTracking.Duration);
-            var resultCode = logEvent.Properties.GetAsRawString(ContextProperties.DependencyTracking.ResultCode);
-            var outcome = logEvent.Properties.GetAsBool(ContextProperties.DependencyTracking.IsSuccessful);
-            var operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
-            string dependencyType = GetDependencyType(logEvent);
+            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights Dependency telemetry instance");
+            Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights Dependency telemetry instance");
 
+            StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+            string target = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.TargetName));
+            string dependencyName = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.DependencyName));
+            string data = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.DependencyData));
+            DateTimeOffset startTime = logEntry.Properties.GetAsDateTimeOffset(nameof(DependencyLogEntry.StartTime));
+            TimeSpan duration = logEntry.Properties.GetAsTimeSpan(nameof(DependencyLogEntry.Duration));
+            string resultCode = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.ResultCode));
+            bool outcome = logEntry.Properties.GetAsBool(nameof(DependencyLogEntry.IsSuccessful));
+            IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(DependencyLogEntry.Context));
+           
+            string dependencyType = GetDependencyType(logEntry);
+            string operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
+            
             var dependencyTelemetry = new DependencyTelemetry(dependencyType, target, dependencyName, data, startTime, duration, resultCode, success: outcome)
             {
                 Id = operationId
             };
 
+            dependencyTelemetry.Properties.AddRange(context);
             return dependencyTelemetry;
         }
 
         /// <summary>
-        ///     Gets the custom dependency type name from the given <paramref name="logEvent"/> to use in an <see cref="DependencyTelemetry"/> instance.
+        ///     Gets the custom dependency type name from the given <paramref name="logEntry"/> to use in an <see cref="DependencyTelemetry"/> instance.
         /// </summary>
-        /// <param name="logEvent">The logged event.</param>
-        protected abstract string GetDependencyType(LogEvent logEvent);
+        /// <param name="logEntry">The logged event.</param>
+        protected abstract string GetDependencyType(StructureValue logEntry);
 
         /// <summary>
         ///     Provides capability to remove intermediary properties that are logged, but should not be tracked in the sink
@@ -49,14 +58,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="logEvent">Event that was logged and written to this sink</param>
         protected override void RemoveIntermediaryProperties(LogEvent logEvent)
         {
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.DependencyType);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.TargetName);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.DependencyName);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.DependencyData);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.IsSuccessful);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.ResultCode);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.StartTime);
-            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.Duration);
+            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to remove the intermediary Azure Application Insights Dependency telemetry properties");
+            logEvent.RemovePropertyIfPresent(ContextProperties.DependencyTracking.DependencyLogEntry);
         }
     }
 }

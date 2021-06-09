@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using GuardNet;
 
 // ReSharper disable once CheckNamespace
@@ -11,6 +12,8 @@ namespace Serilog.Events
     /// </summary>
     public static class LogEventPropertyValueExtensions
     {
+        private static readonly StructureValue EmptyStructureValue = new StructureValue(new LogEventProperty[0]);
+        
         /// <summary>
         ///     Provide a string representation for a property key
         /// </summary>
@@ -93,17 +96,38 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
+        /// <exception cref="FormatException">
+        ///     Thrown when the Serilog property value cannot be parsed correctly because the <typeparamref name="TEnum"/> does not present an enumeration type.
+        /// </exception>
+        /// <returns>
+        ///     The parsed representation of the Serilog property value as the provided <typeparamref name="TEnum"/> enumeration type; <c>null</c> otherwise.
+        /// </returns>
         public static TEnum? GetAsEnum<TEnum>(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
             where TEnum : struct
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues), "Requires a series of event properties to retrieve a Serilog event property as a enumeration representation");
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a enumeration representation");
 
-            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
-            var rawEnum = logEventPropertyValue?.ToDecentString();
-
-            if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            if (logEventPropertyValue is null)
             {
-                return enumRepresentation;
+                return null;
+            }
+            
+            string rawEnum = logEventPropertyValue.ToDecentString();
+            
+            try
+            {
+                if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
+                {
+                    return enumRepresentation;
+                }
+            }
+            catch (ArgumentException exception)
+            {
+                throw new FormatException("Cannot correctly parse the incoming Serilog property value to an enumeration", exception);
             }
 
             return null;
@@ -149,6 +173,33 @@ namespace Serilog.Events
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
             var value = bool.Parse(logEventPropertyValue);
             return value;
+        }
+        
+        /// <summary>
+        /// Provide a <see cref="StructureValue"/> representation for a property value associated with the <paramref name="propertyKey"/>.
+        /// </summary>
+        /// <param name="properties">The series of log properties, containing a <see cref="StructureValue"/> with the <paramref name="propertyKey"/>.</param>
+        /// <param name="propertyKey">The key that is associated with the property value that's an <see cref="StructureValue"/>.</param>
+        /// <returns>
+        ///     An <see cref="StructureValue"/> that contains its own name-value pair collection of the log event; an empty collection instead.
+        /// </returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
+        public static StructureValue GetAsStructureValue(this IReadOnlyDictionary<string, LogEventPropertyValue> properties, string propertyKey)
+        {
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve the structure value from the log event");
+            
+            if (properties is null)
+            {
+                return EmptyStructureValue;
+            }
+            
+            if (properties.TryGetValue(propertyKey, out LogEventPropertyValue propertyValue)
+                && propertyValue is StructureValue value)
+            {
+                return value;
+            }
+
+            return EmptyStructureValue;
         }
 
         /// <summary>

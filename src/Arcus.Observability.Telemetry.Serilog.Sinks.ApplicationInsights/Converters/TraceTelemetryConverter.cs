@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
@@ -22,6 +23,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="formatProvider">The instance to control formatting.</param>
         public override IEnumerable<ITelemetry> Convert(LogEvent logEvent, IFormatProvider formatProvider)
         {
+            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights trace telemetry instance");
+            Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights trace telemetry instance");
+
             foreach (ITelemetry telemetry in base.Convert(logEvent, formatProvider))
             {
                 _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetry);

@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Arcus.Observability.Telemetry.AspNetCore\Arcus.Observability.Telemetry.AspNetCore.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Filters\Arcus.Observability.Telemetry.Serilog.Filters.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj" />
   </ItemGroup>

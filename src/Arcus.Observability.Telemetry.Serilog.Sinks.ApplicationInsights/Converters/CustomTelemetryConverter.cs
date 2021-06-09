@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
+using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
@@ -25,9 +26,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="formatProvider">The instance to control formatting.</param>
         public override IEnumerable<ITelemetry> Convert(LogEvent logEvent, IFormatProvider formatProvider)
         {
+            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights telemetry instance");
+            Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights telemetry instance");
+
             TEntry telemetryEntry = CreateTelemetryEntry(logEvent, formatProvider);
 
+#pragma warning disable 618 // Until we go to a new major.
             AssignTelemetryContextProperties(logEvent, telemetryEntry);
+#pragma warning restore 618
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
 
             RemoveIntermediaryProperties(logEvent);
@@ -48,6 +54,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// </summary>
         /// <param name="logEvent">The log event to extract the properties from.</param>
         /// <param name="telemetry">The destination telemetry instance to add the properties to.</param>
+        [Obsolete("Telemetry context properties are not available anymore at the root of the Serilog properties but on a sub-level custom log entry objects")]
         protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
         {
             AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.TelemetryContext);
