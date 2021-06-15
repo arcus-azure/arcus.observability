@@ -33,7 +33,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Metric, logMessage);
             Assert.Contains(TelemetryType.Metrics.ToString(), logMessage);
             Assert.Contains(metricName, logMessage);
             Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -53,7 +52,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Metric, logMessage);
             Assert.Contains(TelemetryType.Metrics.ToString(), logMessage);
             Assert.Contains(metricName, logMessage);
             Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), logMessage);
@@ -84,7 +82,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Event, logMessage);
             Assert.Contains(TelemetryType.Events.ToString(), logMessage);
             Assert.Contains(eventName, logMessage);
         }
@@ -116,7 +113,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(dependencyType, logMessage);
             Assert.Contains(dependencyData, logMessage);
@@ -188,7 +184,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(dependencyType, logMessage);
             Assert.Contains(dependencyData, logMessage);
@@ -257,7 +252,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(dependencyType, logMessage);
             Assert.Contains(dependencyData, logMessage);
@@ -349,7 +343,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(dependencyType, logMessage);
             Assert.Contains(dependencyData, logMessage);
@@ -420,7 +413,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(vaultUri, logMessage);
             Assert.Contains(secretName, logMessage);
@@ -505,7 +497,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(vaultUri, logMessage);
             Assert.Contains(secretName, logMessage);
@@ -576,7 +567,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(searchServiceName, logMessage);
             Assert.Contains(operationName, logMessage);
@@ -618,7 +608,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(searchServiceName, logMessage);
             Assert.Contains(operationName, logMessage);
@@ -643,7 +632,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(entityType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
@@ -685,7 +673,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(entityType.ToString(), logMessage);
             Assert.Contains(entityName, logMessage);
@@ -709,7 +696,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(queueName, logMessage);
@@ -749,7 +735,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(ServiceBusEntityType.Queue.ToString(), logMessage);
             Assert.Contains(queueName, logMessage);
@@ -773,7 +758,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(topicName, logMessage);
@@ -813,7 +797,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency + " Azure Service Bus", logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(ServiceBusEntityType.Topic.ToString(), logMessage);
             Assert.Contains(topicName, logMessage);
@@ -840,9 +823,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
-            Assert.Contains(TelemetryType.Dependency
-                .ToString(), logMessage);
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(serverName, logMessage);
             Assert.Contains(databaseName, logMessage);
             Assert.Contains(tableName, logMessage);
@@ -885,7 +866,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(containerName, logMessage);
             Assert.Contains(accountName, logMessage);
@@ -928,7 +908,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(containerName, logMessage);
             Assert.Contains(accountName, logMessage);
@@ -953,7 +932,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(tableName, logMessage);
             Assert.Contains(accountName, logMessage);
@@ -996,7 +974,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(tableName, logMessage);
             Assert.Contains(accountName, logMessage);
@@ -1021,7 +998,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(namespaceName, logMessage);
             Assert.Contains(eventHubName, logMessage);
@@ -1064,7 +1040,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(namespaceName, logMessage);
             Assert.Contains(eventHubName, logMessage);
@@ -1088,7 +1063,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(iotHubName, logMessage);
             Assert.Contains(iotHubName, logMessage);
@@ -1129,7 +1103,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(iotHubName, logMessage);
             Assert.Contains(iotHubName, logMessage);
@@ -1156,7 +1129,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(iotHubName, logMessage);
             Assert.Contains(iotHubName, logMessage);
@@ -1204,7 +1176,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(iotHubName, logMessage);
             Assert.Contains(iotHubName, logMessage);
@@ -1230,7 +1201,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(container, logMessage);
             Assert.Contains(database, logMessage);
@@ -1276,7 +1246,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Dependency, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(container, logMessage);
             Assert.Contains(database, logMessage);
@@ -1308,7 +1277,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Assert
 
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(serverName, logMessage);
             Assert.Contains(databaseName, logMessage);
@@ -1338,7 +1306,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(serverName, logMessage);
             Assert.Contains(databaseName, logMessage);
@@ -1494,7 +1461,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaSql, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(serverName, logMessage);
             Assert.Contains(databaseName, logMessage);
@@ -1520,7 +1486,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(request.RequestUri.Host, logMessage);
             Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
@@ -1576,7 +1541,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.DependencyViaHttp, logMessage);
             Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
             Assert.Contains(request.RequestUri.Host, logMessage);
             Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
@@ -1610,7 +1574,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
             Assert.Contains(TelemetryType.Request.ToString(), logMessage);
             Assert.Contains(path, logMessage);
             Assert.Contains(host, logMessage);
@@ -1638,7 +1601,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
             Assert.Contains(TelemetryType.Request.ToString(), logMessage);
             Assert.Contains(path, logMessage);
             Assert.Contains(host, logMessage);
@@ -1856,7 +1818,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
             Assert.Contains(TelemetryType.Request.ToString(), logMessage);
             Assert.Contains(path, logMessage);
             Assert.Contains(host, logMessage);
@@ -1881,7 +1842,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             var logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.RequestViaHttp, logMessage);
             Assert.Contains(TelemetryType.Request.ToString(), logMessage);
             Assert.Contains(path, logMessage);
             Assert.Contains(host, logMessage);
@@ -1935,7 +1895,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Event, logMessage);
             Assert.Contains(TelemetryType.Events.ToString(), logMessage);
             Assert.Contains(message, logMessage);
             Assert.Contains("[EventType, Security]", logMessage);
@@ -1957,7 +1916,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             string logMessage = logger.WrittenMessage;
-            Assert.StartsWith(MessagePrefixes.Event, logMessage);
             Assert.Contains(TelemetryType.Events.ToString(), logMessage);
             Assert.Contains(message, logMessage);
             Assert.Contains("[EventType, Security]", logMessage);

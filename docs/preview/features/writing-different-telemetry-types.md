@@ -64,7 +64,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogBlobStorageDependency(accountName: "multimedia", containerName: "images", isSuccessful: true, startTime, durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure blob",  "DependencyName": "images", "TargetName": "multimedia", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure blob",  "DependencyName": "images", "TargetName": "multimedia", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring Azure Cosmos DB dependencies
@@ -85,7 +85,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogCosmosSqlDependency(accountName: "administration", database: "docs", container: "purchases", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure DocumentDB", "DependencyData": "docs/purchases", "TargetName": "administration", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful" true, "Context": {}}
+// Output: {"DependencyType": "Azure DocumentDB", "DependencyData": "docs/purchases", "TargetName": "administration", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful" true, "Context": {}}
 ```
 
 ### Measuring Azure Event Hubs dependencies
@@ -104,7 +104,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName: "temperature", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: "Dependency {"DependencyType": "Azure Event Hubs", "DependencyData": "be.sensors.contoso", "TargetName": "temerature", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure Event Hubs", "DependencyData": "be.sensors.contoso", "TargetName": "temerature", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring Azure IoT Hub dependencies
@@ -125,7 +125,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure IoT Hub", "TargetName": "sensors", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure IoT Hub", "TargetName": "sensors", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 Or, alternatively you can pass allong the IoT connection string itself so the host name will be selected for you.
@@ -152,7 +152,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure IoT Hub", "TargetName": "sensors", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure IoT Hub", "TargetName": "sensors", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring Azure Key Vault dependencies
@@ -173,7 +173,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.AzureKeyVaultDependency(vaultUri: "https://my-secret-store.vault.azure.net", secretName: "ServiceBus-ConnectionString", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure key vault", "DependencyData": "ServiceBus-ConnectionString", "TargetName": "https://my-secret-store.vault.azure.net", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure key vault", "DependencyData": "ServiceBus-ConnectionString", "TargetName": "https://my-secret-store.vault.azure.net", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring Azure Search dependencies
@@ -192,7 +192,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogAzureSearchDependency(searchServiceName: "orders-search", operationName: "get-orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure Search", "DependencyData": "get-orders", "TargetName": "orders-search", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure Search", "DependencyData": "get-orders", "TargetName": "orders-search", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 
 ### Measuring Azure Service Bus dependencies
 
@@ -210,7 +210,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow
 
 logger.LogServiceBusQueueDependency(queueName: "ordersqueue", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure Service Bus", "TargetName": "ordersqueue", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {"EntityType": "Queue"}}
+// Output: {"DependencyType": "Azure Service Bus", "TargetName": "ordersqueue", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {"EntityType": "Queue"}}
 ```
 
 Note that we have an `LogServiceBusTopicDependency` to log dependency logs for an Azure Service Bus Topic and an `LogServiceBusDependency` to log Azure Service Bus logs where the entity type is not known.
@@ -231,7 +231,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogTableStorageDependency(accountName: "orderAccount", tableName: "orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "Azure table", "DependencyData": "orders", "TargetName": "orderAccount", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Azure table", "DependencyData": "orders", "TargetName": "orderAccount", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring HTTP dependencies
@@ -256,7 +256,7 @@ var startTime = DateTimeOffset.UtcNow;
 var response = await httpClient.SendAsync(request);
 
 logger.LogHttpDependency(request, statusCode: response.StatusCode, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: HTTP Dependency {"DependencyType" "Http", "DependencyName": "POST /r/ujxglouj", "TargetName": "requestbin.net", "ResultCode": 200, "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType" "Http", "DependencyName": "POST /r/ujxglouj", "TargetName": "requestbin.net", "ResultCode": 200, "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring SQL dependencies
@@ -276,7 +276,7 @@ durationMeasurement.Start();
 var products = await _repository.GetProducts();
 
 logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: SQL Dependency {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
@@ -305,7 +305,7 @@ durationMeasurement.Start();
 var products = await _repository.GetProducts();
 
 logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
-// Output: SQL Dependency {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring custom dependencies
@@ -325,7 +325,7 @@ string dependencyName = "SendGrid";
 object dependencyData = "http://my.sendgrid.uri/"
 
 logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: Dependency {"DependencyType": "SendGrid", "DependencyData": "http://my.sendgrid.uri/", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+// Output: {"DependencyType": "SendGrid", "DependencyData": "http://my.sendgrid.uri/", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Making it easier to measure dependencies
@@ -397,7 +397,7 @@ Here is how you can report an `Order Created` event:
 using Microsoft.Extensions.Logging;
 
 logger.LogEvent("Order Created");
-// Output: Events {"Name": "Order Created", "Context": {}}
+// Output: {"EventName": "Order Created", "Context": {}}
 ```
 
 ### Security Events
@@ -410,7 +410,7 @@ Here is how an invalid `Order` can be reported:
 using Microsoft.Extensions.Logging;
 
 loger.LogSecurityEvent("Invalid Order");
-// Output: Events {"Name": "Invalid Order", "Context": {"EventType": "Security"}}
+// Output: {"EventName": "Invalid Order", "Context": {"EventType": "Security"}}
 ```
 
 ## Metrics
@@ -423,7 +423,7 @@ Here is how you can report an `Invoice Received` metric:
 using Microsoft.Extensions.Logging;
 
 logger.LogMetric("Invoice Received", 133.37, telemetryContext);
-// Output: Metric {"Name": "Invoice Received", "Value": 133.37, "Timestamp": "03/23/2020 09:32:02 +00:00", "Context: {}}
+// Output: {"MetricName": "Invoice Received", "MetricValue": 133.37, "Timestamp": "03/23/2020 09:32:02 +00:00", "Context: {}}
 ```
 
 ## Requests
@@ -458,7 +458,7 @@ var stopWatch = Stopwatch.StartNew();
 await _next(httpContext);
 
 logger.LogRequest(httpContext.Request, httpContext.Response, stopWatch.Elapsed);
-// Output: HTTP Request {"RequestMethod": "GET", "RequestHost": "http://localhost:5000/", "RequestUri": "http://localhost:5000/weatherforecast", "ResponseStatusCode": 200, "RequestDuration": "00:00:00.0191554", "RequestTime": "03/23/2020 10:12:55 +00:00", "Context": {}}
+// Output: {"RequestMethod": "GET", "RequestHost": "http://localhost:5000/", "RequestUri": "http://localhost:5000/weatherforecast", "ResponseStatusCode": 200, "RequestDuration": "00:00:00.0191554", "RequestTime": "03/23/2020 10:12:55 +00:00", "Context": {}}
 ```
 
 [&larr; back](/)

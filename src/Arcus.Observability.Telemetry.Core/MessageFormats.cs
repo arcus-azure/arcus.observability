@@ -11,7 +11,7 @@ namespace Arcus.Observability.Telemetry.Core
         /// <summary>
         /// Gets the message format to log external dependencies; compatible with Application Insights 'Dependencies'.
         /// </summary>
-        public const string DependencyFormat = MessagePrefixes.Dependency + " {@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
+        public const string DependencyFormat = "{@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
 
         /// <summary>
         /// Gets the message format to log external dependencies without any custom data value (<see cref="ContextProperties.DependencyTracking.DependencyData"/>);
@@ -44,26 +44,26 @@ namespace Arcus.Observability.Telemetry.Core
         /// <summary>
         /// Gets the message format to log HTTP dependencies; compatible with Application Insights 'Dependencies'.
         /// </summary>
-        public const string HttpDependencyFormat = MessagePrefixes.DependencyViaHttp + " {@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
+        public const string HttpDependencyFormat = "{@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
 
         /// <summary>
         /// Gets the message format to log SQL dependencies; compatible with Application Insights 'Dependencies'.
         /// </summary>
-        public const string SqlDependencyFormat = MessagePrefixes.DependencyViaSql + " {@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
+        public const string SqlDependencyFormat = "{@" + ContextProperties.DependencyTracking.DependencyLogEntry + "}";
 
         /// <summary>
         /// Gets the message format to log events; compatible with Application Insights 'Events'.
         /// </summary>
-        public const string EventFormat = MessagePrefixes.Event + " {@" + ContextProperties.EventTracking.EventLogEntry + "}";
+        public const string EventFormat = "{@" + ContextProperties.EventTracking.EventLogEntry + "}";
 
         /// <summary>
         /// Gets the message format to log metrics; compatible with Application Insights 'Metrics'.
         /// </summary>
-        public const string MetricFormat = MessagePrefixes.Metric + " {@" + ContextProperties.MetricTracking.MetricLogEntry + "}";
+        public const string MetricFormat = "{@" + ContextProperties.MetricTracking.MetricLogEntry + "}";
         
         /// <summary>
         /// Gets the message format to log HTTP requests; compatible with Application Insights 'Requests'.
         /// </summary>
-        public const string RequestFormat = MessagePrefixes.RequestViaHttp + " {@" + ContextProperties.RequestTracking.RequestLogEntry + "}";
+        public const string RequestFormat = "{@" + ContextProperties.RequestTracking.RequestLogEntry + "}";
     }
 }
