@@ -1,3 +1,4 @@
 variables:
   DotNet.Sdk.Version: '3.1.201'
   Project: 'Arcus.Observability'
+  Vm.Image: 'ubuntu-latest'
