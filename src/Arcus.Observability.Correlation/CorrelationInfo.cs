@@ -15,7 +15,7 @@ namespace Arcus.Observability.Correlation
         /// <param name="transactionId">The unique ID information that related different requests together in a single transaction.</param>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationId"/> is blank.</exception>
         public CorrelationInfo(string operationId, string transactionId)
-            : this(operationId, transactionId, parentOperationId: null)
+            : this(operationId, transactionId, operationParentId: null)
         {
         }
 
@@ -24,15 +24,15 @@ namespace Arcus.Observability.Correlation
         /// </summary>
         /// <param name="operationId">The unique ID information to identify the request.</param>
         /// <param name="transactionId">The ID information that related different requests together in a single transaction.</param>
-        /// <param name="parentOperationId">The ID information of the original service that initiated this request.</param>
+        /// <param name="operationParentId">The ID information of the original service that initiated this request.</param>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationId"/> is blank.</exception>
-        public CorrelationInfo(string operationId, string transactionId, string parentOperationId)
+        public CorrelationInfo(string operationId, string transactionId, string operationParentId)
         {
             Guard.NotNullOrEmpty(operationId, nameof(operationId), "Requires a non-blank operation ID to create a correlation instance");
 
             OperationId = operationId;
             TransactionId = transactionId;
-            ParentOperationId = parentOperationId;
+            OperationParentId = operationParentId;
         }
 
         /// <summary>
@@ -48,6 +48,6 @@ namespace Arcus.Observability.Correlation
         /// <summary>
         /// Gets the ID of the original service that initiated this request.
         /// </summary>
-        public string ParentOperationId { get; }
+        public string OperationParentId { get; }
     }
 }
