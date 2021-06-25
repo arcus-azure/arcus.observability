@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
@@ -109,9 +110,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = "Message that will be correlated";
             string operationId = $"operation-{Guid.NewGuid()}";
             string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"operation-parent-{Guid.NewGuid()}";
             
-            DefaultCorrelationInfoAccessor.Instance.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId));
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo()))
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -125,13 +129,19 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(traceEvents.Value, trace =>
+                    
+                    AssertX.Any(traceEvents.Value, trace =>
                     {
-                        return message == trace.Trace.Message
-                               && trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId)
-                               && operationId == actualOperationId
-                               && trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId)
-                               && transactionId == actualTransactionId;
+                        Assert.Equal(message, trace.Trace.Message);
+                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId), "Requires a operation ID in the custom dimensions");
+                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
+                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
+                        
+                        Assert.Equal(operationId, actualOperationId);
+                        Assert.Equal(transactionId, actualTransactionId);
+                        Assert.Equal(operationParentId, actualOperationParentId);
+                        Assert.Equal(operationId, trace.Operation.Id);
+                        Assert.Equal(operationParentId, trace.Operation.ParentId);
                     });
                 });
             }

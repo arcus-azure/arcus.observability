@@ -21,9 +21,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 return;
             }
 
-            if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string correlationId))
+            if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
             {
-                telemetryEntry.Context.Operation.Id = correlationId;
+                telemetryEntry.Context.Operation.Id = operationId;
+            }
+
+            if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationParentId, out string operationParentId))
+            {
+                telemetryEntry.Context.Operation.ParentId = operationParentId;
             }
         }
     }
