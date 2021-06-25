@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Arcus.Observability.Correlation;
 using Arcus.Observability.Tests.Integration.Fixture;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
@@ -139,6 +140,46 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result => result.Exception.OuterMessage == exception.Message && result.Cloud.RoleName == componentName);
+                });
+            }
+        }
+
+        [Fact]
+        public async Task LogExceptionWithCorrelationInfo_SinksToApplicationInsights_ResultsInTelemetryWithCorrelationInfo()
+        {
+            // Arrange
+            string message = BogusGenerator.Lorem.Sentence();
+            var exception = new PlatformNotSupportedException(message);
+            
+            string operationId = $"operation-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"operation-parent-{Guid.NewGuid()}";
+            
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+                
+                // Act
+                logger.LogCritical(exception, exception.Message);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    
+                    AssertX.Any(results.Value, result =>
+                    {
+                        Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                        Assert.Equal(operationId, result.Operation.Id);
+                        Assert.Equal(operationParentId, result.Operation.ParentId);
+                    });
                 });
             }
         }

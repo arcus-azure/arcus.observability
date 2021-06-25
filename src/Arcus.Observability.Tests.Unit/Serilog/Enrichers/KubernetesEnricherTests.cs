@@ -3,7 +3,7 @@ using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Serilog;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Serilog
+namespace Arcus.Observability.Tests.Unit.Serilog.Enrichers
 {
     [Trait("Category", "Unit")]
     public class KubernetesEnricherTests

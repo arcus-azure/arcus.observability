@@ -4,7 +4,7 @@ using Arcus.Observability.Tests.Unit.Correlation;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Arcus.Observability.Tests.Unit.Serilog 
+namespace Arcus.Observability.Tests.Unit.Serilog.Enrichers 
 {
     /// <summary>
     /// Test implementation for the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> using the test <see cref="TestCorrelationInfo"/> model.
