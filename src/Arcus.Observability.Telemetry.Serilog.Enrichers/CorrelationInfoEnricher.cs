@@ -106,7 +106,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationIdPropertyName, correlationInfo.OperationId);
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.TransactionIdPropertyName, correlationInfo.TransactionId);
-            EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationParentIdPropertyName, correlationInfo.ParentOperationId);
+            EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationParentIdPropertyName, correlationInfo.OperationParentId);
         }
 
         /// <summary>
