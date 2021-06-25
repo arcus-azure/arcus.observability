@@ -2,6 +2,7 @@
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
+using Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration;
 using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Configuration;
@@ -138,6 +139,9 @@ namespace Serilog
         /// <summary>
         /// Adds the previously registered <see cref="ICorrelationInfoAccessor"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
+        /// <remarks>
+        ///     Use the <see cref="WithCorrelationInfo(LoggerEnrichmentConfiguration,IServiceProvider,Action{CorrelationInfoEnricherOptions})"/> overload to configure the operation parent ID.
+        /// </remarks>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="serviceProvider">The instance to provide the <see cref="ICorrelationInfoAccessor"/> service while enriching the log events with the correlation information.</param>
         /// <param name="operationIdPropertyName">The name of the property to enrich the log event with the correlation operation ID.</param>
@@ -157,6 +161,25 @@ namespace Serilog
 
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
+        }
+        
+        /// <summary>
+        /// Adds the previously registered <see cref="ICorrelationInfoAccessor"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="serviceProvider">The instance to provide the <see cref="ICorrelationInfoAccessor"/> service while enriching the log events with the correlation information.</param>
+        /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="serviceProvider"/> is <c>null</c>.</exception>
+        public static LoggerConfiguration WithCorrelationInfo(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
+            IServiceProvider serviceProvider,
+            Action<CorrelationInfoEnricherOptions> configureOptions)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
+            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
+
+            var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor>();
+            return WithCorrelationInfo(enrichmentConfiguration, accessor, configureOptions);
         }
 
         /// <summary>
@@ -184,6 +207,9 @@ namespace Serilog
         /// <summary>
         /// Adds the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
+        /// <remarks>
+        ///     Use the <see cref="WithCorrelationInfo{TCorrelationInfo}(LoggerEnrichmentConfiguration,IServiceProvider,Action{CorrelationInfoEnricherOptions})"/> overload to configure the operation parent ID.
+        /// </remarks>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="serviceProvider">The instance to provide the <see cref="ICorrelationInfoAccessor"/> service while enriching the log events with the correlation information.</param>
         /// <param name="operationIdPropertyName">The name of the property to enrich the log event with the correlation operation ID.</param>
@@ -205,10 +231,33 @@ namespace Serilog
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
         }
+        
+        /// <summary>
+        /// Adds the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="serviceProvider">The instance to provide the <see cref="ICorrelationInfoAccessor"/> service while enriching the log events with the correlation information.</param>
+        /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="serviceProvider"/> is <c>null</c>.</exception>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
+            IServiceProvider serviceProvider,
+            Action<CorrelationInfoEnricherOptions> configureOptions)
+            where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
+            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
+
+            var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>();
+            return WithCorrelationInfo(enrichmentConfiguration, accessor, configureOptions);
+        }
 
         /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
+        /// <remarks>
+        ///     Use the <see cref="WithCorrelationInfo(LoggerEnrichmentConfiguration,ICorrelationInfoAccessor,Action{CorrelationInfoEnricherOptions})"/> to configure the operation parent ID.
+        /// </remarks>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
         /// <param name="operationIdPropertyName">The name of the property to enrich the log event with the correlation operation ID.</param>
@@ -228,11 +277,33 @@ namespace Serilog
 
             return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor, operationIdPropertyName, transactionIdPropertyName);
         }
+        
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <see cref="CorrelationInfo"/> model.</param>
+        /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
+        public static LoggerConfiguration WithCorrelationInfo(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            ICorrelationInfoAccessor correlationInfoAccessor,
+            Action<CorrelationInfoEnricherOptions> configureOptions)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
+
+            return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor, configureOptions);
+        }
 
         /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
         /// </summary>
         /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <remarks>
+        ///     Use the <see cref="WithCorrelationInfo{TCorrelationInfo}(LoggerEnrichmentConfiguration,ICorrelationInfoAccessor{TCorrelationInfo},Action{CorrelationInfoEnricherOptions})"/>
+        ///     overload to configure the the operation parent ID.
+        /// </remarks>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
         /// <param name="correlationInfoAccessor">The accessor implementation for the <typeparamref name="TCorrelationInfo"/> model.</param>
         /// <param name="operationIdPropertyName">The name of the property to enrich the log event with the correlation operation ID.</param>
@@ -254,6 +325,29 @@ namespace Serilog
             return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor, operationIdPropertyName, transactionIdPropertyName));
         }
 
+        /// <summary>
+        /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
+        /// </summary>
+        /// <typeparam name="TCorrelationInfo">The type of the custom <see cref="CorrelationInfo"/> model.</typeparam>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="correlationInfoAccessor">The accessor implementation for the <typeparamref name="TCorrelationInfo"/> model.</param>
+        /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
+        public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
+            Action<CorrelationInfoEnricherOptions> configureOptions) 
+            where TCorrelationInfo : CorrelationInfo
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
+            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
+
+            var options = new CorrelationInfoEnricherOptions();
+            configureOptions?.Invoke(options);
+            
+            return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor, options));
+        }
+        
         /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
         /// </summary>

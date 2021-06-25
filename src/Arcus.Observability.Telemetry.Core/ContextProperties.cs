@@ -11,6 +11,7 @@ namespace Arcus.Observability.Telemetry.Core
         {
             public const string OperationId = "OperationId";
             public const string TransactionId = "TransactionId";
+            public const string OperationParentId = "OperationParentId";
         }
 
         public static class DependencyTracking

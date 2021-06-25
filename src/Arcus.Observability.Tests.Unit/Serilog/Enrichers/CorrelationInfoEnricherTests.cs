@@ -10,7 +10,7 @@ using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Serilog
+namespace Arcus.Observability.Tests.Unit.Serilog.Enrichers
 {
     [Trait("Category", "Unit")]
     public class CorrelationInfoEnricherTests
@@ -44,7 +44,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
         }
 
-         [Fact]
+        [Fact]
         public void LogEvent_WithDefaultCorrelationInfoAccessor_HasOperationIdAndTransactionId()
         {
             // Arrange
@@ -71,6 +71,39 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.True(
                 logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
                 $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+        }
+        
+        [Fact]
+        public void LogEvent_WithDefaultCorrelationInfoAccessor_HasOperationIdAndTransactionIdAndOperationParentId()
+        {
+            // Arrange
+            var expectedOperationId = $"operation-{Guid.NewGuid()}";
+            var expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+            var expectedOperationParentId = $"operation-parent-{Guid.NewGuid()}";
+            
+            var spySink = new InMemoryLogSink();
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(expectedOperationId, expectedTransactionId, expectedOperationParentId));
+
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(correlationInfoAccessor)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationParentId, expectedOperationParentId),
+                $"Expected to have a log property operation parent ID '{ContextProperties.Correlation.OperationParentId}' with the value '{expectedOperationParentId}'");
         }
 
         [Fact]
@@ -117,6 +150,36 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             ILogger logger = new LoggerConfiguration()
                 .Enrich.WithCorrelationInfo(correlationInfoAccessor, operationIdPropertyName: operationIdPropertyName)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(operationIdPropertyName, expectedOperationId),
+                $"Expected to have a log property operation ID '{operationIdPropertyName}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+        }
+        
+        [Fact]
+        public void LogEvent_WithDefaultCorrelationInfoAccessorWithCustomOperationIdPropertyOptions_HasOperationIdAndTransactionId()
+        {
+            // Arrange
+            string operationIdPropertyName = $"operation-name-{Guid.NewGuid():N}";
+            string expectedOperationId = $"operation-{Guid.NewGuid()}";
+            string expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+
+            var spySink = new InMemoryLogSink();
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(expectedOperationId, expectedTransactionId));
+
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(correlationInfoAccessor, options => options.OperationIdPropertyName = operationIdPropertyName)
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
 
@@ -191,6 +254,70 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.True(
                 logEvent.ContainsProperty(transactionIdPropertyName, expectedTransactionId),
                 $"Expected to have a log property transaction ID '{transactionIdPropertyName}' with the value '{expectedTransactionId}'");
+        }
+        
+        [Fact]
+        public void LogEvent_WithDefaultCorrelationInfoAccessorWithCustomTransactionIdPropertyOptions_HasOperationIdAndTransactionId()
+        {
+            // Arrange
+            string transactionIdPropertyName = $"transaction-name-{Guid.NewGuid():N}";
+            string expectedOperationId = $"operation-{Guid.NewGuid()}";
+            string expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+
+            var spySink = new InMemoryLogSink();
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(expectedOperationId, expectedTransactionId));
+
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(correlationInfoAccessor, options => options.TransactionIdPropertyName = transactionIdPropertyName)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(transactionIdPropertyName, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{transactionIdPropertyName}' with the value '{expectedTransactionId}'");
+        }
+        
+        [Fact]
+        public void LogEvent_WithDefaultCorrelationInfoAccessorWithCustomOperationParentIdPropertyOptions_HasOperationIdAndTransactionId()
+        {
+            // Arrange
+            var operationParentIdPropertyName = $"transaction-name-{Guid.NewGuid():N}";
+            var expectedOperationId = $"operation-{Guid.NewGuid()}";
+            var expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+            var expectedOperationParentId = $"operation-parent-{Guid.NewGuid()}";
+            
+            var spySink = new InMemoryLogSink();
+            var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
+            correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(expectedOperationId, expectedTransactionId, expectedOperationParentId));
+
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(correlationInfoAccessor, options => options.OperationParentIdPropertyName = operationParentIdPropertyName)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+            Assert.True(
+                logEvent.ContainsProperty(operationParentIdPropertyName, expectedOperationParentId),
+                $"Expected to have a log property operation parent ID '{operationParentIdPropertyName}' with the value '{expectedOperationParentId}'");
         }
 
         [Fact]
@@ -396,7 +523,35 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogEvent_WithCorrelationInfo_HasOperationIdAndTransactionId()
+        public void LogEvent_WithCorrelationInfo_HasOperationId()
+        {
+            // Arrange
+            var expectedOperationId = $"operation-{Guid.NewGuid()}";
+
+            var spySink = new InMemoryLogSink();
+            var stubAccessor = new Mock<ICorrelationInfoAccessor>();
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
+                        .Returns(new CorrelationInfo(expectedOperationId, transactionId: null));
+            
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(stubAccessor.Object)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.False(logEvent.Properties.ContainsKey(ContextProperties.Correlation.TransactionId));
+            Assert.False(logEvent.Properties.ContainsKey(ContextProperties.Correlation.OperationParentId));
+        }
+        
+        [Fact]
+        public void LogEvent_WithCorrelationInfoWithTransactionId_HasOperationIdAndTransactionId()
         {
             // Arrange
             string expectedOperationId = $"operation-{Guid.NewGuid()}";
@@ -423,6 +578,40 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.True(
                 logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
                 $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+        }
+        
+        [Fact]
+        public void LogEvent_WithCorrelationInfoWithOperationParentId_HasOperationIdAndTransactionIdAndOperationParentId()
+        {
+            // Arrange
+            var expectedOperationId = $"operation-{Guid.NewGuid()}";
+            var expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+            var expectedOperationParentId = $"operation-parent-{Guid.NewGuid()}";
+            
+            var spySink = new InMemoryLogSink();
+            var stubAccessor = new Mock<ICorrelationInfoAccessor>();
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
+                        .Returns(new CorrelationInfo(expectedOperationId, expectedTransactionId, expectedOperationParentId));
+            
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(stubAccessor.Object)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationParentId, expectedOperationParentId),
+                $"Expected to have a log property operation parent ID '{ContextProperties.Correlation.OperationParentId}' with the value '{expectedOperationParentId}'");
         }
 
         [Fact]
@@ -455,6 +644,38 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
                 $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
         }
+        
+        [Fact]
+        public void LogEvent_WithCorrelationInfoWithCustomOperationIdPropertyOptions_HasOperationIdAndTransactionId()
+        {
+            // Arrange
+            string operationIdPropertyName = $"operation-name-{Guid.NewGuid():N}";
+            string expectedOperationId = $"operation-{Guid.NewGuid()}";
+            string expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+
+            var spySink = new InMemoryLogSink();
+            var stubAccessor = new Mock<ICorrelationInfoAccessor>();
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
+                        .Returns(new CorrelationInfo(expectedOperationId, expectedTransactionId));
+            
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(stubAccessor.Object, options => options.OperationIdPropertyName = operationIdPropertyName)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(operationIdPropertyName, expectedOperationId),
+                $"Expected to have a log property operation ID '{operationIdPropertyName}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.TransactionId, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{ContextProperties.Correlation.TransactionId}' with the value '{expectedTransactionId}'");
+            Assert.DoesNotContain(logEvent.Properties, property => property.Key == ContextProperties.Correlation.OperationParentId);
+        }
 
         [Fact]
         public void LogEvent_WithCorrelationInfoWithCustomTransactionIdProperty_HasOperationIdAndTransactionId()
@@ -471,6 +692,38 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             
             ILogger logger = new LoggerConfiguration()
                 .Enrich.WithCorrelationInfo(stubAccessor.Object, transactionIdPropertyName: transactionIdPropertyName)
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            // Act
+            logger.Information("This message will be enriched with correlation information");
+
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.True(
+                logEvent.ContainsProperty(ContextProperties.Correlation.OperationId, expectedOperationId),
+                $"Expected to have a log property operation ID '{ContextProperties.Correlation.OperationId}' with the value '{expectedOperationId}'");
+            Assert.True(
+                logEvent.ContainsProperty(transactionIdPropertyName, expectedTransactionId),
+                $"Expected to have a log property transaction ID '{transactionIdPropertyName}' with the value '{expectedTransactionId}'");
+            Assert.DoesNotContain(logEvent.Properties, property => property.Key == ContextProperties.Correlation.OperationParentId);
+        }
+        
+        [Fact]
+        public void LogEvent_WithCorrelationInfoWithCustomTransactionIdPropertyOptions_HasOperationIdAndTransactionId()
+        {
+            // Arrange
+            string transactionIdPropertyName = $"transaction-name-{Guid.NewGuid():N}";
+            string expectedOperationId = $"operation-{Guid.NewGuid()}";
+            string expectedTransactionId = $"transaction-{Guid.NewGuid()}";
+
+            var spySink = new InMemoryLogSink();
+            var stubAccessor = new Mock<ICorrelationInfoAccessor>();
+            stubAccessor.Setup(accessor => accessor.GetCorrelationInfo())
+                        .Returns(new CorrelationInfo(expectedOperationId, expectedTransactionId));
+            
+            ILogger logger = new LoggerConfiguration()
+                .Enrich.WithCorrelationInfo(stubAccessor.Object, options => options.TransactionIdPropertyName = transactionIdPropertyName)
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
 
@@ -702,6 +955,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void WithCorrelationAccessorOptions_WithoutServiceProvider_Throws()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => config.Enrich.WithCorrelationInfo(
+                    serviceProvider: null,
+                    configureOptions: options => { }));
+        }
+
+        [Fact]
         public void WithCorrelationAccessorT_WithoutServiceProvider_Throws()
         {
             // Arrange
@@ -709,6 +975,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(serviceProvider: null));
+        }
+
+        [Fact]
+        public void WithCorrelationAccessorTOptions_WithoutServiceProvider_Throws()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() =>
+                config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(
+                    serviceProvider: null,
+                    configureOptions: options => { }));
         }
 
         [Fact]
@@ -724,6 +1003,18 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void WithCorrelationAccessorOptions_WithoutRegisteredCorrelationAccessor_Throws()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+            var services = new ServiceCollection();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            
+            // Act / Assert
+            Assert.ThrowsAny<InvalidOperationException>(() => config.Enrich.WithCorrelationInfo(serviceProvider, options => { }));
+        }
+        
+        [Fact]
         public void WithCorrelationAccessorT_WithoutRegisteredCorrelationAccessor_Throws()
         {
             // Arrange
@@ -733,6 +1024,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(() => config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(serviceProvider));
+        }
+
+        [Fact]
+        public void WIthCorrelationAccessorT_WithoutRegisteredCorrelationAccessor_Throws()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+            var services = new ServiceCollection();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            
+            // Act / Assert
+            Assert.ThrowsAny<InvalidOperationException>(() =>
+                config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(serviceProvider, options => { }));
         }
 
         [Fact]
@@ -746,6 +1050,20 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(() => config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(serviceProvider));
+        }
+
+        [Fact]
+        public void WithCorrelationAccessorTOptions_WithWrongRegisteredCorrelationAccessor_Throws()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+            var services = new ServiceCollection();
+            services.AddCorrelation();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            
+            // Act / Assert
+            Assert.ThrowsAny<InvalidOperationException>(() =>
+                config.Enrich.WithCorrelationInfo<TestCorrelationInfo>(serviceProvider, options => { }));
         }
     }
 }

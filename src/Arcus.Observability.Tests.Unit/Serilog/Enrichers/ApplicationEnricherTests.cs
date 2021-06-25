@@ -5,7 +5,7 @@ using Serilog;
 using Serilog.Events;
 using Xunit;
 
-namespace Arcus.Observability.Tests.Unit.Serilog
+namespace Arcus.Observability.Tests.Unit.Serilog.Enrichers
 {
     [Trait("Category", "Unit")]
     public class ApplicationEnricherTests

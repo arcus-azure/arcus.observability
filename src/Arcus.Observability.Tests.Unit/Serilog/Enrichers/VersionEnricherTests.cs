@@ -3,7 +3,7 @@ using System.Reflection;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
-using Arcus.Observability.Tests.Unit.Serilog;
+using Arcus.Observability.Tests.Unit.Serilog.Enrichers;
 using Arcus.Observability.Tests.Unit.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -13,7 +13,7 @@ using Xunit;
 
 [assembly: AssemblyFileVersion(VersionEnricherTests.AssemblyVersion)]
 
-namespace Arcus.Observability.Tests.Unit.Serilog
+namespace Arcus.Observability.Tests.Unit.Serilog.Enrichers
 {
     [Trait(name: "Category", value: "Unit")]
     public class VersionEnricherTests
