@@ -3,14 +3,14 @@ title: "Home"
 layout: default
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
+[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?packageVersion=2.2.0)](https://www.nuget.org/packages/Arcus.Observability.Correlation/2.2.0)
 
 # Installation
 
 The Arcus.Observability.Correlation can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlation
+PM > Install-Package Arcus.Observability.Correlation --Version 2.2.0
 ```
 
 For more granular packages we recommend reading the documentation.
@@ -37,7 +37,6 @@ This is licensed under The MIT License (MIT). Which means that you can use, copy
 
 # Older Versions
 
-- [v2.2](../v2.2)
 - [v2.1](../v2.1)
 - [v2.0](../v2.0)
 - [v1.0](../v1.0)
