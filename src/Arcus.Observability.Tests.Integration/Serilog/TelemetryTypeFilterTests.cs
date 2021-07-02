@@ -1261,6 +1261,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             return Enum.GetValues(typeof(TelemetryType))
                        .OfType<TelemetryType>()
                        .Where(type => type != telemetryType)
+                       .Where(type => type != TelemetryType.Trace)
                        .Select(type => new object[] {type})
                        .ToArray();
         }

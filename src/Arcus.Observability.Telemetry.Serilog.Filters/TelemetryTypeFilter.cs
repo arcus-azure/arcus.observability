@@ -39,7 +39,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
         {
             Guard.For(() => !Enum.IsDefined(typeof(TelemetryType), telemetryType), 
                 new ArgumentOutOfRangeException(nameof(telemetryType), telemetryType, "Requires a type of telemetry that's within the supported value range of the enumeration"));
-            
+
+            // We cannot identify traces properly, so we do not allow Trace filters
+            Guard.For<ArgumentException>(() => telemetryType == TelemetryType.Trace, "Filtering out traces is not supported");
+
             return new TelemetryTypeFilter(telemetryType, isTrackingEnabled: null);
         }
 
@@ -54,6 +57,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
             Guard.For(() => !Enum.IsDefined(typeof(TelemetryType), telemetryType), 
                 new ArgumentOutOfRangeException(nameof(telemetryType), telemetryType, "Requires a type of telemetry that's within the supported value range of the enumeration"));
             
+            // We cannot identify traces properly, so we do not allow Trace filters
+            Guard.For<ArgumentException>(() => telemetryType == TelemetryType.Trace, "Filtering out traces is not supported");
+
             return new TelemetryTypeFilter(telemetryType, isTrackingEnabled);
         }
 
@@ -76,7 +82,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
                 case TelemetryType.Metrics:
                     return IsFilteringRequired(ContextProperties.MetricTracking.MetricLogEntry, logEvent);
                 case TelemetryType.Trace:
-                    return true; // TODO: How should we detect this?
+                    // We cannot identify traces properly, so we always include them
+                    return true;
                 default:
                     return false;
             }
