@@ -1192,7 +1192,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
-             string propertyName = _bogusGenerator.Random.Word();
+            string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
             var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
             
