@@ -75,6 +75,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
                     return IsFilteringRequired(ContextProperties.EventTracking.EventLogEntry, logEvent);
                 case TelemetryType.Metrics:
                     return IsFilteringRequired(ContextProperties.MetricTracking.MetricLogEntry, logEvent);
+                case TelemetryType.Trace:
+                    return true; // TODO: How should we detect this?
                 default:
                     return false;
             }
