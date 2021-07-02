@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Filters;
@@ -19,7 +18,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         [InlineData(TelemetryType.Request, ContextProperties.RequestTracking.RequestLogEntry)]
         [InlineData(TelemetryType.Events, ContextProperties.EventTracking.EventLogEntry)]
         [InlineData(TelemetryType.Metrics, ContextProperties.MetricTracking.MetricLogEntry)]
-        public void LogEventAsTelemetry_FiltersInCorrectTelemetry_Succeeds(TelemetryType telemetryType, string logEntryKey)
+        public void LogEventAsTelemetry_TelemetryTypeMatchesFilter_TelemetryFiltered(TelemetryType telemetryType, string logEntryKey)
         {
             // Arrange
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
@@ -34,11 +33,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isEnabled = filter.IsEnabled(logEvent);
             
             // Assert
-            Assert.True(isEnabled);
+            Assert.False(isEnabled);
         }
         
         [Fact]
-        public void LogEventAsTelemetry_FiltersInAllTelemetry_Succeeds()
+        public void LogEventAsTelemetry_TelemetryTypeDoesNotMatchFilter_NoTelemetryFiltered()
         {
             // Arrange
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
@@ -55,7 +54,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogEventAsTelemetry_FiltersOutCorrectTelemetry_Succeeds()
+        public void LogEventAsTelemetry_TelemetryTypeDoesNotMatchFilterFiltersOutCorrectTelemetry_Succeeds()
         {
             // Arrange
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
@@ -68,11 +67,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isEnabled = filter.IsEnabled(logEvent);
             
             // Assert
-            Assert.False(isEnabled);
+            Assert.True(isEnabled);
         }
 
         [Fact]
-        public void LogEventWithoutTelemetry_DoesntFilterAnything_Succeeds()
+        public void LogEventWithoutTelemetry_DoesNotFilterAnything_Succeeds()
         {
             // Arrange
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
@@ -85,7 +84,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isEnabled = filter.IsEnabled(logEvent);
             
             // Assert
-            Assert.False(isEnabled);
+            Assert.True(isEnabled);
         }
 
         [Theory]

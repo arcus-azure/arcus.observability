@@ -68,16 +68,28 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
             switch (TelemetryType)
             {
                 case TelemetryType.Dependency:
-                    return logEvent.Properties.ContainsKey(ContextProperties.DependencyTracking.DependencyLogEntry);
+                    return IsFilteringRequired(ContextProperties.DependencyTracking.DependencyLogEntry, logEvent);
                 case TelemetryType.Request:
-                    return logEvent.Properties.ContainsKey(ContextProperties.RequestTracking.RequestLogEntry);
+                    return IsFilteringRequired(ContextProperties.RequestTracking.RequestLogEntry, logEvent);
                 case TelemetryType.Events:
-                    return logEvent.Properties.ContainsKey(ContextProperties.EventTracking.EventLogEntry);
+                    return IsFilteringRequired(ContextProperties.EventTracking.EventLogEntry, logEvent);
                 case TelemetryType.Metrics:
-                    return logEvent.Properties.ContainsKey(ContextProperties.MetricTracking.MetricLogEntry);
+                    return IsFilteringRequired(ContextProperties.MetricTracking.MetricLogEntry, logEvent);
                 default:
                     return false;
             }
+        }
+
+        private static bool IsFilteringRequired(string keyNameToFilterOut, LogEvent logEvent)
+        {
+            if (logEvent.Properties.ContainsKey(keyNameToFilterOut))
+            {
+                // Telemetry matches the type to filter out, so we should exclude it
+                return false;
+            }
+
+            // Telemetry is of different type, so we should allow tracking of it
+            return true;
         }
     }
 }
