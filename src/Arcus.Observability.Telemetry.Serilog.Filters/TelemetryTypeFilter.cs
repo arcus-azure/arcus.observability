@@ -39,10 +39,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
         {
             Guard.For(() => !Enum.IsDefined(typeof(TelemetryType), telemetryType), 
                 new ArgumentOutOfRangeException(nameof(telemetryType), telemetryType, "Requires a type of telemetry that's within the supported value range of the enumeration"));
-
-            // We cannot identify traces properly, so we do not allow Trace filters
-            Guard.For<ArgumentException>(() => telemetryType == TelemetryType.Trace, "Filtering out traces is not supported");
-
+            
             return new TelemetryTypeFilter(telemetryType, isTrackingEnabled: null);
         }
 
@@ -57,9 +54,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
             Guard.For(() => !Enum.IsDefined(typeof(TelemetryType), telemetryType), 
                 new ArgumentOutOfRangeException(nameof(telemetryType), telemetryType, "Requires a type of telemetry that's within the supported value range of the enumeration"));
             
-            // We cannot identify traces properly, so we do not allow Trace filters
-            Guard.For<ArgumentException>(() => telemetryType == TelemetryType.Trace, "Filtering out traces is not supported");
-
             return new TelemetryTypeFilter(telemetryType, isTrackingEnabled);
         }
 
@@ -74,31 +68,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
             switch (TelemetryType)
             {
                 case TelemetryType.Dependency:
-                    return IsFilteringRequired(ContextProperties.DependencyTracking.DependencyLogEntry, logEvent);
+                    return logEvent.Properties.ContainsKey(ContextProperties.DependencyTracking.DependencyLogEntry);
                 case TelemetryType.Request:
-                    return IsFilteringRequired(ContextProperties.RequestTracking.RequestLogEntry, logEvent);
+                    return logEvent.Properties.ContainsKey(ContextProperties.RequestTracking.RequestLogEntry);
                 case TelemetryType.Events:
-                    return IsFilteringRequired(ContextProperties.EventTracking.EventLogEntry, logEvent);
+                    return logEvent.Properties.ContainsKey(ContextProperties.EventTracking.EventLogEntry);
                 case TelemetryType.Metrics:
-                    return IsFilteringRequired(ContextProperties.MetricTracking.MetricLogEntry, logEvent);
-                case TelemetryType.Trace:
-                    // We cannot identify traces properly, so we always include them
-                    return true;
+                    return logEvent.Properties.ContainsKey(ContextProperties.MetricTracking.MetricLogEntry);
                 default:
                     return false;
             }
-        }
-
-        private static bool IsFilteringRequired(string keyNameToFilterOut, LogEvent logEvent)
-        {
-            if (logEvent.Properties.ContainsKey(keyNameToFilterOut))
-            {
-                // Telemetry matches the type to filter out, so we should exclude it
-                return false;
-            }
-
-            // Telemetry is of different type, so we should allow tracking of it
-            return true;
         }
     }
 }

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
+using Arcus.Observability.Tests.Core;
 using Bogus;
-using Microsoft.Azure.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Serilog;
 using Serilog.Configuration;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,8 +23,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         protected const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
 
         private readonly ITestOutputHelper _outputWriter;
+        private readonly InMemoryLogSink _memoryLogSink;
         private readonly string _instrumentationKey;
-        
+
         protected readonly Faker BogusGenerator = new Faker();
 
         /// <summary>
@@ -32,8 +34,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
             _outputWriter = outputWriter;
+            _memoryLogSink = new InMemoryLogSink();
             _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
-            
+
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
         }
 
@@ -53,8 +56,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             var configuration = new LoggerConfiguration()
                 .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                .WriteTo.AzureApplicationInsights(_instrumentationKey, configureOptions);
-            
+                .WriteTo.AzureApplicationInsights(_instrumentationKey, configureOptions)
+                .WriteTo.Sink(_memoryLogSink);
+
             configureLogging?.Invoke(configuration);
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
@@ -94,6 +98,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var client = new ApplicationInsightsDataClient(clientCredentials);
 
             return client;
+        }
+
+        protected IEnumerable<LogEvent> GetLogEventsFromMemory()
+        {
+            return _memoryLogSink.CurrentLogEmits;
         }
     }
 }

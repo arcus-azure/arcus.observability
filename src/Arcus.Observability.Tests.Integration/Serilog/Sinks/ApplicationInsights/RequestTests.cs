@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,6 +55,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestHost))?.Value.ToDecentString() == $"{requestUri.Scheme}://{requestUri.Host}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestUri))?.Value.ToDecentString() == requestUri.AbsolutePath
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -83,6 +96,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestHost))?.Value.ToDecentString() == $"{requestUri.Scheme}://{requestUri.Host}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestUri))?.Value.ToDecentString() == requestUri.AbsolutePath
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -117,6 +139,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestHost))?.Value.ToDecentString() == $"{requestUri.Scheme}://{requestUri.Host}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestUri))?.Value.ToDecentString() == requestUri.AbsolutePath
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -149,6 +180,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestHost))?.Value.ToDecentString() == $"{requestUri.Scheme}://{requestUri.Host}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.RequestUri))?.Value.ToDecentString() == requestUri.AbsolutePath
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(RequestLogEntry.Context)) != null;
+            });
         }
 
         private HttpMethod GenerateHttpMethod()

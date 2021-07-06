@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
 using Microsoft.Azure.ApplicationInsights.Query;
@@ -11,6 +12,7 @@ using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -46,6 +48,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.CustomEvent.Name == eventName);
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.EventName))?.Value.ToDecentString() == eventName
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -72,6 +82,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -101,6 +118,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     });
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.EventName))?.Value.ToDecentString() == eventName
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
+            });
         }
 
         [Fact]

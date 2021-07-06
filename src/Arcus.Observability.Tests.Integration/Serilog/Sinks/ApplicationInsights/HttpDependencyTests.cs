@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -15,6 +19,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 {
     public class HttpDependencyTests : ApplicationInsightsSinkTests
     {
+        private const string DependencyType = "HTTP";
+
         public HttpDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
@@ -52,12 +58,22 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "HTTP"
+                        return result.Dependency.Type == DependencyType
                                && result.Dependency.Target == requestUri.Host
                                && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}";
                     });
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                return logEntry != null
+                       && DependencyType.Equals(logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyType))?.Value.ToDecentString(), StringComparison.InvariantCultureIgnoreCase)
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyName))?.Value.ToDecentString() == $"{httpMethod} {requestUri.AbsolutePath}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.TargetName))?.Value.ToDecentString() == requestUri.Host
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+            });
         }
 
         [Fact]
@@ -93,13 +109,23 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "HTTP"
+                        return result.Dependency.Type == DependencyType
                                && result.Dependency.Target == requestUri.Host
                                && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}"
                                && result.Cloud.RoleName == componentName;
                     });
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                return logEntry != null
+                       && DependencyType.Equals(logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyType))?.Value.ToDecentString(), StringComparison.InvariantCultureIgnoreCase)
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyName))?.Value.ToDecentString() == $"{httpMethod} {requestUri.AbsolutePath}"
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.TargetName))?.Value.ToDecentString() == requestUri.Host
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+            });
         }
 
         private HttpMethod GenerateHttpMethod()

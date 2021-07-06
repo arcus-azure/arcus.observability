@@ -49,16 +49,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             return requestTelemetry;
         }
 
-        /// <summary>
-        ///     Provides capability to remove intermediary properties that are logged, but should not be tracked in the sink
-        /// </summary>
-        /// <param name="logEvent">Event that was logged and written to this sink</param>
-        protected override void RemoveIntermediaryProperties(LogEvent logEvent)
-        {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to remove the intermediary Azure Application Insights Request telemetry properties");
-            logEvent.RemovePropertyIfPresent(ContextProperties.RequestTracking.RequestLogEntry);
-        }
-
         private static bool DetermineRequestOutcome(string rawResponseStatusCode)
         {
             var statusCode = int.Parse(rawResponseStatusCode);

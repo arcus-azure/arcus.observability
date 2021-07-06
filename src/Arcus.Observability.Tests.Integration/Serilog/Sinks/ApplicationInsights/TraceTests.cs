@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class TraceTests : ApplicationInsightsSinkTests
     {
@@ -37,6 +41,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Trace.Message.Contains(message));
                 });
             }
+
+            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
+            {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
+                return logEntry != null
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == "Sentence")?.Value.ToDecentString() == message
+                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+            });
         }
     }
 }
