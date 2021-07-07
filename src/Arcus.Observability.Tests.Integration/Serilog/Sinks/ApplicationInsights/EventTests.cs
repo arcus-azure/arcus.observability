@@ -10,14 +10,13 @@ using Arcus.Observability.Tests.Core;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
-using Polly;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class EventTests : ApplicationInsightsSinkTests
     {
@@ -82,13 +81,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
                 });
             }
-
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
-            });
         }
 
         [Fact]
@@ -136,10 +128,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string operationId = $"operation-{Guid.NewGuid()}";
             string transactionId = $"transaction-{Guid.NewGuid()}";
             string operationParentId = $"operation-parent-{Guid.NewGuid()}";
-            
+
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
-            
+
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -154,14 +146,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    
+
                     AssertX.Any(traceEvents.Value, trace =>
                     {
                         Assert.Equal(message, trace.Trace.Message);
                         Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId), "Requires a operation ID in the custom dimensions");
                         Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
                         Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
-                        
+
                         Assert.Equal(operationId, actualOperationId);
                         Assert.Equal(transactionId, actualTransactionId);
                         Assert.Equal(operationParentId, actualOperationParentId);

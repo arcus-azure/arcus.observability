@@ -44,10 +44,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
             Assert.Contains(GetLogEventsFromMemory(), logEvent =>
             {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == "Sentence")?.Value.ToDecentString() == message
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+                return logEvent != null
+                       && logEvent.Properties.FirstOrDefault(prop => prop.Key == "Sentence").Value.ToDecentString() == message
+                       && logEvent.Properties.FirstOrDefault(prop => prop.Key == nameof(DependencyLogEntry.Context)).Value != null;
             });
         }
     }
