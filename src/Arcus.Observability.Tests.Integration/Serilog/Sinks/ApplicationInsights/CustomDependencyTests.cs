@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
@@ -11,7 +10,7 @@ using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class CustomDependencyTests : ApplicationInsightsSinkTests
     {
@@ -49,13 +48,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
             
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
-                return logEntry != null &&
-                       logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyType))?.Value.ToDecentString() == dependencyType &&
-                       logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyData))?.Value.ToDecentString() == dependencyData &&
-                       logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
+
+                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(dependencyData, actualDependencyData.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
         }
     }

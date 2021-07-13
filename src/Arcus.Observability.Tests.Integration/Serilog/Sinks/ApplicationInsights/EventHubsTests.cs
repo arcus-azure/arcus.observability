@@ -59,14 +59,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyType))?.Value.ToDecentString() == dependencyType
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyData))?.Value.ToDecentString() == namespaceName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.TargetName))?.Value.ToDecentString() == eventHubName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
+
+                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(namespaceName, actualDependencyData.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(eventHubName, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
         }
     }

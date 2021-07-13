@@ -58,14 +58,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
-                return logEntry != null
-                       && dependencyType.Equals(logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyType))?.Value.ToDecentString(), StringComparison.InvariantCultureIgnoreCase)
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.TargetName))?.Value.ToDecentString() == serverName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.DependencyName))?.Value.ToDecentString() == $"{databaseName}/{tableName}"
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(DependencyLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString(), true);
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal($"{databaseName}/{tableName}", actualDependencyName.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(serverName, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
         }
     }

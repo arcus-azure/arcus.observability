@@ -50,13 +50,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.MetricTracking.MetricLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(MetricLogEntry.MetricName))?.Value.ToDecentString() == metricName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(MetricLogEntry.MetricValue))?.Value.ToDecentString() == metricValue.ToString("0.00", CultureInfo.InvariantCulture)
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(MetricLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualMetricName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.MetricName));
+                Assert.Equal(metricName, actualMetricName.Value.ToDecentString());
+
+                var actualMetricValue = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.MetricValue));
+                Assert.Equal(metricValue.ToString("0.00", CultureInfo.InvariantCulture), actualMetricValue.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.Context));
             });
         }
     }

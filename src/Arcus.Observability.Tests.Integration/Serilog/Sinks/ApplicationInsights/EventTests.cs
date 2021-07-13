@@ -48,12 +48,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.EventName))?.Value.ToDecentString() == eventName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualEventName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.EventName));
+                Assert.Equal(eventName, actualEventName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.Context));
             });
         }
 
@@ -111,12 +113,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                return logEntry != null
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.EventName))?.Value.ToDecentString() == eventName
-                       && logEntry.Properties.FirstOrDefault(prop => prop.Name == nameof(EventLogEntry.Context)) != null;
+                Assert.NotNull(logEntry);
+
+                var actualEventName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.EventName));
+                Assert.Equal(eventName, actualEventName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.Context));
             });
         }
 

@@ -42,11 +42,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            Assert.Contains(GetLogEventsFromMemory(), logEvent =>
-            {
-                return logEvent != null
-                       && logEvent.Properties.FirstOrDefault(prop => prop.Key == "Sentence").Value.ToDecentString() == message
-                       && logEvent.Properties.FirstOrDefault(prop => prop.Key == nameof(DependencyLogEntry.Context)).Value != null;
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                Assert.NotNull(logEvent);
+
+                var actualMessage = Assert.Single(logEvent.Properties, prop => prop.Key == "Sentence");
+                Assert.Equal(message, actualMessage.Value.ToDecentString());
+
+                Assert.Single(logEvent.Properties, prop => prop.Key == nameof(DependencyLogEntry.Context));
             });
         }
     }
