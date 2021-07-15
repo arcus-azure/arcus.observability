@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,6 +25,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogAzureSearchDependency_SinksToApplicationInsights_ResultsInAzureSearchDependencyTelemetry()
         {
             // Arrange
+            string dependencyType = "Azure Search";
             string searchServiceName = BogusGenerator.Commerce.Product();
             string operationName = BogusGenerator.Commerce.ProductName();
 
@@ -48,12 +52,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "Azure Search"
+                        return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == searchServiceName
                                && result.Dependency.Data == operationName;
                     });
                 });
             }
+
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
+
+                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(operationName, actualDependencyData.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(searchServiceName, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
+            });
         }
     }
 }

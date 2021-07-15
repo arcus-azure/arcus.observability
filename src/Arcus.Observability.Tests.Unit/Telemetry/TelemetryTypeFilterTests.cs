@@ -23,19 +23,19 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Arrange
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
             var level = _bogusGenerator.Random.Enum<LogEventLevel>();
-            var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, new []
+            var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, new[]
             {
                 new LogEventProperty(logEntryKey, new ScalarValue("something that represents the telemetry"))
             });
             var filter = TelemetryTypeFilter.On(telemetryType);
-            
+
             // Act
             bool isEnabled = filter.IsEnabled(logEvent);
-            
+
             // Assert
             Assert.False(isEnabled);
         }
-        
+
         [Fact]
         public void LogEventAsTelemetry_TelemetryTypeDoesNotMatchFilter_NoTelemetryFiltered()
         {
@@ -45,10 +45,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var telemetryType = _bogusGenerator.Random.Enum(TelemetryType.Trace);
             var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, Enumerable.Empty<LogEventProperty>());
             var filter = TelemetryTypeFilter.On(telemetryType, isTrackingEnabled: true);
-            
+
             // Act
             bool isEnabled = filter.IsEnabled(logEvent);
-            
+
             // Assert
             Assert.True(isEnabled);
         }
@@ -62,10 +62,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var telemetryType = _bogusGenerator.Random.Enum(TelemetryType.Trace);
             var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, Enumerable.Empty<LogEventProperty>());
             var filter = TelemetryTypeFilter.On(telemetryType);
-            
+
             // Act
             bool isEnabled = filter.IsEnabled(logEvent);
-            
+
             // Assert
             Assert.True(isEnabled);
         }
@@ -79,10 +79,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             var telemetryType = _bogusGenerator.Random.Enum(TelemetryType.Trace);
             var logEvent = new LogEvent(timestamp, level, exception: null, MessageTemplate.Empty, Enumerable.Empty<LogEventProperty>());
             var filter = TelemetryTypeFilter.On(telemetryType);
-            
+
             // Act
             bool isEnabled = filter.IsEnabled(logEvent);
-            
+
             // Assert
             Assert.True(isEnabled);
         }
@@ -108,7 +108,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             bool isTrackingEnabled = _bogusGenerator.Random.Bool();
-            
+
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => TelemetryTypeFilter.On(telemetryType, isTrackingEnabled));
         }

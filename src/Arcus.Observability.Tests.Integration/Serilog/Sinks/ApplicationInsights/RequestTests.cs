@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -51,6 +55,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
+
+            VerifyLogEventProperties(requestUri);
         }
 
         [Fact]
@@ -83,6 +89,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
                 });
             }
+
+            VerifyLogEventProperties(requestUri);
         }
 
         [Fact]
@@ -117,6 +125,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
                 });
             }
+
+            VerifyLogEventProperties(requestUri);
         }
 
         [Fact]
@@ -149,6 +159,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
                 });
             }
+
+            VerifyLogEventProperties(requestUri);
         }
 
         private HttpMethod GenerateHttpMethod()
@@ -181,6 +193,21 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             response.Setup(res => res.StatusCode).Returns((int) statusCode);
 
             return response.Object;
+        }
+
+        private void VerifyLogEventProperties(Uri requestUri){
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualRequestHost = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestHost));
+                Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}", actualRequestHost.Value.ToDecentString());
+
+                var actualRequestUri = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestUri));
+                Assert.Equal(requestUri.AbsolutePath, actualRequestUri.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.Context));
+            });
         }
     }
 }

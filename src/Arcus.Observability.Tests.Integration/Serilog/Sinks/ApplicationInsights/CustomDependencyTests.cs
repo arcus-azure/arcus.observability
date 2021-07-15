@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class CustomDependencyTests : ApplicationInsightsSinkTests
     {
@@ -44,6 +47,19 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Data == dependencyData);
                 });
             }
+            
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
+
+                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(dependencyData, actualDependencyData.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
+            });
         }
     }
 }

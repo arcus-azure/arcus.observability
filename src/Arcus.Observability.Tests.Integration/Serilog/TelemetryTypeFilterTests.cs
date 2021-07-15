@@ -29,7 +29,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public static IEnumerable<object[]> TelemetryTypesWithoutMetric => GetTelemetryTypesWithout(TelemetryType.Metrics);
         public static IEnumerable<object[]> TelemetryTypesWithoutDependency => GetTelemetryTypesWithout(TelemetryType.Dependency);
         public static IEnumerable<object[]> TelemetryTypesWithoutRequest => GetTelemetryTypesWithout(TelemetryType.Request);
-        
+
         [Fact]
         public void LogEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
         {
@@ -37,8 +37,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             string eventName = _bogusGenerator.Random.Word();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Events))
@@ -48,7 +48,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogEvent(eventName, properties);
 
@@ -56,7 +56,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutEvent))]
         public void LogEvent_WithTelemetryTypeFilterOnOtherType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -65,8 +65,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             string eventName = _bogusGenerator.Random.Word();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType, isTrackingEnabled: false))
@@ -76,7 +76,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogEvent(eventName, properties);
 
@@ -89,7 +89,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(TelemetryType.Events.ToString(), writtenMessage);
             }
         }
-        
+
         [Fact]
         public void LogSecurityEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
         {
@@ -97,8 +97,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             string eventName = _bogusGenerator.Random.Word();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Events))
@@ -108,7 +108,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogSecurityEvent(eventName, properties);
 
@@ -116,7 +116,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutEvent))]
         public void LogSecurityEvent_WithTelemetryTypeFilterOnOtherType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -125,8 +125,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             string eventName = _bogusGenerator.Random.Word();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType, isTrackingEnabled: false))
@@ -136,7 +136,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogSecurityEvent(eventName, properties);
 
@@ -158,8 +158,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             double metricValue = _bogusGenerator.Random.Double();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Metrics))
@@ -169,7 +169,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogMetric(metricName, metricValue, properties);
 
@@ -177,7 +177,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutMetric))]
         public void LogMetric_WithTelemetryTypeFilterOnDifferentTyp_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -187,8 +187,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             double metricValue = _bogusGenerator.Random.Double();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
@@ -198,7 +198,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogMetric(metricName, metricValue, properties);
 
@@ -231,8 +231,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Request))
@@ -242,7 +242,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogRequest(stubbedRequest.Object, stubbedResponse.Object, duration, properties);
 
@@ -250,9 +250,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
-         [Theory]
-         [MemberData(nameof(TelemetryTypesWithoutRequest))]
+
+        [Theory]
+        [MemberData(nameof(TelemetryTypesWithoutRequest))]
         public void LogRequest_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
@@ -269,8 +269,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
@@ -280,7 +280,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogRequest(stubbedRequest.Object, stubbedResponse.Object, duration, properties);
 
@@ -297,7 +297,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(TelemetryType.Request.ToString(), writtenMessage);
             }
         }
-        
+
         [Fact]
         public void LogRequestMessage_WithTelemetryTypeFilter_IgnoresRequestMessage()
         {
@@ -311,18 +311,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
-             var spySink = new InMemoryLogSink();
+            var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Request))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogRequest(request, response, duration, properties);
 
@@ -330,7 +330,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutRequest))]
         public void LogRequestMessage_WithTelemetryTypeFilter_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -345,18 +345,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
-             var spySink = new InMemoryLogSink();
+            var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogRequest(request, response, duration, properties);
 
@@ -374,7 +374,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(TelemetryType.Request.ToString(), writtenMessage);
             }
         }
-        
+
         [Fact]
         public void LogHttpDependency_WithTelemetryTypeFilter_IgnoresHttpDependency()
         {
@@ -392,11 +392,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogHttpDependency(request, statusCode, startTime, duration, properties);
 
@@ -404,7 +404,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogHttpDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -423,11 +423,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogHttpDependency(request, statusCode, startTime, duration, properties);
 
@@ -447,7 +447,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, writtenMessage);
             }
         }
-        
+
         [Fact]
         public void LogSqlDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -461,18 +461,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration, properties);
 
@@ -480,7 +480,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogSqlDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -495,18 +495,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration, properties);
 
@@ -527,7 +527,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -538,18 +538,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, properties);
 
@@ -557,7 +557,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -569,18 +569,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, properties);
 
@@ -598,7 +598,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -609,18 +609,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
-             var spySink = new InMemoryLogSink();
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
+            var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, properties);
 
@@ -628,7 +628,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -640,18 +640,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, properties);
 
@@ -669,7 +669,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogAzureSearchDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -681,18 +681,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, properties);
 
@@ -700,7 +700,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogAzureSearchDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -713,18 +713,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, properties);
 
@@ -742,7 +742,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogAzureKeyVaultDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -754,18 +754,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, properties);
 
@@ -773,7 +773,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogAzureKeyVaultDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -786,18 +786,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, properties);
 
@@ -814,7 +814,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogDependencyTarget_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -827,18 +827,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration, properties);
 
@@ -846,7 +846,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogDependencyTarget_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -860,18 +860,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration, properties);
 
@@ -889,7 +889,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogCosmosSqlDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -902,18 +902,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, properties);
 
@@ -921,7 +921,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogCosmosSqlDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -935,18 +935,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, properties);
 
@@ -965,7 +965,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogIotHubDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -976,18 +976,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful: isSuccessful, startTime: startTime, duration: duration, properties);
 
@@ -995,7 +995,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogIotHubDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -1007,18 +1007,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful: isSuccessful, startTime: startTime, duration: duration, properties);
 
@@ -1036,7 +1036,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogEventHubsDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -1048,18 +1048,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration, properties);
 
@@ -1067,7 +1067,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogEventHubsDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -1080,18 +1080,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
-            
+
             using (var factory = new SerilogLoggerFactory(serilogLogger))
             {
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-                
+
                 // Act
                 logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration, properties);
 
@@ -1109,7 +1109,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogTableStorageDependency_WithTelemetryTypeFilter_FiltersOutDependency()
         {
@@ -1121,8 +1121,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
@@ -1140,7 +1140,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogTableStorageDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -1153,8 +1153,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
@@ -1182,7 +1182,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(propertyValue, logMessage);
             }
         }
-        
+
         [Fact]
         public void LogBlobStorageDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
@@ -1194,8 +1194,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
@@ -1213,7 +1213,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Empty(spySink.CurrentLogEmits);
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(TelemetryTypesWithoutDependency))]
         public void LogBlobStorageDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
@@ -1224,10 +1224,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             bool isSuccessful = _bogusGenerator.Random.Bool();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
-             string propertyName = _bogusGenerator.Random.Word();
+            string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> {[propertyName] = propertyValue};
-            
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
             var spySink = new InMemoryLogSink();
             Logger serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
@@ -1262,7 +1262,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                        .OfType<TelemetryType>()
                        .Where(type => type != telemetryType)
                        .Where(type => type != TelemetryType.Trace)
-                       .Select(type => new object[] {type})
+                       .Select(type => new object[] { type })
                        .ToArray();
         }
     }

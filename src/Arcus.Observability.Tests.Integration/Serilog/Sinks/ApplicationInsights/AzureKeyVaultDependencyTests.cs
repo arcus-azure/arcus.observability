@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,6 +25,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogAzureKeyVaultDependency_SinksToApplicationInsights_ResultsInAzureKeyVaultDependencyTelemetry()
         {
             // Arrange
+            string dependencyType = "Azure key vault";
             string vaultUri = "https://myvault.vault.azure.net";
             string secretName = "MySecret";
 
@@ -48,12 +52,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "Azure key vault"
+                        return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == vaultUri
                                && result.Dependency.Data == secretName;
                     });
                 });
             }
+
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
+
+                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(secretName, actualDependencyData.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(vaultUri, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
+            });
         }
     }
 }

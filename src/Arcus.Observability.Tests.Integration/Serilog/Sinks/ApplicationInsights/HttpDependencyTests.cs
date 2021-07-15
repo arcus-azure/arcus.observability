@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -15,6 +19,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 {
     public class HttpDependencyTests : ApplicationInsightsSinkTests
     {
+        private const string DependencyType = "HTTP";
+
         public HttpDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
@@ -52,12 +58,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "HTTP"
+                        return result.Dependency.Type == DependencyType
                                && result.Dependency.Target == requestUri.Host
                                && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}";
                     });
                 });
             }
+
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(DependencyType, actualDependencyType.Value.ToDecentString(), true);
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", actualDependencyName.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(requestUri.Host, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
+            });
         }
 
         [Fact]
@@ -93,13 +115,29 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result =>
                     {
-                        return result.Dependency.Type == "HTTP"
+                        return result.Dependency.Type == DependencyType
                                && result.Dependency.Target == requestUri.Host
                                && result.Dependency.Name == $"{httpMethod} {requestUri.AbsolutePath}"
                                && result.Cloud.RoleName == componentName;
                     });
                 });
             }
+
+            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+                Assert.NotNull(logEntry);
+
+                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                Assert.Equal(DependencyType, actualDependencyType.Value.ToDecentString(), true);
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", actualDependencyName.Value.ToDecentString());
+
+                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                Assert.Equal(requestUri.Host, actualTargetName.Value.ToDecentString());
+
+                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
+            });
         }
 
         private HttpMethod GenerateHttpMethod()
