@@ -1,7 +1,0 @@
-repository: arcus-azure/arcus.observability
-theme: jekyll-theme-slate
-logo: https://raw.githubusercontent.com/arcus-azure/arcus/master/media/arcus.png
-title: Arcus Observability
-description: Observability development in Azure with a breeze
-plugins:
-  - jemoji
