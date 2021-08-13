@@ -193,6 +193,7 @@ var startTime = DateTimeOffset.UtcNow;
 
 logger.LogAzureSearchDependency(searchServiceName: "orders-search", operationName: "get-orders", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: "Dependency Azure Search get-orders named orders-search in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+```
 
 ### Measuring Azure Service Bus dependencies
 
