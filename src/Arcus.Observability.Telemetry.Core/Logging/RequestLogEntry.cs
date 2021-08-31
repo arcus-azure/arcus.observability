@@ -16,6 +16,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <param name="method">The HTTP method of the request.</param>
         /// <param name="host">The host that was requested.</param>
         /// <param name="uri">The URI of the request.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="statusCode">The HTTP status code returned by the service.</param>
         /// <param name="duration">The duration of the processing of the request.</param>
         /// <param name="context">The context that provides more insights on the HTTP request that was tracked.</param>
@@ -32,6 +33,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             string method, 
             string host, 
             string uri, 
+            string operationName,
             int statusCode,
             TimeSpan duration,
             IDictionary<string, object> context)
@@ -46,6 +48,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             RequestUri = uri;
             ResponseStatusCode = statusCode;
             RequestDuration = duration;
+            OperationName = operationName;
             RequestTime = DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat);
             Context = context;
             Context[ContextProperties.General.TelemetryType] = TelemetryType.Request;
@@ -80,7 +83,12 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// Gets the date when the request occurred.
         /// </summary>
         public string RequestTime { get; }
-        
+
+        /// <summary>
+        /// Gets the name of the operation.
+        /// </summary>
+        public string OperationName { get; }
+
         /// <summary>
         /// Gets the context that provides more insights on the HTTP request that was tracked.
         /// </summary>
