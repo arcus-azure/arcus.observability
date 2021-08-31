@@ -316,7 +316,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType, 
-                dependencyName: null, 
+                dependencyName: targetName, 
                 dependencyData: dependencyData, 
                 targetName: targetName, 
                 duration: duration, 
@@ -398,10 +398,10 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
             
             context = context ?? new Dictionary<string, object>();
-            
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure key vault", 
-                dependencyName: null, 
+                dependencyName: vaultUri, 
                 dependencyData: secretName, 
                 targetName: vaultUri, 
                 duration: duration, 
@@ -470,7 +470,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Search", 
-                dependencyName: null, 
+                dependencyName: searchServiceName, 
                 dependencyData: operationName, 
                 targetName: searchServiceName, 
                 duration: duration, 
@@ -637,7 +637,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Service Bus", 
-                dependencyName: null, 
+                dependencyName: entityName, 
                 dependencyData: null, 
                 targetName: entityName, 
                 duration: duration, 
@@ -703,9 +703,11 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
+            string dependencyName = $"{accountName}/{containerName}";
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure blob", 
-                dependencyName: null, 
+                dependencyName: dependencyName, 
                 dependencyData: containerName, 
                 targetName: accountName, 
                 duration: duration, 
@@ -771,9 +773,11 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
+            string dependencyName = $"{accountName}/{tableName}";
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure table",
-                dependencyName: null,
+                dependencyName: dependencyName,
                 dependencyData: tableName,
                 targetName: accountName,
                 duration: duration,
@@ -841,7 +845,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Event Hubs",
-                dependencyName: null,
+                dependencyName: eventHubName,
                 dependencyData: namespaceName,
                 targetName: eventHubName,
                 duration: duration,
@@ -903,7 +907,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure IoT Hub", 
-                dependencyName: null, 
+                dependencyName: iotHubName, 
                 dependencyData: null, 
                 targetName: iotHubName, 
                 duration: duration, 
@@ -978,7 +982,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure DocumentDB", 
-                dependencyName: null, 
+                dependencyName: data, 
                 dependencyData: data, 
                 targetName: accountName, 
                 duration: duration, 
