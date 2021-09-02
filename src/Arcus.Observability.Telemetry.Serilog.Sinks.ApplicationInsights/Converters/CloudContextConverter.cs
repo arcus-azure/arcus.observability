@@ -30,16 +30,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             telemetry.Context.Cloud.RoleName = componentName;
             telemetry.Context.Cloud.RoleInstance = string.IsNullOrWhiteSpace(podName) ? machineName : podName;
-
-            //if (telemetry is RequestTelemetry f)
-            //{
-            //    f.Context.Operation.Name = f.Name;
-            //}
-
-            //if (telemetry is DependencyTelemetry d)
-            //{
-            //    d.Context.Operation.Name = d.Name;
-            //}
         }
     }
 }
