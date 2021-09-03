@@ -38,6 +38,11 @@ module.exports = {
           position: 'right',
         },
         {
+          href: 'https://arcus-azure.net',
+          label: 'Overview of Arcus',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/arcus-azure/arcus.observability',
           label: 'GitHub',
           position: 'right',
@@ -47,6 +52,15 @@ module.exports = {
     footer: {
       style: 'dark',
       links: [
+        {
+          title: 'Arcus',
+          items: [
+            {
+              label: 'Overview of Arcus',
+              href: 'https://arcus-azure.net',
+            },
+          ],
+        },
         {
           title: 'Community',
           items: [
