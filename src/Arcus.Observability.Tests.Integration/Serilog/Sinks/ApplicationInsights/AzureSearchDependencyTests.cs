@@ -28,6 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "Azure Search";
             string searchServiceName = BogusGenerator.Commerce.Product();
             string operationName = BogusGenerator.Commerce.ProductName();
+            string dependencyName = searchServiceName;
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -54,7 +55,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == searchServiceName
-                               && result.Dependency.Data == operationName;
+                               && result.Dependency.Data == operationName
+                               && result.Dependency.Name == dependencyName;
                     });
                 });
             }
@@ -71,6 +73,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(searchServiceName, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });

@@ -528,6 +528,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(secretName, logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure key vault " + vaultUri, logMessage);
         }
 
         [Theory]
@@ -612,6 +614,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(secretName, logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure key vault " + vaultUri, logMessage);
         }
 
         [Theory]
@@ -683,6 +687,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Search " + searchServiceName, logMessage);
         }
 
         [Fact]
@@ -724,6 +730,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Search " + searchServiceName, logMessage);
         }
 
         [Fact]
@@ -748,6 +756,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + entityName, logMessage);
         }
 
         [Fact]
@@ -789,6 +799,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + entityName, logMessage);
         }
 
         [Fact]
@@ -812,6 +824,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + queueName, logMessage);
         }
 
         [Fact]
@@ -851,6 +865,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + queueName, logMessage);
         }
 
         [Fact]
@@ -874,6 +890,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + topicName, logMessage);
         }
         
         [Fact]
@@ -913,6 +931,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Service Bus " + topicName, logMessage);
         }
 
         [Fact]
@@ -941,6 +961,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{databaseName}/{tableName}";
+            Assert.Contains("Sql " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -982,6 +1005,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{accountName}/{containerName}";
+            Assert.Contains("Azure blob " + dependencyName, logMessage);
         }
         
         [Fact]
@@ -1014,7 +1040,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogBlobStorageDependency(containerName, accountName, isSuccessful, measurement);
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement);
 
             // Assert
             var logMessage = logger.WrittenMessage;
@@ -1024,6 +1050,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{accountName}/{containerName}";
+            Assert.Contains("Azure blob " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1048,6 +1077,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{accountName}/{tableName}";
+            Assert.Contains("Azure table " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1090,6 +1122,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{accountName}/{tableName}";
+            Assert.Contains("Azure table " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1114,6 +1149,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Event Hubs " + eventHubName, logMessage);
         }
 
         [Fact]
@@ -1156,6 +1193,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure Event Hubs " + eventHubName, logMessage);
         }
 
         [Fact]
@@ -1179,6 +1218,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure IoT Hub " + iotHubName, logMessage);
         }
 
         [Fact]
@@ -1219,6 +1260,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure IoT Hub " + iotHubName, logMessage);
         }
 
         [Fact]
@@ -1245,6 +1288,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure IoT Hub " + iotHubName, logMessage);
         }
         
         [Fact]
@@ -1292,6 +1337,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            Assert.Contains("Azure IoT Hub " + iotHubName, logMessage);
         }
 
         [Fact]
@@ -1318,6 +1365,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{database}/{container}";
+            Assert.Contains("Azure DocumentDB " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1363,6 +1413,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{database}/{container}";
+            Assert.Contains("Azure DocumentDB " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1395,6 +1448,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{databaseName}/{tableName}";
+            Assert.Contains("Sql " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1424,6 +1480,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{databaseName}/{tableName}";
+            Assert.Contains("Sql " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1579,6 +1638,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
+            // Check specifically on dependencyName
+            string dependencyName = $"{databaseName}/{tableName}";
+            Assert.Contains("Sql " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1604,6 +1666,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             var isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
             Assert.Contains($"Successful: {isSuccessful}", logMessage);
+            // Check specifically on dependencyName
+            Uri requestUri = request.RequestUri;
+            HttpMethod requestMethod = request.Method;
+            string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
+            Assert.Contains("Http " + dependencyName, logMessage);
         }
 
         [Fact]
@@ -1660,6 +1727,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             var isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
             Assert.Contains($"Successful: {isSuccessful}", logMessage);
+            // Check specifically on dependencyName
+            Uri requestUri = request.RequestUri;
+            HttpMethod requestMethod = request.Method;
+            string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
+            Assert.Contains("Http " + dependencyName, logMessage);
         }
 
         [Fact]
