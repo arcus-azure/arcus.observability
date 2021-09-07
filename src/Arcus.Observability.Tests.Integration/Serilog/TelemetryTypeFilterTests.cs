@@ -856,6 +856,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             string targetName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
@@ -873,7 +874,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, startTime, duration, properties);
+                logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, startTime, duration, properties);
 
                 // Assert
                 LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
@@ -885,6 +886,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
                 Assert.Contains(duration.ToString(), logMessage);
                 Assert.Contains(isSuccessful.ToString(), logMessage);
+                Assert.Contains(dependencyName, logMessage);
                 Assert.Contains(propertyName, logMessage);
                 Assert.Contains(propertyValue, logMessage);
             }

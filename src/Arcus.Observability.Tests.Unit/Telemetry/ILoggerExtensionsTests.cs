@@ -122,6 +122,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependency_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
+        [Fact]
         public void LogDependency_WithoutDependencyType_Fails()
         {
             // Arrange
@@ -191,7 +217,35 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
         }
-        
+
+        [Fact]
+        public void LogDependencyWithDependencyMeasurement_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
         [Fact]
         public void LogDependencyWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
         {
@@ -259,7 +313,34 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
         }
-        
+
+        [Fact]
+        public void LogDependencyTarget_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, startTime, duration);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
         [Fact]
         public void LogDependencyTarget_WithoutDependencyType_Fails()
         {
@@ -350,7 +431,36 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
         }
-        
+
+        [Fact]
+        public void LogDependencyWithDependencyMeasurementTarget_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DependencyMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
         [Fact]
         public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyType_Fails()
         {

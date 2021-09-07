@@ -225,6 +225,37 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyType">Custom type of dependency</param>
         /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            string dependencyName,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
@@ -248,6 +279,40 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
             
             LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            string dependencyName,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, dependencyName, startTime: startTime, duration: duration, context: context);
         }
 
         /// <summary>
@@ -287,6 +352,39 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
         /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of the dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            string dependencyName,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="targetName">Name of dependency target</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
@@ -311,18 +409,54 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
             Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
-            
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName: targetName, startTime, duration, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            string dependencyName,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+
             context = context ?? new Dictionary<string, object>();
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
-                dependencyType, 
-                dependencyName: targetName, 
-                dependencyData: dependencyData, 
-                targetName: targetName, 
-                duration: duration, 
-                startTime: startTime, 
+                dependencyType,
+                dependencyName: dependencyName,
+                dependencyData: dependencyData,
+                targetName: targetName,
+                duration: duration,
+                startTime: startTime,
                 resultCode: null,
-                isSuccessful: isSuccessful, 
+                isSuccessful: isSuccessful,
                 context: context));
         }
 
