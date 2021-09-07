@@ -141,7 +141,7 @@ namespace Microsoft.Extensions.Logging
             string resourcePath = request.RequestUri.AbsolutePath;
             string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
 
-            logger.LogWarning(RequestFormat, new RequestLogEntry(request.Method.ToString(), host, resourcePath, null, statusCode, duration, context));
+            logger.LogWarning(RequestFormat, new RequestLogEntry(request.Method.ToString(), host, resourcePath, statusCode, duration, context));
         }
 
         /// <summary>

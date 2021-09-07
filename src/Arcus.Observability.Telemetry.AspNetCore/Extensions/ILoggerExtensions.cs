@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.Logging
             PathString resourcePath = request.Path;
             var host = $"{request.Scheme}://{request.Host}";
 
-            logger.LogWarning(MessageFormats.RequestFormat, new RequestLogEntry(request.Method, host, resourcePath, null, responseStatusCode, duration, context));
+            logger.LogWarning(MessageFormats.RequestFormat, new RequestLogEntry(request.Method, host, resourcePath, responseStatusCode, duration, context));
         }
 
         /// <summary>
