@@ -45,6 +45,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
             _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
+            _operationContextConverter.EnrichWithOperationName(telemetryEntry);
 
             return new List<ITelemetry> { telemetryEntry };
         }

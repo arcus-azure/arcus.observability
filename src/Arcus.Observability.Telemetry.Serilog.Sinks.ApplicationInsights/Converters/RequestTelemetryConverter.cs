@@ -43,16 +43,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var requestTelemetry = new RequestTelemetry(requestName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
             {
                 Id = operationId,
-                Url = url,
+                Url = url
             };
 
             if (!String.IsNullOrEmpty(operationName))
             {
                 requestTelemetry.Context.Operation.Name = $"{requestMethod} {operationName}";
-            }
-            else
-            {
-                requestTelemetry.Context.Operation.Name = requestName;
             }
 
             requestTelemetry.Properties.AddRange(context);
