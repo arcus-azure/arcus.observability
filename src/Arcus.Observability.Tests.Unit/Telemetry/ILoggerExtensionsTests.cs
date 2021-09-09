@@ -1050,7 +1050,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
-            // Check specifically on dependencyName
             string dependencyName = $"{accountName}/{containerName}";
             Assert.Contains("Azure blob " + dependencyName, logMessage);
         }
