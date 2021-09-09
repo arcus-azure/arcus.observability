@@ -931,8 +931,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
             Assert.Contains(duration.ToString(), logMessage);
             Assert.Contains(isSuccessful.ToString(), logMessage);
-            // Check specifically on dependencyName
-            Assert.Contains("Azure Service Bus " + topicName, logMessage);
+            var dependencyName = topicName;
+            Assert.Contains("Azure Service Bus " + dependencyName, logMessage);
         }
 
         [Fact]
