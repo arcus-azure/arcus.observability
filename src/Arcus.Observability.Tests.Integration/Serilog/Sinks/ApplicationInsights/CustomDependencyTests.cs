@@ -27,7 +27,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                
+
                 bool isSuccessful = BogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = DateTimeOffset.Now;
                 TimeSpan duration = BogusGenerator.Date.Timespan();
@@ -47,8 +47,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Data == dependencyData);
                 });
             }
-            
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+
+            AssertX.Any(GetLogEventsFromMemory(), logEvent =>
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
@@ -73,7 +74,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                bool isSuccessful = BogusGenerator.PickRandom(true, false);                
+                bool isSuccessful = BogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = DateTimeOffset.Now;
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
@@ -93,8 +94,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-AssertX.Any(GetLogEventsFromMemory(), logEvent => 
-{
+            AssertX.Any(GetLogEventsFromMemory(), logEvent =>
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
