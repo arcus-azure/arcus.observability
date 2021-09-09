@@ -93,7 +93,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+AssertX.Any(GetLogEventsFromMemory(), logEvent => 
+{
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
