@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.SqlServer.Server;
 using Moq;
 using Xunit;
 
@@ -32,10 +29,14 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             logger.LogMetric(metricName, metricValue);
 
             // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Metrics.ToString(), logMessage);
-            Assert.Contains(metricName, logMessage);
-            Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), logMessage);
+            MetricLogEntry metric = logger.GetMessageAsMetric();
+            Assert.Equal(metricName, metric.MetricName);
+            Assert.Equal(metricValue, metric.MetricValue);
+            Assert.Collection(metric.Context, item =>
+            {
+                Assert.Equal(nameof(TelemetryType), item.Key);
+                Assert.Equal(TelemetryType.Metrics, item.Value);
+            });
         }
 
         [Fact]
@@ -51,11 +52,49 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             logger.LogMetric(metricName, metricValue, timestamp);
 
             // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Metrics.ToString(), logMessage);
-            Assert.Contains(metricName, logMessage);
-            Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), logMessage);
-            Assert.Contains(timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            MetricLogEntry metric = logger.GetMessageAsMetric();
+            Assert.Equal(metricName, metric.MetricName);
+            Assert.Equal(metricValue, metric.MetricValue);
+            Assert.Equal(timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat), metric.Timestamp);
+            Assert.Collection(metric.Context, item =>
+            {
+                Assert.Equal(nameof(TelemetryType), item.Key);
+                Assert.Equal(TelemetryType.Metrics, item.Value);
+            });
+        }
+
+        [Fact]
+        public void LogMetric_ValidArgumentsWithCustomContext_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string metricName = _bogusGenerator.Name.FullName();
+            double metricValue = _bogusGenerator.Random.Double();
+            DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
+
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogMetric(metricName, metricValue, timestamp, context);
+
+            // Assert
+            MetricLogEntry metric = logger.GetMessageAsMetric();
+            Assert.Equal(metricName, metric.MetricName);
+            Assert.Equal(metricValue, metric.MetricValue);
+            Assert.Equal(timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat), metric.Timestamp);
+            Assert.Collection(metric.Context,
+                item =>
+                {
+                    Assert.Equal(key, item.Key);
+                    Assert.Equal(value, item.Value);
+                },
+                item =>
+                {
+                    Assert.Equal(nameof(TelemetryType), item.Key);
+                    Assert.Equal(TelemetryType.Metrics, item.Value);
+                });
         }
 
         [Fact]
