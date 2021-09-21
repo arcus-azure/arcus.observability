@@ -39,33 +39,33 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <param name="telemetryEntry">The telemetry instance to enrich.</param>
         public void EnrichWithOperationName<TEntry>(TEntry telemetryEntry) where TEntry : ITelemetry, ISupportProperties
         {
-            if (telemetryEntry is RequestTelemetry r)
+            if (telemetryEntry is RequestTelemetry requestTelemetry)
             {
                 // Check if operation has already been set with a custom value in the RequestTelemetryConverter, if not use the request name
-                if (String.IsNullOrEmpty(r.Context.Operation.Name))
+                if (String.IsNullOrEmpty(requestTelemetry.Context.Operation.Name))
                 {
-                    r.Context.Operation.Name = r.Name;
+                    requestTelemetry.Context.Operation.Name = requestTelemetry.Name;
                 }
             }
 
-            if (telemetryEntry is DependencyTelemetry d)
+            if (telemetryEntry is DependencyTelemetry dependencyTelemetry)
             {
-                d.Context.Operation.Name = d.Name;
+                dependencyTelemetry.Context.Operation.Name = dependencyTelemetry.Name;
             }
 
-            if (telemetryEntry is EventTelemetry e)
+            if (telemetryEntry is EventTelemetry eventTelemetry)
             {
-                e.Context.Operation.Name = e.Name;
+                eventTelemetry.Context.Operation.Name = eventTelemetry.Name;
             }
 
-            if (telemetryEntry is AvailabilityTelemetry a)
+            if (telemetryEntry is AvailabilityTelemetry availabilityTelemetry)
             {
-                a.Context.Operation.Name = a.Name;
+                availabilityTelemetry.Context.Operation.Name = availabilityTelemetry.Name;
             }
 
-            if (telemetryEntry is MetricTelemetry m)
+            if (telemetryEntry is MetricTelemetry metricTelemetry)
             {
-                m.Context.Operation.Name = m.Name;
+                metricTelemetry.Context.Operation.Name = metricTelemetry.Name;
             }
         }
     }
