@@ -46,9 +46,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 Url = url
             };
 
-            if (!String.IsNullOrEmpty(operationName))
+            // Add requestMethod to the operationName if it is missing
+            if (!operationName.StartsWith(requestMethod))
             {
                 requestTelemetry.Context.Operation.Name = $"{requestMethod} {operationName}";
+            }
+            else
+            {
+                requestTelemetry.Context.Operation.Name = operationName;
             }
 
             requestTelemetry.Properties.AddRange(context);
