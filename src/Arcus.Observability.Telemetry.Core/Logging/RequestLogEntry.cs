@@ -35,12 +35,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             int statusCode,
             TimeSpan duration,
             IDictionary<string, object> context) : this (method, host, uri, $"{method} {uri}", statusCode, duration, context)
-        {
-            Guard.For<ArgumentException>(() => host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
-            Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
-            Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
-        }
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestLogEntry"/> class.
