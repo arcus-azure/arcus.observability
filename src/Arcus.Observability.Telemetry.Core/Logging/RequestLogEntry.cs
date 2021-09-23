@@ -66,6 +66,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             IDictionary<string, object> context)
         {
             Guard.For<ArgumentException>(() => host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires an operation name that is not null or whitespace");
             Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
