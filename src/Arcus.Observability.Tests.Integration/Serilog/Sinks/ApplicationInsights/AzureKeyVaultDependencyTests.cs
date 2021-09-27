@@ -28,6 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "Azure key vault";
             string vaultUri = "https://myvault.vault.azure.net";
             string secretName = "MySecret";
+            string dependencyName = vaultUri;
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -54,7 +55,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == vaultUri
-                               && result.Dependency.Data == secretName;
+                               && result.Dependency.Data == secretName
+                               && result.Dependency.Name == dependencyName;
                     });
                 });
             }
@@ -71,6 +73,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(vaultUri, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });

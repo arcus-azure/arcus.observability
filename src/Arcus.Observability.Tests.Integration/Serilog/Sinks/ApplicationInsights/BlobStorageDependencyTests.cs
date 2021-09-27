@@ -28,6 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string componentName = BogusGenerator.Commerce.ProductName();
             string containerName = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
+            string dependencyName = $"{accountName}/{containerName}";
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -54,7 +55,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                         return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == accountName
                                && result.Dependency.Data == containerName
-                               && result.Cloud.RoleName == componentName;
+                               && result.Cloud.RoleName == componentName
+                               && result.Dependency.Name == dependencyName;
                     });
                 });
             }
@@ -71,6 +73,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(accountName, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });

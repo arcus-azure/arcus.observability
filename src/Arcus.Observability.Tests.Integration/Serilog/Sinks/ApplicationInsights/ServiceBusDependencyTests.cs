@@ -25,6 +25,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string dependencyType = "Azure Service Bus";
             string entityName = BogusGenerator.Commerce.Product();
+            string dependencyName = entityName;
+
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -45,7 +47,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsDependencyResult> results = await client.Events.GetDependencyEventsAsync(ApplicationId, timespan: "PT30M");
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Target == entityName);
+                    Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Target == entityName && result.Dependency.Name == dependencyName);
                 });
             }
 
@@ -58,6 +60,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(entityName, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });

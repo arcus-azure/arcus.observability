@@ -66,6 +66,46 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that was done</param>
+        /// <param name="response">Response that will be sent out</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="response"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="request"/>'s URI is blank,
+        ///     the <paramref name="request"/>'s scheme contains whitespace,
+        ///     the <paramref name="request"/>'s host contains whitespace,
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     Thrown when the <paramref name="response"/>'s status code is outside the 0-999 inclusively,
+        ///     the <paramref name="duration"/> is a negative time range.
+        /// </exception>
+        public static void LogRequest(
+            this ILogger logger,
+            HttpRequestMessage request,
+            HttpResponseMessage response,
+            string operationName,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
+            Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request");
+            Guard.NotNull(request.RequestUri, nameof(request.RequestUri), "Requires a request URI to track a HTTP request");
+            Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "Requires a HTTP request scheme without whitespace");
+            Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
+            Guard.NotLessThan((int)response.StatusCode, 0, nameof(response), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            Guard.NotGreaterThan((int)response.StatusCode, 999, nameof(response), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+
+            LogRequest(logger, request, response.StatusCode, operationName, duration, context);
+        }
+
+        /// <summary>
+        ///     Logs an HTTP request
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="request">Request that was done</param>
         /// <param name="responseStatusCode">HTTP status code returned by the service</param>
         /// <param name="duration">Duration of the operation</param>
         /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
@@ -105,6 +145,51 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        ///     Logs an HTTP request
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="request">Request that was done</param>
+        /// <param name="responseStatusCode">HTTP status code returned by the service</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the HTTP request that was tracked</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="request"/>'s URI is blank,
+        ///     the <paramref name="request"/>'s scheme contains whitespace,
+        ///     the <paramref name="request"/>'s host contains whitespace,
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     Thrown when the <paramref name="responseStatusCode"/>'s status code is outside the 0-999 inclusively,
+        ///     the <paramref name="duration"/> is a negative time range.
+        /// </exception>
+        public static void LogRequest(
+            this ILogger logger,
+            HttpRequestMessage request,
+            HttpStatusCode responseStatusCode,
+            string operationName,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
+            Guard.NotNull(request.RequestUri, nameof(request.RequestUri), "Requires a request URI to track a HTTP request");
+            Guard.For<ArgumentException>(() => request.RequestUri.Scheme?.Contains(" ") == true, "Requires a HTTP request scheme without whitespace");
+            Guard.For<ArgumentException>(() => request.RequestUri.Host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
+            Guard.NotLessThan((int)responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            Guard.NotGreaterThan((int)responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+
+            context = context ?? new Dictionary<string, object>();
+
+            var statusCode = (int)responseStatusCode;
+            string resourcePath = request.RequestUri.AbsolutePath;
+            string host = $"{request.RequestUri.Scheme}://{request.RequestUri.Host}";
+
+            logger.LogWarning(RequestFormat, new RequestLogEntry(request.Method.ToString(), host, resourcePath, operationName, statusCode, duration, context));
+        }
+
+        /// <summary>
         ///     Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
@@ -131,6 +216,37 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
 
             LogDependency(logger, dependencyType, dependencyData, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            string dependencyName,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -171,6 +287,40 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
         /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            string dependencyName,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, dependencyName, startTime: startTime, duration: duration, context: context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
         /// <param name="targetName">Name of the dependency target</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="measurement">Measuring the latency to call the dependency</param>
@@ -194,6 +344,39 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
             
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of the dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="measurement">Measuring the latency to call the dependency</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            string dependencyName,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -226,18 +409,54 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
             Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
-            
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName: targetName, startTime, duration, context);
+        }
+
+        /// <summary>
+        ///     Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">Custom type of dependency</param>
+        /// <param name="dependencyData">Custom data of dependency</param>
+        /// <param name="targetName">Name of dependency target</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="dependencyName">The name of the dependency</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogDependency(
+            this ILogger logger,            
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            string dependencyName,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+
             context = context ?? new Dictionary<string, object>();
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
-                dependencyType, 
-                dependencyName: null, 
-                dependencyData: dependencyData, 
-                targetName: targetName, 
-                duration: duration, 
-                startTime: startTime, 
+                dependencyType,
+                dependencyName: dependencyName,
+                dependencyData: dependencyData,
+                targetName: targetName,
+                duration: duration,
+                startTime: startTime,
                 resultCode: null,
-                isSuccessful: isSuccessful, 
+                isSuccessful: isSuccessful,
                 context: context));
         }
 
@@ -313,10 +532,10 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
             
             context = context ?? new Dictionary<string, object>();
-            
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure key vault", 
-                dependencyName: null, 
+                dependencyName: vaultUri, 
                 dependencyData: secretName, 
                 targetName: vaultUri, 
                 duration: duration, 
@@ -385,7 +604,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Search", 
-                dependencyName: null, 
+                dependencyName: searchServiceName, 
                 dependencyData: operationName, 
                 targetName: searchServiceName, 
                 duration: duration, 
@@ -552,7 +771,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Service Bus", 
-                dependencyName: null, 
+                dependencyName: entityName, 
                 dependencyData: null, 
                 targetName: entityName, 
                 duration: duration, 
@@ -618,9 +837,11 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
+            string dependencyName = $"{accountName}/{containerName}";
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure blob", 
-                dependencyName: null, 
+                dependencyName: dependencyName, 
                 dependencyData: containerName, 
                 targetName: accountName, 
                 duration: duration, 
@@ -686,9 +907,11 @@ namespace Microsoft.Extensions.Logging
             
             context = context ?? new Dictionary<string, object>();
 
+            string dependencyName = $"{accountName}/{tableName}";
+
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure table",
-                dependencyName: null,
+                dependencyName: dependencyName,
                 dependencyData: tableName,
                 targetName: accountName,
                 duration: duration,
@@ -756,7 +979,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Event Hubs",
-                dependencyName: null,
+                dependencyName: eventHubName,
                 dependencyData: namespaceName,
                 targetName: eventHubName,
                 duration: duration,
@@ -818,7 +1041,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure IoT Hub", 
-                dependencyName: null, 
+                dependencyName: iotHubName, 
                 dependencyData: null, 
                 targetName: iotHubName, 
                 duration: duration, 
@@ -893,7 +1116,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure DocumentDB", 
-                dependencyName: null, 
+                dependencyName: data, 
                 dependencyData: data, 
                 targetName: accountName, 
                 duration: duration, 

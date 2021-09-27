@@ -24,6 +24,81 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
+        public async Task LogRequest_SinksToApplicationInsightsWithoutOperationName_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+                HttpResponse response = CreateStubResponse(statusCode);
+
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
+                    Assert.Contains(results.Value, result => !String.IsNullOrEmpty(result.Operation.Name));
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequest_SinksToApplicationInsightsWithOperationName_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            string operationName = "sampleoperation";
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+                HttpResponse response = CreateStubResponse(statusCode);
+
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
+                    Assert.Contains(results.Value, result => result.Operation.Name == $"{httpMethod} {operationName}");
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
         public async Task LogRequest_SinksToApplicationInsightsWithResponse_ResultsInRequestTelemetry()
         {
             // Arrange

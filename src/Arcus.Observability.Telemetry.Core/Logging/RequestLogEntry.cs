@@ -29,14 +29,44 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         ///     the <paramref name="duration"/> is a negative time range.
         /// </exception>
         public RequestLogEntry(
+            string method,
+            string host,
+            string uri,
+            int statusCode,
+            TimeSpan duration,
+            IDictionary<string, object> context) : this (method, host, uri, $"{method} {uri}", statusCode, duration, context)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestLogEntry"/> class.
+        /// </summary>
+        /// <param name="method">The HTTP method of the request.</param>
+        /// <param name="host">The host that was requested.</param>
+        /// <param name="uri">The URI of the request.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="statusCode">The HTTP status code returned by the service.</param>
+        /// <param name="duration">The duration of the processing of the request.</param>
+        /// <param name="context">The context that provides more insights on the HTTP request that was tracked.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="duration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="uri"/>'s URI is blank,
+        ///     the <paramref name="host"/> contains whitespace,
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     Thrown when the <paramref name="statusCode"/>'s status code is outside the 100-599 inclusively,
+        ///     the <paramref name="duration"/> is a negative time range.
+        /// </exception>
+        public RequestLogEntry(
             string method, 
             string host, 
             string uri, 
+            string operationName,
             int statusCode,
             TimeSpan duration,
             IDictionary<string, object> context)
         {
             Guard.For<ArgumentException>(() => host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires an operation name that is not null or whitespace");
             Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
@@ -46,6 +76,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             RequestUri = uri;
             ResponseStatusCode = statusCode;
             RequestDuration = duration;
+            OperationName = operationName;
             RequestTime = DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat);
             Context = context;
             Context[ContextProperties.General.TelemetryType] = TelemetryType.Request;
@@ -80,7 +111,12 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// Gets the date when the request occurred.
         /// </summary>
         public string RequestTime { get; }
-        
+
+        /// <summary>
+        /// Gets the name of the operation.
+        /// </summary>
+        public string OperationName { get; }
+
         /// <summary>
         /// Gets the context that provides more insights on the HTTP request that was tracked.
         /// </summary>

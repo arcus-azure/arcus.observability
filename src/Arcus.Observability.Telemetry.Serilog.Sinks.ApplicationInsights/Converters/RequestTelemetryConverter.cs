@@ -29,6 +29,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             string requestHost = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.RequestHost));
             string requestUri = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.RequestUri));
             string responseStatusCode = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.ResponseStatusCode));
+            string operationName = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.OperationName));
             TimeSpan requestDuration = logEntry.Properties.GetAsTimeSpan(nameof(RequestLogEntry.RequestDuration));
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
@@ -42,8 +43,18 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var requestTelemetry = new RequestTelemetry(requestName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
             {
                 Id = operationId,
-                Url = url,
+                Url = url
             };
+
+            // Add requestMethod to the operationName if it is missing
+            if (!operationName.StartsWith(requestMethod))
+            {
+                requestTelemetry.Context.Operation.Name = $"{requestMethod} {operationName}";
+            }
+            else
+            {
+                requestTelemetry.Context.Operation.Name = operationName;
+            }
 
             requestTelemetry.Properties.AddRange(context);
             return requestTelemetry;

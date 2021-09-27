@@ -1,6 +1,7 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Serilog.Events;
 

@@ -29,6 +29,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string container = BogusGenerator.Commerce.ProductName();
             string database = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
+            string dependencyData = $"{database}/{container}";
+            string dependencyName = $"{database}/{container}";
+
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -55,8 +58,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == accountName
-                               && result.Dependency.Data == $"{database}/{container}"
-                               && result.Cloud.RoleName == componentName;
+                               && result.Dependency.Data == dependencyData
+                               && result.Cloud.RoleName == componentName
+                               && result.Dependency.Name == dependencyName;
                     });
                 });
             }
@@ -69,10 +73,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
 
                 var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
-                Assert.Equal($"{database}/{container}", actualDependencyData.Value.ToDecentString());
+                Assert.Equal(dependencyData, actualDependencyData.Value.ToDecentString());
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(accountName, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });

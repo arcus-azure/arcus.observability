@@ -28,6 +28,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "Azure IoT Hub";
             string componentName = BogusGenerator.Commerce.ProductName();
             string iotHubName = BogusGenerator.Commerce.ProductName();
+            string dependencyName = iotHubName;
+
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
@@ -52,7 +54,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         return result.Dependency.Type == dependencyType
                                && result.Dependency.Target == iotHubName
-                               && result.Cloud.RoleName == componentName;
+                               && result.Cloud.RoleName == componentName
+                               && result.Dependency.Name == dependencyName;
                     });
                 });
             }
@@ -66,6 +69,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(iotHubName, actualTargetName.Value.ToDecentString());
+
+                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
