@@ -36,9 +36,7 @@ You can use the version script to create a new documentation version based on th
    
 `npm run docusaurus docs:version v1.1`
 
-3. Update NuGet install statements to include `--version {version}`
-
-This needs to be done in `01-index.md` & `02-Features/correlation.md`.
+3. Update NuGet install statements to include `--version {version}`. This needs to be done in `01-index.md` & `02-Features/correlation.md`.
 
 #### What does tagging do?
 
