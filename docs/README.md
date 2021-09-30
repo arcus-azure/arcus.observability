@@ -32,11 +32,10 @@ You can use the version script to create a new documentation version based on th
 ### Tagging a new version
 
 1. First, make sure your content in the `./preview` directory is ready to be frozen as a version. A version always should be based from master.
-2. Enter a new version number: 
-   
+2. Enter a new version number:
 `npm run docusaurus docs:version v1.1`
 
-3. Update NuGet install statements to include `--version {version}`. This needs to be done in `01-index.md` & `02-Features/correlation.md`.
+4. Update NuGet install statements to include `--version {version}`. This needs to be done in `01-index.md` & `02-Features/correlation.md`.
 
 #### What does tagging do?
 
