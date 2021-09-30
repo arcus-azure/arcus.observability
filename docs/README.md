@@ -36,7 +36,12 @@ You can use the version script to create a new documentation version based on th
    
 `npm run docusaurus docs:version v1.1`
 
----
+3. Update NuGet install statements to include `--version {version}`
+
+This needs to be done in `01-index.md` & `02-Features/correlation.md`.
+
+#### What does tagging do?
+
 When tagging a new version, the document versioning mechanism will:
 
 - Copy the full `./preview` folder contents into a new `versioned_docs/version-<version>/` folder.
