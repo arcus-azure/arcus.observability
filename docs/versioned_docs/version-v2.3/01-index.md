@@ -12,7 +12,7 @@ sidebar_label: Welcome
 The Arcus.Observability.Correlation can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlation
+PM > Install-Package Arcus.Observability.Correlation --version 2.3.0
 ```
 
 For more granular packages we recommend reading the documentation.
