@@ -2121,7 +2121,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
             Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
             Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
-
         }
         
         [Theory]
@@ -2365,7 +2364,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(queueName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
             Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
             Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
-
         }
         
         [Theory]
@@ -2610,7 +2608,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
             Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
             Assert.Equal(entityType.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
-
         }
         
         [Theory]

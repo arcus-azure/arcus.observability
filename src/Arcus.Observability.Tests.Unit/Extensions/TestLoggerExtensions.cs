@@ -25,7 +25,6 @@ namespace Arcus.Observability.Tests.Unit
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
-
         public static RequestLogEntry GetMessageAsRequest(this TestLogger logger)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
