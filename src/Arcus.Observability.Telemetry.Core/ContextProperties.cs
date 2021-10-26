@@ -64,6 +64,15 @@ namespace Arcus.Observability.Telemetry.Core
             public const string ResponseStatusCode = "ResponseStatusCode";
             public const string RequestDuration = "RequestDuration";
             public const string RequestTime = "RequestTime";
+            
+            public static class ServiceBus
+            {
+                public const string Endpoint = "ServiceBus-Endpoint";
+                public const string EntityName = "ServiceBus-Entity";
+                public const string EntityType = "ServiceBus-EntityType";
+
+                public const string DefaultOperationName = "Process";
+            }
         }
 
         public static class MetricTracking

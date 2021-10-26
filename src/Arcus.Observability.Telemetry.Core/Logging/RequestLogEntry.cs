@@ -34,8 +34,14 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             string uri,
             int statusCode,
             TimeSpan duration,
-            IDictionary<string, object> context) : this (method, host, uri, $"{method} {uri}", statusCode, duration, context)
-        { }
+            IDictionary<string, object> context) 
+            : this(method, host, uri, operationName: $"{method} {uri}", statusCode, duration, context)
+        {
+            Guard.For<ArgumentException>(() => host?.Contains(" ") is true, "Requires a HTTP request host name without whitespace");
+            Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
+            Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestLogEntry"/> class.
@@ -64,22 +70,72 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             int statusCode,
             TimeSpan duration,
             IDictionary<string, object> context)
+            : this(method, host, uri, operationName, statusCode, sourceSystem: RequestSourceSystem.Http, duration, requestTime: DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat), context)
         {
-            Guard.For<ArgumentException>(() => host?.Contains(" ") == true, "Requires a HTTP request host name without whitespace");
+            Guard.For<ArgumentException>(() => host?.Contains(" ") is true, "Requires a HTTP request host name without whitespace");
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires an operation name that is not null or whitespace");
             Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
-            
+        }
+
+        private RequestLogEntry(
+            string method, 
+            string host, 
+            string uri, 
+            string operationName,
+            int statusCode,
+            RequestSourceSystem sourceSystem,
+            TimeSpan duration,
+            string requestTime,
+            IDictionary<string, object> context)
+        {
+            Guard.For<ArgumentException>(() => host?.Contains(" ") is true, "Requires a HTTP request host name without whitespace");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank operation name");
+            Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
+            Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+
             RequestMethod = method;
             RequestHost = host;
             RequestUri = uri;
             ResponseStatusCode = statusCode;
             RequestDuration = duration;
             OperationName = operationName;
-            RequestTime = DateTimeOffset.UtcNow.ToString(FormatSpecifiers.InvariantTimestampFormat);
+            SourceSystem = sourceSystem;
+            RequestTime = requestTime;
             Context = context;
             Context[ContextProperties.General.TelemetryType] = TelemetryType.Request;
+        }
+
+        /// <summary>
+        /// Creates an <see cref="RequestLogEntry"/> instance for Azure Service Bus requests.
+        /// </summary>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the Azure Service Bus request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static RequestLogEntry CreateForServiceBus(
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            IDictionary<string, object> context)
+        {
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+            
+            return new RequestLogEntry(
+                method: "<not-applicable>",
+                host: "<not-applicable>",
+                uri: "<not-applicable>",
+                operationName,
+                statusCode: isSuccessful ? 200 : 500,
+                sourceSystem: RequestSourceSystem.AzureServiceBus,
+                duration,
+                startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
+                context);
         }
 
         /// <summary>
@@ -113,7 +169,12 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         public string RequestTime { get; }
 
         /// <summary>
-        /// Gets the name of the operation.
+        /// Gets the type of source system from where the request came from.
+        /// </summary>
+        public RequestSourceSystem SourceSystem { get; set; }
+
+        /// <summary>
+        /// Gets the name of the operation of the source system from where the request came from.
         /// </summary>
         public string OperationName { get; }
 
@@ -128,8 +189,17 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            string contextFormatted = $"{{{String.Join("; ", Context.Select(item => $"[{item.Key}, {item.Value}]"))}}}";
-            return $"{RequestMethod} {RequestHost}/{RequestUri} completed with {ResponseStatusCode} in {RequestDuration} at {RequestTime} - (Context: {contextFormatted})";
+            var contextFormatted = $"{{{String.Join("; ", Context.Select(item => $"[{item.Key}, {item.Value}]"))}}}";
+            switch (SourceSystem)
+            {
+                case RequestSourceSystem.AzureServiceBus:
+                    bool isSuccessful = ResponseStatusCode is 200;
+                    return $"Azure Service Bus from {OperationName} completed in {RequestDuration} at {RequestTime} - (IsSuccessful: {isSuccessful}, Context: {contextFormatted})";
+                case RequestSourceSystem.Http:
+                    return $"{RequestMethod} {RequestHost}/{RequestUri} from {OperationName} completed with {ResponseStatusCode} in {RequestDuration} at {RequestTime} - (Context: {contextFormatted})";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(SourceSystem), SourceSystem, "Unknown request source system");
+            }
         }
     }
 }

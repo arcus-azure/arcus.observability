@@ -429,6 +429,38 @@ logger.LogMetric("Invoice Received", 133.37, telemetryContext);
 
 ## Requests
 
+### Incoming Azure Service Bus requests
+Requests allow you to keep track of Azure Service Bus messages on a queue or topic and how the message was processed.
+
+Here is how you can report an Azure Service Bus queue request on a message that's being processed:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+bool isSuccessful = false;
+
+// Start measuring.
+using (var measurement = DependencyMeasurement.Start())
+{
+    try
+    {
+        // Processing message.
+
+        // End processing.
+        
+        isSuccessful = true;
+    }
+    finally
+    {
+        logger.LogServiceBusQueueRequest("<my-queue-namespace>.servicebus.windows.net", "<my-queue-name>", "<operation-name>", isSuccessful, measurement);
+        // Output: Azure Service Bus from <operation-name> completed in 0.00:12:20.8290760 at 2021-10-26T05:36:03.6067975 +02:00 - (IsSuccessful: True, Context: {[ServiceBus-Endpoint, <my-queue-namespace>.servicebus.windows.net]; [ServiceBus-Entity, <my-queue-name>]; [ServiceBus-EntityType, Queue]; [TelemetryType, Request]})
+    }
+}
+```
+
+We also support Azure Service Bus topics and general Service Bus tracking (indepent of queue or topic).
+
+### Incoming HTTP requests
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
 
 **Installation**

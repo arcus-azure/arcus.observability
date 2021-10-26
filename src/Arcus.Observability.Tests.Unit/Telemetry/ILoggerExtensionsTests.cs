@@ -34,7 +34,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(metricValue, metric.MetricValue);
             Assert.Collection(metric.Context, item =>
             {
-                Assert.Equal(nameof(TelemetryType), item.Key);
+                Assert.Equal(ContextProperties.General.TelemetryType, item.Key);
                 Assert.Equal(TelemetryType.Metrics, item.Value);
             });
         }
@@ -58,7 +58,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(timestamp.ToString(FormatSpecifiers.InvariantTimestampFormat), metric.Timestamp);
             Assert.Collection(metric.Context, item =>
             {
-                Assert.Equal(nameof(TelemetryType), item.Key);
+                Assert.Equal(ContextProperties.General.TelemetryType, item.Key);
                 Assert.Equal(TelemetryType.Metrics, item.Value);
             });
         }
@@ -92,7 +92,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
                 },
                 item =>
                 {
-                    Assert.Equal(nameof(TelemetryType), item.Key);
+                    Assert.Equal(ContextProperties.General.TelemetryType, item.Key);
                     Assert.Equal(TelemetryType.Metrics, item.Value);
                 });
         }
@@ -2090,6 +2090,748 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Act & Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, duration));
+        }
+
+        [Fact]
+        public void LogServiceBusTopicRequestWithMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusTopicRequest(serviceBusNamespace, topicName, operationName, isSuccessful, measurement, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequestWithMeasurement_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusTopicRequest(serviceBusNamespace, topicName, operationName, isSuccessful, measurement, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequestWithMeasurement_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequestWithMeasurement_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusTopicRequestWithMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement: null, context));
+        }
+
+        [Fact]
+        public void LogServiceBusTopicRequest_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+
+            // Act
+            logger.LogServiceBusTopicRequest(serviceBusNamespace, topicName, operationName, isSuccessful, duration, startTime, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequest_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context);
+            
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(entityName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequest_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicRequest_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusTopicRequest_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            TimeSpan negativeDuration = _bogusGenerator.Date.Timespan().Negate();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicRequest(serviceBusNamespace, entityName, operationName, isSuccessful, negativeDuration, startTime, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusQueueRequestWithMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string queueName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusQueueRequest(serviceBusNamespace, queueName, operationName, isSuccessful, measurement, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(queueName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequestWithMeasurement_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string queueName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusQueueRequest(serviceBusNamespace, queueName, operationName, isSuccessful, measurement, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(queueName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequestWithMeasurement_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequestWithMeasurement_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusQueueRequestWithMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement: null, context));
+        }
+
+        [Fact]
+        public void LogServiceBusQueueRequest_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string queueName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogServiceBusQueueRequest(serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, context);
+            
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(queueName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequest_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context);
+            
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(entityName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequest_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueRequest_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusQueueRequest_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            TimeSpan negativeDuration = _bogusGenerator.Date.Timespan().Negate();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusQueueRequest(serviceBusNamespace, entityName, operationName, isSuccessful, negativeDuration, startTime, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusRequestWithMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusRequest(serviceBusNamespace, topicName, operationName, isSuccessful, measurement, entityType, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(entityType.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequestWithMeasurement_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogServiceBusRequest(serviceBusNamespace, topicName, operationName, isSuccessful, measurement, entityType, context);
+
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(measurement.Elapsed, entry.RequestDuration);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(topicName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(entityType.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequestWithMeasurement_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, entryType, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequestWithMeasurement_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement, entryType, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusRequestWithMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, measurement: null, entityType, context));
+        }
+
+        [Fact]
+        public void LogServiceBusRequest_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entryType, context);
+            
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(operationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(entityName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(entryType.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequest_WithoutOperationName_Succeeds(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entryType, context);
+            
+            // Assert
+            RequestLogEntry entry = logger.GetMessageAsRequest();
+            Assert.Equal(ContextProperties.RequestTracking.ServiceBus.DefaultOperationName, entry.OperationName);
+            Assert.Equal(isSuccessful, entry.ResponseStatusCode is 200);
+            Assert.Equal(duration, entry.RequestDuration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.RequestTime);
+            Assert.Equal(value, Assert.Single(entry.Context, item => item.Key == key).Value);
+            Assert.Equal(serviceBusNamespace, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.Endpoint).Value);
+            Assert.Equal(entityName, Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityName).Value);
+            Assert.Equal(TelemetryType.Request, Assert.Single(entry.Context, item => item.Key == ContextProperties.General.TelemetryType).Value);
+            Assert.Equal(entryType.ToString(), Assert.Single(entry.Context, item => item.Key == ContextProperties.RequestTracking.ServiceBus.EntityType).Value);
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequest_WithoutServiceBusNamespace_Fails(string serviceBusNamespace)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entryType, context));
+        }
+        
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusRequest_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entryType, context));
+        }
+        
+        [Fact]
+        public void LogServiceBusRequest_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var entryType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string key = _bogusGenerator.Lorem.Word();
+            string value = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+            
+            TimeSpan negativeDuration = _bogusGenerator.Date.Timespan().Negate();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, negativeDuration, startTime, entryType, context));
         }
 
         [Fact]
