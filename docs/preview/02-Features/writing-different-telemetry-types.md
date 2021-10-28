@@ -458,7 +458,7 @@ using (var measurement = DependencyMeasurement.Start())
 }
 ```
 
-We also support Azure Service Bus topics and general Service Bus tracking (indepent of queue or topic).
+We provide support for all Azure Service Bus entity types such as queues, topics and subscriptions.
 
 ### Incoming HTTP requests
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
