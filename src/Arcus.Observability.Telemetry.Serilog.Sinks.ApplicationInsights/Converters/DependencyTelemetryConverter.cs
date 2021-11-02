@@ -34,12 +34,13 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             string resultCode = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.ResultCode));
             bool outcome = logEntry.Properties.GetAsBool(nameof(DependencyLogEntry.IsSuccessful));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(DependencyLogEntry.Context));
-            
+
+            string dependencyId = logEntry.Properties.GetAsRawString(ContextProperties.DependencyTracking.DependencyId);
             string operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
-            
+
             var dependencyTelemetry = new DependencyTelemetry(dependencyType, target, dependencyName, data, startTime, duration, resultCode, success: outcome)
             {
-                Id = operationId
+                Id = dependencyId ?? operationId
             };
 
             dependencyTelemetry.Properties.AddRange(context);

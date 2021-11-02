@@ -21,7 +21,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
         protected const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
-
+        protected const string PastHalfHourTimeSpan = "PT30M";
+        
         private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
         private readonly string _instrumentationKey;

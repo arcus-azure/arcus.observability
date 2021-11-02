@@ -388,6 +388,19 @@ catch (Exception exception)
 }
 ```
 
+### Making it easier to link dependencies
+
+Service-to-service correlation requires linkage between tracked dependencies (outgoing) and requests (incoming).
+Tracking any kind of dependency with the library has the possibility to provide an dependency ID. This ID will be needed later when the incoming request is tracked (dependency ID = request's parent ID).
+
+// TODO: provide example.
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+logger.Log
+```
+
 ## Events
 
 Events allow you to report custom events which are a great way to track business-related events.
