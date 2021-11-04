@@ -45,6 +45,25 @@ ILogger logger = new LoggerConfiguration()
 
 The Azure Application Insights sink has some additional configuration which can be changed to influence the tracking.
 
+### Requests
+
+### Request ID
+
+When tracking requests, the ID for the request telemetry is by default a generated GUID. The generation of this ID can be configurable via the options.
+This is useful (for example) in a service-to-service correlation system where you want the ID of the incoming request based on the sending system, or you want to incorporate the operation ID in the request ID.
+
+```csharp
+using Serilog;
+using Serilog.Configuration;
+
+ILogger logger = new LoggerConfiguration()
+    .WriteTo.AzureApplicationInsights("<key>", options =>
+    {
+        // Configurable generation function for the telemetry request ID.
+        options.Request.GenerateId = () => $"my-custom-ID-{Guid.NewGuid()}";
+    })
+```
+
 ### Exceptions
 
 #### Properties

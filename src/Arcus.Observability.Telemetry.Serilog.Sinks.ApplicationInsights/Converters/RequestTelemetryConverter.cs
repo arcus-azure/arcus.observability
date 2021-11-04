@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
@@ -13,6 +14,26 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class RequestTelemetryConverter : CustomTelemetryConverter<RequestTelemetry>
     {
+        private ApplicationInsightsSinkRequestOptions _options;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestTelemetryConverter" /> class.
+        /// </summary>
+        public RequestTelemetryConverter()
+            : this(new ApplicationInsightsSinkRequestOptions())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestTelemetryConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to tracking requests.</param>
+        public RequestTelemetryConverter(ApplicationInsightsSinkRequestOptions options)
+        {
+            Guard.NotNull(options, nameof(options), "Requires a set of user-configurable options to influence the behavior of how requests are tracked");
+            _options = options;
+        }
+        
         /// <summary>
         ///     Creates a telemetry entry for a given log event
         /// </summary>
@@ -34,7 +55,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
 
-            string operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
+            string id = _options.GenerateId();
 
             var requestName = $"{requestMethod} {requestUri}";
             bool isSuccessfulRequest = DetermineRequestOutcome(responseStatusCode);
@@ -42,11 +63,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             var requestTelemetry = new RequestTelemetry(requestName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
             {
-                Id = operationId,
+                Id = id,
                 Url = url
             };
 
-            // Add requestMethod to the operationName if it is missing
             if (!operationName.StartsWith(requestMethod))
             {
                 requestTelemetry.Context.Operation.Name = $"{requestMethod} {operationName}";
