@@ -67,7 +67,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int)statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _);
+                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
                 AssertOperationContext(requestTelemetry, operationId);
 
