@@ -28,6 +28,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// Initializes a new instance of the <see cref="RequestTelemetryConverter" /> class.
         /// </summary>
         /// <param name="options">The user-defined configuration options to tracking requests.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options" /> is <c>null</c>.</exception>
         public RequestTelemetryConverter(ApplicationInsightsSinkRequestOptions options)
         {
             Guard.NotNull(options, nameof(options), "Requires a set of user-configurable options to influence the behavior of how requests are tracked");
