@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.AspNetCore</PackageId>
+    <TargetFrameworks>netstandard2.1;net6.0;netcoreapp3.1</TargetFrameworks>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve ASP.NET Core telemetry with Serilog in applications</Description>
@@ -13,26 +12,27 @@
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Azure;Observability;Telemetry;Serilog;ASP.NET;Core</PackageTags>
+    <PackageId>Arcus.Observability.Telemetry.AspNetCore</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Arcus.Observability.Telemetry.AspNetCore</AssemblyName>
     <RootNamespace>Arcus.Observability.Telemetry.AspNetCore</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Guard.Net" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../Arcus.Observability.Telemetry.Core/Arcus.Observability.Telemetry.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Guard.Net" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

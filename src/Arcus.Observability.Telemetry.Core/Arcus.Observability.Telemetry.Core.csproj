@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.Core</PackageId>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve telemetry with Serilog in applications</Description>
@@ -13,23 +12,16 @@
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Azure;Observability;Telemetry;Serilog</PackageTags>
+    <PackageId>Arcus.Observability.Telemetry.Core</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Arcus.Observability.Telemetry.Core</AssemblyName>
     <RootNamespace>Arcus.Observability.Telemetry.Core</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-  </ItemGroup>
-
-
   <ItemGroup>
     <PackageReference Include="Guard.Net" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
   </ItemGroup>
 
 </Project>
