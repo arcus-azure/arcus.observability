@@ -193,7 +193,38 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus topic is registered.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus topic is registered (use Azure public cloud).</param>
+        /// <param name="topicName">The name of the Azure Service Bus topic.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
+        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus topic request.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="topicName"/> is blank.</exception>
+        public static void LogServiceBusTopicRequestWithPrefix(
+            this ILogger logger,
+            string serviceBusNamespacePrefix,
+            string topicName,
+            string operationName,
+            bool isSuccessful,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace to track the topic request");
+            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
+            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus topic request process latency duration");
+
+            // TODO: the dependency date from the measurement instance is not used when tracking the request.
+
+            LogServiceBusTopicRequestWithPrefix(logger, serviceBusNamespacePrefix, topicName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Service Bus topic request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered.</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
@@ -220,26 +251,43 @@ namespace Microsoft.Extensions.Logging
             LogServiceBusTopicRequest(logger, serviceBusNamespace, topicName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
 
-        public static void LogServiceBusTopicRequest(
+        /// <summary>
+        ///     Logs an Azure Service Bus topic request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus topic is registered (use Azure public cloud).</param>
+        /// <param name="topicName">The name of the Azure Service Bus topic.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the Azure Service Bus topic request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="topicName"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogServiceBusTopicRequestWithPrefix(
             this ILogger logger,
-            string serviceBusNamespace,
+            string serviceBusNamespacePrefix,
             string topicName,
-            string cloudName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            TimeSpan duration,
+            DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
-            
-            
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace to track the topic request");
+            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus topic request operation");
+
+            LogServiceBusRequestWithPrefix(logger, serviceBusNamespacePrefix, topicName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Topic, context);
         }
 
         /// <summary>
         ///     Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus topic is registered.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered.</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
@@ -271,7 +319,38 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus queue is registered.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
+        /// <param name="queueName">The name of the Azure Service Bus queue.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
+        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="queueName"/> is blank.</exception>
+        public static void LogServiceBusQueueRequestWithPrefix(
+            this ILogger logger,
+            string serviceBusNamespacePrefix,
+            string queueName,
+            string operationName,
+            bool isSuccessful,
+            DependencyMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace to track the queue request");
+            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
+            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus queue request process latency duration");
+
+            // TODO: the dependency date from the measurement instance is not used when tracking the request.
+
+            LogServiceBusQueueRequestWithPrefix(logger, serviceBusNamespacePrefix, queueName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Service Bus queue request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered.</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
@@ -302,7 +381,39 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus queue is registered.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
+        /// <param name="queueName">The name of the Azure Service Bus queue.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the Azure Service Bus queue request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="queueName"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogServiceBusQueueRequestWithPrefix(
+            this ILogger logger,
+            string serviceBusNamespacePrefix,
+            string queueName,
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace to track the queue request");
+            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus queue request operation");
+
+            LogServiceBusRequestWithPrefix(logger, serviceBusNamespacePrefix, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Service Bus queue request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered.</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
@@ -329,12 +440,45 @@ namespace Microsoft.Extensions.Logging
 
             LogServiceBusRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
         }
-        
+
         /// <summary>
         ///     Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus is registered.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
+        /// <param name="entityName">The name of the Azure Service Bus entity.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
+        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="entityType">The type of the Azure Service Bus entity.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="entityName"/> is blank.</exception>
+        public static void LogServiceBusRequestWithPrefix(
+            this ILogger logger,
+            string serviceBusNamespacePrefix,
+            string entityName,
+            string operationName,
+            bool isSuccessful,
+            DependencyMeasurement measurement,
+            ServiceBusEntityType entityType,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace to track the queue request");
+            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
+            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
+
+            // TODO: the dependency date from the measurement instance is not used when tracking the request.
+
+            LogServiceBusRequestWithPrefix(logger, serviceBusNamespacePrefix, entityName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, entityType, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Service Bus request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus is registered.</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
@@ -350,7 +494,7 @@ namespace Microsoft.Extensions.Logging
             string operationName,
             bool isSuccessful,
             DependencyMeasurement measurement,
-            ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
+            ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -367,7 +511,41 @@ namespace Microsoft.Extensions.Logging
         ///     Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
-        /// <param name="serviceBusNamespace">The namespace (without '.servicebus.windows.net') where the Azure Service Bus is registered.</param>
+        /// <param name="serviceBusNamespacePrefix">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
+        /// <param name="entityName">The name of the Azure Service Bus entity.</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the Azure Service Bus request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="entityType">The type of the Azure Service Bus entity.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespacePrefix"/> or <paramref name="entityName"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogServiceBusRequestWithPrefix(
+            this ILogger logger,
+            string serviceBusNamespacePrefix,
+            string entityName,
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            ServiceBusEntityType entityType,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serviceBusNamespacePrefix, nameof(serviceBusNamespacePrefix), "Requires an Azure Service Bus namespace suffix to track the request");
+            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
+
+            LogServiceBusRequest(logger, serviceBusNamespacePrefix + ".servicebus.windows.net", entityName, operationName, isSuccessful, duration, startTime, entityType, context);
+        }
+
+        /// <summary>
+        ///     Logs an Azure Service Bus request.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the telemetry.</param>
+        /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus is registered.</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
@@ -386,33 +564,12 @@ namespace Microsoft.Extensions.Logging
             bool isSuccessful,
             TimeSpan duration,
             DateTimeOffset startTime,
-            ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
+            ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
+            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the request");
             Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
-
-            LogServiceBusRequest(logger, serviceBusNamespace, entityName, ".servicebus.windows.net", operationName, isSuccessful, duration, startTime, entityType, context);
-        }
-
-        public static void LogServiceBusRequest(
-            this ILogger logger,
-            string serviceBusNamespace,
-            string entityName,
-            string cloudName,
-            string operationName,
-            bool isSuccessful,
-            TimeSpan duration,
-            DateTimeOffset startTime,
-            ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
-            Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotNullOrWhitespace(cloudName, nameof(cloudName), "Requires an Azure Service Bus namespace suffix to track the request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
 
             if (string.IsNullOrWhiteSpace(operationName))
@@ -421,7 +578,7 @@ namespace Microsoft.Extensions.Logging
             }
 
             context = context ?? new Dictionary<string, object>();
-            context[ContextProperties.RequestTracking.ServiceBus.Endpoint] = serviceBusNamespace + cloudName;
+            context[ContextProperties.RequestTracking.ServiceBus.Endpoint] = serviceBusNamespace;
             context[ContextProperties.RequestTracking.ServiceBus.EntityName] = entityName;
             context[ContextProperties.RequestTracking.ServiceBus.EntityType] = entityType;
 

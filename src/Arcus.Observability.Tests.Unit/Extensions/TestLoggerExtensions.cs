@@ -34,7 +34,7 @@ namespace Arcus.Observability.Tests.Unit
                 throw new InvalidOperationException(
                     "Cannot parse the written message as a telemetry request because no log message was written to this test logger");
             }
-            const string pattern = @"Azure Service Bus from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[\w+, \w+\])(; \[[\w\-]+, \w+\])*))\}\)$";
+            const string pattern = @"Azure Service Bus from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, \w+\])(; \[[\w\-]+, [\w\.]+\])*))\}\)$";
             Match match = Regex.Match(logger.WrittenMessage, pattern);
 
             string operationName = GetOperationName(match);
