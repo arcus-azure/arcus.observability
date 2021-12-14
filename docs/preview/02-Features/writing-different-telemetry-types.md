@@ -42,11 +42,12 @@ We provide support for the following dependencies:
 - [Azure Search](#measuring-azure-search-dependencies)
 - [Azure Service Bus](#measuring-azure-service-bus-dependencies)
 - [Azure Table Storage](#measuring-azure-table-storage-dependencies)
-- [Custom](#measuring-custom-dependencies)
 - [HTTP](#measuring-http-dependencies)
 - [SQL](#measuring-sql-dependencies)
+- [Custom](#measuring-custom-dependencies)
 
 Since measuring dependencies can add some noise in your code, we've introduced `DependencyMeasurement` to make it simpler. ([docs](#making-it-easier-to-measure-dependencies))
+Linking service-to-service correlation can be hard, this can be made easier with including dependency ID's. ([docs](#making-it-easier-to-link-services))
 
 ### Measuring Azure Blob Storage dependencies
 
@@ -388,17 +389,31 @@ catch (Exception exception)
 }
 ```
 
-### Making it easier to link dependencies
+### Making it easier to link services
 
 Service-to-service correlation requires linkage between tracked dependencies (outgoing) and requests (incoming).
 Tracking any kind of dependency with the library has the possibility to provide an dependency ID. This ID will be needed later when the incoming request is tracked (dependency ID = request's parent ID).
 
-// TODO: provide example.
+Tracking the outgoing dependency:
 
 ```csharp
-using Microsoft.Extensions.Logging;
+var durationMeasurement = new StopWatch();
 
-logger.Log
+// Start measuring
+durationMeasurement.Start();
+var startTime = DateTimeOffset.UtcNow;
+
+var trackingId = "75D298F7-99FF-4BB8-8019-230974EB6D1E";
+
+logger.AzureKeyVaultDependency(
+    vaultUri: "https://my-secret-store.vault.azure.net", 
+    secretName: "ServiceBus-ConnectionString", 
+    isSuccessful: true, 
+    startTime: startTime, 
+    duration: durationMeasurement.Elapsed,
+    dependencyId: trackingId);
+
+// Output: {"DependencyType": "Azure key vault", "DependencyId": "75D298F7-99FF-4BB8-8019-230974EB6D1E", "DependencyData": "ServiceBus-ConnectionString", "TargetName": "https://my-secret-store.vault.azure.net", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ## Events
