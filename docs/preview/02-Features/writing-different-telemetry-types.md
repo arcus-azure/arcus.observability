@@ -432,7 +432,7 @@ logger.LogMetric("Invoice Received", 133.37, telemetryContext);
 ### Incoming Azure Service Bus requests
 Requests allow you to keep track of incoming Azure Service Bus messages on a queue or topic.
 
-Here is how you can report an Azure Service Bus queue request on a message that's being processed:
+Here is how you can log an Azure Service Bus queue request on a message that's being processed:
 
 ```csharp
 using Microsoft.Extensions.Logging;
