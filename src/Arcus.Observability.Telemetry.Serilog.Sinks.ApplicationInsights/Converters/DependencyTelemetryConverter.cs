@@ -25,6 +25,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights Dependency telemetry instance");
 
             StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
+            string dependencyId = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.DependencyId));
             string dependencyType = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.DependencyType));
             string dependencyName = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.DependencyName));
             string target = logEntry.Properties.GetAsRawString(nameof(DependencyLogEntry.TargetName));
@@ -35,12 +36,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             bool outcome = logEntry.Properties.GetAsBool(nameof(DependencyLogEntry.IsSuccessful));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(DependencyLogEntry.Context));
 
-            string dependencyId = logEntry.Properties.GetAsRawString(ContextProperties.DependencyTracking.DependencyId);
-            string operationId = logEvent.Properties.GetAsRawString(ContextProperties.Correlation.OperationId);
-
             var dependencyTelemetry = new DependencyTelemetry(dependencyType, target, dependencyName, data, startTime, duration, resultCode, success: outcome)
             {
-                Id = dependencyId ?? operationId
+                Id = dependencyId
             };
 
             dependencyTelemetry.Properties.AddRange(context);
