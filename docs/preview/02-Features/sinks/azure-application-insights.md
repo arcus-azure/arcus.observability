@@ -50,7 +50,7 @@ The Azure Application Insights sink has some additional configuration which can 
 ### Request ID
 
 When tracking requests, the ID for the request telemetry is by default a generated GUID. The generation of this ID can be configured via the options.
-This is useful (for example) in a service-to-service correlation system where you want the ID of the incoming request based on the sending system, or you want to incorporate the operation ID in the request ID.
+This is useful (for example) in a service-to-service correlation system where you want the ID of the incoming request to be based on the sending system, or you want to incorporate the operation ID in the request ID.
 
 ```csharp
 using Serilog;
