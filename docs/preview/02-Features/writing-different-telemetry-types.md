@@ -392,7 +392,7 @@ catch (Exception exception)
 ### Making it easier to link services
 
 Service-to-service correlation requires linkage between tracked dependencies (outgoing) and requests (incoming).
-Tracking any kind of dependency with the library has the possibility to provide an dependency ID. This ID will be needed later when the incoming request is tracked (dependency ID = request's parent ID).
+Tracking any kind of dependency with the library has the possibility to provide a dependency ID. This dependency ID will be needed later when the incoming request is tracked (dependency ID = request's parent ID).
 
 Tracking the outgoing dependency:
 
