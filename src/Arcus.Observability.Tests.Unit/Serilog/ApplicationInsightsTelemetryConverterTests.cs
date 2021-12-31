@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Xml.Serialization;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
 using Arcus.Observability.Tests.Core;
+using Arcus.Observability.Tests.Unit.Fixture;
 using Bogus;
 using Bogus.DataSets;
 using Microsoft.ApplicationInsights.Channel;
@@ -21,6 +25,7 @@ using Xunit;
 using static Arcus.Observability.Telemetry.Core.ContextProperties;
 using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Arcus.Observability.Tests.Unit.Serilog
 {
@@ -38,10 +43,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
             var statusCode = HttpStatusCode.OK;
@@ -72,6 +80,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+                AssertContainsTelemetryProperty(requestTelemetry, "RequestBody", json);
             });
         }
 
@@ -84,10 +93,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
             var statusCode = HttpStatusCode.OK;
@@ -117,6 +129,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+                AssertContainsTelemetryProperty(requestTelemetry, "RequestBody", json);
             });
         }
 
@@ -129,10 +142,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var statusCode = HttpStatusCode.OK;
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
@@ -163,6 +179,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+                AssertContainsTelemetryProperty(requestTelemetry, "RequestBody", json);
             });
         }
 
@@ -175,10 +192,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var statusCode = (int)HttpStatusCode.OK;
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
@@ -208,6 +228,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+                AssertContainsTelemetryProperty(requestTelemetry, "RequestBody", json);
             });
         }
 
@@ -222,9 +243,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             const int dependencyData = 10;
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
+
+            Order order = OrderGenerator.Generate();
+            string xml = SerializeXml(order);
             var telemetryContext = new Dictionary<string, object>
             {
-                ["CustomSetting"] = "Approved"
+                ["CustomSetting"] = "Approved",
+                ["CustomXml"] = xml
             };
             logger.LogDependency(dependencyType, dependencyData, isSuccessful: true, startTime: startTime, duration: duration, context: telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
@@ -247,7 +272,19 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.True(dependencyTelemetry.Success);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "CustomSetting", "Approved");
+                AssertContainsTelemetryProperty(dependencyTelemetry, "CustomXml", xml);
             });
+        }
+
+        private static string SerializeXml(Order order)
+        {
+            using (var writer = new StringWriter())
+            {
+                var serializer = new XmlSerializer(typeof(Order));
+                serializer.Serialize(writer, order);
+
+                return writer.ToString();
+            }
         }
 
         [Fact]
@@ -689,6 +726,44 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void LogEvent_WithJsonTelemetryValue_CreatesEventTelemetry()
+        {
+            // Arrange
+            const string eventName = "Order Invoiced";
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
+            var context = new Dictionary<string, object>
+            {
+                ["Value"] = json,
+                ["OrderId"] = "ABC",
+                ["Vendor"] = "Contoso"
+            };
+            logger.LogEvent(eventName, context);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
+                Assert.Equal(eventName, eventTelemetry.Name);
+                AssertOperationContext(eventTelemetry, operationId);
+                AssertContainsTelemetryProperty(eventTelemetry, "Value", json);
+                AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
+                AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
+            });
+        }
+
+        [Fact]
         public void LogException_WithException_CreatesExceptionTelemetry()
         {
             // Arrange
@@ -826,6 +901,14 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             });
         }
 
+        //private static TTelemetry ConvertTelemetry<TTelemetry>(InMemoryLogSink spySink)
+        //{
+        //    LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+        //    var converter = ApplicationInsightsTelemetryConverter.Create();
+
+        //    //converter.Convert(logEvent);
+        //}
+
         private static void AssertOperationContext<TTelemetry>(TTelemetry telemetry, string operationId) where TTelemetry : ITelemetry
         {
             Assert.NotNull(telemetry.Context);
@@ -869,7 +952,9 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
         private static void AssertContainsTelemetryProperty(ISupportProperties telemetry, string key, string value)
         {
-            Assert.Contains(telemetry.Properties, prop => prop.Equals(new KeyValuePair<string, string>(key, value)));
+            Assert.True(
+                telemetry.Properties.Contains(new KeyValuePair<string, string>(key, value)), 
+                $"Value ({value}) not in telemetry context ({String.Join(", ", telemetry.Properties.Select(item => $"[{item.Key}] = {item.Value}"))})");
         }
     }
 }
