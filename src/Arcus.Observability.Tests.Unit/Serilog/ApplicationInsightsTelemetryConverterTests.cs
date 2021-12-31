@@ -901,14 +901,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             });
         }
 
-        //private static TTelemetry ConvertTelemetry<TTelemetry>(InMemoryLogSink spySink)
-        //{
-        //    LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
-        //    var converter = ApplicationInsightsTelemetryConverter.Create();
-
-        //    //converter.Convert(logEvent);
-        //}
-
         private static void AssertOperationContext<TTelemetry>(TTelemetry telemetry, string operationId) where TTelemetry : ITelemetry
         {
             Assert.NotNull(telemetry.Context);
