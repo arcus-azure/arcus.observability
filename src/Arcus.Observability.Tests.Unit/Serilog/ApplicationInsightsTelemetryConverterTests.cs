@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Xml.Serialization;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
 using Arcus.Observability.Tests.Core;
 using Arcus.Observability.Tests.Unit.Fixture;
@@ -74,7 +75,57 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int)statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(operationId, requestTelemetry.Id);
+                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
+                Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
+
+                AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
+                AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+            });
+        }
+        
+        [Fact]
+        public void LogRequestMessage_WithRequestAndResponseWithCustomId_CreatesRequestTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Client"] = "https://localhost",
+                ["ContentType"] = "application/json",
+            };
+            var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
+            var statusCode = HttpStatusCode.OK;
+            var response = new HttpResponseMessage(statusCode);
+            TimeSpan duration = TimeSpan.FromSeconds(5);
+            logger.LogRequest(request, response, duration, telemetryContext);
+
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var requestId = Guid.NewGuid().ToString();
+            var converter = ApplicationInsightsTelemetryConverter.Create(new ApplicationInsightsSinkOptions
+            {
+                Request = { GenerateId = () => requestId }
+            });
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, RequestTracking.RequestLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
+                Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
+                Assert.Equal(duration, requestTelemetry.Duration);
+                Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
+                Assert.True(requestTelemetry.Success);
+                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
                 AssertOperationContext(requestTelemetry, operationId);
 
@@ -121,9 +172,58 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
                 Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
                 Assert.Equal(duration, requestTelemetry.Duration);
-                Assert.Equal(((int)statusCode).ToString(), requestTelemetry.ResponseCode);
+                Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(operationId, requestTelemetry.Id);
+                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
+                Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
+
+                AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
+                AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+            });
+        }
+        
+        [Fact]
+        public void LogRequestMessage_WithRequestAndResponseStatusCodeWithCustomId_CreatesRequestTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Client"] = "https://localhost",
+                ["ContentType"] = "application/json",
+            };
+            var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
+            var statusCode = HttpStatusCode.OK;
+            TimeSpan duration = TimeSpan.FromSeconds(5);
+            logger.LogRequest(request, statusCode, duration, telemetryContext);
+
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var requestId = Guid.NewGuid().ToString();
+            var converter = ApplicationInsightsTelemetryConverter.Create(new ApplicationInsightsSinkOptions
+            {
+                Request = { GenerateId = () => requestId }
+            });
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, RequestTracking.RequestLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
+                Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
+                Assert.Equal(duration, requestTelemetry.Duration);
+                Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
+                Assert.True(requestTelemetry.Success);
+                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
                 AssertOperationContext(requestTelemetry, operationId);
 
@@ -171,9 +271,59 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
                 Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
                 Assert.Equal(duration, requestTelemetry.Duration);
-                Assert.Equal(((int)statusCode).ToString(), requestTelemetry.ResponseCode);
+                Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(operationId, requestTelemetry.Id);
+                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
+                Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
+
+                AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
+                AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+            });
+        }
+        
+        [Fact]
+        public void LogRequest_WithRequestAndResponseWithCustomId_CreatesRequestTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Client"] = "https://localhost",
+                ["ContentType"] = "application/json",
+            };
+            var statusCode = HttpStatusCode.OK;
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
+            HttpResponse response = CreateStubResponse(statusCode);
+            TimeSpan duration = TimeSpan.FromSeconds(5);
+            logger.LogRequest(request, response, duration, telemetryContext);
+
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var requestId = Guid.NewGuid().ToString();
+            var converter = ApplicationInsightsTelemetryConverter.Create(new ApplicationInsightsSinkOptions
+            {
+                Request = { GenerateId = () => requestId }
+            });
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, RequestTracking.RequestLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
+                Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
+                Assert.Equal(duration, requestTelemetry.Duration);
+                Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
+                Assert.True(requestTelemetry.Success);
+                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
                 AssertOperationContext(requestTelemetry, operationId);
 
@@ -200,7 +350,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["ContentType"] = "application/json",
                 ["RequestBody"] = json
             };
-            var statusCode = (int)HttpStatusCode.OK;
+            var statusCode = (int) HttpStatusCode.OK;
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
             TimeSpan duration = TimeSpan.FromSeconds(5);
             logger.LogRequest(request, statusCode, duration, telemetryContext);
@@ -222,7 +372,56 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(statusCode.ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(operationId, requestTelemetry.Id);
+                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
+                Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
+                AssertOperationContext(requestTelemetry, operationId);
+
+                AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
+                AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
+            });
+        }
+        
+        [Fact]
+        public void LogRequest_WithRequestAndResponseStatusCodeWithCustomId_CreatesRequestTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Client"] = "https://localhost",
+                ["ContentType"] = "application/json",
+            };
+            var statusCode = (int) HttpStatusCode.OK;
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
+            TimeSpan duration = TimeSpan.FromSeconds(5);
+            logger.LogRequest(request, statusCode, duration, telemetryContext);
+
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var requestId = Guid.NewGuid().ToString();
+            var converter = ApplicationInsightsTelemetryConverter.Create(new ApplicationInsightsSinkOptions()
+            {
+                Request = { GenerateId = () => requestId }
+            });
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, RequestTracking.RequestLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var requestTelemetry = Assert.IsType<RequestTelemetry>(telemetry);
+                Assert.Equal("GET /api/v1/health", requestTelemetry.Name);
+                Assert.Equal(duration, requestTelemetry.Duration);
+                Assert.Equal(statusCode.ToString(), requestTelemetry.ResponseCode);
+                Assert.True(requestTelemetry.Success);
+                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
                 AssertOperationContext(requestTelemetry, operationId);
 
