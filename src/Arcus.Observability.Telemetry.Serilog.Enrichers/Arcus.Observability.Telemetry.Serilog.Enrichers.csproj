@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.Serilog.Enrichers</PackageId>
+    <TargetFrameworks>netstandard2.1;net6.0;netcoreapp3.1</TargetFrameworks>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve telemetry with Serilog in applications</Description>
@@ -13,6 +12,7 @@
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Azure;Observability;Telemetry;Serilog</PackageTags>
+    <PackageId>Arcus.Observability.Telemetry.Serilog.Enrichers</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

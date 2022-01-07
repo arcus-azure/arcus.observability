@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <PackageId>Arcus.Observability.Telemetry.Sql</PackageId>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve SQL telemetry with Serilog in applications</Description>
@@ -13,18 +12,19 @@
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Azure;Observability;Telemetry;Serilog;Sql</PackageTags>
+    <PackageId>Arcus.Observability.Telemetry.Sql</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Arcus.Observability.Telemetry.Sql</AssemblyName>
     <RootNamespace>Arcus.Observability.Telemetry.Sql</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../Arcus.Observability.Telemetry.Core/Arcus.Observability.Telemetry.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <ItemGroup>
+    <ProjectReference Include="../Arcus.Observability.Telemetry.Core/Arcus.Observability.Telemetry.Core.csproj" />
   </ItemGroup>
 
 </Project>

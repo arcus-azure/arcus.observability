@@ -15,16 +15,17 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class ApplicationInsightsTelemetryConverter : TelemetryConverterBase
     {
+        private readonly RequestTelemetryConverter _requestTelemetryConverter;
         private readonly ExceptionTelemetryConverter _exceptionTelemetryConverter;
         private readonly TraceTelemetryConverter _traceTelemetryConverter = new TraceTelemetryConverter();
         private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
         private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
-        private readonly RequestTelemetryConverter _requestTelemetryConverter = new RequestTelemetryConverter();
         private readonly DependencyTelemetryConverter _dependencyTelemetryConverter = new DependencyTelemetryConverter();
 
         private ApplicationInsightsTelemetryConverter(ApplicationInsightsSinkOptions options)
         {
             Guard.NotNull(options, nameof(options), "Requires a set of options to influence how to track to Application Insights");
+            _requestTelemetryConverter = new RequestTelemetryConverter(options.Request);
             _exceptionTelemetryConverter = new ExceptionTelemetryConverter(options.Exception);
         }
         
