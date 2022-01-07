@@ -395,7 +395,7 @@ Service-to-service correlation requires linkage between tracked dependencies (ou
 Tracking any kind of dependency with the library has the possibility to provide an dependency ID.
 
 To link the request (incoming) with the dependency (outgoing), the request needs to include this dependency ID in its tracking (dependency ID = request's parent ID) so that we now which dependency triggered the request.
-For more information, see how to do this in a [Web API]() and [Azure Service Bus]() context.
+For more information, see how to do this in a Web API and Azure Service Bus context.
 
 Tracking the outgoing dependency:
 
