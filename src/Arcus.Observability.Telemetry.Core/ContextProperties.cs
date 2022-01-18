@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 #pragma warning disable 1591
 namespace Arcus.Observability.Telemetry.Core
@@ -70,6 +71,11 @@ namespace Arcus.Observability.Telemetry.Core
                 public const string Endpoint = "ServiceBus-Endpoint";
                 public const string EntityName = "ServiceBus-Entity";
                 public const string EntityType = "ServiceBus-EntityType";
+
+                public static class Topic
+                {
+                    public const string SubscriptionName = "ServiceBus-TopicSubscription";
+                }
 
                 public const string DefaultOperationName = "Process";
             }

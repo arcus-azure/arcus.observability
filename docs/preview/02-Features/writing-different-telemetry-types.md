@@ -458,7 +458,32 @@ using (var measurement = DependencyMeasurement.Start())
 }
 ```
 
-We provide support for all Azure Service Bus entity types such as queues, topics and subscriptions.
+We provide support for all Azure Service Bus entity types such as queues, topics and subscriptions. 
+All these types can be tracked by passing allong the full Azure Service namespace, or with providing the namespace name and the Azure cloud separately.
+
+```csharp
+
+DependencyMeasurement measurement = ...
+
+// Tracking Azure Service Bus topics.
+// ----------------------------------
+
+// Providing the full Azure Service Bus topic namespace.
+logger.LogServiceBusTopicRequest("<my-topic-namespace>.servicebus.windows.net", "<my-topic-name>", "<subscription-name>", "<operation-name>", isSuccessful: true, measurement);
+
+// Providing the Azure Service Bus topic name and Azure cloud separately.
+logger.LogServiceBusTopicRequestWithSuffix("<my-topic-namespace-name>", ".servicebus.windows.net", "<my-topic-name>", "<subscription-name>", "<operation-name>", isSuccessful: true, measurement);
+
+
+// Tracking general Azure Service Bus requests.
+// --------------------------------------------
+
+// Providing the full Azure Service Bus topic namespace.
+logger.LogServiceBusRequest("<my-topic-namespace>.servicebus.windows.net", "<my-topic-name>", "<subscription-name>", "<operation-name>", isSuccessful: true, measurement, ServiceBusEntityType.Topic);
+
+// Providing the Azure Service Bus queue namespace name and Azure cloud separately.
+logger.LogServiceBusQueueRequestWithSuffix("<my-queue-namespace-name>", ".servicebus.windows.net", "<my-queue-name>", "<operation-name>", isSuccessful: true, measurement, ServiceBusEntityType.Queue);
+```
 
 ### Incoming HTTP requests
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
