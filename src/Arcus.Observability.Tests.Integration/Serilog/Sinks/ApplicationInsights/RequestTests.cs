@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,20 +23,19 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogRequest_SinksToApplicationInsightsWithoutOperationName_ResultsInRequestTelemetry()
+        public async Task LogRequest_SinksToApplicationInsightsWithoutOperationNameAndCustomId_ResultsInRequestTelemetry()
         {
             // Arrange
             HttpMethod httpMethod = GenerateHttpMethod();
             var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
             HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
-
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
                 HttpResponse response = CreateStubResponse(statusCode);
-
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
@@ -52,8 +50,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
-                    Assert.Contains(results.Value, result => !String.IsNullOrEmpty(result.Operation.Name));
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && Guid.TryParse(result.Request.Id, out Guid _)
+                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                    });
                 });
             }
 
@@ -61,20 +64,187 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogRequest_SinksToApplicationInsightsWithOperationName_ResultsInRequestTelemetry()
+        public async Task LogRequest_SinksToApplicationInsightsWithOperationNameWithoutCustomId_ResultsInRequestTelemetry()
         {
             // Arrange
             string operationName = "sampleoperation";
             HttpMethod httpMethod = GenerateHttpMethod();
             var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
             HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
-
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
                 HttpResponse response = CreateStubResponse(statusCode);
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && Guid.TryParse(result.Request.Id, out Guid _)
+                               && result.Operation.Name == $"{httpMethod} {operationName}";
+                    });
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequest_SinksToApplicationInsightsWithResponseStatusCodeWithoutOperationNameWithCustomId_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            var requestId = Guid.NewGuid().ToString();
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+                
+                HttpResponse response = CreateStubResponse(statusCode);
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, response, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && result.Request.Id == requestId
+                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                    });
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequest_SinksToApplicationInsightsWithResponseStatusCodeWithOperationNameAndCustomId_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            string operationName = "sampleoperation";
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            var requestId = Guid.NewGuid().ToString();
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, (int) statusCode, operationName, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && result.Request.Id == requestId
+                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                    });
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseWithoutOperationNameWithCustomId_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            var requestId = Guid.NewGuid().ToString();
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, statusCode, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == requestUri.ToString()
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && result.Request.Id == requestId
+                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                    });
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseWithOperationNameWithoutCustomId_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            string operationName = "sampleoperation";
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+                var response = new HttpResponseMessage(statusCode);
 
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
@@ -90,134 +260,33 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
-                    Assert.Contains(results.Value, result => result.Operation.Name == $"{httpMethod} {operationName}");
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == requestUri.ToString()
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && Guid.TryParse(result.Request.Id, out Guid _)
+                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                    });
                 });
             }
 
             VerifyLogEventProperties(requestUri);
         }
-
+        
         [Fact]
-        public async Task LogRequest_SinksToApplicationInsightsWithResponse_ResultsInRequestTelemetry()
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseStatusCodeWithoutOperationNameAndCustomId_ResultsInRequestTelemetry()
         {
             // Arrange
             HttpMethod httpMethod = GenerateHttpMethod();
-            var requestUri = new Uri(BogusGenerator.Internet.Url());
-            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
-
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
-                HttpResponse response = CreateStubResponse(statusCode);
-
-                TimeSpan duration = BogusGenerator.Date.Timespan();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
-            }
-
-            // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
-            {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
-                });
-            }
-
-            VerifyLogEventProperties(requestUri);
-        }
-
-        [Fact]
-        public async Task LogRequest_SinksToApplicationInsightsWithResponseStatusCode_ResultsInRequestTelemetry()
-        {
-            // Arrange
-            HttpMethod httpMethod = GenerateHttpMethod();
-            var requestUri = new Uri(BogusGenerator.Internet.Url());
-            HttpRequest request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
-
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
-                TimeSpan duration = BogusGenerator.Date.Timespan();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogRequest(request, (int)statusCode, duration, telemetryContext);
-            }
-
-            // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
-            {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}");
-                });
-            }
-
-            VerifyLogEventProperties(requestUri);
-        }
-
-        [Fact]
-        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponse_ResultsInRequestTelemetry()
-        {
-            // Arrange
-            var requestUri = new Uri(BogusGenerator.Internet.Url());
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                HttpMethod httpMethod = GenerateHttpMethod();
                 var request = new HttpRequestMessage(httpMethod, requestUri);
-
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
-                var response = new HttpResponseMessage(statusCode);
-
-                var duration = BogusGenerator.Date.Timespan();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
-            }
-
-            // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
-            {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
-                });
-            }
-
-            VerifyLogEventProperties(requestUri);
-        }
-
-        [Fact]
-        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseStatusCode_ResultsInRequestTelemetry()
-        {
-            // Arrange
-            var requestUri = new Uri(BogusGenerator.Internet.Url());
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                HttpMethod httpMethod = GenerateHttpMethod();
-                var request = new HttpRequestMessage(httpMethod, requestUri);
-
-                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
-                var duration = BogusGenerator.Date.Timespan();
+                TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
@@ -231,7 +300,55 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Request.Url == requestUri.ToString());
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == requestUri.ToString()
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && Guid.TryParse(result.Request.Id, out Guid _)
+                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                    });
+                });
+            }
+
+            VerifyLogEventProperties(requestUri);
+        }
+
+        [Fact]
+        public async Task LogRequestMessage_SinksToApplicationInsightsWithResponseStatusCodeWithOperationNameAndCustomId_ResultsInRequestTelemetry()
+        {
+            // Arrange
+            string operationName = "sampleoperation";
+            HttpMethod httpMethod = GenerateHttpMethod();
+            var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            var requestId = Guid.NewGuid().ToString();
+            
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var request = new HttpRequestMessage(httpMethod, requestUri);
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogRequest(request, statusCode, operationName, duration, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    Assert.NotEmpty(results.Value);
+                    Assert.Contains(results.Value, result =>
+                    {
+                        return result.Request.Url == requestUri.ToString()
+                               && result.Request.ResultCode == ((int) statusCode).ToString()
+                               && result.Request.Id == requestId
+                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                    });
                 });
             }
 
@@ -270,15 +387,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             return response.Object;
         }
 
-        private void VerifyLogEventProperties(Uri requestUri){
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+        private void VerifyLogEventProperties(Uri requestUri)
+        {
+            IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
+            AssertX.Any(logEvents, logEvent => 
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
                 Assert.NotNull(logEntry);
 
-                var actualRequestHost = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestHost));
+                LogEventProperty actualRequestHost = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestHost));
                 Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}", actualRequestHost.Value.ToDecentString());
 
-                var actualRequestUri = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestUri));
+                LogEventProperty actualRequestUri = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.RequestUri));
                 Assert.Equal(requestUri.AbsolutePath, actualRequestUri.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(RequestLogEntry.Context));

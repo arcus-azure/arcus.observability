@@ -85,7 +85,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await Policy.TimeoutAsync(timeout)
                         .WrapAsync(Policy.Handle<Exception>(exception =>
                             {
-                                _outputWriter.WriteLine($"Failed to contact Azure Application Insights. Reason: {exception.Message}");
+                                _outputWriter.WriteLine($"Failed to find correct telemetry at Azure Application Insights. Reason: {exception.Message}");
                                 return true;
                             })
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(3)))

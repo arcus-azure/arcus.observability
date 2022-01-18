@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using GuardNet;
 
@@ -211,19 +212,26 @@ namespace Serilog.Events
         {
             Guard.NotNull(logEventPropertyValue, nameof(logEventPropertyValue));
 
-            var propertyValueAsString = logEventPropertyValue.ToString().Trim();
-
-            if (propertyValueAsString.StartsWith("\""))
+            if (logEventPropertyValue is ScalarValue scalar)
             {
-                propertyValueAsString = propertyValueAsString.Remove(0, 1);
+                var result = scalar.Value.ToString();
+                return result;
             }
-
-            if (propertyValueAsString.EndsWith("\""))
+            else
             {
-                propertyValueAsString = propertyValueAsString.Remove(propertyValueAsString.Length - 1);
-            }
+                string propertyValueAsString = logEventPropertyValue.ToString().Trim();
+                if (propertyValueAsString.StartsWith("\""))
+                {
+                    propertyValueAsString = propertyValueAsString.Remove(0, 1);
+                }
 
-            return propertyValueAsString;
+                if (propertyValueAsString.EndsWith("\""))
+                {
+                    propertyValueAsString = propertyValueAsString.Remove(propertyValueAsString.Length - 1);
+                }
+
+                return propertyValueAsString;
+            }
         }
     }
 }

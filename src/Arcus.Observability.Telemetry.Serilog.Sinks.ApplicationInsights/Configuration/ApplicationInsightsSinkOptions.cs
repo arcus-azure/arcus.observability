@@ -6,6 +6,11 @@
     public class ApplicationInsightsSinkOptions
     {
         /// <summary>
+        /// Gets the Application Insights options related to tracking requests.
+        /// </summary>
+        public ApplicationInsightsSinkRequestOptions Request { get; } = new ApplicationInsightsSinkRequestOptions();
+        
+        /// <summary>
         /// Gets the Application Insights options related to tracking exceptions.
         /// </summary>
         public ApplicationInsightsSinkExceptionOptions Exception { get; } = new ApplicationInsightsSinkExceptionOptions();
