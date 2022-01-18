@@ -6,12 +6,12 @@
     public enum RequestSourceSystem
     {
         /// <summary>
-        /// Sets the request source system as an Azure Service Bus queue or topic.
+        /// Specifies that the request-source is an Azure Service Bus queue or topic.
         /// </summary>
         AzureServiceBus, 
         
         /// <summary>
-        /// Sets the request source system as an web API endpoint.
+        /// Specifies that the request-source is a HTTP request
         /// </summary>
         Http
     }
