@@ -93,10 +93,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
             var statusCode = HttpStatusCode.OK;
@@ -192,10 +195,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, new Uri("https://" + "localhost" + "/api/v1/health"));
             var statusCode = HttpStatusCode.OK;
@@ -291,10 +297,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var statusCode = HttpStatusCode.OK;
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
@@ -390,10 +399,13 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             ILogger logger = CreateLogger(
                 spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
 
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Client"] = "https://localhost",
                 ["ContentType"] = "application/json",
+                ["RequestBody"] = json
             };
             var statusCode = (int) HttpStatusCode.OK;
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "https", "localhost", "/api/v1/health");
