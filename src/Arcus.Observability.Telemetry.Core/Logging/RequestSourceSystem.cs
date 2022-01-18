@@ -11,7 +11,7 @@
         AzureServiceBus, 
         
         /// <summary>
-        /// Sets the request source system as an web API endpoint.
+        /// Specifies that the request-source is a HTTP request
         /// </summary>
         Http
     }
