@@ -144,14 +144,18 @@ namespace Serilog.Events
             Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property as a Double representation");
             
             LogEventProperty logEventPropertyValue = properties.FirstOrDefault(prop => prop.Name == propertyKey);
-            string rawDouble = logEventPropertyValue?.Value?.ToDecentString();
-
-            if (rawDouble is null)
+            if (logEventPropertyValue is null)
             {
                 return double.NaN;
             }
 
-            return double.Parse(rawDouble, CultureInfo.InvariantCulture);
+            if (logEventPropertyValue.Value is ScalarValue scalarValue 
+                && scalarValue.Value is double value)
+            {
+                return value;
+            }
+
+            return double.NaN;
         }
         
         /// <summary>

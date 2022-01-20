@@ -63,6 +63,36 @@ namespace Arcus.Observability.Tests.Unit
         }
         
         /// <summary>
+        /// Gets the written message to the <paramref name="logger"/> as a strongly-typed Request.
+        /// </summary>
+        /// <param name="logger">The test logger where a test message is written to.</param>
+        /// <returns>
+        ///     The strongly-typed Request containing the telemetry information.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
+        public static RequestLogEntry GetMessageAsRequest(this TestLogger logger)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+
+            if (logger.WrittenMessage is null)
+            {
+                throw new InvalidOperationException(
+                    "Cannot parse the written message as a telemetry request because no log message was written to this test logger");
+            }
+            const string pattern = @"Azure Service Bus from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, \w+\])(; \[[\w\-]+, [\w\.]+\])*))\}\)$";
+            Match match = Regex.Match(logger.WrittenMessage, pattern);
+
+            string operationName = match.GetGroupValue("operationname");
+            TimeSpan duration = match.GetGroupValueAsTimeSpan("duration");
+            DateTimeOffset startTime = match.GetGroupValueAsDateTimeOffset("timestamp");
+            bool isSuccessful = match.GetGroupValueAsBool("issuccessful");
+            IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
+
+            return RequestLogEntry.CreateForServiceBus(operationName, isSuccessful, duration, startTime, context);
+        }
+
+        /// <summary>
         /// Gets the written message to the <paramref name="logger"/> as a strongly-typed Metric.
         /// </summary>
         /// <param name="logger">The test logger where a test message is written to.</param>

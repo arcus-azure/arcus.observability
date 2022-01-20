@@ -337,8 +337,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            var path = $"/{_bogusGenerator.Name.FirstName().ToLower()}";
-            string host = _bogusGenerator.Name.FirstName().ToLower();
+            var path = $"/{_bogusGenerator.Lorem.Word().ToLower()}";
+            string host = _bogusGenerator.Lorem.Word().ToLower();
             HttpMethod method = HttpMethod.Head;
             var request = new HttpRequestMessage(method, new Uri("https://" + host + path));
             var response = new HttpResponseMessage(statusCode);
