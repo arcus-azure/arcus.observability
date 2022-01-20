@@ -197,7 +197,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus topic is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus topic request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
@@ -235,7 +235,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered (use Azure public cloud).</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus topic request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
@@ -272,7 +272,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus topic is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus topic request.</param>
         /// <param name="startTime">The time when the request was received.</param>
@@ -314,7 +314,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus topic is registered (use Azure public cloud).</param>
         /// <param name="topicName">The name of the Azure Service Bus topic.</param>
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus topic request.</param>
         /// <param name="startTime">The time when the request was received.</param>
@@ -352,7 +352,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus queue is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
@@ -385,7 +385,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
@@ -417,7 +417,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus queue is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus queue request.</param>
         /// <param name="startTime">The time when the request was received.</param>
@@ -451,7 +451,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus queue request.</param>
         /// <param name="startTime">The time when the request was received.</param>
@@ -484,7 +484,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus queue is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
         /// <param name="entityType">The type of the Azure Service Bus entity.</param>
@@ -519,7 +519,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
         /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
         /// <param name="entityType">The type of the Azure Service Bus entity.</param>
@@ -553,7 +553,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
         /// <param name="serviceBusNamespaceSuffix">The namespace suffix (i.e. '.servicebus.windows.net' or '*.servicebus.cloudapi.de') where the Azure Service Bus is registered (Will be combined with <paramref name="serviceBusNamespace"/>).</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus request.</param>
         /// <param name="startTime">The time when the request was received.</param>
@@ -589,7 +589,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
-        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
         /// <param name="duration">The duration it took to process the Azure Service Bus request.</param>
         /// <param name="startTime">The time when the request was received.</param>
