@@ -43,7 +43,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.NotNull(results.Value);
                     Assert.NotEmpty(results.Value);
                     AssertX.Any(results.Value, result =>
@@ -91,7 +91,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.NotNull(results.Value);
                     Assert.NotEmpty(results.Value);
                     AssertX.Any(results.Value, result =>
@@ -99,6 +99,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                         Assert.Equal(operationName, result.Request.Name);
                         Assert.Contains(topicName, result.Request.Source);
                         Assert.Contains(serviceBusNamespace, result.Request.Source);
+                        Assert.Contains(serviceBusNamespaceSuffix, result.Request.Source);
                         Assert.Empty(result.Request.Url);
                         Assert.Equal(operationName, result.Operation.Name);
                         Assert.True(bool.TryParse(result.Request.Success, out bool success));
@@ -106,7 +107,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                         AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityType, ServiceBusEntityType.Topic.ToString());
                         AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityName, topicName);
-                        AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.Endpoint, serviceBusNamespace);
+                        AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.Endpoint, serviceBusNamespace + serviceBusNamespaceSuffix);
                         AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName, subscriptionName);
                     });
                 });
@@ -139,7 +140,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.NotNull(results.Value);
                     Assert.NotEmpty(results.Value);
                     AssertX.Any(results.Value, result =>
