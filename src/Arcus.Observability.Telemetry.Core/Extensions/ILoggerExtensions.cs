@@ -213,7 +213,7 @@ namespace Microsoft.Extensions.Logging
             string subscriptionName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -250,7 +250,7 @@ namespace Microsoft.Extensions.Logging
             string subscriptionName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -365,7 +365,7 @@ namespace Microsoft.Extensions.Logging
             string queueName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -373,8 +373,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the queue request");
             Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus queue request process latency duration");
-
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
 
             LogServiceBusQueueRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, queueName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -397,15 +395,13 @@ namespace Microsoft.Extensions.Logging
             string queueName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
             Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
             Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus queue request process latency duration");
-
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
 
             LogServiceBusQueueRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -498,7 +494,7 @@ namespace Microsoft.Extensions.Logging
             string entityName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
@@ -507,8 +503,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the queue request");
             Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
-
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
 
             LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, entityType, context);
         }
@@ -532,7 +526,7 @@ namespace Microsoft.Extensions.Logging
             string entityName,
             string operationName,
             bool isSuccessful,
-            DependencyMeasurement measurement,
+            RequestMeasurement measurement,
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
@@ -540,8 +534,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
             Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
-
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
 
             LogServiceBusRequest(logger, serviceBusNamespace, entityName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, entityType, context);
         }

@@ -330,9 +330,10 @@ logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: 
 // Output: {"DependencyType": "SendGrid", "DependencyData": "http://my.sendgrid.uri/", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
-### Making it easier to measure dependencies
+### Making it easiser to measure telemetry
 
-Measuring dependencies means you need to keep track of how long the action took and when it started.
+Measuring dependencies or requests means you need to keep track of how long the action took and when it started.
+The `Arcus.Observability.Telemetry.Core` library provides an easy way to accomplish this.
 
 Here's a small example:
 
@@ -351,27 +352,32 @@ object dependencyData = "https://my.sendgrid.uri/";
 logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, context: telemetryContext);
 ```
 
-However, by using `DependencyMeasurement.Start()` we take care of the measuring aspect:
+#### Making it easier to measure dependencies
+
+By using `DependencyMeasurement.Start()` we take care of the measuring aspect:
 
 ```csharp
 using Arcus.Observability.Telemetry.Core;
 using Microsoft.Extensions.Logging;
 
 // Start measuring
-using (var measurement = DependencyMeasurement.Start())
+using (var measurement = DependencyMeasurement.Start(dependencyData: "Call_SendGrid"))
 {
     // Do Action
 
     // Track dependency
     string dependencyName = "SendGrid";
     object dependencyData = "https://my.sendgrid.uri/";
-    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, measurement, telemetryContext);
 }
 ```
 
-Failures during the interaction with the tracked dependency can be controlled by passing `isSuccessful`:
+Failures during the interaction with the dependency can be controlled by passing `isSuccessful`:
 
 ```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.Extensions.Logging;
+
 string dependencyName = "SendGrid";
 object dependencyData = "https://my.sendgrid.uri";
 
@@ -380,12 +386,34 @@ try
     // Interact with SendGrid...
     // Done!
 
-    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, startTime: measurement, context: telemetryContext);
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: true, measurement, telemetryContext);
 }
 catch (Exception exception)
 {
     logger.LogError(exception, "Failed to interact with SendGrid");
-    logger.LogDependency(dependencyName, dependencyData, isSuccessful: false, startTime: measurement, context: telemetryContext);
+    logger.LogDependency(dependencyName, dependencyData, isSuccessful: false, measurement, telemetryContext);
+}
+```
+
+#### Making it easier to measure requests
+
+By using `RequestMeasurement.Start()` we take care of the measuring aspect:
+
+```csharp
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+
+HttpRequest request = ...
+HttpResponse response = ...
+
+// Start measuring
+using (var measurement = RequestMeasurement.Start())
+{
+    // Process message
+
+    // Track request
+    logger.LogRequest(request, response, measurement.Elapsed, telemetryContext);
 }
 ```
 
@@ -395,7 +423,7 @@ Service-to-service correlation requires linkage between tracked dependencies (ou
 Tracking any kind of dependency with the library has the possibility to provide an dependency ID.
 
 To link the request (incoming) with the dependency (outgoing), the request needs to include this dependency ID in its tracking (dependency ID = request's parent ID) so that we now which dependency triggered the request.
-For more information, see how to do this in a Web API and Azure Service Bus context.
+For more information, see how to do this in a Web API and [Azure Service Bus](#incoming-azure-service-bus-requests) context.
 
 Tracking the outgoing dependency:
 
@@ -471,7 +499,7 @@ using Microsoft.Extensions.Logging;
 bool isSuccessful = false;
 
 // Start measuring.
-using (var measurement = DependencyMeasurement.Start())
+using (var measurement = RequestMeasurement.Start())
 {
     try
     {
