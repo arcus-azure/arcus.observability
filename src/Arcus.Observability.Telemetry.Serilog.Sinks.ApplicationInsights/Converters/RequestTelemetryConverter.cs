@@ -55,7 +55,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             TimeSpan requestDuration = logEntry.Properties.GetAsTimeSpan(nameof(RequestLogEntry.RequestDuration));
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
-            var sourceSystem = logEntry.Properties.GetAsEnum<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
+            var sourceSystem = logEntry.Properties.GetAsObject<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
 
             string id = _options.GenerateId();
 
@@ -63,22 +63,15 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             bool isSuccessfulRequest = DetermineRequestOutcome(responseStatusCode);
             Uri url = DetermineUrl(sourceSystem, requestHost, requestUri);
             string source = DetermineRequestSource(sourceSystem, context);
+            string requestOperationName = DetermineRequestOperationName(sourceSystem, requestMethod, operationName);
 
             var requestTelemetry = new RequestTelemetry(sourceName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
             {
                 Id = id,
                 Url = url,
-                Source = source
+                Source = source,
+                Context = { Operation = { Name = requestOperationName } }
             };
-
-            if (sourceSystem is RequestSourceSystem.Http && !operationName.StartsWith(requestMethod))
-            {
-                requestTelemetry.Context.Operation.Name = $"{requestMethod} {operationName}";
-            }
-            else
-            {
-                requestTelemetry.Context.Operation.Name = operationName;
-            }
 
             requestTelemetry.Properties.AddRange(context);
             return requestTelemetry;
@@ -124,6 +117,16 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             var statusCode = int.Parse(rawResponseStatusCode);
 
             return statusCode >= 200 && statusCode < 300;
+        }
+
+        private static string DetermineRequestOperationName(RequestSourceSystem sourceSystem, string requestMethod, string operationName)
+        {
+            if (sourceSystem is RequestSourceSystem.Http && !operationName.StartsWith(requestMethod))
+            {
+                return $"{requestMethod} {operationName}";
+            }
+
+            return operationName;
         }
     }
 }

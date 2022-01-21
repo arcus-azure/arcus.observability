@@ -8,11 +8,11 @@
         /// <summary>
         /// Specifies that the request-source is an Azure Service Bus queue or topic.
         /// </summary>
-        AzureServiceBus, 
+        AzureServiceBus = 1, 
         
         /// <summary>
         /// Specifies that the request-source is a HTTP request
         /// </summary>
-        Http
+        Http = 2
     }
 }
