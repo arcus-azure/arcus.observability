@@ -183,5 +183,19 @@ namespace Serilog.Events
             bool value = bool.Parse(propertyValue);
             return value;
         }
+
+        internal static TEnum GetAsEnum<TEnum>(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
+        {
+            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as an enumeration representation");
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as an enumeration representation");
+
+            LogEventProperty property = properties.FirstOrDefault(prop => prop.Name == propertyKey);
+            if (property != null && property.Value is TEnum value)
+            {
+                return value;
+            }
+
+            return default(TEnum);
+        }
     }
 }
