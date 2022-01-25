@@ -330,7 +330,7 @@ logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: 
 // Output: {"DependencyType": "SendGrid", "DependencyData": "http://my.sendgrid.uri/", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
-### Making it easiser to measure telemetry
+### Making it easier to measure telemetry
 
 Measuring dependencies or requests means you need to keep track of how long the action took and when it started.
 The `Arcus.Observability.Telemetry.Core` library provides an easy way to accomplish this.
