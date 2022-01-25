@@ -183,5 +183,32 @@ namespace Serilog.Events
             bool value = bool.Parse(propertyValue);
             return value;
         }
+
+        /// <summary>
+        /// Gets a <typeparamref name="TValue"/> representation of a property in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
+        /// </summary>
+        /// <typeparam name="TValue">The custom type to cast to.</typeparam>
+        /// <param name="properties">The properties containing the property value associated with the <paramref name="propertyKey"/>.</param>
+        /// <param name="propertyKey">The key the property is associated with.</param>
+        /// <returns>
+        ///     An <typeparamref name="TValue"/> representation when the property was found; <c>default</c> otherwise.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="properties"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
+        internal static TValue GetAsObject<TValue>(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
+        {
+            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as an enumeration representation");
+            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as an enumeration representation");
+
+            LogEventProperty property = properties.FirstOrDefault(prop => prop.Name == propertyKey);
+            if (property != null 
+                && property.Value is ScalarValue scalarValue 
+                && scalarValue.Value is TValue value)
+            {
+                return value;
+            }
+
+            return default(TValue);
+        }
     }
 }
