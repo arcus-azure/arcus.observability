@@ -2260,7 +2260,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2294,7 +2294,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2327,7 +2327,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2361,7 +2361,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2394,7 +2394,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2416,7 +2416,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -2438,7 +2438,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2459,7 +2459,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2481,7 +2481,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -2502,7 +2502,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2524,7 +2524,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2913,7 +2913,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2945,7 +2945,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2976,7 +2976,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3008,7 +3008,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3039,7 +3039,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3060,7 +3060,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3081,7 +3081,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3101,7 +3101,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3122,7 +3122,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3452,7 +3452,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3485,7 +3485,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3517,7 +3517,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3550,7 +3550,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3582,7 +3582,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3604,7 +3604,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3626,7 +3626,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3647,7 +3647,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3669,7 +3669,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = DependencyMeasurement.Start();
+            var measurement = RequestMeasurement.Start();
             measurement.Dispose();
             
             // Act
