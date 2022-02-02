@@ -4,13 +4,13 @@ using System.Diagnostics;
 namespace Arcus.Observability.Telemetry.Core
 {
     /// <summary>
-    /// Represents an instance to measure easily requests in an application.
+    /// Represents an instance to measure easily telemetry in an application.
     /// </summary>
-    public class RequestMeasurement : IDisposable
+    public class DurationMeasurement : IDisposable
     {
         private readonly Stopwatch _stopwatch;
 
-        private RequestMeasurement()
+        private DurationMeasurement()
         {
             _stopwatch = Stopwatch.StartNew();
             StartTime = DateTimeOffset.UtcNow;
@@ -19,18 +19,18 @@ namespace Arcus.Observability.Telemetry.Core
         /// <summary>
         /// Starts measuring a request until the measurement is disposed.
         /// </summary>
-        public static RequestMeasurement Start()
+        public static DurationMeasurement Start()
         {
-            return new RequestMeasurement();
+            return new DurationMeasurement();
         }
 
         /// <summary>
-        /// Gets the time when the request measurement was started.
+        /// Gets the time when the measurement was started.
         /// </summary>
         public DateTimeOffset StartTime { get; }
 
         /// <summary>
-        /// Gets the total elapsed time measured for the request.
+        /// Gets the total elapsed time measured for the telemetry.
         /// </summary>
         public TimeSpan Elapsed => _stopwatch.Elapsed;
 

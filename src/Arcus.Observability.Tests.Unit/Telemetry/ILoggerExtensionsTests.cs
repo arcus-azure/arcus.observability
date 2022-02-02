@@ -259,6 +259,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyWithDependencyDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+        }
+
+        [Fact]
         public void LogDependencyWithDependencyMeasurement_ValidArgumentsWithDependencyName_Succeeds()
         {
             // Arrange
@@ -287,6 +313,161 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyWithDurationMeasurement_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogDependencyWithDurationMeasurement_WithoutDependencyType_Fails(string dependencyType)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurement_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData: null, isSuccessful, dependencyName, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurement_ValidArgumentsWithTargetName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string targetName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(dependencyType, dependency.DependencyType);
+            Assert.Equal(dependencyData, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(targetName, dependency.TargetName);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogDependencyWithDurationMeasurementWithTargetName_WithoutDependencyType_Fails(string dependencyType)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string targetName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementWithTargetName_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string targetName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData: null, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementWithTargetName_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string targetName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogDependencyWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
         {
             // Arrange
@@ -296,9 +477,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement: null));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement: (DependencyMeasurement) null));
         }
-        
+
+        [Fact]
+        public void LogDependencyWithDependencyDurationMeasurement_WithoutDependencyMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement: (DurationMeasurement)null));
+        }
+
         [Fact]
         public void LogDependencyWithDependencyMeasurement_WithoutDependencyType_Fails()
         {
@@ -313,7 +507,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement));
         }
-        
+
+        [Fact]
+        public void LogDependencyWithDependencyDurationMeasurement_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement));
+        }
+
         [Fact]
         public void LogDependencyWithDependencyMeasurement_WithoutDependencyData_Fails()
         {
@@ -323,6 +532,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             object dependencyData = null;
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDependencyDurationMeasurement_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act / Assert
@@ -502,6 +726,142 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_ValidArgumentsWithDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(dependencyType, logMessage);
+            Assert.Contains(dependencyData, logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType: null, dependencyData, targetName, isSuccessful, dependencyName, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutDependencyData_Fails(string dependencyData)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutTargetName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName: null, isSuccessful, dependencyName, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(dependencyType, dependency.DependencyType);
+            Assert.Equal(dependencyData, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(dependencyName, dependency.DependencyName);
+            Assert.Null(dependency.TargetName);
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutDependencyName_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string targetName = _bogusGenerator.Random.Word();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName: null, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(dependencyType, dependency.DependencyType);
+            Assert.Equal(dependencyData, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Null(dependency.DependencyName);
+            Assert.Equal(targetName, dependency.TargetName);
+        }
+
+        [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyName = _bogusGenerator.Random.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyType_Fails()
         {
             // Arrange
@@ -511,6 +871,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string targetName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogDependencyTargetWithDependencyDurationMeasurement_WithoutDependencyType_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = null;
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act / Assert
@@ -534,6 +910,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogDependencyTargetWithDependencyDurationMeasurement_WithoutDependencyData_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Name.FullName();
+            object dependencyData = null;
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement));
+        }
+
+        [Fact]
         public void LogDependencyTargetWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
         {
             // Arrange
@@ -544,7 +936,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: null));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: (DependencyMeasurement) null));
+        }
+
+        [Fact]
+        public void LogDependencyTargetWithDependencyDurationMeasurement_WithoutDependencyMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: (DurationMeasurement) null));
         }
 
         [Theory]
@@ -742,6 +1148,33 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
         [Theory]
         [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
+        public void LogAzureKeyVaultDependency_WithIdWithValidSecretNameDurationMeasurement_Succeeds(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var vaultUri = "https://myvault.vault.azure.net";
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+            var id = Guid.NewGuid().ToString();
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, measurement, id);
+
+            // Assert
+            DependencyLogEntry entry = logger.GetMessageAsDependency();
+            Assert.Equal("Azure key vault", entry.DependencyType);
+            Assert.Equal(id, entry.DependencyId);
+            Assert.Equal(entry.DependencyName, vaultUri);
+            Assert.Equal(secretName, entry.DependencyData);
+            Assert.Equal(duration, entry.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.StartTime);
+        }
+
+        [Theory]
+        [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
         public void LogAzureKeyVaultDependency_WithValidSecretNameDependencyMeasurement_Succeeds(string secretName)
         {
             // Arrange
@@ -764,7 +1197,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(duration, entry.Duration);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.StartTime);
         }
-        
+
+        [Theory]
+        [ClassData(typeof(ValidAzureKeyVaultSecretNames))]
+        public void LogAzureKeyVaultDependency_WithValidSecretNameDurationMeasurement_Succeeds(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var vaultUri = "https://myvault.vault.azure.net";
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry entry = logger.GetMessageAsDependency();
+            Assert.Equal("Azure key vault", entry.DependencyType);
+            Assert.Equal(entry.DependencyName, vaultUri);
+            Assert.Equal(secretName, entry.DependencyData);
+            Assert.Equal(duration, entry.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), entry.StartTime);
+        }
+
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogAzureKeyVaultDependencyDependencyMeasurement_WithIdWithoutVaultUri_Fails(string vaultUri)
@@ -859,6 +1317,100 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
                 () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
         }
 
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependencyDurationMeasurement_WithIdWithoutVaultUri_Fails(string vaultUri)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency(vaultUri, "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependency_WithIdWithoutSecretNameDurationMeasurement_Fails(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
+        }
+
+        [Theory]
+        [ClassData(typeof(InvalidAzureKeyVaultSecretNames))]
+        public void LogAzureKeyVaultDependency_WithIdWithInvalidSecretNameDurationMeasurement_Fails(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.Throws<FormatException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependencyDurationMeasurement_WithIdWithoutMatchingVaultUri_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.Throws<UriFormatException>(
+                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependencyDurationMeasurement_WithoutVaultUri_Fails(string vaultUri)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency(vaultUri, "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start()));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureKeyVaultDependency_WithoutSecretNameDurationMeasurement_Fails(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start()));
+        }
+
+        [Theory]
+        [ClassData(typeof(InvalidAzureKeyVaultSecretNames))]
+        public void LogAzureKeyVaultDependency_WithInvalidSecretNameDurationMeasurement_Fails(string secretName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.Throws<FormatException>(
+                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start()));
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependencyDurationMeasurement_WithoutMatchingVaultUri_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+
+            // Act / Assert
+            Assert.Throws<UriFormatException>(
+                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start()));
+        }
+
         [Fact]
         public void LogAzureSearchDependency_ValidArguments_Succeeds()
         {
@@ -926,6 +1478,80 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             string dependencyName = searchServiceName;
             Assert.Contains("Azure Search " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogAzureSearchDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.Product();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement);
+
+            // Assert
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(searchServiceName, logMessage);
+            Assert.Contains(operationName, logMessage);
+            Assert.Contains(isSuccessful.ToString(), logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            string dependencyName = searchServiceName;
+            Assert.Contains("Azure Search " + dependencyName, logMessage);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDurationMeasurement_WithoutSearchServiceName_Fails(string searchServiceName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDurationMeasurement_WithoutOperationName_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogAzureSearchDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.ProductName();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement: (DurationMeasurement) null));
         }
 
         [Fact]
@@ -998,6 +1624,68 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogServiceBusDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string entityName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, entityType);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(entityName, dependency.TargetName);
+            Assert.Equal("Azure Service Bus", dependency.DependencyType);
+            Assert.Equal(entityName, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
+            Assert.Equal(entityType.ToString(), entityTypeItem.Value);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusDependencyWithDurationMeasurement_WithoutEntityName_Fails(string entityName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusDependency(entityName, isSuccessful, measurement, entityType));
+        }
+
+        [Fact]
+        public void LogServiceBusDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string entityName = _bogusGenerator.Commerce.Product();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusDependency(entityName, isSuccessful, measurement: (DurationMeasurement) null, entityType));
+        }
+
+        [Fact]
         public void LogServiceBusQueueDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1064,6 +1752,59 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogServiceBusQueueDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(queueName, dependency.TargetName);
+            Assert.Equal("Azure Service Bus", dependency.DependencyType);
+            Assert.Equal(queueName, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), entityTypeItem.Value);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueDependencyWithDurationMeasurement_WithoutQueueName_Fails(string queueName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogServiceBusQueueDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogServiceBusTopicDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1127,6 +1868,61 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(isSuccessful.ToString(), logMessage);
             var dependencyName = topicName;
             Assert.Contains("Azure Service Bus " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(topicName, dependency.TargetName);
+            Assert.Equal("Azure Service Bus", dependency.DependencyType);
+            Assert.Equal(topicName, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), entityTypeItem.Value);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicDependencyWithDurationMeasurement_WithoutTopicName_Fails(string topicName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = _bogusGenerator.Commerce.Product();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement: (DurationMeasurement) null));
         }
 
         [Fact]
@@ -1247,6 +2043,82 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogBlobStorageDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string containerName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(accountName, dependency.TargetName);
+            Assert.Equal(containerName, dependency.DependencyData);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(accountName + "/" + containerName, dependency.DependencyName);
+            Assert.Equal("Azure blob", dependency.DependencyType);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogBlobStorageDependencyWithDurationMeasurement_WithoutAccountName_Fails(string accountName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string containerName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / 
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogBlobStorageDependencyWithDurationMeasurement_WithoutContainerName_Fails(string containerName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / 
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogBlobStorageDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            string containerName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            // Act / 
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogTableStorageDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1314,6 +2186,81 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             string dependencyName = $"{accountName}/{tableName}";
             Assert.Contains("Azure table " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogTableStorageDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(accountName, dependency.TargetName);
+            Assert.Equal("Azure table", dependency.DependencyType);
+            Assert.Equal(accountName + "/" + tableName, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogTableStorageDependencyWithDurationMeasurement_WithoutAccountName_Fails(string accountName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogTableStorageDependencyWithDurationMeasurement_WithoutTableName_Fails(string tableName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogTableStorageDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Commerce.ProductName();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement: (DurationMeasurement) null));
         }
 
         [Fact]
@@ -1387,6 +2334,85 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogEventHubsDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventHubName = _bogusGenerator.Commerce.ProductName();
+            string namespaceName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(eventHubName, dependency.TargetName);
+            Assert.Equal("Azure Event Hubs", dependency.DependencyType);
+            Assert.Equal(eventHubName, dependency.DependencyName);
+            Assert.Equal(namespaceName, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogEventHubsDependencyWithDurationMeasurement_WithoutNamespaceName_Fails(string namespaceName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventHubName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogEventHubsDependencyWithDurationMeasurement_WithoutEventHubName_Fails(string eventHubName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string namespaceName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogEventHubsDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string namespaceName = _bogusGenerator.Commerce.ProductName();
+            string eventHubName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogIotHubDependency_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1451,6 +2477,116 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             string dependencyName = iotHubName;
             Assert.Contains("Azure IoT Hub " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogIotHubDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(iotHubName, dependency.TargetName);
+            Assert.Equal("Azure IoT Hub", dependency.DependencyType);
+            Assert.Equal(iotHubName, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Fact]
+        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubConnectionString = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(iotHubConnectionString, dependency.TargetName);
+            Assert.Equal("Azure IoT Hub", dependency.DependencyType);
+            Assert.Equal(iotHubConnectionString, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogIotHubDependencyWithDurationMeasurement_WithoutIoTHubName_Fails(string iotHubName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogIotHubDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string iotHubName = _bogusGenerator.Commerce.ProductName();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_WithoutConnectionString_Fails(string iotHubConnectionString)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string iotHubConnectionString = _bogusGenerator.Commerce.ProductName();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement: (DurationMeasurement)null));
         }
 
         [Fact]
@@ -1606,6 +2742,107 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogCosmosSqlDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(accountName, dependency.TargetName);
+            Assert.Equal("Azure DocumentDB", dependency.DependencyType);
+            Assert.Equal(database + "/" + container, dependency.DependencyName);
+            Assert.Equal(database + "/" + container, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogCosmosSqlDependencyWithDurationMeasurement_WithoutAccountName_Fails(string accountName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string database = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogCosmosSqlDependencyWithDurationMeasurement_WithoutDatabase_Fails(string database)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogCosmosSqlDependencyWithDurationMeasurement_WithoutContainer_Fails(string container)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogCosmosSqlDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string database = _bogusGenerator.Commerce.ProductName();
+            string container = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogSqlDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1640,6 +2877,128 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
+        public void LogSqlDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(serverName, dependency.TargetName);
+            Assert.Equal("Sql", dependency.DependencyType);
+            Assert.Equal(databaseName + "/" + tableName, dependency.DependencyName);
+            Assert.Equal(operationName, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithDurationMeasurement_WithoutServerName_Fails(string serverName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithDurationMeasurement_WithoutDatabaseName_Fails(string databaseName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithDurationMeasurement_WithoutTableName_Fails(string tableName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithDurationMeasurement_WithoutOperation_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
         public void LogSqlDependencyConnectionString_ValidArguments_Succeeds()
         {
             // Arrange
@@ -1668,6 +3027,112 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains(duration.ToString(), logMessage);
             string dependencyName = $"{databaseName}/{tableName}";
             Assert.Contains("Sql " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogSqlDependencyConnectionStringWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogSqlDependency(connectionString, tableName, operationName, isSuccessful, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(serverName, dependency.TargetName);
+            Assert.Equal("Sql", dependency.DependencyType);
+            Assert.Equal(databaseName + "/" + tableName, dependency.DependencyName);
+            Assert.Equal(operationName, dependency.DependencyData);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutConnectionString_Fails(string connectionString)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutTableName_Fails(string tableName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutOperationName_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, tableName, operationName, isSuccessful, measurement));
+        }
+
+        [Fact]
+        public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = _bogusGenerator.Name.FullName();
+            string databaseName = _bogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string tableName = _bogusGenerator.Name.FullName();
+            string operationName = _bogusGenerator.Name.FullName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, tableName, operationName, isSuccessful, measurement: (DurationMeasurement) null));
         }
 
         [Fact]
@@ -1914,6 +3379,59 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             HttpMethod requestMethod = request.Method;
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             Assert.Contains("Http " + dependencyName, logMessage);
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, measurement);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(request.RequestUri?.Host, dependency.TargetName);
+            Assert.Equal("Http", dependency.DependencyType);
+            Assert.Equal(request.Method.Method + " " + request.RequestUri?.AbsolutePath, dependency.DependencyName);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithDurationMeasurement_WithoutRequest_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request: null, statusCode, measurement));
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: (DurationMeasurement) null));
         }
 
         [Fact]
@@ -2260,7 +3778,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2294,7 +3812,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2327,7 +3845,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2361,7 +3879,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2394,7 +3912,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2416,7 +3934,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -2438,7 +3956,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2459,7 +3977,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2481,7 +3999,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -2502,7 +4020,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2524,7 +4042,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2913,7 +4431,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2945,7 +4463,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -2976,7 +4494,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3008,7 +4526,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3039,7 +4557,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3060,7 +4578,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3081,7 +4599,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3101,7 +4619,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3122,7 +4640,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3452,7 +4970,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3485,7 +5003,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3517,7 +5035,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3550,7 +5068,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3582,7 +5100,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3604,7 +5122,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act
@@ -3626,7 +5144,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3647,7 +5165,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
             // Act
@@ -3669,7 +5187,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string key = _bogusGenerator.Lorem.Word();
             string value = _bogusGenerator.Lorem.Word();
             var context = new Dictionary<string, object> { [key] = value };
-            var measurement = RequestMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             measurement.Dispose();
             
             // Act

@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Logging
                                       SecretNameRegex = new Regex(SecretNamePattern, RegexOptions.Compiled);
 
         /// <summary>
-        ///     Logs an HTTP request
+        /// Logs an HTTP request
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that was done</param>
@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an HTTP request
+        /// Logs an HTTP request
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that was done</param>
@@ -102,7 +102,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an HTTP request
+        /// Logs an HTTP request
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that was done</param>
@@ -145,7 +145,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an HTTP request
+        /// Logs an HTTP request
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that was done</param>
@@ -190,7 +190,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus topic request.
+        /// Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -213,7 +213,7 @@ namespace Microsoft.Extensions.Logging
             string subscriptionName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -223,13 +223,11 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus topic request process latency duration");
 
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
-
             LogServiceBusTopicRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, topicName, subscriptionName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus topic request.
+        /// Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered (use Azure public cloud).</param>
@@ -250,7 +248,7 @@ namespace Microsoft.Extensions.Logging
             string subscriptionName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -259,13 +257,11 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus topic request process latency duration");
 
-            // TODO: the dependency date from the measurement instance is not used when tracking the request.
-
             LogServiceBusTopicRequest(logger, serviceBusNamespace, topicName, subscriptionName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus topic request.
+        /// Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus topic is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -308,7 +304,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus topic request.
+        /// Logs an Azure Service Bus topic request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus topic is registered (use Azure public cloud).</param>
@@ -346,7 +342,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus queue request.
+        /// Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -365,7 +361,7 @@ namespace Microsoft.Extensions.Logging
             string queueName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -378,7 +374,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus queue request.
+        /// Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
@@ -395,7 +391,7 @@ namespace Microsoft.Extensions.Logging
             string queueName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
@@ -407,7 +403,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus queue request.
+        /// Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -442,7 +438,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus queue request.
+        /// Logs an Azure Service Bus queue request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus queue is registered (use Azure public cloud).</param>
@@ -474,7 +470,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus request.
+        /// Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus queue is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -494,7 +490,7 @@ namespace Microsoft.Extensions.Logging
             string entityName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
@@ -508,7 +504,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus request.
+        /// Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
@@ -526,7 +522,7 @@ namespace Microsoft.Extensions.Logging
             string entityName,
             string operationName,
             bool isSuccessful,
-            RequestMeasurement measurement,
+            DurationMeasurement measurement,
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
@@ -539,7 +535,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus request.
+        /// Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace where the Azure Service Bus is registered. (Will be combined with <paramref name="serviceBusNamespaceSuffix"/>).</param>
@@ -576,7 +572,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus request.
+        /// Logs an Azure Service Bus request.
         /// </summary>
         /// <param name="logger">The logger instance to track the telemetry.</param>
         /// <param name="serviceBusNamespace">The namespace prefix where the Azure Service Bus is registered (use Azure public cloud).</param>
@@ -620,7 +616,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -632,6 +628,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a custom dependency")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -649,7 +646,36 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">The custom type of dependency.</param>
+        /// <param name="dependencyData">The custom data of dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -662,6 +688,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a custom dependency")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -680,7 +707,38 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">The custom type of dependency.</param>
+        /// <param name="dependencyData">The custom data of dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="dependencyName">The name of the dependency.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            bool isSuccessful,
+            string dependencyName,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -712,7 +770,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -746,7 +804,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -759,6 +817,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a custom dependency")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -777,7 +836,38 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">The custom type of dependency.</param>
+        /// <param name="dependencyData">The custom data of dependency.</param>
+        /// <param name="targetName">The name of the dependency target.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -791,6 +881,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a custom dependency")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -810,7 +901,40 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="dependencyType">The custom type of dependency.</param>
+        /// <param name="dependencyData">The custom data of dependency.</param>
+        /// <param name="targetName">The name of the dependency target.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="dependencyName">The name of the dependency.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        public static void LogDependency(
+            this ILogger logger,
+            string dependencyType,
+            object dependencyData,
+            string targetName,
+            bool isSuccessful,
+            string dependencyName,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -844,7 +968,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a dependency.
+        /// Logs a dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="dependencyType">Custom type of dependency</param>
@@ -861,7 +985,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static void LogDependency(
-            this ILogger logger,            
+            this ILogger logger,
             string dependencyType,
             object dependencyData,
             string targetName,
@@ -891,7 +1015,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Key Vault dependency.
+        /// Logs an Azure Key Vault dependency.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
@@ -903,6 +1027,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Key Vault dependency")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,
@@ -925,9 +1050,45 @@ namespace Microsoft.Extensions.Logging
             context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement, dependencyId: null, context);
         }
-        
+
         /// <summary>
-        ///     Logs an Azure Key Vault dependency.
+        /// Logs an Azure Key Vault dependency.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
+        /// <param name="secretName">The secret that is being used within the Azure Key Vault resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
+        /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
+        /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        public static void LogAzureKeyVaultDependency(
+            this ILogger logger,
+            string vaultUri,
+            string secretName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
+            Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
+            Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
+            Guard.For<FormatException>(
+                () => !SecretNameRegex.IsMatch(secretName),
+                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+            Guard.For<UriFormatException>(
+                () => !KeyVaultUriRegex.IsMatch(vaultUri),
+                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+
+            context = context ?? new Dictionary<string, object>();
+            LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement, dependencyId: null, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Key Vault dependency.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
@@ -940,6 +1101,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Key Vault dependency")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,
@@ -965,7 +1127,45 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Key Vault dependency.
+        /// Logs an Azure Key Vault dependency.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
+        /// <param name="secretName">The secret that is being used within the Azure Key Vault resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
+        /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
+        /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        public static void LogAzureKeyVaultDependency(
+            this ILogger logger,
+            string vaultUri,
+            string secretName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
+            Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
+            Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
+            Guard.For<FormatException>(
+                () => !SecretNameRegex.IsMatch(secretName),
+                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+            Guard.For<UriFormatException>(
+                () => !KeyVaultUriRegex.IsMatch(vaultUri),
+                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
+
+            context = context ?? new Dictionary<string, object>();
+            LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Key Vault dependency.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
@@ -1004,7 +1204,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Key Vault dependency.
+        /// Logs an Azure Key Vault dependency.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="vaultUri">The URI pointing to the Azure Key Vault resource.</param>
@@ -1056,7 +1256,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Search Dependency.
+        /// Logs an Azure Search Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="searchServiceName">Name of the Azure Search service</param>
@@ -1066,6 +1266,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure search dependency")]
         public static void LogAzureSearchDependency(
             this ILogger logger,
             string searchServiceName,
@@ -1085,7 +1286,36 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Search Dependency.
+        /// Logs an Azure Search Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="searchServiceName">The name of the Azure Search service.</param>
+        /// <param name="operationName">The name of the operation to execute on the Azure Search service.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        public static void LogAzureSearchDependency(
+            this ILogger logger,
+            string searchServiceName,
+            string operationName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track the Azure Search dependency");
+            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Search resource when tracking the Azure Search dependency");
+
+            context = context ?? new Dictionary<string, object>();
+
+            LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Search Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="searchServiceName">Name of the Azure Search service</param>
@@ -1109,23 +1339,23 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
-            
+
             context = context ?? new Dictionary<string, object>();
 
             logger.LogWarning(DependencyFormat, new DependencyLogEntry(
-                dependencyType: "Azure Search", 
-                dependencyName: searchServiceName, 
-                dependencyData: operationName, 
-                targetName: searchServiceName, 
-                duration: duration, 
-                startTime: startTime, 
-                resultCode: null, 
-                isSuccessful: isSuccessful, 
+                dependencyType: "Azure Search",
+                dependencyName: searchServiceName,
+                dependencyData: operationName,
+                targetName: searchServiceName,
+                duration: duration,
+                startTime: startTime,
+                resultCode: null,
+                isSuccessful: isSuccessful,
                 context: context));
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="queueName">Name of the Service Bus queue</param>
@@ -1133,6 +1363,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="measurement">Measuring the latency to call the Service Bus dependency</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Service Bus queue dependency")]
         public static void LogServiceBusQueueDependency(
             this ILogger logger,
             string queueName,
@@ -1147,7 +1378,30 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="queueName">The name of the Service Bus queue.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the Service Bus dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        public static void LogServiceBusQueueDependency(
+            this ILogger logger,
+            string queueName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires a non-blank Azure Service Bus Queue name to track an Azure Service Bus Queue dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus Queue when tracking the Azure Service Bus Queue dependency");
+
+            LogServiceBusQueueDependency(logger, queueName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="queueName">Name of the Service Bus queue</param>
@@ -1174,7 +1428,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="topicName">Name of the Service Bus topic</param>
@@ -1183,6 +1437,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Service Bus topic dependency")]
         public static void LogServiceBusTopicDependency(
             this ILogger logger,
             string topicName,
@@ -1198,7 +1453,31 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="topicName">The name of the Service Bus topic.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the Service Bus dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
+        public static void LogServiceBusTopicDependency(
+            this ILogger logger,
+            string topicName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires a non-blank Azure Service Bus Topic name to track an Azure Service Bus Topic dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus Topic when tracking the Azure Service Bus Topic dependency");
+
+            LogServiceBusTopicDependency(logger, topicName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="topicName">Name of the Service Bus topic</param>
@@ -1225,7 +1504,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="entityName">Name of the Service Bus entity</param>
@@ -1235,6 +1514,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Service Bus dependency")]
         public static void LogServiceBusDependency(
             this ILogger logger,
             string entityName,
@@ -1251,7 +1531,33 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Service Bus Dependency.
+        /// Logs an Azure Service Bus Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="entityName">The name of the Service Bus entity.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the Service Bus dependency.</param>
+        /// <param name="entityType">The type of the Service Bus entity.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
+        public static void LogServiceBusDependency(
+            this ILogger logger,
+            string entityName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires a non-blank Azure Service Bus entity name to track an Azure Service Bus dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus when tracking the Azure Service Bus dependency");
+
+            LogServiceBusDependency(logger, entityName, isSuccessful, measurement.StartTime, measurement.Elapsed, entityType, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Service Bus Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="entityName">Name of the Service Bus entity</param>
@@ -1292,7 +1598,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Blob Storage Dependency.
+        /// Logs an Azure Blob Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Account of the storage resource</param>
@@ -1302,6 +1608,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="containerName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Blob storage dependency")]
         public static void LogBlobStorageDependency(
             this ILogger logger,
             string accountName,
@@ -1319,7 +1626,34 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Blob Storage Dependency.
+        /// Logs an Azure Blob Storage Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="accountName">The account of the storage resource.</param>
+        /// <param name="containerName">The name of the Blob Container resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="containerName"/> is blank.</exception>
+        public static void LogBlobStorageDependency(
+            this ILogger logger,
+            string accountName,
+            string containerName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name for the Azure Blob storage resource to track an Azure Blob storage dependency");
+            Guard.NotNullOrWhitespace(containerName, nameof(containerName), "Requires a non-blank container name in the Azure BLob storage resource to track an Azure Blob storage dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Blob storage when tracking an Azure Blob storage dependency");
+
+            LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Blob Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Account of the storage resource</param>
@@ -1362,7 +1696,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Table Storage Dependency.
+        /// Logs an Azure Table Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Account of the storage resource</param>
@@ -1372,6 +1706,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Table storage dependency")]
         public static void LogTableStorageDependency(
             this ILogger logger, 
             string accountName, 
@@ -1389,7 +1724,34 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Table Storage Dependency.
+        /// Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="accountName">The account of the storage resource.</param>
+        /// <param name="tableName">The name of the Table Storage resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the Table Storage dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        public static void LogTableStorageDependency(
+            this ILogger logger,
+            string accountName,
+            string tableName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name for the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Table storage when tracking an Azure Table storage dependency");
+
+            LogTableStorageDependency(logger, accountName, tableName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Table Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Account of the storage resource</param>
@@ -1432,7 +1794,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Event Hub Dependency.
+        /// Logs an Azure Event Hub Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="namespaceName">Namespace of the resource</param>
@@ -1442,6 +1804,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="namespaceName"/> or <paramref name="eventHubName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Event Hubs dependency")]
         public static void LogEventHubsDependency(
             this ILogger logger, 
             string namespaceName, 
@@ -1459,7 +1822,34 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Event Hub Dependency.
+        /// Logs an Azure Event Hub Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="namespaceName">The namespace of the resource.</param>
+        /// <param name="eventHubName">The name of the Event Hub resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="namespaceName"/> or <paramref name="eventHubName"/> is blank.</exception>
+        public static void LogEventHubsDependency(
+            this ILogger logger,
+            string namespaceName,
+            string eventHubName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
+            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Event Hub resource when tracking an Azure Event Hub dependency");
+
+            LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Event Hub Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="namespaceName">Namespace of the resource</param>
@@ -1500,7 +1890,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Iot Hub Dependency.
+        /// Logs an Azure Iot Hub Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="iotHubName">Name of the IoT Hub resource</param>
@@ -1509,6 +1899,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure IoT Hub dependency")]
         public static void LogIotHubDependency(
             this ILogger logger, 
             string iotHubName, 
@@ -1524,7 +1915,31 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an Azure Iot Hub Dependency.
+        /// Logs an Azure Iot Hub Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="iotHubName">The nme of the IoT Hub resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
+        public static void LogIotHubDependency(
+            this ILogger logger,
+            string iotHubName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(iotHubName, nameof(iotHubName), "Requires a non-blank resource name of the IoT Hub resource to track a IoT Hub dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the IoT Hub resource when tracking a IoT Hub dependency");
+
+            LogIotHubDependency(logger, iotHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Iot Hub Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="iotHubName">Name of the IoT Hub resource</param>
@@ -1562,7 +1977,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a Cosmos SQL dependency.
+        /// Logs a Cosmos SQL dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Name of the storage resource</param>
@@ -1573,6 +1988,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/>, <paramref name="database"/>, or <paramref name="container"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a Cosmos SQL dependency")]
         public static void LogCosmosSqlDependency(
             this ILogger logger, 
             string accountName, 
@@ -1592,7 +2008,37 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a Cosmos SQL dependency.
+        /// Logs a Cosmos SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="accountName">The name of the storage resource.</param>
+        /// <param name="database">The name of the database.</param>
+        /// <param name="container">The name of the container.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful</param>
+        /// <param name="measurement">The measuring the latency of the dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/>, <paramref name="database"/>, or <paramref name="container"/> is blank.</exception>
+        public static void LogCosmosSqlDependency(
+            this ILogger logger,
+            string accountName,
+            string database,
+            string container,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name of the Cosmos SQL storage to track a Cosmos SQL dependency");
+            Guard.NotNullOrWhitespace(database, nameof(database), "Requires a non-blank database name of the Cosmos SQL storage to track a Cosmos SQL dependency");
+            Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Cosmos SQL storage when tracking an Cosmos SQL dependency");
+
+            LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a Cosmos SQL dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Name of the storage resource</param>
@@ -1638,7 +2084,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an HTTP dependency
+        /// Logs an HTTP dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that started the HTTP communication</param>
@@ -1649,6 +2095,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside the bounds of the enumeration.
         /// </exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a HTTP dependency")]
         public static void LogHttpDependency(
             this ILogger logger, 
             HttpRequestMessage request, 
@@ -1666,7 +2113,35 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an HTTP dependency
+        /// Logs an HTTP dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="request">The request that started the HTTP communication.</param>
+        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
+        /// <param name="measurement">The measuring the latency of the HTTP dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside the bounds of the enumeration.
+        /// </exception>
+        public static void LogHttpDependency(
+            this ILogger logger,
+            HttpRequestMessage request,
+            HttpStatusCode statusCode,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
+            Guard.For(() => !Enum.IsDefined(typeof(HttpStatusCode), statusCode),
+                new ArgumentException("Requires a response HTTP status code that's within the bound of the enumeration to track a HTTP dependency"));
+
+            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs an HTTP dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">Request that started the HTTP communication</param>
@@ -1716,7 +2191,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a SQL dependency
+        /// Logs a SQL dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="serverName">Name of server hosting the database</param>
@@ -1727,6 +2202,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, or <paramref name="tableName"/> is blank.</exception>
+        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a SQL dependency")]
         public static void LogSqlDependency(
             this ILogger logger, 
             string serverName, 
@@ -1746,7 +2222,42 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a SQL dependency
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="serverName">The name of server hosting the database.</param>
+        /// <param name="databaseName">The name of database.</param>
+        /// <param name="tableName">The name of tracked table in the SQL database.</param>
+        /// <param name="operationName">The name of the operation that was performed on the SQL database.</param>	
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the SQL dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, <paramref name="tableName"/>, or <paramref name="operationName"/> is blank.
+        /// </exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string serverName,
+            string databaseName,
+            string tableName,
+            string operationName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serverName, nameof(serverName), "Requires a non-blank SQL server name to track a SQL dependency");
+            Guard.NotNullOrWhitespace(databaseName, nameof(databaseName), "Requires a non-blank SQL database name to track a SQL dependency");
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank SQL table name to track a SQL dependency");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name of the SQL operation to track a SQL dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to measure the latency of the SQL storage when tracking an SQL dependency");
+
+            LogSqlDependency(logger, serverName, databaseName, tableName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="serverName">Name of server hosting the database</param>
@@ -1797,7 +2308,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a custom event
+        /// Logs a custom event
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="name">Name of the event</param>
@@ -1815,7 +2326,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a custom metric
+        /// Logs a custom metric
         /// </summary>
         /// <param name="logger">The logger to track the metric.</param>
         /// <param name="name">Name of the metric</param>
@@ -1834,7 +2345,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs a custom metric
+        /// Logs a custom metric
         /// </summary>
         /// <param name="logger">The logger to track the metric.</param>
         /// <param name="name">Name of the metric</param>
@@ -1854,7 +2365,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        ///     Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
+        /// Logs an event related to an security activity (i.e. input validation, authentication, authorization...).
         /// </summary>
         /// <param name="logger">The logger to track the security event.</param>
         /// <param name="name">The name of the security event written.</param>

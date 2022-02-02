@@ -17,6 +17,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Arcus.Observability.Telemetry.Core</AssemblyName>
     <RootNamespace>Arcus.Observability.Telemetry.Core</RootNamespace>
+    <NoWarn>NU5048;NU5125</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

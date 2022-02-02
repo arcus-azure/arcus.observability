@@ -6,6 +6,7 @@ namespace Arcus.Observability.Telemetry.Core
     /// <summary>
     /// Represents an instance to measure easily dependencies in an application.
     /// </summary>
+    [Obsolete("Use " + nameof(DurationMeasurement) + " instead to track the duration of the telemetry")]
     public class DependencyMeasurement : IDisposable
     {
         private readonly Stopwatch _stopwatch;

@@ -354,14 +354,14 @@ logger.LogDependency("SendGrid", dependencyData, isSuccessful: true, startTime: 
 
 #### Making it easier to measure dependencies
 
-By using `DependencyMeasurement.Start()` we take care of the measuring aspect:
+By using `DurationMeasurement.Start()` we take care of the measuring aspect:
 
 ```csharp
 using Arcus.Observability.Telemetry.Core;
 using Microsoft.Extensions.Logging;
 
 // Start measuring
-using (var measurement = DependencyMeasurement.Start(dependencyData: "Call_SendGrid"))
+using (var measurement = DurationMeasurement.Start())
 {
     // Do Action
 
@@ -397,7 +397,7 @@ catch (Exception exception)
 
 #### Making it easier to measure requests
 
-By using `RequestMeasurement.Start()` we take care of the measuring aspect:
+By using `DurationMeasurement.Start()` we take care of the measuring aspect:
 
 ```csharp
 using Arcus.Observability.Telemetry.Core;
@@ -408,7 +408,7 @@ HttpRequest request = ...
 HttpResponse response = ...
 
 // Start measuring
-using (var measurement = RequestMeasurement.Start())
+using (var measurement = DurationMeasurement.Start())
 {
     // Process message
 
