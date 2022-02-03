@@ -771,9 +771,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
                 () => logger.LogDependency(dependencyType: null, dependencyData, targetName, isSuccessful, dependencyName, measurement));
         }
 
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void LogDependencyWithDurationMeasurementTarget_WithoutDependencyData_Fails(string dependencyData)
+        [Fact]
+        public void LogDependencyWithDurationMeasurementTarget_WithoutDependencyData_Fails()
         {
             // Arrange
             var logger = new TestLogger();
@@ -786,7 +785,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement));
+                () => logger.LogDependency(dependencyType, dependencyData: null, targetName, isSuccessful, dependencyName, measurement));
         }
 
         [Fact]
@@ -2047,8 +2046,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string containerName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string containerName = _bogusGenerator.Lorem.Word();
+            string accountName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2193,8 +2192,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string tableName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string tableName = _bogusGenerator.Lorem.Word();
+            string accountName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2338,8 +2337,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
+            string eventHubName = _bogusGenerator.Lorem.Word();
+            string namespaceName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2484,7 +2483,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubName = _bogusGenerator.Commerce.ProductName();
+            string iotHubName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2510,7 +2509,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubConnectionString = _bogusGenerator.Commerce.ProductName();
+            var iotHubName = "acme.azure-devices.net";
+            var iotHubConnectionString = $"HostName={iotHubName};SharedAccessKeyName=AllAccessKey;DeviceId=fake;SharedAccessKey=dGVzdFN0cmluZzE=";
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2523,9 +2523,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(iotHubConnectionString, dependency.TargetName);
+            Assert.Equal(iotHubName, dependency.TargetName);
             Assert.Equal("Azure IoT Hub", dependency.DependencyType);
-            Assert.Equal(iotHubConnectionString, dependency.DependencyName);
+            Assert.Equal(iotHubName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
@@ -2746,9 +2746,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string container = _bogusGenerator.Commerce.ProductName();
-            string database = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
+            string container = _bogusGenerator.Lorem.Word();
+            string database = _bogusGenerator.Lorem.Word();
+            string accountName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -2881,10 +2881,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string serverName = _bogusGenerator.Name.FullName();
-            string databaseName = _bogusGenerator.Name.FullName();
-            string tableName = _bogusGenerator.Name.FullName();
-            string operationName = _bogusGenerator.Name.FullName();
+            string serverName = _bogusGenerator.Lorem.Word();
+            string databaseName = _bogusGenerator.Lorem.Word();
+            string tableName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -3034,11 +3034,11 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string serverName = _bogusGenerator.Name.FullName();
-            string databaseName = _bogusGenerator.Name.FullName();
+            string serverName = _bogusGenerator.Lorem.Word();
+            string databaseName = _bogusGenerator.Lorem.Word();
             var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
-            string tableName = _bogusGenerator.Name.FullName();
-            string operationName = _bogusGenerator.Name.FullName();
+            string tableName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
             var measurement = DurationMeasurement.Start();
@@ -3397,14 +3397,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             logger.LogHttpDependency(request, statusCode, measurement);
 
             // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(request.RequestUri?.Host, dependency.TargetName);
-            Assert.Equal("Http", dependency.DependencyType);
-            Assert.Equal(request.Method.Method + " " + request.RequestUri?.AbsolutePath, dependency.DependencyName);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.Equal(duration, dependency.Duration);
-            var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
-            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            string logMessage = logger.WrittenMessage;
+            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
+            Assert.Contains(request.RequestUri?.Host, logMessage);
+            Assert.Contains(request.RequestUri?.PathAndQuery, logMessage);
+            Assert.Contains(request.Method.ToString(), logMessage);
+            Assert.Contains(((int)statusCode).ToString(), logMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
+            Assert.Contains(duration.ToString(), logMessage);
+            bool isSuccessful = (int) statusCode >= 200 && (int) statusCode < 300;
+            Assert.Contains($"Successful: {isSuccessful}", logMessage);
+            Uri requestUri = request.RequestUri;
+            HttpMethod requestMethod = request.Method;
+            string dependencyName = $"{requestMethod} {requestUri?.AbsolutePath}";
+            Assert.Contains("Http " + dependencyName, logMessage);
         }
 
         [Fact]
