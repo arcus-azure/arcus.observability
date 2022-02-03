@@ -1386,6 +1386,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="measurement">The measuring the latency to call the Service Bus dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="queueName"/> is blank.</exception>
         public static void LogServiceBusQueueDependency(
             this ILogger logger,
             string queueName,
