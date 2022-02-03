@@ -69,7 +69,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         {
             // Arrange
             var logger = new TestLogger();
-            string metricName = _bogusGenerator.Name.FullName();
+            string metricName = _bogusGenerator.Lorem.Word();
             double metricValue = _bogusGenerator.Random.Double();
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
 
@@ -398,7 +398,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string dependencyType = _bogusGenerator.Lorem.Word();
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string targetName = _bogusGenerator.Random.Word();
+            string targetName = _bogusGenerator.Lorem.Word();
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -796,7 +796,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string dependencyType = _bogusGenerator.Lorem.Word();
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string dependencyName = _bogusGenerator.Random.Word();
+            string dependencyName = _bogusGenerator.Lorem.Word();
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -824,7 +824,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             string dependencyType = _bogusGenerator.Lorem.Word();
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string targetName = _bogusGenerator.Random.Word();
+            string targetName = _bogusGenerator.Lorem.Word();
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
