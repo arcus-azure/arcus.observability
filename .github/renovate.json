@@ -2,11 +2,24 @@
   "assigneesFromCodeOwners": true,
   "separateMajorMinor": true,
   "separateMultipleMajor": true,
-  "branchPrefix": "renovate/",
-  "ignorePaths": [
+  "masterIssue": false,
+  "branchPrefix":"renovate-",
+  "labels":["dependencies"],
+  "ignoreDeps":[],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "extends": [
+    "config:base",
+    "default:disablePrControls"
+  ],
+  "nuget": {
+    "enabled": true
+  },
+   "ignorePaths": [
     "/docs/**"
   ],
   "vulnerabilityAlerts": {
     "enabled": true
   }
 }
+
