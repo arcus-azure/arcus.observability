@@ -1,0 +1,25 @@
+{
+  "assigneesFromCodeOwners": true,
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
+  "masterIssue": false,
+  "branchPrefix":"renovate-",
+  "labels":["dependencies"],
+  "ignoreDeps":[],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "extends": [
+    "config:base",
+    "default:disablePrControls"
+  ],
+  "nuget": {
+    "enabled": true
+  },
+   "ignorePaths": [
+    "/docs/**"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  }
+}
+
