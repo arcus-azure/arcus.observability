@@ -977,17 +977,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogAzureKeyVaultDependency_WithIdWithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(5), "dependency ID"));
-        }
-        
-        [Fact]
         public void LogAzureKeyVaultDependency_WithIdWithNegativeDuration_Fails()
         {
             // Arrange
@@ -1024,17 +1013,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogAzureKeyVaultDependency_WithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, startTime: DateTimeOffset.UtcNow, duration: TimeSpan.FromSeconds(5)));
-        }
-        
-        [Fact]
         public void LogAzureKeyVaultDependency_WithNegativeDuration_Fails()
         {
             // Arrange
@@ -1069,17 +1047,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DependencyMeasurement.Start(), "dependency ID"));
         }
-        
-        [Fact]
-        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithIdWithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start(), "dependency ID"));
-        }
 
         [Theory]
         [ClassData(typeof(Blanks))]
@@ -1103,17 +1070,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DependencyMeasurement.Start()));
-        }
-        
-        [Fact]
-        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
         }
 
         [Theory]
@@ -1140,17 +1096,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
         }
 
-        [Fact]
-        public void LogAzureKeyVaultDependencyDurationMeasurement_WithIdWithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start(), "dependency ID"));
-        }
-
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogAzureKeyVaultDependencyDurationMeasurement_WithoutVaultUri_Fails(string vaultUri)
@@ -1173,17 +1118,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DurationMeasurement.Start()));
-        }
-        
-        [Fact]
-        public void LogAzureKeyVaultDependencyDurationMeasurement_WithoutMatchingVaultUri_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.Throws<UriFormatException>(
-                () => logger.LogAzureKeyVaultDependency("https://vault-without-vault.azure.net-suffix", "MySecret", isSuccessful: true, measurement: DurationMeasurement.Start()));
         }
 
         [Fact]
