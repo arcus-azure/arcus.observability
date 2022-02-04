@@ -17,12 +17,6 @@ namespace Microsoft.Extensions.Logging
     // ReSharper disable once InconsistentNaming
     public static class ILoggerExtensions
     {
-        private const string KeyVaultUriPattern = "^https:\\/\\/[0-9a-zA-Z\\-]{3,24}\\.vault.azure.net(\\/)?$",
-                             SecretNamePattern = "^[a-zA-Z][a-zA-Z0-9\\-]{0,126}$";
-        
-        private static readonly Regex KeyVaultUriRegex = new Regex(KeyVaultUriPattern, RegexOptions.Compiled),
-                                      SecretNameRegex = new Regex(SecretNamePattern, RegexOptions.Compiled);
-
         /// <summary>
         /// Logs an HTTP request
         /// </summary>
@@ -1040,12 +1034,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName), 
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
 
             context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement, dependencyId: null, context);
@@ -1076,12 +1064,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName),
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
 
             context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement, dependencyId: null, context);
@@ -1115,12 +1097,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName), 
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
 
             context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
@@ -1153,12 +1129,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName),
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
 
             context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
@@ -1191,12 +1161,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName), 
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
             
             context = context ?? new Dictionary<string, object>();
@@ -1232,12 +1196,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
             Guard.NotNullOrWhitespace(vaultUri, nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
-            Guard.For<FormatException>(
-                () => !SecretNameRegex.IsMatch(secretName), 
-                "Requires a Azure Key Vault secret name in the correct format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
-            Guard.For<UriFormatException>(
-                () => !KeyVaultUriRegex.IsMatch(vaultUri),
-                "Requires the Azure Key Vault host to be in the right format, see https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
             
             context = context ?? new Dictionary<string, object>();
