@@ -1,0 +1,12 @@
+{
+  "assigneesFromCodeOwners": true,
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
+  "branchPrefix": "renovate/",
+  "ignorePaths": [
+    "/docs/**"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  }
+}
