@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Arcus.Testing.Logging" Version="0.1.0" />
+    <PackageReference Include="Arcus.Testing.Logging" Version="0.3.0" />
     <PackageReference Include="Bogus" Version="29.0.1" />
     <PackageReference Include="Guard.Net" Version="1.2.0" />
     <PackageReference Include="Microsoft.Azure.ApplicationInsights.Query" Version="1.0.0" />
