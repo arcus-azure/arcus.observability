@@ -1,7 +1,7 @@
 {
   "assigneesFromCodeOwners": true,
   "separateMajorMinor": true,
-  "separateMultipleMajor": true,
+  "separateMultipleMajor": false,
   "masterIssue": false,
   "branchPrefix":"renovate-",
   "labels":["dependencies"],
