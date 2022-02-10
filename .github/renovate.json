@@ -16,7 +16,7 @@
     "enabled": true
   },
    "ignorePaths": [
-    "/docs/**"
+    "**/docs/**"
   ],
   "vulnerabilityAlerts": {
     "enabled": true
