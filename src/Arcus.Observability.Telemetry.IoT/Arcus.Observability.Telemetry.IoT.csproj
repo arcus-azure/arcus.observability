@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve IoT telemetry with Serilog in applications</Description>
@@ -15,16 +15,20 @@
     <PackageId>Arcus.Observability.Telemetry.IoT</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Arcus.Observability.Telemetry.IoT</AssemblyName>
-    <RootNamespace>Arcus.Observability.Telemetry.IoT</RootNamespace>
+    <NoWarn>NU5048;NU5125</NoWarn>
   </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Guard.Net" Version="1.2.0" />
-      <PackageReference Include="Microsoft.Azure.Devices.Client" Version="[1.26.0,1.40.0)" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Guard.Net" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.39.0" />
+  </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
+    <PackageReference Include="Guard.Net" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.26.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../Arcus.Observability.Telemetry.Core/Arcus.Observability.Telemetry.Core.csproj" />
   </ItemGroup>
 
