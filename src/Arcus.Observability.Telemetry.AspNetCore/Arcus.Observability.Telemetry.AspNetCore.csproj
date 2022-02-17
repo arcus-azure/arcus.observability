@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
     <Description>Provides capability to improve ASP.NET Core telemetry with Serilog in applications</Description>
@@ -15,8 +15,6 @@
     <PackageId>Arcus.Observability.Telemetry.AspNetCore</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Arcus.Observability.Telemetry.AspNetCore</AssemblyName>
-    <RootNamespace>Arcus.Observability.Telemetry.AspNetCore</RootNamespace>
     <NoWarn>NU5048;NU5125</NoWarn>
   </PropertyGroup>
 
@@ -28,7 +26,11 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
     
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Guard.Net" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
     <PackageReference Include="Guard.Net" Version="1.2.0" />
   </ItemGroup>
 
