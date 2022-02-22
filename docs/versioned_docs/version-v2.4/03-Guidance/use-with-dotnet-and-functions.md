@@ -1,9 +1,9 @@
 ---
-title: "Using Arcus & Serilog in .NET Core and/or Azure Functions"
+title: "Using Arcus & Serilog in Azure Functions"
 layout: default
 ---
 
-# Using Arcus & Serilog in .NET Core and/or Azure Functions
+# Using Arcus & Serilog in Azure Functions
 
 When using Arcus Observability & Serilog it is mandatory that your application is configured correctly to ensure everything works smoothly and all features are working fine.
 
@@ -14,7 +14,7 @@ Some aspects we would like to highlight are:
 - Make sure to call [`UseSerilog`](https://www.nuget.org/packages/Serilog.AspNetCore) when creating a `IHostBuilder`
 - Remove default for logging including its configuration in `appsettings.json` *(if applicable)*
 
-If you cannot use `UseSerilog`, you can still configure it by using `AddSerilog` as a logging provider; but we recommend removing all other providers with `loggingBuilder.ClearProviders()` so that they don't interfer.
+If you cannot use `UseSerilog`, you can still configure it by using `AddSerilog` as a logging provider; but we recommend removing all other providers with `loggingBuilder.ClearProviders()` so that they don't interfere.
 
 ## Setting up Serilog with Azure Functions
 
