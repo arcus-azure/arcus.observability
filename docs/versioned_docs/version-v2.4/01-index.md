@@ -30,7 +30,7 @@ For more granular packages we recommend reading the documentation.
 
 # Guidance
 
-- [Using Arcus & Serilog in .NET Core and/or Azure Functions](/guidance/use-with-dotnet-and-functions)
+- [Using Arcus & Serilog in Azure Functions](/guidance/use-with-dotnet-and-functions)
 
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.
