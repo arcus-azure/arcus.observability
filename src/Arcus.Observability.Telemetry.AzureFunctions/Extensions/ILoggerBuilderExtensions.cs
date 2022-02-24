@@ -1,4 +1,5 @@
-﻿using GuardNet;
+﻿using System;
+using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
@@ -15,10 +16,11 @@ namespace Microsoft.Extensions.Logging
         /// except the specific Azure Functions registrations.
         /// </summary>
         /// <param name="loggingBuilder">The builder containing the <see cref="ILoggerProvider"/> registrations.</param>
+        [Obsolete("Calling this method causes issues with correctly writing log-information to Application Insights")]
         public static ILoggingBuilder ClearProvidersExceptFunctionProviders(this ILoggingBuilder loggingBuilder)
         {
             Guard.NotNull(loggingBuilder, nameof(loggingBuilder));
-
+            
             // Kudos to katrash: https://stackoverflow.com/questions/45986517/remove-console-and-debug-loggers-in-asp-net-core-2-0-when-in-production-mode
             foreach (ServiceDescriptor serviceDescriptor in loggingBuilder.Services)
             {
