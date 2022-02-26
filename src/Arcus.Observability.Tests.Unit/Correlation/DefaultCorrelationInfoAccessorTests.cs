@@ -10,13 +10,13 @@ namespace Arcus.Observability.Tests.Unit.Correlation
     public class DefaultCorrelationInfoAccessorTests
     {
         [Fact]
-        public async Task SetCorrelationInfo_Twice_UsesMostRecentValue()
+        public void SetCorrelationInfo_Twice_UsesMostRecentValue()
         {
             // Arrange
             var firstOperationId = $"operation-{Guid.NewGuid()}";
             var secondOperationId = $"operation-{Guid.NewGuid()}";
             var transactionId = $"transaction-{Guid.NewGuid()}";
-            await SetCorrelationInfo(firstOperationId, transactionId);
+            SetCorrelationInfo(firstOperationId, transactionId);
 
             // Act
             SetCorrelationInfo(secondOperationId, transactionId);
