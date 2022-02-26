@@ -19,7 +19,7 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             await SetCorrelationInfo(firstOperationId, transactionId);
 
             // Act
-            await SetCorrelationInfo(secondOperationId, transactionId);
+            SetCorrelationInfo(secondOperationId, transactionId);
 
             // Assert
             CorrelationInfo correlationInfo = DefaultCorrelationInfoAccessor.Instance.GetCorrelationInfo();
@@ -27,7 +27,7 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             Assert.Equal(transactionId, correlationInfo.TransactionId);
         }
 
-        private async Task SetCorrelationInfo(string operationId, string transactionId)
+        private void SetCorrelationInfo(string operationId, string transactionId)
         {
             DefaultCorrelationInfoAccessor.Instance.SetCorrelationInfo(
                 new CorrelationInfo(operationId, transactionId));
