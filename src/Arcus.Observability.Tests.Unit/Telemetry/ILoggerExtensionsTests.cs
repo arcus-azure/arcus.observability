@@ -1187,7 +1187,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(searchServiceName, dependency.TargetName);
         }
 
-
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogAzureSearchDependencyWithDependencyId_WithoutSearchServiceName_Fails(string searchServiceName)
