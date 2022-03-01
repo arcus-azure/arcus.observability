@@ -1147,7 +1147,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
         }
 
         [Fact]
-        public void LogAzureSearchDependencyWithDependencyMeasurement_WithNegativeDuration_Fails()
+        public void LogAzureSearchDependency_WithNegativeDuration_Fails()
         {
             // Arrange
             var logger = new TestLogger();
@@ -1160,7 +1160,84 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration));
         }
-        
+
+        [Fact]
+        public void LogAzureSearchDependencyWithDependencyId_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act
+            logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(searchServiceName, dependency.DependencyName);
+            Assert.Equal(operationName, dependency.DependencyData);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal("Azure Search", dependency.DependencyType);
+            Assert.Equal(searchServiceName, dependency.TargetName);
+        }
+
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDependencyId_WithoutSearchServiceName_Fails(string searchServiceName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = GeneratePositiveDuration();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDependencyId_WithoutOperationName_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = GeneratePositiveDuration();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId));
+        }
+
+        [Fact]
+        public void LogAzureSearchDependencyWithDependencyId_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.Product();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            TimeSpan duration = GeneratePositiveDuration().Negate();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId));
+        }
+
         [Fact]
         public void LogAzureSearchDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
         {
@@ -1217,6 +1294,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Contains("Azure Search " + dependencyName, logMessage);
         }
 
+        [Fact]
+        public void LogAzureSearchDependencyWithDependencyIdWithDurationMeasurement_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyId = _bogusGenerator.Lorem.Word();
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act
+            logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement, dependencyId);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(searchServiceName, dependency.DependencyName);
+            Assert.Equal(operationName, dependency.DependencyData);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(measurement.Elapsed, dependency.Duration);
+            Assert.Equal("Azure Search", dependency.DependencyType);
+            Assert.Equal(searchServiceName, dependency.TargetName);
+        }
+
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogAzureSearchDependencyWithDurationMeasurement_WithoutSearchServiceName_Fails(string searchServiceName)
@@ -1235,6 +1338,23 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDependencyIdWithDurationMeasurement_WithoutSearchServiceName_Fails(string searchServiceName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogAzureSearchDependencyWithDurationMeasurement_WithoutOperationName_Fails(string operationName)
         {
             // Arrange
@@ -1249,6 +1369,23 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
                 () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement));
         }
 
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogAzureSearchDependencyWithDependencyIdWithDurationMeasurement_WithoutOperationName_Fails(string operationName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            DurationMeasurement measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement, dependencyId));
+        }
+
         [Fact]
         public void LogAzureSearchDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
         {
@@ -1261,6 +1398,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement: (DurationMeasurement) null));
+        }
+
+        [Fact]
+        public void LogAzureSearchDependencyWithDependencyIdWithDurationMeasurement_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string searchServiceName = _bogusGenerator.Commerce.ProductName();
+            string operationName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement: (DurationMeasurement) null, dependencyId));
         }
 
         [Fact]
