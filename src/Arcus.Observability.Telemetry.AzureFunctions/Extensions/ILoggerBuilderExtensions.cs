@@ -1,4 +1,5 @@
-﻿using GuardNet;
+﻿using System;
+using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
@@ -15,6 +16,7 @@ namespace Microsoft.Extensions.Logging
         /// except the specific Azure Functions registrations.
         /// </summary>
         /// <param name="loggingBuilder">The builder containing the <see cref="ILoggerProvider"/> registrations.</param>
+        [Obsolete("Calling this method causes issues with correctly writing log-information to Application Insights. It is advised to no longer use it.")]
         public static ILoggingBuilder ClearProvidersExceptFunctionProviders(this ILoggingBuilder loggingBuilder)
         {
             Guard.NotNull(loggingBuilder, nameof(loggingBuilder));
