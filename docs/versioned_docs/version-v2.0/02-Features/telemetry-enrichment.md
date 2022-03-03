@@ -7,10 +7,17 @@ layout: default
 
 We provide a variety of enrichers for Serilog:
 
-- [Application Enricher](#application-enricher)
-- [Correlation Enricher](#correlation-enricher)
-- [Kubernetes Enricher](#kubernetes-enricher)
-- [Version Enricher](#version-enricher)
+- [Telemetry Enrichment](#telemetry-enrichment)
+  - [Installation](#installation)
+  - [Application Enricher](#application-enricher)
+    - [Custom Serilog property names](#custom-serilog-property-names)
+  - [Correlation Enricher](#correlation-enricher)
+    - [Custom Serilog property names](#custom-serilog-property-names-1)
+  - [Kubernetes Enricher](#kubernetes-enricher)
+    - [Custom Serilog property names](#custom-serilog-property-names-2)
+  - [Version Enricher](#version-enricher)
+    - [Custom application version](#custom-application-version)
+    - [Custom Serilog property names](#custom-serilog-property-names-3)
 
 ## Installation
 
@@ -23,7 +30,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
 ## Application Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
-that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportiunity to choose the location from where the application 'instance' should be retrieved.
+that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportunity to choose the location from where the application 'instance' should be retrieved.
 
 **Example**
 Name: `ComponentName`
@@ -42,7 +49,7 @@ logger.Information("Some event");
 // Output: Some event {ComponentName: My application component, MachineName: MyComputer}
 ```
 
-Or, alternatively one can choose to use the Kubernetes information which our [Application Insights](./sinks/azure-application-insights) sink will prioritize above the `MachineName` when determining the telemetry `Cloud.RoleInstance`.
+Or, alternatively one can choose to use the Kubernetes information which our [Application Insights](./sinks/azure-application-insights.md) sink will prioritize above the `MachineName` when determining the telemetry `Cloud.RoleInstance`.
 
 ```csharp
 using Serilog;
@@ -255,7 +262,7 @@ logger.Information("Some event");
 
 ### Custom application version
 
-The version enricher allows you to specify an `IAppVersion` instance that retrieves your custom application version, which will be used during enrichement.
+The version enricher allows you to specify an `IAppVersion` instance that retrieves your custom application version, which will be used during enrichment.
 By default this is set to the version of the current executing assembly.
 
 **Assembly version as application version**
@@ -320,7 +327,7 @@ ILogger logger = new LoggerConfiguration()
 
 ### Custom Serilog property names
 
-The version enricher allows you to specify the name of the property that will be added to the log event during enrichement.
+The version enricher allows you to specify the name of the property that will be added to the log event during enrichment.
 By default this is set to `version`.
 
 ```csharp

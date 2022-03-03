@@ -54,15 +54,12 @@ namespace Arcus.Samples.AzureFunction
 
             builder.Services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.ClearProvidersExceptFunctionProviders();
                 loggingBuilder.AddSerilog(logger);
             });
         }
     }
 }
 ```
-
-> :bulb: Note that we are using `ClearProvidersExceptFunctionProviders` instead of `ClearProviders` given Azure Functions requires some logging providers to be available.
 
 Here is an example of how you can use ILogger to write multi-dimensional metrics with Arcus. If Serilog would not be setup correctly (see above), it would only report the metric without the dimensions.
 

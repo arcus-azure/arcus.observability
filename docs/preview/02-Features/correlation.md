@@ -46,7 +46,7 @@ namespace Application
 ```
 ## Custom Correlation
 
-We register two interfaces during the registration of the correlation: `ICorrealtionInfoAccessor` and `ICorrelationInfoAccessor<>`.
+We register two interfaces during the registration of the correlation: `ICorrelationInfoAccessor` and `ICorrelationInfoAccessor<>`.
 The reason is because some applications require a custom `CorrelationInfo` model, and with using the generic interface `ICorrelationInfoAccessor<>` we can support this.
 
 **Example**
@@ -192,7 +192,7 @@ namespace Application
 This custom options model can then be included when registering the correlation:
 
 ```csharp
-using Microsoft.Excentions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {

@@ -153,7 +153,7 @@ var host = Host.CreateDefaultBuilder()
 
                     string instrumentationKey = context.Configuration["ApplicationInsights:InstrumentationKey"];
 
-                    if (!String.IsNullOrWhiteSpace(instrumentationKey))
+                    if (!string.IsNullOrWhiteSpace(instrumentationKey))
                     {
                         loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
                     }
@@ -172,7 +172,8 @@ using Arcus.Security.Core;
 var host = Host.CreateDefaultBuilder()
                .ConfigureSecretStore((context, config, builder) =>
                {
-                   // Configure the secretstore here
+                   // Configure the secret store here
+                   // https://security.arcus-azure.net/features/secret-store/
                })
                .UseSerilog((context, serviceProvider, loggerConfig) =>
                {
@@ -183,7 +184,7 @@ var host = Host.CreateDefaultBuilder()
 
                     var instrumentationKey = secretProvider.GetRawSecretAsync("ApplicationInsights:InstrumentationKey").GetAwaiter().GetResult();
 
-                    if (!String.IsNullOrWhiteSpace(instrumentationKey))
+                    if (!string.IsNullOrWhiteSpace(instrumentationKey))
                     {
                         loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
                     }

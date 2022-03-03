@@ -7,10 +7,12 @@ layout: default
 
 We provide a variety of enrichers for Serilog:
 
-- [Application Enricher](#application-enricher)
-- [Correlation Enricher](#correlation-enricher)
-- [Kubernetes Enricher](#kubernetes-enricher)
-- [Version Enricher](#version-enricher)
+- [Telemetry Enrichment](#telemetry-enrichment)
+  - [Installation](#installation)
+  - [Application Enricher](#application-enricher)
+  - [Correlation Enricher](#correlation-enricher)
+  - [Kubernetes Enricher](#kubernetes-enricher)
+  - [Version Enricher](#version-enricher)
 
 ## Installation
 
@@ -23,7 +25,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
 ## Application Enricher
 
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
-that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportiunity to choose the location from where the application 'instance' should be retrieved.
+that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportunity to choose the location from where the application 'instance' should be retrieved.
 
 **Example**
 Name: `ComponentName`

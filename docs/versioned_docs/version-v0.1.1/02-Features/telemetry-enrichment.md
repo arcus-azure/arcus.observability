@@ -7,10 +7,12 @@ layout: default
 
 We provide a variety of enrichers for Serilog:
 
-- [Application Enricher](#application-enricher)
-- [Correlation Enricher](#correlation-enricher)
-- [Kubernetes Enricher](#kubernetes-enricher)
-- [Version Enricher](#version-enricher)
+- [Telemetry Enrichment](#telemetry-enrichment)
+  - [Installation](#installation)
+  - [Application Enricher](#application-enricher)
+  - [Correlation Enricher](#correlation-enricher)
+  - [Kubernetes Enricher](#kubernetes-enricher)
+  - [Version Enricher](#version-enricher)
 
 ## Installation
 
