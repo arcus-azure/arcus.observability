@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
@@ -26,6 +25,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "Azure Service Bus";
             string entityName = BogusGenerator.Commerce.Product();
             string dependencyName = entityName;
+            string dependencyId = BogusGenerator.Lorem.Word();
+            var entityType = ServiceBusEntityType.Queue;
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
@@ -37,7 +38,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, ServiceBusEntityType.Queue, telemetryContext);
+                logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyId, entityType, telemetryContext);
             }
 
             // Assert
@@ -47,21 +48,42 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     EventsResults<EventsDependencyResult> results = await client.Events.GetDependencyEventsAsync(ApplicationId, timespan: "PT30M");
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Dependency.Type == dependencyType && result.Dependency.Target == entityName && result.Dependency.Name == dependencyName);
+                    AssertX.Any(results.Value, result =>
+                    {
+                        Assert.Equal(dependencyType, result.Dependency.Type);
+                        Assert.Equal(entityName, result.Dependency.Target);
+                        Assert.Equal(dependencyName, result.Dependency.Name);
+                        Assert.Equal(dependencyId, result.Dependency.Id);
+
+                        AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
+                    });
                 });
             }
 
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+            AssertSerilogLogProperties(dependencyType, entityName, dependencyName);
+        }
+
+        private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
+        {
+            Assert.True(customDimensions.TryGetValue(key, out string actual), $"Cannot find {key} in custom dimensions: {String.Join(", ", customDimensions.Keys)}");
+            Assert.Equal(expected, actual);
+        }
+
+        private void AssertSerilogLogProperties(string dependencyType, string entityName, string dependencyName)
+        {
+            IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
+            AssertX.Any(logEvents, logEvent =>
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
-                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                LogEventProperty actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
                 Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
 
-                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                LogEventProperty actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(entityName, actualTargetName.Value.ToDecentString());
 
-                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                LogEventProperty actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
                 Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
