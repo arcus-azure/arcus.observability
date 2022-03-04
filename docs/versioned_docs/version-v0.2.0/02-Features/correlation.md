@@ -192,7 +192,7 @@ namespace Application
 This custom options model can then be included when registering the correlation:
 
 ```csharp
-using Microsoft.Excentions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {

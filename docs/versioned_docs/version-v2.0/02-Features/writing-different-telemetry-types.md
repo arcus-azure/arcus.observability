@@ -9,16 +9,31 @@ Logs are a great way to gain insights, but sometimes they are not the best appro
 
 We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
 
-- [Dependencies](#dependencies)
-- [Events](#events)
-- [Metrics](#metrics)
-- [Requests](#requests)
+- [Write different telemetry types](#write-different-telemetry-types)
+  - [Installation](#installation)
+  - [Dependencies](#dependencies)
+    - [Measuring Azure Blob Storage dependencies](#measuring-azure-blob-storage-dependencies)
+    - [Measuring Azure Cosmos DB dependencies](#measuring-azure-cosmos-db-dependencies)
+    - [Measuring Azure Event Hubs dependencies](#measuring-azure-event-hubs-dependencies)
+    - [Measuring Azure IoT Hub dependencies](#measuring-azure-iot-hub-dependencies)
+    - [Measuring Azure Key Vault dependencies](#measuring-azure-key-vault-dependencies)
+    - [Measuring Azure Search dependencies](#measuring-azure-search-dependencies)
+    - [Measuring Azure Service Bus dependencies](#measuring-azure-service-bus-dependencies)
+    - [Measuring Azure Table Storage Dependencies](#measuring-azure-table-storage-dependencies)
+    - [Measuring HTTP dependencies](#measuring-http-dependencies)
+    - [Measuring SQL dependencies](#measuring-sql-dependencies)
+    - [Measuring custom dependencies](#measuring-custom-dependencies)
+    - [Making it easier to measure dependencies](#making-it-easier-to-measure-dependencies)
+  - [Events](#events)
+    - [Security Events](#security-events)
+  - [Metrics](#metrics)
+  - [Requests](#requests)
 
-For most optimal output, we recommend using our [Azure Application Insights sink](/features/sinks/azure-application-insights).
+For most optimal output, we recommend using our [Azure Application Insights sink](./sinks/azure-application-insights.md).
 
 **We highly encourage to provide contextual information to all your telemetry** to make it more powerful and support this for all telemetry types.
 
-> :bulb: For sake of simplicity we have not included how to track contextual information, for more information see [our documentation](/features/making-telemetry-more-powerful).
+> :bulb: For sake of simplicity we have not included how to track contextual information, for more information see [our documentation](./making-telemetry-more-powerful.md).
 
 ## Installation
 
@@ -31,20 +46,6 @@ PM > Install-Package Arcus.Observability.Telemetry.Core
 ## Dependencies
 
 Dependencies allow you to track how your external dependencies are doing to give you insights on performance and error rate.
-
-We provide support for the following dependencies:
-
-- [Azure Blob Storage](#measuring-azure-blob-storage-dependencies)
-- [Azure Cosmos DB](#measuring-azure-cosmos-db-dependencies)
-- [Azure Event Hubs](#measuring-azure-event-hubs-dependencies)
-- [Azure IoT Hub](#measuring-azure-iot-hub-dependencies)
-- [Azure Key Vault](#measuring-azure-key-vault-dependencies)
-- [Azure Search](#measuring-azure-search-dependencies)
-- [Azure Service Bus](#measuring-azure-service-bus-dependencies)
-- [Azure Table Storage](#measuring-azure-table-storage-dependencies)
-- [Custom](#measuring-custom-dependencies)
-- [HTTP](#measuring-http-dependencies)
-- [SQL](#measuring-sql-dependencies)
 
 Since measuring dependencies can add some noise in your code, we've introduced `DependencyMeasurement` to make it simpler. ([docs](#making-it-easier-to-measure-dependencies))
 
@@ -104,7 +105,7 @@ durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
 logger.LogEventHubsDependency(namespaceName: "be.sensors.contoso", eventHubName: "temperature", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: "Dependency Azure Event Hubs be.sensors.contoso named temerature in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
+// Output: "Dependency Azure Event Hubs be.sensors.contoso named temperature in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
 ### Measuring Azure IoT Hub dependencies
@@ -128,7 +129,7 @@ logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime:
 // Output: "Dependency Azure IoT Hub named sensors in 00:00:00.2521801 at 03/23/2020 09:56:31 +00:00 (Successful: True - Context: )"
 ```
 
-Or, alternatively you can pass allong the IoT connection string itself so the host name will be selected for you.
+Or, alternatively you can pass along the IoT connection string itself so the host name will be selected for you.
 
 **Installation**
 
@@ -178,7 +179,7 @@ logger.AzureKeyVaultDependency(vaultUri: "https://my-secret-store.vault.azure.ne
 
 ### Measuring Azure Search dependencies
 
-We allow you to measure Azure Search depdendencies for cognetive services.
+We allow you to measure Azure Search dependencies for cognitive services.
 
 Here is how you can report an Azure Search dependency:
 
@@ -311,7 +312,7 @@ logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessf
 
 ### Measuring custom dependencies
 
-Here is how you can areport a custom depenency:
+Here is how you can measure a custom dependency:
 
 ```csharp
 using Microsoft.Extensions.Logging;

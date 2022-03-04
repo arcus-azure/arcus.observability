@@ -42,7 +42,7 @@ ILogger logger = new LoggerConfiguration()
 Alternatively, you can explicitly specify if it should track telemetry or not based on the application configuration has to be tracked or not :
 
 ```csharp
-var trackDependencies = configuration["telemetry:depenencies:isEnabled"];
+var trackDependencies = configuration["telemetry:dependencies:isEnabled"];
 ILogger logger = new LoggerConfiguration()
     .WriteTo.AzureApplicationInsights("<key>")
     .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency, isTrackingEnabled: bool.Parse(trackDependencies)))

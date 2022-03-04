@@ -25,7 +25,7 @@ logger.LogEvent("Order Created", telemetryContext);
 
 By doing so, you'll be able to interact more efficient with your logs by filtering, searching, ... on it.
 
-We support this for all [telemetry types that you can write](/features/writing-different-telemetry-types).
+We support this for all [telemetry types that you can write](./writing-different-telemetry-types.md).
 
 ### Seeing the power in action
 

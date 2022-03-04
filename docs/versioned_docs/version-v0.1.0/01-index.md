@@ -19,13 +19,13 @@ For more granular packages we recommend reading the documentation.
 
 # Features
 
-- [Writing different telemetry types](/features/writing-different-telemetry-types) - Go beyond logs with our `ILogger` extensions for Dependencies, Events, Requests & Metrics.
-- [Correlation](/features/correlation) - A common set of correlation levels.
+- [Writing different telemetry types](./02-Features/writing-different-telemetry-types.md) - Go beyond logs with our `ILogger` extensions for Dependencies, Events, Requests & Metrics.
+- [Correlation](./02-Features/correlation.md) - A common set of correlation levels.
 - Telemetry
-    - [Enrichment](/features/telemetry-enrichment) - A set of enrichers to improve telemetry information.
-    - [Filters](/features/telemetry-filter) - A set of filters to control telemetry flow with.
+    - [Enrichment](./02-Features/telemetry-enrichment.md) - A set of enrichers to improve telemetry information.
+    - [Filters](./02-Features/telemetry-filter.md) - A set of filters to control telemetry flow with.
 - Sinks
-    - [Azure Application Insights](/features/sinks/azure-application-insights) - Flow Traces, Dependencies, Events, Requests & Metrics information to Azure Application Insights
+    - [Azure Application Insights](./02-Features/sinks/azure-application-insights.md) - Flow Traces, Dependencies, Events, Requests & Metrics information to Azure Application Insights
 
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.

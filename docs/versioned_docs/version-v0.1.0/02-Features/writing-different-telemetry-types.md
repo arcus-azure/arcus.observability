@@ -9,12 +9,19 @@ Logs are a great way to gain insights, but sometimes they are not the best appro
 
 We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
 
-- [Dependencies](#dependencies)
-- [Events](#events)
-- [Metrics](#metrics)
-- [Requests](#requests)
+- [Write different telemetry types](#write-different-telemetry-types)
+  - [Installation](#installation)
+  - [Dependencies](#dependencies)
+    - [Measuring Azure Service Bus dependencies](#measuring-azure-service-bus-dependencies)
+    - [Measuring HTTP dependencies](#measuring-http-dependencies)
+    - [Measuring SQL dependencies](#measuring-sql-dependencies)
+    - [Measuring custom dependencies](#measuring-custom-dependencies)
+  - [Events](#events)
+    - [Security Events](#security-events)
+  - [Metrics](#metrics)
+  - [Requests](#requests)
 
-For most optimal output, we recommend using our [Azure Application Insights sink](/features/sinks/azure-application-insights).
+For most optimal output, we recommend using our [Azure Application Insights sink](./sinks/azure-application-insights.md).
 
 ## Installation
 
@@ -27,13 +34,6 @@ PM > Install-Package Arcus.Observability.Telemetry.Core -Version 0.1.0
 ## Dependencies
 
 Dependencies allow you to track how your external dependencies are doing to give you insights on performance and error rate.
-
-We provide support for the following dependencies:
-
-- [Azure Service Bus](#measuring-azure-service-bus-dependencies)
-- [Custom](#measuring-custom-dependencies)
-- [HTTP](#measuring-http-dependencies)
-- [SQL](#measuring-sql-dependencies)
 
 ### Measuring Azure Service Bus dependencies
 
@@ -190,7 +190,7 @@ using (var measurement = DependencyMeasurement.Start("get-products"))
 
 ### Measuring custom dependencies
 
-Here is how you can areport a custom depenency:
+Here is how you can measure a custom dependency:
 
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -277,7 +277,7 @@ var telemetryContext = new Dictionary<string, object>
     {"OrderId", "OrderId was not in correct format"}
 };
 
-loger.LogSecurityEvent("Invalid Order", telemetryContext);
+logger.LogSecurityEvent("Invalid Order", telemetryContext);
 // Output: "Events Invalid Order (Context: [EventType, Security], [OrderId, OrderId was not in correct format])"
 ```
 
