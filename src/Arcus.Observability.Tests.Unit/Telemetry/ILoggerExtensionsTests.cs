@@ -1183,6 +1183,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(dependencyId, dependency.DependencyId);
             Assert.Equal("Azure Search", dependency.DependencyType);
             Assert.Equal(searchServiceName, dependency.TargetName);
         }
@@ -1315,6 +1316,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(measurement.StartTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(measurement.Elapsed, dependency.Duration);
+            Assert.Equal(dependencyId, dependency.DependencyId);
             Assert.Equal("Azure Search", dependency.DependencyType);
             Assert.Equal(searchServiceName, dependency.TargetName);
         }
