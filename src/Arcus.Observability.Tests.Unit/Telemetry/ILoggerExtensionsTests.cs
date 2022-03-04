@@ -1331,7 +1331,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, entityType));
         }
 
-
         [Fact]
         public void LogServiceBusDependencyWithDependencyId_WithNegativeDuration_Fails()
         {
