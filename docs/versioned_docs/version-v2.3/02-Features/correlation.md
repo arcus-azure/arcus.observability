@@ -24,7 +24,7 @@ PM > Install-Package Arcus.Observability.Correlation --version 2.3.0
 The `Arcus.Observability.Correlation` library provides a way to get access to correlation information across your application.
 What it **DOES NOT** provide is how this correlation information is initially set.
 
-It uses the the Microsoft dependency injection mechanism to register an `ICorrelationInfoAccessor` and `ICorrelationInfoAccessor<>` implementation that is available.
+It uses the Microsoft dependency injection mechanism to register an `ICorrelationInfoAccessor` and `ICorrelationInfoAccessor<>` implementation that is available.
 
 **Example**
 
