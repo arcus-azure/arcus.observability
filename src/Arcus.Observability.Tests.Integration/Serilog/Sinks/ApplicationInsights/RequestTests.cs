@@ -37,10 +37,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
+                logger.LogRequest(request, response, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -79,10 +80,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+                logger.LogRequest(request, response, operationName, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -121,10 +123,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
+                logger.LogRequest(request, response, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -163,10 +166,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, (int) statusCode, operationName, duration, telemetryContext);
+                logger.LogRequest(request, (int) statusCode, operationName, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -204,10 +208,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -247,10 +252,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 var response = new HttpResponseMessage(statusCode);
 
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+                logger.LogRequest(request, response, operationName, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -287,10 +293,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, duration, startTime, telemetryContext);
             }
 
             // Assert
@@ -329,10 +336,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, operationName, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, operationName, duration, startTime, telemetryContext);
             }
 
             // Assert

@@ -80,16 +80,37 @@ namespace Arcus.Observability.Tests.Unit
                 throw new InvalidOperationException(
                     "Cannot parse the written message as a telemetry request because no log message was written to this test logger");
             }
-            const string pattern = @"Azure Service Bus from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, \w+\])(; \[[\w\-]+, [\w\.]+\])*))\}\)$";
-            Match match = Regex.Match(logger.WrittenMessage, pattern);
 
-            string operationName = match.GetGroupValue("operationname");
-            TimeSpan duration = match.GetGroupValueAsTimeSpan("duration");
-            DateTimeOffset startTime = match.GetGroupValueAsDateTimeOffset("timestamp");
-            bool isSuccessful = match.GetGroupValueAsBool("issuccessful");
-            IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
+            if (logger.WrittenMessage.StartsWith("Azure Service Bus"))
+            {
+                const string pattern = @"Azure Service Bus from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, \w+\])(; \[[\w\-]+, [\w\.]+\])*))\}\)$";
+                Match match = Regex.Match(logger.WrittenMessage, pattern);
 
-            return RequestLogEntry.CreateForServiceBus(operationName, isSuccessful, duration, startTime, context);
+                string operationName = match.GetGroupValue("operationname");
+                TimeSpan duration = match.GetGroupValueAsTimeSpan("duration");
+                DateTimeOffset startTime = match.GetGroupValueAsDateTimeOffset("timestamp");
+                bool isSuccessful = match.GetGroupValueAsBool("issuccessful");
+                IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
+
+                return RequestLogEntry.CreateForServiceBus(operationName, isSuccessful, duration, startTime, context);
+            }
+            else
+            {
+                const string pattern = @"(?<method>(POST|GET|HEAD|PUT|DELETE)) (?<scheme>\w+):\/\/(?<host>\w+)\/(?<uri>\/\w+) from (?<operation>[\w\s\/]+) completed with (?<statuscode>[0-9]+) in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<date>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(Context: \{(?<context>((\[[\w\-]+, \w+\])(; \[[\w\-]+, [\w\.]+\])*))\}\)$";
+                Match match = Regex.Match(logger.WrittenMessage, pattern);
+
+                string method = match.GetGroupValue("method");
+                string scheme = match.GetGroupValue("scheme");
+                string host = match.GetGroupValue("host");
+                string uri = match.GetGroupValue("uri");
+                string operationName = match.GetGroupValue("operation");
+                TimeSpan duration = match.GetGroupValueAsTimeSpan("duration");
+                DateTimeOffset startTime = match.GetGroupValueAsDateTimeOffset("date");
+                int statusCode = match.GetGroupValueAsNullableInt("statuscode").GetValueOrDefault();
+                IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
+
+                return RequestLogEntry.CreateForHttpRequest(method, scheme, host, uri, operationName, statusCode, duration, startTime, context);
+            }
         }
 
         /// <summary>

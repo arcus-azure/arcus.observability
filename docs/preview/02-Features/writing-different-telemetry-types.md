@@ -1,4 +1,4 @@
----
+﻿---
 title: "Write different telemetry types"
 layout: default
 ---
@@ -419,7 +419,7 @@ using (var measurement = DurationMeasurement.Start())
     // Process message
 
     // Track request
-    logger.LogRequest(request, response, measurement.Elapsed, telemetryContext);
+    logger.LogRequest(request, response, measurement, telemetryContext);
 }
 ```
 
@@ -505,7 +505,7 @@ using Microsoft.Extensions.Logging;
 bool isSuccessful = false;
 
 // Start measuring.
-using (var measurement = RequestMeasurement.Start())
+using (var measurement = DurationMeasurement.Start())
 {
     try
     {
@@ -575,13 +575,15 @@ if (httpContext.Request?.Headers?.ContainsKey("X-Tenant") == true)
     tenantName = httpContext.Request.Headers["X-Tenant"];
 }
 
-var stopWatch = Stopwatch.StartNew();
+// Start tracking request.
+using (var measurement = DurationMeasurement.Start())
+{
+    // Perform action that creates a response, in this case call next middleware in the chain.
+    await _next(httpContext);
 
-// Perform action that creates a response, in this case call next middleware in the chain.
-await _next(httpContext);
-
-logger.LogRequest(httpContext.Request, httpContext.Response, stopWatch.Elapsed);
-// Output: {"RequestMethod": "GET", "RequestHost": "http://localhost:5000/", "RequestUri": "http://localhost:5000/weatherforecast", "ResponseStatusCode": 200, "RequestDuration": "00:00:00.0191554", "RequestTime": "03/23/2020 10:12:55 +00:00", "Context": {}}
+    logger.LogRequest(httpContext.Request, httpContext.Response, measurement);
+    // Output: {"RequestMethod": "GET", "RequestHost": "http://localhost:5000/", "RequestUri": "http://localhost:5000/weatherforecast", "ResponseStatusCode": 200, "RequestDuration": "00:00:00.0191554", "RequestTime": "03/23/2020 10:12:55 +00:00", "Context": {}}
+}
 ```
 
-
+> 💡 Note that [Arcus Web API request tracking middleware](https://webapi.arcus-azure.net/features/logging#logging-incoming-requests) can already do this for you in a ASP.NET Core application
