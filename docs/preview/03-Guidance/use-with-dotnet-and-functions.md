@@ -14,8 +14,6 @@ Some aspects we would like to highlight are:
 - Make sure to call [`UseSerilog`](https://www.nuget.org/packages/Serilog.AspNetCore) when creating a `IHostBuilder`
 - Remove default for logging including its configuration in `appsettings.json` *(if applicable)*
 
-If you cannot use `UseSerilog`, you can still configure it by using `AddSerilog` as a logging provider; but we recommend removing all other providers with `loggingBuilder.ClearProviders()` so that they don't interfere.
-
 ## Setting up Serilog with Azure Functions
 
 Using Serilog with Azure Functions requires some guidance and we've made it a bit easier to use.
