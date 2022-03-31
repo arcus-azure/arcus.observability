@@ -37,10 +37,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
+                logger.LogRequest(request, response, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -48,14 +49,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && Guid.TryParse(result.Request.Id, out Guid _)
-                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                        Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
+                        Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                     });
                 });
             }
@@ -79,10 +80,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+                logger.LogRequest(request, response, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -90,14 +92,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && Guid.TryParse(result.Request.Id, out Guid _)
-                               && result.Operation.Name == $"{httpMethod} {operationName}";
+                        Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
+                        Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
             }
@@ -121,10 +123,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 
                 HttpResponse response = CreateStubResponse(statusCode);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, telemetryContext);
+                logger.LogRequest(request, response, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -132,14 +135,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && result.Request.Id == requestId
-                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                        Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
+                        Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                     });
                 });
             }
@@ -163,10 +166,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, (int) statusCode, operationName, duration, telemetryContext);
+                logger.LogRequest(request, (int) statusCode, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -174,14 +178,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == $"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}"
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && result.Request.Id == requestId
-                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                        Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
+                        Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                        Assert.Equal(requestId, result.Request.Id);
+                        Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
             }
@@ -204,10 +208,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -215,14 +220,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == requestUri.ToString()
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && result.Request.Id == requestId
-                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                        Assert.Equal(requestUri.ToString(), result.Request.Url);
+                        Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                        Assert.Equal(requestId, result.Request.Id);
+                        Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                     });
                 });
             }
@@ -247,10 +252,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 var response = new HttpResponseMessage(statusCode);
 
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, telemetryContext);
+                logger.LogRequest(request, response, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -258,14 +264,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == requestUri.ToString()
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && Guid.TryParse(result.Request.Id, out Guid _)
-                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                        Assert.Equal(requestUri.ToString(), result.Request.Url);
+                        Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
             }
@@ -287,10 +293,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -298,14 +305,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == requestUri.ToString()
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && Guid.TryParse(result.Request.Id, out Guid _)
-                               && result.Operation.Name.StartsWith(httpMethod.Method);
+                        Assert.Equal(requestUri.ToString(), result.Request.Url);
+                        Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                     });
                 });
             }
@@ -329,10 +336,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, operationName, duration, telemetryContext);
+                logger.LogRequest(request, statusCode, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -340,14 +348,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Request.Url == requestUri.ToString()
-                               && result.Request.ResultCode == ((int) statusCode).ToString()
-                               && result.Request.Id == requestId
-                               && result.Operation.Name == $"{httpMethod.Method} {operationName}";
+                        Assert.Equal(requestUri.ToString(), result.Request.Url);
+                        Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                        Assert.Equal(requestId, result.Request.Id);
+                        Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
             }
