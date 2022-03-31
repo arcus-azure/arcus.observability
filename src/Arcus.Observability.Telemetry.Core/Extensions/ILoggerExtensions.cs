@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            LogRequest(logger, request, response, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, response, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="response"/> is <c>null</c>.
@@ -112,8 +112,8 @@ namespace Microsoft.Extensions.Logging
             this ILogger logger,
             HttpRequestMessage request,
             HttpResponseMessage response,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
-            LogRequest(logger, request, response.StatusCode, duration, startTime, context);
+            LogRequest(logger, request, response.StatusCode, startTime, duration, context);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            LogRequest(logger, request, response, operationName, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, response, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="response"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -224,8 +224,8 @@ namespace Microsoft.Extensions.Logging
             HttpRequestMessage request,
             HttpResponseMessage response,
             string operationName,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -233,7 +233,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
-            LogRequest(logger, request, response.StatusCode, operationName, duration, startTime, context);
+            LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, responseStatusCode, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -319,8 +319,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -336,8 +336,8 @@ namespace Microsoft.Extensions.Logging
             this ILogger logger,
             HttpRequestMessage request,
             HttpStatusCode responseStatusCode,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -346,7 +346,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, operationName: null, duration, startTime, context);
+            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, operationName, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, responseStatusCode, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -435,8 +435,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
         /// <param name="operationName">The name of the operation of the HTTP request.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -453,8 +453,8 @@ namespace Microsoft.Extensions.Logging
             HttpRequestMessage request,
             HttpStatusCode responseStatusCode,
             string operationName,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -471,8 +471,8 @@ namespace Microsoft.Extensions.Logging
                     request.RequestUri.AbsolutePath, 
                     operationName, 
                     (int) responseStatusCode, 
-                    duration, 
                     startTime, 
+                    duration,
                     context));
         }
 

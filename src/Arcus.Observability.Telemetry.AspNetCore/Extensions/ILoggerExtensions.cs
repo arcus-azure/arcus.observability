@@ -69,7 +69,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, response, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, response, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -90,8 +90,8 @@ namespace Microsoft.Extensions.Logging
             this ILogger logger,
             HttpRequest request,
             HttpResponse response,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -101,7 +101,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, response.StatusCode, operationName: null, duration, startTime, context);
+            LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, response, operationName, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, response, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -172,8 +172,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
         /// <param name="operationName">The name of the operation of the request.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or the <paramref name="response"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
@@ -182,8 +182,8 @@ namespace Microsoft.Extensions.Logging
             HttpRequest request,
             HttpResponse response,
             string operationName,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -193,7 +193,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, response.StatusCode, operationName, duration, startTime, context);
+            LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, responseStatusCode, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -265,8 +265,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -277,8 +277,8 @@ namespace Microsoft.Extensions.Logging
             this ILogger logger,
             HttpRequest request,
             int responseStatusCode,
-            TimeSpan duration,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -289,7 +289,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, operationName: null, duration, startTime, context);
+            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogRequest(logger, request, responseStatusCode, operationName, measurement.Elapsed, measurement.StartTime, context);
+            LogRequest(logger, request, responseStatusCode, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
         /// <summary>
@@ -365,8 +365,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
         /// <param name="operationName">The name of the operation of the HTTP request.</param>
-        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="startTime">The time when the HTTP request was received.</param>
+        /// <param name="duration">The duration of the HTTP request processing operation.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -374,12 +374,12 @@ namespace Microsoft.Extensions.Logging
         ///     or the <paramref name="duration"/> is a negative time range.
         /// </exception>
         public static void LogRequest(
-            this ILogger logger, 
-            HttpRequest request, 
-            int responseStatusCode, 
-            string operationName, 
-            TimeSpan duration, 
+            this ILogger logger,
+            HttpRequest request,
+            int responseStatusCode,
+            string operationName,
             DateTimeOffset startTime,
+            TimeSpan duration,
             Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -392,7 +392,7 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(MessageFormats.RequestFormat, 
                 RequestLogEntry.CreateForHttpRequest(
-                    request.Method, request.Scheme, request.Host.ToString(), request.Path, operationName, responseStatusCode, duration, startTime, context));
+                    request.Method, request.Scheme, request.Host.ToString(), request.Path, operationName, responseStatusCode, startTime, duration, context));
         }
     }
 }

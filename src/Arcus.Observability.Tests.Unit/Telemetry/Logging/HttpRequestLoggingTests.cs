@@ -126,7 +126,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(stubRequest, stubResponse, duration, startTime, context);
+            logger.LogRequest(stubRequest, stubResponse, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -154,7 +154,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, stubResponse, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response: stubResponse, startTime: startTime, duration: duration, context: context));
         }
 
         [Fact]
@@ -176,7 +176,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, response: null, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, response: null, startTime: startTime, duration: duration, context: context));
         }
 
         [Fact]
@@ -200,7 +200,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, stubResponse, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, stubResponse, startTime, duration, context));
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(stubRequest, stubResponse, operationName, duration, startTime, context);
+            logger.LogRequest(stubRequest, stubResponse, operationName, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -344,7 +344,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, stubResponse, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response: stubResponse, operationName: operationName, startTime: startTime, duration: duration, context: context));
         }
 
         [Fact]
@@ -367,7 +367,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, response: null, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, response: null, operationName: operationName, startTime: startTime, duration: duration, context: context));
         }
 
         [Fact]
@@ -392,7 +392,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, stubResponse, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, stubResponse, operationName, startTime, duration, context));
         }
 
         [Fact]
@@ -501,7 +501,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(stubRequest, statusCode, duration, startTime, context);
+            logger.LogRequest(stubRequest, statusCode, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -529,7 +529,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, startTime: startTime, duration: duration, context: context));
         }
 
         [Fact]
@@ -552,7 +552,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, startTime, duration, context));
         }
 
         [Theory]
@@ -577,7 +577,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, startTime, duration, context));
         }
 
         [Fact]
@@ -691,7 +691,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(stubRequest, statusCode, operationName, duration, startTime, context);
+            logger.LogRequest(stubRequest, statusCode, operationName, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -720,7 +720,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, operationName: operationName, startTime: startTime, duration: duration, context: context));
         }
 
         [Theory]
@@ -746,7 +746,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, operationName, startTime, duration, context));
         }
 
         [Fact]
@@ -770,7 +770,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, operationName, duration, startTime, context));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, operationName, startTime, duration, context));
         }
 
         [Fact]
@@ -875,7 +875,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(request, response, duration, startTime, context);
+            logger.LogRequest(request, response, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -900,7 +900,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response: response, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -917,7 +917,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response: null, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response: null, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -937,7 +937,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response, startTime, duration));
         }
 
         [Fact]
@@ -1047,7 +1047,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(request, response, operationName, duration, startTime, context);
+            logger.LogRequest(request, response, operationName, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -1073,7 +1073,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response, operationName, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, response: response, operationName: operationName, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -1091,7 +1091,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response: null, operationName, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response: null, operationName: operationName, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -1112,7 +1112,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response, operationName, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, response, operationName, startTime, duration));
         }
 
         [Fact]
@@ -1196,7 +1196,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(request, statusCode, duration, startTime, context);
+            logger.LogRequest(request, statusCode, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -1220,7 +1220,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -1239,7 +1239,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, startTime, duration));
         }
 
         [Fact]
@@ -1327,7 +1327,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogRequest(request, statusCode, operationName, duration, startTime, context);
+            logger.LogRequest(request, statusCode, operationName, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -1352,7 +1352,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, operationName, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, operationName: operationName, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -1372,7 +1372,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, operationName, duration, startTime));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, operationName, startTime, duration));
         }
 
         private static HttpResponse CreateStubResponse(int statusCode)

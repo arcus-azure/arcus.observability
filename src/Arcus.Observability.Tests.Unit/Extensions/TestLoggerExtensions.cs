@@ -109,7 +109,7 @@ namespace Arcus.Observability.Tests.Unit
                 int statusCode = match.GetGroupValueAsNullableInt("statuscode").GetValueOrDefault();
                 IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
 
-                return RequestLogEntry.CreateForHttpRequest(method, scheme, host, uri, operationName, statusCode, duration, startTime, context);
+                return RequestLogEntry.CreateForHttpRequest(method, scheme, host, uri, operationName, statusCode, startTime, duration, context);
             }
         }
 

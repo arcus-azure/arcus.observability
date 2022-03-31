@@ -41,7 +41,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, startTime, telemetryContext);
+                logger.LogRequest(request, response, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -84,7 +84,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, startTime, telemetryContext);
+                logger.LogRequest(request, response, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -127,7 +127,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, duration, startTime, telemetryContext);
+                logger.LogRequest(request, response, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -170,7 +170,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, (int) statusCode, operationName, duration, startTime, telemetryContext);
+                logger.LogRequest(request, (int) statusCode, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -212,7 +212,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, startTime, telemetryContext);
+                logger.LogRequest(request, statusCode, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -256,7 +256,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, response, operationName, duration, startTime, telemetryContext);
+                logger.LogRequest(request, response, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -297,7 +297,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, duration, startTime, telemetryContext);
+                logger.LogRequest(request, statusCode, startTime, duration, telemetryContext);
             }
 
             // Assert
@@ -340,7 +340,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogRequest(request, statusCode, operationName, duration, startTime, telemetryContext);
+                logger.LogRequest(request, statusCode, operationName, startTime, duration, telemetryContext);
             }
 
             // Assert
