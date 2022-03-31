@@ -178,7 +178,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
                     AssertX.Any(results.Value, result =>
                     {
@@ -208,7 +208,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
                 var request = new HttpRequestMessage(httpMethod, requestUri);
                 TimeSpan duration = BogusGenerator.Date.Timespan();
-                DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
@@ -220,11 +220,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
                     AssertX.Any(results.Value, result =>
                     {
-                        Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
+                        Assert.Equal(requestUri.ToString(), result.Request.Url);
                         Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
                         Assert.Equal(requestId, result.Request.Id);
                         Assert.StartsWith(httpMethod.Method, result.Operation.Name);

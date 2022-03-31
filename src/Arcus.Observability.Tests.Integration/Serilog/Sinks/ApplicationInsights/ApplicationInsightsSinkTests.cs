@@ -85,7 +85,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             await Policy.TimeoutAsync(timeout)
                         .WrapAsync(Policy.Handle<Exception>()
-                                         .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(3)))
+                                         .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }
 
