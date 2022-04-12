@@ -879,9 +879,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string dependencyType = _bogusGenerator.Name.FullName();
+            string dependencyType = _bogusGenerator.Random.Word();
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
-            string targetName = _bogusGenerator.Lorem.Word();
+            string targetName = _bogusGenerator.Random.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             string dependencyName = _bogusGenerator.Random.Word();
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
@@ -897,7 +897,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(dependencyData, dependency.DependencyData);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(targetName, dependency.DependencyName);
+            Assert.Equal(dependencyName, dependency.DependencyName);
             Assert.Equal(targetName, dependency.TargetName);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
@@ -1125,7 +1125,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string dependencyType = _bogusGenerator.Lorem.Word();
+            string dependencyType = _bogusGenerator.Random.Word();
             var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
             string targetName = _bogusGenerator.Lorem.Word();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
