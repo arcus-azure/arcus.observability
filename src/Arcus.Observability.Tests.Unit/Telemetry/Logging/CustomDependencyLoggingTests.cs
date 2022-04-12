@@ -663,7 +663,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
                 () => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: null, dependencyId));
         }
 
-
         [Fact]
         public void LogDependencyWithDependencyMeasurement_WithoutDependencyMeasurement_Fails()
         {
