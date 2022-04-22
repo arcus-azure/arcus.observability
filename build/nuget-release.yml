@@ -119,8 +119,18 @@ stages:
             parameters:
               repositoryName: '$(Repository)'
               releaseNotes: |
-                Install new version via [NuGet](https://www.nuget.org/packages/$(Project).Correlation/$(Build.BuildNumber))
+                Install the Arcus.Observability packages that you need via NuGet, for instance [$(Project).Telemetry.Serilog.Sinks.ApplicationInsights](https://www.nuget.org/packages/$(Project).Telemetry.Serilog.Sinks.ApplicationInsights/$(Build.BuildNumber)):
                 ```shell
-                PM > Install-Package $(Project).Correlation --Version $(Build.BuildNumber)
+                PM > Install-Package $(Project).Telemetry.Serilog.Sinks.ApplicationInsights --Version $(Build.BuildNumber)
                 ```
+                For a complete list of all Arcus.Security packages see the [documentation](https://observability.arcus-azure.net/).
+                ## What's new?
+                ### Features
+                * Provide the capability to do something (#123)
+                ### Fixes / Changes
+                None.
+                ### Breaking Changes
+                None.
+                ### Removal
+                None.
           - template: nuget/publish-official-package.yml@templates
