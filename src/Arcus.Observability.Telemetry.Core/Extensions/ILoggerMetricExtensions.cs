@@ -51,7 +51,5 @@ namespace Microsoft.Extensions.Logging
 
             logger.LogWarning(MessageFormats.MetricFormat, new MetricLogEntry(name, value, timestamp, context));
         }
-
-       
     }
 }
