@@ -123,7 +123,7 @@ stages:
                 ```shell
                 PM > Install-Package $(Project).Telemetry.Serilog.Sinks.ApplicationInsights --Version $(Build.BuildNumber)
                 ```
-                For a complete list of all Arcus.Security packages see the [documentation](https://observability.arcus-azure.net/).
+                For a complete list of all Arcus.Observability packages see the [documentation](https://observability.arcus-azure.net/).
                 ## What's new?
                 ### Features
                 * Provide the capability to do something (#123)
