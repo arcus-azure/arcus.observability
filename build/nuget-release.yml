@@ -119,11 +119,11 @@ stages:
             parameters:
               repositoryName: '$(Repository)'
               releaseNotes: |
-                Install the Arcus.Observability packages that you need via NuGet, for instance [$(Project).Telemetry.Serilog.Sinks.ApplicationInsights](https://www.nuget.org/packages/$(Project).Telemetry.Serilog.Sinks.ApplicationInsights/$(Build.BuildNumber)):
+                Install the $(Project) packages that you need via NuGet, for instance [$(Project).Telemetry.Serilog.Sinks.ApplicationInsights](https://www.nuget.org/packages/$(Project).Telemetry.Serilog.Sinks.ApplicationInsights/$(Build.BuildNumber)):
                 ```shell
                 PM > Install-Package $(Project).Telemetry.Serilog.Sinks.ApplicationInsights --Version $(Build.BuildNumber)
                 ```
-                For a complete list of all Arcus.Observability packages see the [documentation](https://observability.arcus-azure.net/).
+                For a complete list of all $(Project) packages see the [documentation](https://observability.arcus-azure.net/).
                 ## What's new?
                 ### Features
                 * Provide the capability to do something (#123)
