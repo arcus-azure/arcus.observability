@@ -3,7 +3,6 @@ using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
 using Microsoft.Extensions.Logging;
-using Microsoft.SqlServer.Server;
 using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
@@ -268,7 +267,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement: (DurationMeasurement)null));
         }
-
 
         [Fact]
         public void LogBlobStorageDependencyWithDurationMeasurementWithDependencyId_WithoutMeasurement_Fails()
