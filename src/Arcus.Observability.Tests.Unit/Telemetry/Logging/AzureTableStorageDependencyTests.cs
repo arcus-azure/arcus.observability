@@ -39,6 +39,34 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
+        public void LogTableStorageDependencyWithDependencyId_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Lorem.Word();
+            string accountName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, dependencyId);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.NotNull(dependency);
+            Assert.Equal("Azure table", dependency.DependencyType);
+            Assert.StartsWith(accountName, dependency.DependencyName);
+            Assert.EndsWith(tableName, dependency.DependencyName);
+            Assert.Equal(tableName, dependency.DependencyData);
+            Assert.Equal(accountName, dependency.TargetName);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(dependencyId, dependency.DependencyId);
+        }
+
+        [Fact]
         public void LogTableStorageDependency_WithNegativeDuration_Fails()
         {
             // Arrange
@@ -51,6 +79,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act
             Assert.ThrowsAny<ArgumentException>(() => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
+        public void LogTableStorageDependencyWithDependencyId_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
+            TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -109,6 +153,37 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
         }
 
+        [Fact]
+        public void LogTableStorageDependencyWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Lorem.Word();
+            string accountName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement, dependencyId);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.NotNull(dependency);
+            Assert.Equal("Azure table", dependency.DependencyType);
+            Assert.StartsWith(accountName, dependency.DependencyName);
+            Assert.EndsWith(tableName, dependency.DependencyName);
+            Assert.Equal(tableName, dependency.DependencyData);
+            Assert.Equal(accountName, dependency.TargetName);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(dependencyId, dependency.DependencyId);
+        }
+
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogTableStorageDependencyWithDurationMeasurement_WithoutAccountName_Fails(string accountName)
@@ -128,6 +203,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogTableStorageDependencyWithDurationMeasurementDependencyId_WithoutAccountName_Fails(string accountName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogTableStorageDependencyWithDurationMeasurement_WithoutTableName_Fails(string tableName)
         {
             // Arrange
@@ -143,6 +236,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
                 () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement));
         }
 
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogTableStorageDependencyWithDurationMeasurementWithDependencyId_WithoutTableName_Fails(string tableName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement, dependencyId));
+        }
+
         [Fact]
         public void LogTableStorageDependencyWithDurationMeasurement_WithoutMeasurement_Fails()
         {
@@ -155,6 +266,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement: (DurationMeasurement)null));
+        }
+
+        [Fact]
+        public void LogTableStorageDependencyWithDurationMeasurementWithDependencyId_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Commerce.ProductName();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement: null, dependencyId));
         }
     }
 }

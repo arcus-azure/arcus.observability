@@ -72,6 +72,35 @@ namespace Microsoft.Extensions.Logging
         /// Logs an Azure Table Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="accountName">The account of the storage resource.</param>
+        /// <param name="tableName">The name of the Table Storage resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the Table Storage dependency.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        public static void LogTableStorageDependency(
+            this ILogger logger,
+            string accountName,
+            string tableName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name for the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Table storage when tracking an Azure Table storage dependency");
+
+            LogTableStorageDependency(logger, accountName, tableName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">Account of the storage resource</param>
         /// <param name="tableName">Name of the Table Storage resource</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
@@ -97,6 +126,40 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
+            LogTableStorageDependency(logger, accountName, tableName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Table Storage Dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="accountName">Account of the storage resource</param>
+        /// <param name="tableName">Name of the Table Storage resource</param>
+        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
+        /// <param name="startTime">Point in time when the interaction with the dependency was started</param>
+        /// <param name="duration">Duration of the operation</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>nul</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogTableStorageDependency(
+            this ILogger logger,
+            string accountName,
+            string tableName,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name for the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Table storage operation");
+
+            context = context ?? new Dictionary<string, object>();
+
             string dependencyName = $"{accountName}/{tableName}";
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
@@ -106,6 +169,7 @@ namespace Microsoft.Extensions.Logging
                 targetName: accountName,
                 duration: duration,
                 startTime: startTime,
+                dependencyId: dependencyId,
                 resultCode: null,
                 isSuccessful: isSuccessful,
                 context: context));
