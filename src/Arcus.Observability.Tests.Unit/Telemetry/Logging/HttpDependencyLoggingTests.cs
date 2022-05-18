@@ -222,7 +222,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Contains("Http " + dependencyName, logMessage);
         }
 
-
         [Fact]
         public void LogHttpDependencyWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
         {
