@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Logging
     /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public static class ILoggerExtensions
+    public static class ILoggerRequestExtensions
     {
         /// <summary>
         ///     Logs an HTTP request
