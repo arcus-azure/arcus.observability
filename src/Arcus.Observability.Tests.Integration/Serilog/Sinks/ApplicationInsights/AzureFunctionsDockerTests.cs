@@ -47,7 +47,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                         AssertX.Any(results.Value, result =>
                         {
                             Assert.Contains("order", result.Request.Url);
-                            Assert.Equal(200.ToString(), result.Request.ResultCode);
+                            Assert.Equal("200", result.Request.ResultCode);
                             Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
                             Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
                         });
