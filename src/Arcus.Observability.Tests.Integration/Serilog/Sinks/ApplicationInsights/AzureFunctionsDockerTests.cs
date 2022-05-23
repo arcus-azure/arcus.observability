@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,8 +30,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             int httpPort = Configuration.GetValue<int>("AzureFunctions:HttpPort");
-            using (HttpResponseMessage response = await HttpClient.GetAsync($"http://localhost:{httpPort}/api/order"))
+            string? requestUri = $"http://localhost:{httpPort}/api/order";
+            Logger.LogInformation("GET -> {URI}", requestUri);
+
+            using (HttpResponseMessage response = await HttpClient.GetAsync(requestUri))
             {
+                Logger.LogInformation("{StatusCode} <- {URI}", response.StatusCode, requestUri);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
                 using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
