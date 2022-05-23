@@ -134,15 +134,10 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '$(DotNet.Sdk.PreviousVersion)'
-          - template: templates/run-docker-project.yml
+          - template: templates/run-docker-integration-tests.yml
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
               httpPort: '$(AzureFunctions.HttpPort)'
-          - template: test/run-integration-tests.yml@templates
-            parameters:
-              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-              projectName: '$(Project).Tests.Integration'
-              category: 'Docker'
 
   - stage: ReleaseToMyget
     displayName: 'Release to MyGet'

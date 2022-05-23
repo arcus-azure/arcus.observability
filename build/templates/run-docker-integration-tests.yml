@@ -38,6 +38,7 @@ steps:
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
       projectName: '$(Project).Tests.Integration'
+      category: 'Docker'
   - task: Bash@3
     inputs:
       targetType: 'inline'

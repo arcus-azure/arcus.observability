@@ -125,11 +125,6 @@ stages:
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
               httpPort: '$(AzureFunctions.HttpPort)'
-          - template: test/run-integration-tests.yml@templates
-            parameters:
-              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-              projectName: '$(Project).Tests.Integration'
-              category: 'Docker'
 
   - stage: Release
     displayName: 'Release to NuGet.org'
