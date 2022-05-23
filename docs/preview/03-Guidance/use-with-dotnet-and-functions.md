@@ -15,7 +15,7 @@ Some aspects we would like to highlight are:
 - Remove the default Microsoft's `ApplicationInsightsLoggerProvider` via the `RemoveMicrosoftApplicationInsightsLoggerProvider` extension
 - Remove default for logging including its configuration in `appsettings.json` *(if applicable)*
 
-> We need to call `RemoveMicrosoftApplicationInsightsLoggerProvider` to remove Microsoft's `ApplicationInsightsLoggerProvider` because it would conflict with our own Serilog Application Insights sink. We can't garantee stable telemetry if Microsoft's logger provider is registered as this provider manipulates the telemetry before it get's send out to Application Insights. Removoving it ensure that Arcus is in full control of the send-out telemetry.
+> We need to call `RemoveMicrosoftApplicationInsightsLoggerProvider` to remove Microsoft's `ApplicationInsightsLoggerProvider` because it would conflict with our own Serilog Application Insights sink. We can't guarantee stable telemetry if Microsoft's logger provider is registered as this provider manipulates the telemetry before it get's send out to Application Insights. Removing it ensure that Arcus is in full control of the send-out telemetry.
 
 ## Setting up Serilog with Azure Functions
 
