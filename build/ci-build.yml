@@ -31,6 +31,7 @@ variables:
   - group: 'Arcus - GitHub Package Registry'
   - group: 'Build Configuration'
   - template: ./variables/build.yml
+  - template: ./variables/test.yml
 
 stages:
   - stage: Build
@@ -113,11 +114,42 @@ stages:
               projectName: '$(Project).Tests.Integration'
               category: 'Integration'
 
+  - stage: DockerTests
+    displayName: Docker Tests
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: DockerTests
+        displayName: 'Run Docker tests'
+        pool:
+          vmImage: '$(Vm.Image)'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
+          - task: UseDotNet@2
+            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+            inputs:
+              packageType: 'sdk'
+              version: '$(DotNet.Sdk.PreviousVersion)'
+          - template: templates/run-docker-project.yml
+            parameters:
+              dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
+              httpPort: '$(AzureFunctions.HttpPort)'
+          - template: test/run-integration-tests.yml@templates
+            parameters:
+              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+              projectName: '$(Project).Tests.Integration'
+              category: 'Docker'
+
   - stage: ReleaseToMyget
     displayName: 'Release to MyGet'
     dependsOn:
       - UnitTests
       - IntegrationTests
+      - DockerTests
     condition: succeeded()
     jobs:
       - job: PushToMyGet
