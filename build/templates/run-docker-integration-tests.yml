@@ -34,6 +34,8 @@ steps:
       imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
       containerName: '${{ parameters.dockerProjectName }}'
       ports: '${{ parameters.httpPort }}:80'
+      envVars: |
+        APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
