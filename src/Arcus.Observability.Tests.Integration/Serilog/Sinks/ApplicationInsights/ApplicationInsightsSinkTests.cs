@@ -72,8 +72,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// Creates an <see cref="ILoggerFactory"/> instance that will create <see cref="Microsoft.Extensions.Logging.ILogger"/> instances that writes to Azure Application Insights.
         /// </summary>
         /// <param name="configuration">The Serilog configuration to setup the Microsoft logging.</param>
+<<<<<<< Updated upstream
         protected ILoggerFactory CreateLoggerFactory(
             LoggerConfiguration configuration)
+=======
+        protected ILoggerFactory CreateLoggerFactory(LoggerConfiguration configuration)
+>>>>>>> Stashed changes
         {
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
