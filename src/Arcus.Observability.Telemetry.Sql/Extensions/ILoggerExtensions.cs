@@ -69,7 +69,61 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Logs a SQL dependency
+        /// Logs a SQL dependency.
+        /// </summary>	
+        /// <param name="logger">The logger instance to track the SQL dependency.</param>
+        /// <param name="connectionString">The SQL connection string.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the SQL dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string connectionString,
+            string sqlCommand,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
+            Guard.NotNull(measurement, nameof(measurement));
+
+            LogSqlDependency(logger, connectionString, sqlCommand, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the SQL dependency.</param>
+        /// <param name="connectionString">The SQL connection string.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the SQL dependency.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string connectionString,
+            string sqlCommand,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
+            Guard.NotNull(measurement, nameof(measurement));
+
+            LogSqlDependency(logger, connectionString, sqlCommand, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
         /// </summary>
         /// <param name="logger">The logger to track the SQL dependency.</param>
         /// <param name="connectionString">The SQL connection string.</param>
@@ -97,6 +151,64 @@ namespace Microsoft.Extensions.Logging
 
             var connection = new SqlConnectionStringBuilder(connectionString);
             logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the SQL dependency.</param>
+        /// <param name="connectionString">The SQL connection string.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="startTime">The point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">The duration of the operation</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string connectionString,
+            string sqlCommand,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
+
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the SQL dependency.</param>
+        /// <param name="connectionString">The SQL connection string.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="startTime">The point in time when the interaction with the HTTP dependency was started</param>
+        /// <param name="duration">The duration of the operation</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string connectionString,
+            string sqlCommand,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
+
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
         }
     }
 }
