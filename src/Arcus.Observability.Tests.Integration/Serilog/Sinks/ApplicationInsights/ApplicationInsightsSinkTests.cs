@@ -22,10 +22,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     {
         protected const string OnlyLastHourFilter = "timestamp gt now() sub duration'PT1H'";
         protected const string PastHalfHourTimeSpan = "PT30M";
-        
+
         private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
-        private readonly string _instrumentationKey;
 
         protected readonly Faker BogusGenerator = new Faker();
 
@@ -36,10 +35,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             _outputWriter = outputWriter;
             _memoryLogSink = new InMemoryLogSink();
-            _instrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
-
+            
+            InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
         }
+
+        /// <summary>
+        /// Gets the instrumentation key to connect to the Azure Application Insights instance.
+        /// </summary>
+        protected string InstrumentationKey { get; }
 
         /// <summary>
         /// Gets the ID of the application that has access to the Azure Application Insights resource.
@@ -57,10 +61,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             var configuration = new LoggerConfiguration()
                 .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                .WriteTo.AzureApplicationInsights(_instrumentationKey, configureOptions)
+                .WriteTo.AzureApplicationInsights(InstrumentationKey, configureOptions)
                 .WriteTo.Sink(_memoryLogSink);
 
             configureLogging?.Invoke(configuration);
+            return CreateLoggerFactory(configuration);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ILoggerFactory"/> instance that will create <see cref="Microsoft.Extensions.Logging.ILogger"/> instances that writes to Azure Application Insights.
+        /// </summary>
+        /// <param name="configuration">The Serilog configuration to setup the Microsoft logging.</param>
+        protected ILoggerFactory CreateLoggerFactory(
+            LoggerConfiguration configuration)
+        {
             return LoggerFactory.Create(builder => builder.AddSerilog(configuration.CreateLogger(), dispose: true));
         }
 
