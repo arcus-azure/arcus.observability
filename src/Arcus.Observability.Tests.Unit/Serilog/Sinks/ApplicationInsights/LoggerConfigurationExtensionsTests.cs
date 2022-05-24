@@ -151,6 +151,5 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
             Assert.Throws<ArgumentException>(
                 () => config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, LogEventLevel.Debug, options => { }));
         }
-
     }
 }
