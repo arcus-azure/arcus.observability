@@ -327,7 +327,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
                 () => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, measurement));
         }
 
-
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogSqlDependencyWithSqlCommandWithDurationMeasurement_WithoutDatabaseName_Fails(string databaseName)
