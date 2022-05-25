@@ -184,7 +184,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
         }
 
-
         [Fact]
         public void LogIotHubDependencyWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
         {
