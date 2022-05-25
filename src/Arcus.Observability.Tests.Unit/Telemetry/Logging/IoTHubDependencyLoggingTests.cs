@@ -432,10 +432,10 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubName = BogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
-            string deviceId = BogusGenerator.Internet.Ip();
+            string iotHubName = BogusGenerator.Lorem.Word();
+            string deviceId = BogusGenerator.Lorem.Word();
             string sharedAccessKey = BogusGenerator.Random.Hash();
-            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
+            var iotHubConnectionString = $"HostName={iotHubName};DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = BogusGenerator.Random.Bool();
             DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
             TimeSpan duration = BogusGenerator.Date.Timespan();
