@@ -483,13 +483,13 @@ loger.LogSecurityEvent("Invalid Order");
 
 Metrics allow you to report custom metrics which allow you to give insights on application-specific metrics.
 
-Here is how you can report an `Invoice Received` metric:
+Here is how you can report an `Invoices Received` metric:
 
 ```csharp
 using Microsoft.Extensions.Logging;
 
-logger.LogMetric("Invoice Received", 133.37, telemetryContext);
-// Output: {"MetricName": "Invoice Received", "MetricValue": 133.37, "Timestamp": "03/23/2020 09:32:02 +00:00", "Context: {}}
+logger.LogMetric("Invoices Received", 133);
+// Output: {"MetricName": "Invoices Received", "MetricValue": 133, "Timestamp": "03/23/2020 09:32:02 +00:00", "Context: {[TelemetryType, Metric]}}
 ```
 
 ## Requests
