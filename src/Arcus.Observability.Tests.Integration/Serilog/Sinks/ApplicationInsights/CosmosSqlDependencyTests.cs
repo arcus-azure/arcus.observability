@@ -29,20 +29,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string container = BogusGenerator.Commerce.ProductName();
             string database = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
-            string dependencyData = $"{database}/{container}";
             string dependencyName = $"{database}/{container}";
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
                 bool isSuccessful = BogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = DateTimeOffset.Now; // BogusGenerator.Date.RecentOffset(days: 0);
+                DateTimeOffset startTime = DateTimeOffset.Now;
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, dependencyId, telemetryContext);
             }
 
             // Assert
@@ -51,34 +51,41 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsDependencyResult> results =
-                        await client.Events.GetDependencyEventsAsync(ApplicationId,
-                            timespan: "PT15M");
+                        await client.Events.GetDependencyEventsAsync(ApplicationId, PastHalfHourTimeSpan);
+                    
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Dependency.Type == dependencyType
-                               && result.Dependency.Target == accountName
-                               && result.Dependency.Data == dependencyData
-                               && result.Cloud.RoleName == componentName
-                               && result.Dependency.Name == dependencyName;
+                        Assert.Equal(dependencyType, result.Dependency.Type);
+                        Assert.Equal(accountName, result.Dependency.Target);
+                        Assert.Equal(dependencyName, result.Dependency.Data);
+                        Assert.Equal(componentName, result.Cloud.RoleName);
+                        Assert.Equal(dependencyName, result.Dependency.Name);
                     });
                 });
             }
 
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+            AssertSerilogLogProperties(dependencyType, dependencyName, accountName);
+        }
+
+        private void AssertSerilogLogProperties(string dependencyType, string dependencyName, string accountName)
+        {
+            IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
+            AssertX.Any(logEvents, logEvent =>
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
-                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                LogEventProperty actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
                 Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
 
-                var actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
-                Assert.Equal(dependencyData, actualDependencyData.Value.ToDecentString());
+                LogEventProperty actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
+                Assert.Equal(dependencyName, actualDependencyData.Value.ToDecentString());
 
-                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                LogEventProperty actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(accountName, actualTargetName.Value.ToDecentString());
 
-                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                LogEventProperty actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
                 Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
