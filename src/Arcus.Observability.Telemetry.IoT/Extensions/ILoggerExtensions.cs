@@ -54,7 +54,36 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogIotHubDependency(logger, iotHubConnectionString, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
+            LogIotHubDependency(logger, iotHubConnectionString, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId: null, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Iot Hub Dependency.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the IoT Hub dependency.</param>
+        /// <param name="iotHubConnectionString">The connection string to interact with an IoT Hub resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
+        /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        public static void LogIotHubDependency(
+            this ILogger logger,
+            string iotHubConnectionString,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track the IoT Hub dependency");
+            Guard.NotNullOrWhitespace(iotHubConnectionString, nameof(iotHubConnectionString), "Requires an IoT Hub connection string to retrieve the IoT host name to track the IoT Hub dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to measure the duration of interaction with the IoT Hub dependency");
+
+            context = context ?? new Dictionary<string, object>();
+
+            LogIotHubDependency(logger, iotHubConnectionString, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
         /// <summary>
@@ -82,8 +111,38 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
+            LogIotHubDependency(logger, iotHubConnectionString, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
+
+        /// <summary>
+        /// Logs an Azure Iot Hub Dependency.
+        /// </summary>
+        /// <param name="logger">The logger instance to track the IoT Hub dependency.</param>
+        /// <param name="iotHubConnectionString">The connection string to interact with an IoT Hub resource.</param>
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="startTime">The point in time when the interaction with the dependency was started.</param>
+        /// <param name="duration">The duration of the operation.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
+        /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        public static void LogIotHubDependency(
+            this ILogger logger,
+            string iotHubConnectionString,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track the IoT Hub dependency");
+            Guard.NotNullOrWhitespace(iotHubConnectionString, nameof(iotHubConnectionString), "Requires an IoT Hub connection string to retrieve the IoT host name to track the IoT Hub dependency");
+
+            context = context ?? new Dictionary<string, object>();
+
             var iotHubConnection = IotHubConnectionStringBuilder.Create(iotHubConnectionString);
-            logger.LogIotHubDependency(iotHubName: iotHubConnection.HostName, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
+            logger.LogIotHubDependency(iotHubName: iotHubConnection.HostName, isSuccessful, startTime, duration, dependencyId, context);
         }
     }
 }
