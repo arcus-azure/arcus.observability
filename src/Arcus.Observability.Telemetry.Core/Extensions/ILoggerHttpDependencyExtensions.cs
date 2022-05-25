@@ -19,10 +19,10 @@ namespace Microsoft.Extensions.Logging
         /// Logs an HTTP dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="request">Request that started the HTTP communication</param>
-        /// <param name="statusCode">Status code that was returned by the service for this HTTP communication</param>
-        /// <param name="measurement">Measuring the latency of the HTTP dependency</param>
-        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <param name="request">The request that started the HTTP communication.</param>
+        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
+        /// <param name="measurement">The measuring the latency of the HTTP dependency.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside the bounds of the enumeration.
@@ -106,10 +106,10 @@ namespace Microsoft.Extensions.Logging
         /// Logs an HTTP dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="request">Request that started the HTTP communication</param>
-        /// <param name="statusCode">Status code that was returned by the service for this HTTP communication</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
-        /// <param name="duration">Duration of the operation</param>
+        /// <param name="request">The request that started the HTTP communication.</param>
+        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
+        /// <param name="startTime">The point in time when the interaction with the HTTP dependency was started.</param>
+        /// <param name="duration">The duration of the operation.</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
@@ -141,12 +141,12 @@ namespace Microsoft.Extensions.Logging
         /// Logs an HTTP dependency
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="request">Request that started the HTTP communication</param>
-        /// <param name="statusCode">Status code that was returned by the service for this HTTP communication</param>
-        /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
-        /// <param name="duration">Duration of the operation</param>
+        /// <param name="request">The request that started the HTTP communication.</param>
+        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
+        /// <param name="startTime">The point in time when the interaction with the HTTP dependency was started.</param>
+        /// <param name="duration">The duration of the operation.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
-        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         /// <exception cref="ArgumentException">
