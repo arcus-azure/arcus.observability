@@ -432,7 +432,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string iotHubName = BogusGenerator.Lorem.Word();
+            string iotHubName = BogusGenerator.Lorem.Word() + ".";
             string deviceId = BogusGenerator.Lorem.Word();
             string sharedAccessKey = BogusGenerator.Random.Hash();
             var iotHubConnectionString = $"HostName={iotHubName};DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
