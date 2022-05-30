@@ -26,21 +26,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "SQL";
             string serverName = BogusGenerator.Database.Engine();
             string databaseName = BogusGenerator.Database.Collation();
-            string tableName = BogusGenerator.Database.Column();
-            string dependencyName = $"{databaseName}/{tableName}";
+            string sqlCommand = $"SELECT {BogusGenerator.Database.Column()} FROM Some_Table";
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
 
             using (ILoggerFactory loggerFactory = CreateLoggerFactory())
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
-                string operation = BogusGenerator.PickRandom("GET", "UPDATE", "DELETE", "CREATE");
                 bool isSuccessful = BogusGenerator.PickRandom(true, false);
                 DateTimeOffset startTime = DateTimeOffset.Now;
                 TimeSpan duration = BogusGenerator.Date.Timespan();
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogSqlDependency(serverName, databaseName, tableName, operation, isSuccessful, startTime, duration, telemetryContext);
+                logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, startTime, duration, dependencyId, telemetryContext);
             }
 
             // Assert
@@ -49,29 +48,85 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     EventsResults<EventsDependencyResult> results = 
-                        await client.Events.GetDependencyEventsAsync(ApplicationId, timespan: "PT30M");
+                        await client.Events.GetDependencyEventsAsync(ApplicationId, PastHalfHourTimeSpan);
+                   
                     Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
+                    AssertX.Any(results.Value, result =>
                     {
-                        return result.Dependency.Type == dependencyType
-                               && result.Dependency.Target == serverName
-                               && result.Dependency.Name == $"{dependencyType}: {dependencyName}";
+                        Assert.Equal(dependencyType, result.Dependency.Type);
+                        Assert.Equal(serverName, result.Dependency.Target);
+                        Assert.Equal($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                        Assert.Equal(dependencyId, result.Dependency.Id);
                     });
                 });
             }
 
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
+            AssertSerilogLogEvents(dependencyType, serverName, databaseName);
+        }
+
+        [Fact]
+        public async Task LogSqlDependencyWithConnectionString_SinksToApplicationInsights_ResultsInSqlDependencyTelemetry()
+        {
+            // Arrange
+            string dependencyType = "SQL";
+            string serverName = BogusGenerator.Database.Engine();
+            string databaseName = BogusGenerator.Database.Collation();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = $"SELECT {BogusGenerator.Database.Column()} FROM Some_Table";
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                bool isSuccessful = BogusGenerator.PickRandom(true, false);
+                DateTimeOffset startTime = DateTimeOffset.Now;
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogSqlDependency(connectionString, sqlCommand, isSuccessful, startTime, duration, dependencyId, telemetryContext);
+            }
+
+            // Assert
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results =
+                        await client.Events.GetDependencyEventsAsync(ApplicationId, PastHalfHourTimeSpan);
+
+                    Assert.NotEmpty(results.Value);
+                    AssertX.Any(results.Value, result =>
+                    {
+                        Assert.Equal(dependencyType, result.Dependency.Type);
+                        Assert.Equal(serverName, result.Dependency.Target);
+                        Assert.Equal($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                        Assert.Equal(dependencyId, result.Dependency.Id);
+                    });
+                });
+            }
+
+            AssertSerilogLogEvents(dependencyType, serverName, databaseName);
+        }
+
+        private void AssertSerilogLogEvents(string dependencyType, string serverName, string databaseName)
+        {
+            IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
+            AssertX.Any(logEvents, logEvent =>
+            {
                 StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
                 Assert.NotNull(logEntry);
 
-                var actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
+                LogEventProperty actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
                 Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString(), true);
 
-                var actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                LogEventProperty actualTargetName =
+                    Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
                 Assert.Equal(serverName, actualTargetName.Value.ToDecentString());
 
-                var actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
-                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
+                LogEventProperty actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
+                Assert.Equal(databaseName, actualDependencyName.Value.ToDecentString());
 
                 Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
