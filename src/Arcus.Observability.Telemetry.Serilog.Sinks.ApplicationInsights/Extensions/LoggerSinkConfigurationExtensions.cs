@@ -25,6 +25,7 @@ namespace Serilog.Configuration
         /// <param name="instrumentationKey">The required Application Insights key.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(AzureApplicationInsightsWithInstrumentationKey) + " overload instead")]
         public static LoggerConfiguration AzureApplicationInsights(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string instrumentationKey)
@@ -47,6 +48,7 @@ namespace Serilog.Configuration
         /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(AzureApplicationInsightsWithInstrumentationKey) + " overload instead")]
         public static LoggerConfiguration AzureApplicationInsights(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string instrumentationKey,
@@ -70,6 +72,7 @@ namespace Serilog.Configuration
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(AzureApplicationInsightsWithInstrumentationKey) + " overload instead")]
         public static LoggerConfiguration AzureApplicationInsights(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string instrumentationKey, 
@@ -94,6 +97,7 @@ namespace Serilog.Configuration
         /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(AzureApplicationInsightsWithInstrumentationKey) + " overload instead")]
         public static LoggerConfiguration AzureApplicationInsights(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string instrumentationKey,
