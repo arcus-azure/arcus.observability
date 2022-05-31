@@ -25,7 +25,7 @@ using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsights("<key>")
+    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>")
     .CreateLogger();
 
 ILogger logger = new LoggerConfiguration()
@@ -42,7 +42,7 @@ using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsights("<key>", restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>", restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 ```
 
@@ -64,7 +64,7 @@ using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
-    .WriteTo.AzureApplicationInsights("<key>", options =>
+    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>", options =>
     {
         // Configurable generation function for the telemetry request ID.
         options.Request.GenerateId = () => $"my-custom-ID-{Guid.NewGuid()}";
@@ -87,7 +87,7 @@ using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
-    .WriteTo.AzureApplicationInsights("<key>", options =>
+    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>", options =>
     {
         // Opt-in to track all the first-level exception properties; inherited properties will not be included.
         options.Exception.IncludeProperties = true;
@@ -133,7 +133,7 @@ var loggerConfig =  new LoggerConfiguration()
 
 if(string.IsNullOrEmpty(key) == false)
 {
-    loggerConfig.WriteTo.AzureApplicationInsights(key);
+    loggerConfig.WriteTo.AzureApplicationInsightsWithInstrumentationKey(key);
 }
 
 ILogger logger = loggerConfig.CreateLogger();
@@ -162,7 +162,7 @@ var host = Host.CreateDefaultBuilder()
 
                     if (!string.IsNullOrWhiteSpace(instrumentationKey))
                     {
-                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
+                        loggerConfiguration.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey, LogEventLevel.Information);
                     }
                })
                .Build();
@@ -193,7 +193,7 @@ var host = Host.CreateDefaultBuilder()
 
                     if (!string.IsNullOrWhiteSpace(instrumentationKey))
                     {
-                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
+                        loggerConfiguration.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey, LogEventLevel.Information);
                     }
                })
                .Build();
