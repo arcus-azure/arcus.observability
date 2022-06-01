@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyType">The custom type of dependency.</param>
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyType">The custom type of dependency.</param>
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
@@ -143,7 +143,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
         /// <param name="dependencyName">The name of the dependency.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -174,7 +174,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
         /// <param name="dependencyName">The name of the dependency.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
@@ -375,7 +375,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="targetName">The name of the dependency target.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -406,7 +406,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="dependencyData">The custom data of dependency.</param>
         /// <param name="targetName">The name of the dependency target.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
@@ -474,7 +474,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="targetName">The name of the dependency target.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
         /// <param name="dependencyName">The name of the dependency.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
@@ -507,7 +507,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="targetName">The name of the dependency target.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
         /// <param name="dependencyName">The name of the dependency.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">

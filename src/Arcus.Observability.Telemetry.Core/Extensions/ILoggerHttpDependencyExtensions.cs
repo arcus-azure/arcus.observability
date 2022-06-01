@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The request that started the HTTP communication.</param>
         /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
-        /// <param name="measurement">The measuring the latency of the HTTP dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The request that started the HTTP communication.</param>
         /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
-        /// <param name="measurement">The measuring the latency of the HTTP dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c>.</exception>

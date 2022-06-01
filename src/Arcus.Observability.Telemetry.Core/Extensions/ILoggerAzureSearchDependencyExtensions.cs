@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="searchServiceName">The name of the Azure Search service.</param>
         /// <param name="operationName">The name of the operation to execute on the Azure Search service.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="searchServiceName">The name of the Azure Search service.</param>
         /// <param name="operationName">The name of the operation to execute on the Azure Search service.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
