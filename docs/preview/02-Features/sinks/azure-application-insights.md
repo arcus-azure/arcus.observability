@@ -17,7 +17,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsi
 
 The Azure Application Insights sink is an extension of the [official Application Insights sink](https://www.nuget.org/packages/Serilog.Sinks.ApplicationInsights/) that allows you to not only emit traces or events, but the whole Application Insights suite of telemetry types - Traces, Dependencies, Events, Requests & Metrics.
 
-You can easily configure the sink by providing the Azure Application Insights key:
+You can easily configure the sink by providing the Azure Application Insights connection string or instrumentation key, but the connection string is prefered.
 
 ```csharp
 using Serilog;
@@ -25,7 +25,12 @@ using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsights("<key>")
+    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>")
+    .CreateLogger();
+
+ILogger logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>")
     .CreateLogger();
 ```
 
@@ -37,7 +42,7 @@ using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsights("<key>", restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 ```
 
@@ -57,7 +62,7 @@ using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
-    .WriteTo.AzureApplicationInsights("<key>", options =>
+    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", options =>
     {
         // Configurable generation function for the telemetry request ID.
         options.Request.GenerateId = () => $"my-custom-ID-{Guid.NewGuid()}";
@@ -80,7 +85,7 @@ using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
-    .WriteTo.AzureApplicationInsights("<key>", options =>
+    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", options =>
     {
         // Opt-in to track all the first-level exception properties; inherited properties will not be included.
         options.Exception.IncludeProperties = true;
@@ -109,7 +114,7 @@ With this configuration, the custom dimension name for the public properties of 
 
 ## FAQ
 
-### Q: Why is it mandatory to provide an instrumentation key?
+### Q: Why is it mandatory to provide a instrumentation key?
 
 While the native Azure Application Insights SDK does not enforce an instrumentation key we have chosen to make it mandatory to provide one.
 
@@ -124,9 +129,9 @@ using Serilog.Configuration;
 var loggerConfig =  new LoggerConfiguration()
     .MinimumLevel.Debug();
 
-if(string.IsNullOrEmpty(key) == false)
+if (!string.IsNullOrWhiteSpace(key))
 {
-    loggerConfig.WriteTo.AzureApplicationInsights(key);
+    loggerConfig.WriteTo.AzureApplicationInsightsWithInstrumentationKey(key);
 }
 
 ILogger logger = loggerConfig.CreateLogger();
@@ -134,34 +139,10 @@ ILogger logger = loggerConfig.CreateLogger();
 
 ### Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?
 
-Simply use the `UseSerilog` extension method on `IHostBuilder` which accepts an `Action<HostBuilderContext, IServiceProvider, LoggerConfiguration>`.  This Action gives you access to the configuration and the configured services:
+Simply use the `UseSerilog` extension method on `IHostBuilder` which accepts an `Action<HostBuilderContext, IServiceProvider, LoggerConfiguration>`.
+This Action gives you access to the configuration and the configured services.
 
-```csharp
-using Serilog.Configuration;
-
-...
-
-var host = Host.CreateDefaultBuilder()
-               .ConfigureAppConfiguration((context, configBuilder) =>
-               {
-                   // App specific configuration
-               })
-               .UseSerilog((context, serviceProvider, loggerConfig) =>
-               {
-                    loggerConf.Enrich.FromLogContext()
-                              .WriteTo.Console();
-
-                    string instrumentationKey = context.Configuration["ApplicationInsights:InstrumentationKey"];
-
-                    if (!string.IsNullOrWhiteSpace(instrumentationKey))
-                    {
-                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
-                    }
-               })
-               .Build();
-```
-
-If the InstrumentationKey is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus.Security](https://github.com/arcus-azure/arcus.security) can be used to retrieve the InstrumentationKey.
+If the connection string is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus secret store](https://security.arcus-azure.net/features/secret-store) can be used to retrieve the connection string.
 
 ```csharp
 using Serilog.Configuration;
@@ -169,27 +150,27 @@ using Arcus.Security.Core;
 
 ...
 
-var host = Host.CreateDefaultBuilder()
-               .ConfigureSecretStore((context, config, builder) =>
-               {
-                   // Configure the secret store here
-                   // https://security.arcus-azure.net/features/secret-store/
-               })
-               .UseSerilog((context, serviceProvider, loggerConfig) =>
-               {
-                    loggerConf.Enrich.FromLogContext()
-                              .WriteTo.Console();
+IHostBuilder host = 
+    Host.CreateDefaultBuilder()
+    .ConfigureSecretStore((context, config, builder) =>
+    {
+        // Configure the secret store here.
+        // See: https://security.arcus-azure.net/features/secret-store/
+    })
+    .UseSerilog((context, serviceProvider, loggerConfig) =>
+    {
+         loggerConf.Enrich.FromLogContext()
+                   .WriteTo.Console();
 
-                    var secretProvider = serviceProvider.GetService<ISecretProvider>();
+         var secretProvider = serviceProvider.GetService<ISecretProvider>();
 
-                    var instrumentationKey = secretProvider.GetRawSecretAsync("ApplicationInsights:InstrumentationKey").GetAwaiter().GetResult();
+         string connectionString = secretProvider.GetRawSecretAsync("ApplicationInsights:ConnectionString").GetAwaiter().GetResult();
 
-                    if (!string.IsNullOrWhiteSpace(instrumentationKey))
-                    {
-                        loggerConfiguration.WriteTo.AzureApplicationInsights(instrumentationKey, LogEventLevel.Information);
-                    }
-               })
-               .Build();
+         if (!string.IsNullOrWhiteSpace(connectionString))
+         {
+             loggerConfiguration.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, LogEventLevel.Information);
+         }
+    });
 ```
 
 
