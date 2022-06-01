@@ -18,6 +18,7 @@ variables:
   - group: 'Arcus Observability - Integration Testing'
   - group: 'Build Configuration'
   - template: ./variables/build.yml
+  - template: ./variables/test.yml
   - name: 'Repository'
     value: 'arcus-azure/arcus.observability'
   - name: 'Package.Version'
@@ -100,9 +101,37 @@ stages:
               dotnetSdkVersion: '$(DotNet.Sdk.Version)'
               projectName: '$(Project).Tests.Integration'
 
+  - stage: DockerTests
+    displayName: Docker Tests
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: DockerTests
+        displayName: 'Run Docker tests'
+        pool:
+          vmImage: '$(Vm.Image)'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
+          - task: UseDotNet@2
+            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+            inputs:
+              packageType: 'sdk'
+              version: '$(DotNet.Sdk.PreviousVersion)'
+          - template: templates/run-docker-project.yml
+            parameters:
+              dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
+              httpPort: '$(AzureFunctions.HttpPort)'
+
   - stage: Release
     displayName: 'Release to NuGet.org'
-    dependsOn: IntegrationTests
+    dependsOn:
+      - UnitTests
+      - IntegrationTests
+      - DockerTests
     condition: succeeded()
     jobs:
       - job: PushToNuGet

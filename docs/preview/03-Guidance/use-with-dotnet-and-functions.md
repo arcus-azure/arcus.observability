@@ -12,7 +12,10 @@ We encourage you to follow the standard [Serilog instructions](https://github.co
 Some aspects we would like to highlight are:
 
 - Make sure to call [`UseSerilog`](https://www.nuget.org/packages/Serilog.AspNetCore) when creating a `IHostBuilder`
-- Remove default for logging including its configuration in `appsettings.json` *(if applicable)*
+- Remove the default Microsoft's `ApplicationInsightsLoggerProvider` via the `RemoveMicrosoftApplicationInsightsLoggerProvider` extension
+- Remove the `Logging` section from the `appsettings.json` *(if applicable)* as this is not used by Serilog
+
+> We need to call `RemoveMicrosoftApplicationInsightsLoggerProvider` to remove Microsoft's `ApplicationInsightsLoggerProvider` because it would conflict with our own Serilog Application Insights sink. We can't guarantee stable telemetry if Microsoft's logger provider is registered as this provider manipulates the telemetry before it get's send out to Application Insights. Removing it ensure that Arcus is in full control of the send-out telemetry.
 
 ## Setting up Serilog with Azure Functions
 
@@ -52,7 +55,8 @@ namespace Arcus.Samples.AzureFunction
 
             builder.Services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.AddSerilog(logger);
+                loggingBuilder.RemoveMicrosoftApplicationInsightsLoggerProvider()
+                              .AddSerilog(logger);
             });
         }
     }
