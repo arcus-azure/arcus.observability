@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="database">The name of the database.</param>
         /// <param name="container">The name of the container.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful</param>
-        /// <param name="measurement">The measuring the latency of the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/>, <paramref name="database"/>, or <paramref name="container"/> is blank.</exception>
@@ -82,7 +82,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="database">The name of the database.</param>
         /// <param name="container">The name of the container.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful</param>
-        /// <param name="measurement">The measuring the latency of the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
