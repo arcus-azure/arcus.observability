@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus topic request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus topic request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="subscriptionName">The name of the subscription on the Azure Service Bus topic.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus topic request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus topic request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus topic request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus topic request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -174,7 +174,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus queue request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
@@ -205,7 +205,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="queueName">The name of the Azure Service Bus queue.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus queue request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus queue request.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
@@ -302,7 +302,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus queue request.</param>
         /// <param name="entityType">The type of the Azure Service Bus entity.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
@@ -335,7 +335,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="entityName">The name of the Azure Service Bus entity.</param>
         /// <param name="operationName">The optional logical name that can be used to identify the operation that consumes the message.</param>
         /// <param name="isSuccessful">The indication whether or not the Azure Service Bus request was successfully processed.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the Azure Service Bus queue request.</param>
+        /// <param name="measurement">The instance to measure the duration of the Azure Service Bus queue request.</param>
         /// <param name="entityType">The type of the Azure Service Bus entity.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
