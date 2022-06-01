@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="namespaceName">The namespace of the resource.</param>
         /// <param name="eventHubName">The name of the Event Hub resource.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="namespaceName"/> or <paramref name="eventHubName"/> is blank.</exception>
@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="namespaceName">The namespace of the resource.</param>
         /// <param name="eventHubName">The name of the Event Hub resource.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring the latency to call the dependency.</param>
+        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
