@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the HTTP request.</param>
+        /// <param name="measurement">The instance to measure the duration of the HTTP request.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="response"/>'s status code is outside the 0-999 range inclusively.</exception>
@@ -143,7 +143,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="response">The outgoing HTTP response that was created.</param>
         /// <param name="operationName">The name of the operation of the HTTP request.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the HTTP request.</param>
+        /// <param name="measurement">The instance to measure the duration of the HTTP request.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or the <paramref name="measurement"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="response"/>'s status code is outside the 0-999 range inclusively.</exception>
@@ -237,7 +237,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the HTTP request.</param>
+        /// <param name="measurement">The instance to measure the duration of the HTTP request.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/> or <paramref name="measurement"/> is <c>null</c></exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="responseStatusCode"/> is outside the 0-999 range inclusively.</exception>
@@ -335,7 +335,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="request">The incoming HTTP request that was processed.</param>
         /// <param name="responseStatusCode">The HTTP status code returned by the service.</param>
         /// <param name="operationName">The name of the operation of the HTTP request.</param>
-        /// <param name="measurement">The instance to measure the latency duration of the HTTP request.</param>
+        /// <param name="measurement">The instance to measure the duration of the HTTP request.</param>
         /// <param name="context">The context that provides more insights on the tracked HTTP request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="responseStatusCode"/> is outside the 0-999 inclusively.</exception>

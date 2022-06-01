@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="tableName">The name of tracked table in the SQL database.</param>
         /// <param name="operationName">The name of the operation that was performed on the SQL database.</param>	
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
-        /// <param name="measurement">The measuring of the latency to call the dependency.</param>
+        /// <param name="measurement">The measurement of the duration to call the dependency.</param>
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
