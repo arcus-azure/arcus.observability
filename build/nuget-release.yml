@@ -121,7 +121,7 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '$(DotNet.Sdk.PreviousVersion)'
-          - template: templates/run-docker-project.yml
+          - template: templates/run-docker-integration-tests.yml
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
               httpPort: '$(AzureFunctions.HttpPort)'
