@@ -14,5 +14,10 @@
         /// Gets the correlation options specific for the operation ID.
         /// </summary>
         public CorrelationInfoOperationOptions Operation { get; } = new CorrelationInfoOperationOptions();
+
+        /// <summary>
+        /// Gets the correlation options specific for the upstream service.
+        /// </summary>
+        public CorrelationInfoUpstreamServiceOptions UpstreamService { get; } = new CorrelationInfoUpstreamServiceOptions();
     }
 }
