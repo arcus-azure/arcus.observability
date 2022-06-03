@@ -11,7 +11,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
     [Trait("Category", "Unit")]
     public class AzureServiceBusDependencyLoggingTests
     {
-        private readonly Faker _bogusGenerator = new Faker();
+        private static readonly Faker BogusGenerator = new Faker();
 
         [Fact]
         public void LogServiceBusDependency_ValidArguments_Succeeds()
@@ -19,9 +19,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
@@ -45,18 +45,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyId, entityType);
+            logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, startTime, duration, dependencyId, entityType);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(entityName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(entityName, dependency.TargetName);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
@@ -72,8 +74,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
 
@@ -87,14 +89,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType entityType = ServiceBusEntityType.Queue;
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyId, entityType));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, startTime, duration, dependencyId, entityType));
         }
 
         [Fact]
@@ -103,8 +106,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             const ServiceBusEntityType entityType = ServiceBusEntityType.Topic;
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -130,9 +133,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -158,21 +161,23 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            string entityName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
             TimeSpan duration = measurement.Elapsed;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusDependency(entityName, isSuccessful, measurement, dependencyId, entityType);
+            logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, measurement, dependencyId, entityType);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(entityName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(entityName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(entityName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
@@ -189,8 +194,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
@@ -201,19 +206,38 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogServiceBusDependencyWithDependencyIdWithDurationMeasurement_WithoutNamespaceEndpoint_Fails(string namespaceEndpoint)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string entityName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, measurement, dependencyId, entityType));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogServiceBusDependencyWithDependencyIdWithDurationMeasurement_WithoutEntityName_Fails(string entityName)
         {
             // Arrange
             var logger = new TestLogger();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusDependency(entityName, isSuccessful, measurement, dependencyId, entityType));
+                () => logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, measurement, dependencyId, entityType));
         }
 
         [Fact]
@@ -221,9 +245,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string entityName = _bogusGenerator.Commerce.Product();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string entityName = BogusGenerator.Commerce.Product();
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
@@ -237,16 +261,17 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string entityName = _bogusGenerator.Commerce.Product();
-            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string entityName = BogusGenerator.Commerce.Product();
+            var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusDependency(entityName, isSuccessful, measurement: (DurationMeasurement)null, dependencyId, entityType));
+                () => logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, measurement: (DurationMeasurement)null, dependencyId, entityType));
         }
 
         [Fact]
@@ -254,9 +279,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
@@ -279,18 +304,20 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, dependencyId);
+            logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, startTime, duration, dependencyId);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(queueName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(queueName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(queueName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
@@ -306,8 +333,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
 
@@ -320,14 +347,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, dependencyId));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -335,8 +363,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -362,8 +390,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -389,20 +417,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
             TimeSpan duration = measurement.Elapsed;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement, dependencyId);
+            logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, measurement, dependencyId);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(queueName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(queueName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(queueName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
@@ -419,7 +449,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
@@ -429,17 +459,34 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogServiceBusQueueDependencyWithDependencyIdWithDurationMeasurement_WithoutNamespaceEndpoint_Fails(string namespaceEndpoint)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogServiceBusQueueDependencyWithDependencyIdWithDurationMeasurement_WithoutQueueName_Fails(string queueName)
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement, dependencyId));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, measurement, dependencyId));
         }
 
         [Fact]
@@ -447,8 +494,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
 
             // Act
             Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement: (DurationMeasurement)null));
@@ -459,12 +506,13 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string queueName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(queueName, isSuccessful, measurement: (DurationMeasurement)null, dependencyId));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogServiceBusQueueDependency(namespaceEndpoint, queueName, isSuccessful, measurement: (DurationMeasurement)null, dependencyId));
         }
 
         [Fact]
@@ -472,9 +520,9 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act
@@ -497,20 +545,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string toipcName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusTopicDependency(toipcName, isSuccessful, startTime, duration, dependencyId);
+            logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(toipcName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(topicName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
-            Assert.Equal(toipcName, dependency.DependencyName);
+            Assert.Equal(topicName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
@@ -525,8 +575,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
 
             // Act / Assert
@@ -536,18 +586,36 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicDependencyWithDependencyId_WithoutNamespaceEndpoint_Fails(string namespaceEndpoint)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
+            var startTime = DateTimeOffset.UtcNow;
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogServiceBusTopicDependencyWithDependencyId_WithoutTopicName_Fails(string topicName)
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            TimeSpan duration = BogusGenerator.Date.Timespan();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, dependencyId));
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -555,8 +623,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
 
@@ -569,15 +637,16 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
             var startTime = DateTimeOffset.UtcNow;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, dependencyId));
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -585,8 +654,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DependencyMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -612,8 +681,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
@@ -639,20 +708,22 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
             TimeSpan duration = measurement.Elapsed;
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act
-            logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement, dependencyId);
+            logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, measurement, dependencyId);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(topicName, dependency.TargetName);
+            Assert.Contains(namespaceEndpoint, dependency.TargetName);
+            Assert.Contains(topicName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(topicName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
@@ -669,7 +740,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
@@ -683,8 +754,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
@@ -693,18 +764,36 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
+        public void LogServiceBusTopicDependencyWithDependencyIdWithDurationMeasurement_WithoutNamespaceEndpoint_Fails(string namespaceEndpoint)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
         public void LogServiceBusTopicDependencyWithDependencyIdWithDurationMeasurement_WithoutTopicName_Fails(string topicName)
         {
             // Arrange
             var logger = new TestLogger();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement, dependencyId));
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, measurement, dependencyId));
         }
 
         [Fact]
@@ -712,13 +801,14 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string dependencyId = _bogusGenerator.Lorem.Word();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogServiceBusTopicDependency(topicName, isSuccessful, measurement: null, dependencyId));
+                () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, measurement: null, dependencyId));
         }
     }
 }

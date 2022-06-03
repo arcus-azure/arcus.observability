@@ -23,6 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             string dependencyType = "Azure Service Bus";
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
             string entityName = BogusGenerator.Commerce.Product();
             string dependencyName = entityName;
             string dependencyId = BogusGenerator.Lorem.Word();
@@ -38,7 +39,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
                 // Act
-                logger.LogServiceBusDependency(entityName, isSuccessful, startTime, duration, dependencyId, entityType, telemetryContext);
+                logger.LogServiceBusDependency(namespaceEndpoint, entityName, isSuccessful, startTime, duration, dependencyId, entityType, telemetryContext);
             }
 
             // Assert
@@ -51,7 +52,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     AssertX.Any(results.Value, result =>
                     {
                         Assert.Equal(dependencyType, result.Dependency.Type);
-                        Assert.Equal(entityName, result.Dependency.Target);
+                        Assert.Contains(namespaceEndpoint, result.Dependency.Target);
+                        Assert.Contains(entityName, result.Dependency.Target);
                         Assert.Equal(dependencyName, result.Dependency.Name);
                         Assert.Equal(dependencyId, result.Dependency.Id);
 
@@ -60,7 +62,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 });
             }
 
-            AssertSerilogLogProperties(dependencyType, entityName, dependencyName);
+            AssertSerilogLogProperties(dependencyType, namespaceEndpoint, entityName, dependencyName);
         }
 
         private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
@@ -69,7 +71,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Assert.Equal(expected, actual);
         }
 
-        private void AssertSerilogLogProperties(string dependencyType, string entityName, string dependencyName)
+        private void AssertSerilogLogProperties(string dependencyType, string namespaceEndpoint, string entityName, string dependencyName)
         {
             IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
             AssertX.Any(logEvents, logEvent =>
@@ -80,8 +82,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 LogEventProperty actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
                 Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
 
-                LogEventProperty actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
-                Assert.Equal(entityName, actualTargetName.Value.ToDecentString());
+                LogEventProperty actualTargetNameProperty = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
+                string actualTargetName = actualTargetNameProperty.Value.ToDecentString();
+                Assert.Contains(namespaceEndpoint, actualTargetName);
+                Assert.Contains(entityName, actualTargetName);
 
                 LogEventProperty actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
                 Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
