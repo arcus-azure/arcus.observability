@@ -18,6 +18,6 @@
         /// <summary>
         /// Gets the correlation options specific for the upstream service.
         /// </summary>
-        public CorrelationInfoUpstreamServiceOptions UpstreamService { get; } = new CorrelationInfoUpstreamServiceOptions();
+        public CorrelationInfoUpstreamServiceOptions OperationParent { get; } = new CorrelationInfoUpstreamServiceOptions();
     }
 }
