@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Unit
                     "Cannot parse the written message as a telemetry dependency because no log message was written to this test logger");
             }
 
-            const string pattern = @"^(?<dependencytype>[\w\s]+) (?<dependencyname>[\w\s\.\/\/:\-]+)? (?<dependencydata>[\w\s\-\,\/]+)? named (?<targetname>[\w\s\.\/\/:\-]+)? with ID (?<dependencyid>[\w\s\-]*)? in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<starttime>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) \(IsSuccessful: (?<issuccessful>(True|False)) - ResultCode: (?<resultcode>\d*) - Context: \{(?<context>((\[\w+, \w+\])(; \[[\w\-]+, \w+\])*))\}\)$";
+            const string pattern = @"^(?<dependencytype>[\w\s]+) (?<dependencyname>[\w\s\.\/\/:\-]+)? (?<dependencydata>[\w\s\-\,\/]+)? named (?<targetname>[\w\s\.\/\/:\|\-]+)? with ID (?<dependencyid>[\w\s\-]*)? in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<starttime>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) \(IsSuccessful: (?<issuccessful>(True|False)) - ResultCode: (?<resultcode>\d*) - Context: \{(?<context>((\[\w+, \w+\])(; \[[\w\-]+, \w+\])*))\}\)$";
             Match match = Regex.Match(logger.WrittenMessage, pattern);
 
             string dependencyType = match.GetGroupValue("dependencytype");
