@@ -51,6 +51,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="tableName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string connectionString,
@@ -135,6 +136,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="tableName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string connectionString,

@@ -59,6 +59,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, <paramref name="tableName"/>, or <paramref name="operationName"/> is blank.
         /// </exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -156,6 +157,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, <paramref name="tableName"/>, or <paramref name="operationName"/> is blank.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
