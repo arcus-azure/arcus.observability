@@ -5,33 +5,26 @@ slug: /
 sidebar_label: Welcome
 ---
 
-[![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
+# Introduction
+
+Arcus Observability allows you to work easily with Azure Application Insights telemetry. Instead of managing logging, correlation, tracking, Arcus Observability allows you to work with the common `ILogger` infrastructure and still be able to write multi-dimensional telemetry data. The library supports multiple telemetry types like tracking dependencies, requests, events, metrics, while also be able to filter with Serilog filters and enrich with custom correlation.
+
+![Logger Arcus - Application Insights](/img/logger-arcus-appinsights.png)
+
+# Guidance
+
+- [Using Arcus & Serilog in ASP.NET Core](./03-Guidance/use-with-dotnet-and-aspnetcore.md)
+- [Using Arcus & Serilog in Azure Functions](./03-Guidance/use-with-dotnet-and-functions.md)
 
 # Installation
 
 The Arcus.Observability.Correlation package can be installed via NuGet:
 
 ```shell
-PM > Install-Package Arcus.Observability.Correlation
+PM > Install-Package Arcus.Observability.Serilog.Sinks.ApplicationInsights
 ```
 
-For more granular packages we recommend reading the documentation.
-
-# Features
-
-- [Making telemetry more powerful](./02-Features/making-telemetry-more-powerful.md) by making it simple to provide contextual information
-- [Writing different telemetry types](./02-Features/writing-different-telemetry-types.md) - Go beyond logs with our `ILogger` extensions for Dependencies, Events, Requests & Metrics.
-- [Correlation](./02-Features/correlation.md) - A common set of correlation levels.
-- Telemetry
-    - [Enrichment](./02-Features/telemetry-enrichment.md) - A set of enrichers to improve telemetry information.
-    - [Filters](./02-Features/telemetry-filter.md) - A set of filters to control telemetry flow with.
-- Sinks
-    - [Azure Application Insights](./02-Features/sinks/azure-application-insights.md) - Flow Traces, Dependencies, Events, Requests & Metrics information to Azure Application Insights
-
-# Guidance
-
-- [Using Arcus & Serilog in ASP.NET Core](./03-Guidance/use-with-dotnet-and-aspnetcore.md)
-- [Using Arcus & Serilog in Azure Functions](./03-Guidance/use-with-dotnet-and-functions.md)
+For more granular packages we recommend reading [the documentation](./02-Features/sinks/azure-application-insights.md).
 
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.
