@@ -30,6 +30,7 @@ For more granular packages we recommend reading the documentation.
 
 # Guidance
 
+- [Using Arcus & Serilog in ASP.NET Core](./03-Guidance/use-with-dotnet-and-aspnetcore.md)
 - [Using Arcus & Serilog in Azure Functions](./03-Guidance/use-with-dotnet-and-functions.md)
 
 # License
