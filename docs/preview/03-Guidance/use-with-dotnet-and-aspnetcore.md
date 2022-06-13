@@ -15,6 +15,7 @@ Using Serilog with ASP.NET Core requires you to install an ASP.NET Core specific
 PM > Install-Package -Name Serilog.AspNetCore
 ```
 
+When using Arcus.Observability, we expect you to setup Serilog as your logging infrastructure.
 We encourage you to follow the standard [Serilog instructions](https://github.com/serilog/serilog-aspnetcore) on setting up Serilog for ASP.NET Core. Make sure to call [`UseSerilog`](https://www.nuget.org/packages/Serilog.AspNetCore).
 
 Using Azure Application Insights requires you to install an Arcus specific package:
