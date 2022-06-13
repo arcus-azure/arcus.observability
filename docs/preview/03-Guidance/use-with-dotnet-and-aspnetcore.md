@@ -23,6 +23,8 @@ Using Azure Application Insights requires you to install an Arcus specific packa
 PM > Install-Package -Name Arcus.Observability.Telemetry.Serilog.Sinks.AzureApplicationInsights
 ```
 
+Now you can configure Serilog and make sure that telemetry is written to Azure Application Insights using the components that are made available by Arcus Observability
+
 We encourage you to use the [Azure Application Insights connection string](https://docs.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=net) to configure the Serilog sink: 
 
 ```csharp
