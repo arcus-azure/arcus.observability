@@ -55,7 +55,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// </summary>
         /// <param name="logEvent">The log event to extract the properties from.</param>
         /// <param name="telemetry">The destination telemetry instance to add the properties to.</param>
-        [Obsolete("Telemetry context properties are not available anymore at the root of the Serilog properties but on a sub-level custom log entry objects")]
         protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
         {
             AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.TelemetryContext);
