@@ -41,8 +41,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -75,9 +79,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int)statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, operationId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -89,9 +92,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
-            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -128,9 +134,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, requestId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -144,8 +149,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -177,9 +186,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, operationId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -191,9 +199,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
-            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -229,9 +240,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, requestId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -245,8 +255,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction={Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -279,9 +293,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, operationId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -293,9 +306,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
-            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction={Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -332,9 +348,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(((int) statusCode).ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, requestId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -348,8 +363,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction={Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -381,9 +400,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(statusCode.ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.True(Guid.TryParse(requestTelemetry.Id, out Guid _));
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, operationId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -395,9 +413,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         {
             // Arrange
             var spySink = new InMemoryLogSink();
-            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction={Guid.NewGuid()}";
+            string operationParentId = $"parent-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(
-                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+                spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
+                                         .Enrich.WithProperty(ContextProperties.Correlation.OperationParentId, operationParentId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -433,9 +454,8 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, requestTelemetry.Duration);
                 Assert.Equal(statusCode.ToString(), requestTelemetry.ResponseCode);
                 Assert.True(requestTelemetry.Success);
-                Assert.Equal(requestId, requestTelemetry.Id);
                 Assert.Equal(new Uri("https://localhost/api/v1/health"), requestTelemetry.Url);
-                AssertOperationContext(requestTelemetry, operationId);
+                AssertOperationContextForRequest(requestTelemetry, requestId, transactionId, operationParentId);
 
                 AssertContainsTelemetryProperty(requestTelemetry, "Client", "https://localhost");
                 AssertContainsTelemetryProperty(requestTelemetry, "ContentType", "application/json");
@@ -821,7 +841,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
 
             var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, "https://localhost/api/v1/health");
             var startTime = DateTimeOffset.UtcNow;
@@ -853,7 +876,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Equal("200", dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
-                AssertOperationContext(dependencyTelemetry, operationId);
+                AssertOperationContextForNonRequest(dependencyTelemetry, operationId, transactionId);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Port", "4000");
             });
@@ -865,7 +888,11 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
+            
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
             var telemetryContext = new Dictionary<string, object>
@@ -894,7 +921,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(duration, dependencyTelemetry.Duration);
                 Assert.Null(dependencyTelemetry.ResultCode);
                 Assert.True(dependencyTelemetry.Success);
-                AssertOperationContext(dependencyTelemetry, operationId);
+                AssertOperationContextForNonRequest(dependencyTelemetry, operationId, transactionId);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Statement", "Query");
             });
@@ -907,7 +934,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             const string eventName = "Order Invoiced";
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
 
             var telemetryContext = new Dictionary<string, object>
             {
@@ -930,7 +960,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
                 Assert.Equal(eventName, eventTelemetry.Name);
-                AssertOperationContext(eventTelemetry, operationId);
+                AssertOperationContextForNonRequest(eventTelemetry, operationId, transactionId);
                 AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
                 AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
             });
@@ -943,7 +973,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             const string eventName = "Order Invoiced";
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
 
             Order order = OrderGenerator.Generate();
             string json = JsonSerializer.Serialize(order);
@@ -967,7 +1000,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
                 Assert.Equal(eventName, eventTelemetry.Name);
-                AssertOperationContext(eventTelemetry, operationId);
+                AssertOperationContextForNonRequest(eventTelemetry, operationId, transactionId);
                 AssertContainsTelemetryProperty(eventTelemetry, "Value", json);
                 AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
                 AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
@@ -982,7 +1015,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             var exception = new PlatformNotSupportedException(platform);
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
 
             logger.LogCritical(exception, exception.Message);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
@@ -1000,7 +1036,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.NotNull(exceptionTelemetryType);
                 Assert.NotNull(exceptionTelemetryType.Exception);
                 Assert.Equal(exception.Message, exceptionTelemetryType.Exception.Message);
-                AssertOperationContext(exceptionTelemetryType, operationId);
+                AssertOperationContextForNonRequest(exceptionTelemetryType, operationId, transactionId);
             });
         }
 
@@ -1013,7 +1049,10 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             var timestamp = DateTimeOffset.UtcNow;
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
-            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, 
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
 
             var telemetryContext = new Dictionary<string, object>
             {
@@ -1036,7 +1075,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(metricName, metricTelemetry.Name);
                 Assert.Equal(metricValue, metricTelemetry.Sum);
                 Assert.Equal(timestamp, metricTelemetry.Timestamp);
-                AssertOperationContext(metricTelemetry, operationId);
+                AssertOperationContextForNonRequest(metricTelemetry, operationId, transactionId);
 
                 AssertContainsTelemetryProperty(metricTelemetry, "Capacity", "0.45");
             });
@@ -1048,9 +1087,11 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config =>
             {
                 return config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                             .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
                              .Enrich.WithProperty(General.ComponentName, "component")
                              .Enrich.WithProperty(Kubernetes.PodName, "pod");
             });
@@ -1073,7 +1114,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(SeverityLevel.Information, traceTelemetry.SeverityLevel);
                 Assert.Equal("component", traceTelemetry.Context.Cloud.RoleName);
                 Assert.Equal("pod", traceTelemetry.Context.Cloud.RoleInstance);
-                AssertOperationContext(traceTelemetry, operationId);
+                AssertOperationContextForNonRequest(traceTelemetry, operationId, transactionId);
             });
         }
 
@@ -1083,9 +1124,11 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             // Arrange
             var spySink = new InMemoryLogSink();
             string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
             ILogger logger = CreateLogger(spySink, config =>
             {
                 return config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                             .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId)
                              .Enrich.WithProperty(General.ComponentName, "component")
                              .Enrich.WithProperty(General.MachineName, "machine");
             });
@@ -1108,15 +1151,32 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.Equal(SeverityLevel.Information, traceTelemetry.SeverityLevel);
                 Assert.Equal("component", traceTelemetry.Context.Cloud.RoleName);
                 Assert.Equal("machine", traceTelemetry.Context.Cloud.RoleInstance);
-                AssertOperationContext(traceTelemetry, operationId);
+                AssertOperationContextForNonRequest(traceTelemetry, operationId, transactionId);
             });
         }
 
-        private static void AssertOperationContext<TTelemetry>(TTelemetry telemetry, string operationId) where TTelemetry : ITelemetry
+        private static void AssertOperationContextForNonRequest<TTelemetry>(
+            TTelemetry telemetry, 
+            string operationId,
+            string transactionId) where TTelemetry : ITelemetry
         {
             Assert.NotNull(telemetry.Context);
             Assert.NotNull(telemetry.Context.Operation);
-            Assert.Equal(operationId, telemetry.Context.Operation.Id);
+            Assert.Equal(operationId, telemetry.Context.Operation.ParentId);
+            Assert.Equal(transactionId, telemetry.Context.Operation.Id);
+        }
+
+        private static void AssertOperationContextForRequest(
+            RequestTelemetry telemetry, 
+            string operationId,
+            string transactionId,
+            string operationParentId)
+        {
+            Assert.NotNull(telemetry.Context);
+            Assert.NotNull(telemetry.Context.Operation);
+            Assert.Equal(operationId, telemetry.Id);
+            Assert.Equal(transactionId, telemetry.Context.Operation.Id);
+            Assert.Equal(operationParentId, telemetry.Context.Operation.ParentId);
         }
 
         private static ILogger CreateLogger(ILogEventSink sink, Func<LoggerConfiguration, LoggerConfiguration> configureLoggerConfiguration = null)

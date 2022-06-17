@@ -3,6 +3,8 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
+using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
@@ -11,6 +13,27 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class OperationContextConverter
     {
+        private readonly ApplicationInsightsSinkOptions _options;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationContextConverter" /> class.
+        /// </summary>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
+        public OperationContextConverter()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationContextConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        public OperationContextConverter(ApplicationInsightsSinkOptions options)
+        {
+            Guard.NotNull(options, nameof(options), "Requires a set of options to influence the behavior of the Application Insights Serilog sink");
+            _options = options;
+        }
+
         /// <summary>
         /// Enrich the given <paramref name="telemetryEntry"/> with the Operation-related information.
         /// </summary>
@@ -22,14 +45,39 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 return;
             }
 
-            if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
+            if (telemetryEntry is RequestTelemetry requestTelemetry)
             {
-                telemetryEntry.Context.Operation.Id = operationId;
-            }
+                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
+                {
+                    if (operationId is null || operationId is "null")
+                    {
+                        operationId = _options.Request.GenerateId();
+                    }
 
-            if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationParentId, out string operationParentId))
+                    requestTelemetry.Id = operationId;
+                }
+
+                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.TransactionId, out string transactionId))
+                {
+                    telemetryEntry.Context.Operation.Id = transactionId;
+                }
+
+                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationParentId, out string operationParentId))
+                {
+                    telemetryEntry.Context.Operation.ParentId = operationParentId;
+                }
+            }
+            else
             {
-                telemetryEntry.Context.Operation.ParentId = operationParentId;
+                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.TransactionId, out string transactionId))
+                {
+                    telemetryEntry.Context.Operation.Id = transactionId;
+                }
+
+                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
+                {
+                    telemetryEntry.Context.Operation.ParentId = operationId;
+                }
             }
         }
 

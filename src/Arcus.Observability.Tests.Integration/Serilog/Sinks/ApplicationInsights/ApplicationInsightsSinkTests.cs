@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.Azure.ApplicationInsights.Query;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -50,6 +52,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// </summary>
         protected string ApplicationId { get; }
 
+        protected CorrelationInfo GenerateCorrelationInfo()
+        {
+            return new CorrelationInfo(
+                $"operation-{Guid.NewGuid()}",
+                $"transaction-{Guid.NewGuid()}",
+                $"parent-{Guid.NewGuid()}");
+        }
+
         /// <summary>
         /// Creates an <see cref="ILoggerFactory"/> instance that will create <see cref="Microsoft.Extensions.Logging.ILogger"/> instances that writes to Azure Application Insights.
         /// </summary>
@@ -61,7 +71,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             var configuration = new LoggerConfiguration()
                 .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                .WriteTo.AzureApplicationInsights(InstrumentationKey, configureOptions)
+                .WriteTo.AzureApplicationInsightsWithInstrumentationKey(InstrumentationKey, configureOptions)
                 .WriteTo.Sink(_memoryLogSink);
 
             configureLogging?.Invoke(configuration);
@@ -80,14 +90,26 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         protected Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
         {
-            var operationId = Guid.NewGuid();
-            Logger.LogInformation("Testing '{TestName}' using {OperationId}", memberName, operationId);
+            var testId = Guid.NewGuid();
+            Logger.LogInformation("Testing '{TestName}' using {TestId}", memberName, testId);
 
             return new Dictionary<string, object>
             {
-                ["OperationId"] = operationId,
+                ["TestId"] = testId,
                 ["TestName"] = memberName
             };
+        }
+
+        protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ApplicationInsightsClient, Task> assertion)
+        {
+            using (IApplicationInsightsDataClient dataClient = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    var client = new ApplicationInsightsClient(dataClient, ApplicationId);
+                    await assertion(client);
+                });
+            }
         }
 
         protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)
@@ -102,7 +124,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }
-
         protected ApplicationInsightsDataClient CreateApplicationInsightsClient()
         {
             var clientCredentials = new ApiKeyClientCredentials(Configuration.GetValue<string>("ApplicationInsights:ApiKey"));
@@ -111,9 +132,56 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             return client;
         }
 
+        protected void AssertRequestCorrelation(EventsRequestResult requestResult)
+        {
+           
+        }
+
         protected IEnumerable<LogEvent> GetLogEventsFromMemory()
         {
             return _memoryLogSink.CurrentLogEmits;
+        }
+    }
+
+    public class ApplicationInsightsClient
+    {
+        private readonly IApplicationInsightsDataClient _client;
+        private readonly string _applicationId;
+        private const string PastHalfHourTimeSpan = "PT30M";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationInsightsClient" /> class.
+        /// </summary>
+        public ApplicationInsightsClient(
+            IApplicationInsightsDataClient client,
+            string applicationId)
+        {
+            _client = client;
+            _applicationId = applicationId;
+        }
+
+        public async Task<IEnumerable<EventsDependencyResult>> GetDependenciesAsync()
+        {
+            EventsResults<EventsDependencyResult> result = 
+                await _client.Events.GetDependencyEventsAsync(_applicationId, timespan: PastHalfHourTimeSpan);
+
+            return result.Value;
+        }
+
+        public async Task<IEnumerable<EventsRequestResult>> GetRequestsAsync()
+        {
+            EventsResults<EventsRequestResult> result = 
+                await _client.Events.GetRequestEventsAsync(_applicationId, timespan: PastHalfHourTimeSpan);
+
+            return result.Value;
+        }
+
+        public async Task<IEnumerable<EventsCustomEventResult>> GetCustomEventsAsync()
+        {
+            EventsResults<EventsCustomEventResult> result = 
+                await _client.Events.GetCustomEventsAsync(_applicationId, timespan: PastHalfHourTimeSpan);
+
+            return result.Value;
         }
     }
 }

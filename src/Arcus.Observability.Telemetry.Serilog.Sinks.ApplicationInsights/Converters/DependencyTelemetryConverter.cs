@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
@@ -13,6 +14,23 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class DependencyTelemetryConverter : CustomTelemetryConverter<DependencyTelemetry>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyTelemetryConverter" /> class.
+        /// </summary>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
+        public DependencyTelemetryConverter()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyTelemetryConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        public DependencyTelemetryConverter(ApplicationInsightsSinkOptions options) : base(options)
+        {
+        }
+
         /// <summary>
         ///     Creates a telemetry entry for a given log event
         /// </summary>
