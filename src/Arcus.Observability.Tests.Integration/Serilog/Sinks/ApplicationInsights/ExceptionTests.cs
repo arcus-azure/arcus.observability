@@ -177,8 +177,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     AssertX.Any(results.Value, result =>
                     {
                         Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                        Assert.Equal(operationId, result.Operation.Id);
-                        Assert.Equal(operationParentId, result.Operation.ParentId);
+                        Assert.Equal(transactionId, result.Operation.Id);
+                        Assert.Equal(operationId, result.Operation.ParentId);
                     });
                 });
             }

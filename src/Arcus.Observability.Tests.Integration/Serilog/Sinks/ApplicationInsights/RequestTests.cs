@@ -63,7 +63,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                         Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
-                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
                         Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
                         Assert.Equal(correlation.OperationId, result.Request.Id);
@@ -110,7 +109,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                         Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
-                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
                         Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
@@ -130,7 +128,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             var requestId = Guid.NewGuid().ToString();
             
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(
+                       configureLogging: config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null),
+                       configureOptions: options => options.Request.GenerateId = () => requestId))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
                 
@@ -174,7 +174,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             var requestId = Guid.NewGuid().ToString();
             
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Request.GenerateId = () => requestId))
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(
+                       configureLogging: config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null),
+                       configureOptions: options => options.Request.GenerateId = () => requestId))
             {
                 ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -244,7 +246,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         Assert.Equal(requestUri.ToString(), result.Request.Url);
                         Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
-                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
                         Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                     });
                 });
