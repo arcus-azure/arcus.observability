@@ -65,10 +65,28 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             
             foreach (PropertyInfo exceptionProperty in exceptionProperties)
             {
-                string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
+                string propertyFormat = DeterminePropertyFormat();
+
+                string key = String.Format(propertyFormat, exceptionProperty.Name);
                 var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
                 exceptionTelemetry.Properties[key] = value;
             }
+        }
+
+        private string DeterminePropertyFormat()
+        {
+            if (Options != null)
+            {
+                return Options.Exception.PropertyFormat;
+            }
+
+            if (_options != null)
+            {
+                return _options.PropertyFormat;
+            }
+
+            throw new InvalidOperationException(
+                "Could not determine exception property format because the Application Insights exception converter was not initialized with any options");
         }
     }
 }
