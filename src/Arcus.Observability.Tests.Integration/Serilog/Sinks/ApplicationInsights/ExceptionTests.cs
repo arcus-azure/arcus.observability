@@ -39,7 +39,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.Contains(results.Value, result =>
                     {
                         return result.Exception.OuterMessage == exception.Message
@@ -69,7 +69,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.Contains(results.Value, result =>
                     {
                         return result.Exception.OuterMessage == exception.Message
@@ -105,7 +105,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.Contains(results.Value, result =>
                     {
                         string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
@@ -137,7 +137,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
                     Assert.Contains(results.Value, result => result.Exception.OuterMessage == exception.Message && result.Cloud.RoleName == componentName);
                 });
@@ -171,7 +171,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
+                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, timespan: PastHalfHourTimeSpan);
                     Assert.NotEmpty(results.Value);
                     
                     AssertX.Any(results.Value, result =>
