@@ -26,15 +26,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string metricName = "threshold";
             double metricValue = 0.25;
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogMetric(metricName, metricValue, telemetryContext);
-            }
+            // Act
+            Logger.LogMetric(metricName, metricValue, telemetryContext);
 
             // Assert
             using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
@@ -49,19 +44,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.NotEmpty(results);
                 });
             }
-
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.MetricTracking.MetricLogEntry);
-                Assert.NotNull(logEntry);
-
-                var actualMetricName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.MetricName));
-                Assert.Equal(metricName, actualMetricName.Value.ToDecentString());
-
-                var actualMetricValue = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.MetricValue));
-                Assert.Equal(metricValue.ToString("0.00", CultureInfo.InvariantCulture), actualMetricValue.Value.ToDecentString());
-
-                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(MetricLogEntry.Context));
-            });
         }
     }
 }

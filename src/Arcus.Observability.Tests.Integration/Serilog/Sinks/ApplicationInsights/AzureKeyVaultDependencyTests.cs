@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -31,62 +27,25 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyName = vaultUri;
             string dependencyId = Guid.NewGuid().ToString();
 
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<AzureKeyVaultDependencyTests>();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = DateTimeOffset.Now;
+            TimeSpan duration = BogusGenerator.Date.Timespan();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
-                bool isSuccessful = BogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = DateTimeOffset.Now;
-                TimeSpan duration = BogusGenerator.Date.Timespan();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
-            }
+            Logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
 
             // Assert
-            using (IApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                Assert.Contains(results, result =>
                 {
-                    EventsResults<EventsDependencyResult> results = 
-                        await client.Events.GetDependencyEventsAsync(ApplicationId, PastHalfHourTimeSpan);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result =>
-                    {
-                        return result.Dependency.Type == dependencyType
-                               && result.Dependency.Id == dependencyId
-                               && result.Dependency.Target == vaultUri
-                               && result.Dependency.Data == secretName
-                               && result.Dependency.Name == dependencyName;
-                    });
+                    return result.Dependency.Type == dependencyType
+                           && result.Dependency.Id == dependencyId
+                           && result.Dependency.Target == vaultUri
+                           && result.Dependency.Data == secretName
+                           && result.Dependency.Name == dependencyName;
                 });
-            }
-
-            AssertSerilogLogProperties(dependencyType, secretName, vaultUri, dependencyName);
-        }
-
-        private void AssertSerilogLogProperties(string dependencyType, string secretName, string vaultUri, string dependencyName)
-        {
-            IEnumerable<LogEvent> logEvents = GetLogEventsFromMemory();
-            AssertX.Any(logEvents, logEvent =>
-            {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.DependencyTracking.DependencyLogEntry);
-                Assert.NotNull(logEntry);
-
-                LogEventProperty actualDependencyType = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyType));
-                Assert.Equal(dependencyType, actualDependencyType.Value.ToDecentString());
-
-                LogEventProperty actualDependencyData = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyData));
-                Assert.Equal(secretName, actualDependencyData.Value.ToDecentString());
-
-                LogEventProperty actualTargetName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.TargetName));
-                Assert.Equal(vaultUri, actualTargetName.Value.ToDecentString());
-
-                LogEventProperty actualDependencyName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.DependencyName));
-                Assert.Equal(dependencyName, actualDependencyName.Value.ToDecentString());
-
-                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(DependencyLogEntry.Context));
             });
         }
     }

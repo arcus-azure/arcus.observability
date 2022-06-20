@@ -26,27 +26,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogCritical(exception, exception.Message);
-            }
+            
+            // Act
+            Logger.LogCritical(exception, exception.Message);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(results.Value, result =>
-                    {
-                        return result.Exception.OuterMessage == exception.Message
-                               && result.CustomDimensions.Keys.Contains($"Exception-{nameof(TestException.SpyProperty)}") == false;
-                    });
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.DoesNotContain($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions.Keys);
                 });
-            }
+            });
         }
 
         [Fact]
@@ -65,19 +58,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             }
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(results.Value, result =>
-                    {
-                        return result.Exception.OuterMessage == exception.Message
-                               && result.CustomDimensions.TryGetValue($"Exception-{nameof(TestException.SpyProperty)}", out string actualProperty)
-                               && expectedProperty == actualProperty;
-                    });
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.True(result.CustomDimensions.TryGetValue($"Exception-{nameof(TestException.SpyProperty)}", out string actualProperty));
+                    Assert.Equal(expectedProperty, actualProperty);
                 });
-            }
+            });
         }
 
         [Fact]
@@ -101,20 +91,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             }
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(results.Value, result =>
-                    {
-                        string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
-                        return result.Exception.OuterMessage == exception.Message
-                               && result.CustomDimensions.TryGetValue(propertyName, out string actualProperty)
-                               && expectedProperty == actualProperty;
-                    });
+                    string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
+                    
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.True(result.CustomDimensions.TryGetValue(propertyName, out string actualProperty));
+                    Assert.Equal(expectedProperty, actualProperty);
                 });
-            }
+            });
         }
 
         [Fact]
@@ -133,15 +121,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             }
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Exception.OuterMessage == exception.Message && result.Cloud.RoleName == componentName);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                 });
-            }
+            });
         }
 
         [Fact]
@@ -167,21 +155,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             }
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsResults<EventsExceptionResult> results = await client.Events.GetExceptionEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    
-                    AssertX.Any(results.Value, result =>
-                    {
-                        Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                        Assert.Equal(operationId, result.Operation.Id);
-                        Assert.Equal(operationParentId, result.Operation.ParentId);
-                    });
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(operationId, result.Operation.Id);
+                    Assert.Equal(operationParentId, result.Operation.ParentId);
                 });
-            }
+            });
         }
     }
 }

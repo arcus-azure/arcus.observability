@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Arcus.Observability.Tests.Core;
 using Bogus;
@@ -14,6 +16,7 @@ using Serilog.Configuration;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -25,6 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
+        private readonly ILoggerFactory _loggerFactory;
 
         protected readonly Faker BogusGenerator = new Faker();
 
@@ -38,6 +42,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             
             InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
+
+            _loggerFactory = CreateLoggerFactory();
+            Logger = _loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
         }
 
         /// <summary>
@@ -49,6 +56,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// Gets the ID of the application that has access to the Azure Application Insights resource.
         /// </summary>
         protected string ApplicationId { get; }
+
+        protected ILogger Logger { get; }
 
         /// <summary>
         /// Creates an <see cref="ILoggerFactory"/> instance that will create <see cref="Microsoft.Extensions.Logging.ILogger"/> instances that writes to Azure Application Insights.
@@ -88,6 +97,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ["OperationId"] = operationId,
                 ["TestName"] = memberName
             };
+        }
+
+        protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ApplicationInsightsClient, Task> assertion)
+        {
+            using (ApplicationInsightsDataClient dataClient = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    var client = new ApplicationInsightsClient(dataClient, ApplicationId);
+                    await assertion(client);
+                }); 
+            }
         }
 
         protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion)

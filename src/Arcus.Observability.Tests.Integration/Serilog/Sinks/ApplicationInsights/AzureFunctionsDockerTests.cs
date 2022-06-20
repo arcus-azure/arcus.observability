@@ -38,21 +38,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Logger.LogInformation("{StatusCode} <- {URI}", response.StatusCode, requestUri);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-                using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
                 {
-                    await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                    EventsRequestResult[] results = await client.GetRequestsAsync();
+                    AssertX.Any(results, result =>
                     {
-                        EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
-                        Assert.NotEmpty(results.Value);
-                        AssertX.Any(results.Value, result =>
-                        {
-                            Assert.Contains("order", result.Request.Url);
-                            Assert.Equal("200", result.Request.ResultCode);
-                            Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
-                            Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
-                        });
+                        Assert.Contains("order", result.Request.Url);
+                        Assert.Equal("200", result.Request.ResultCode);
+                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
+                        Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
                     });
-                }
+                });
             }
         }
     }
