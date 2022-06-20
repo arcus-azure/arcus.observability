@@ -9,6 +9,7 @@ namespace Arcus.Observability.Correlation
     public class CorrelationInfoUpstreamServiceOptions
     {
         private string _operationParentIdHeaderName = "Request-Id";
+        private Func<string> _generateId = () => Guid.NewGuid().ToString();
 
         /// <summary>
         /// Gets or sets the flag indicating whether or not the upstream service information should be extracted from the <see cref="OperationParentIdHeaderName"/> following the W3C Trace-Context standard. 
@@ -26,6 +27,20 @@ namespace Arcus.Observability.Correlation
             {
                 Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank value for the operation parent ID request header name");
                 _operationParentIdHeaderName = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the function to generate the operation parent ID without extracting from the request.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> is <c>null</c>.</exception>
+        public Func<string> GenerateId
+        {
+            get => _generateId;
+            set
+            {
+                Guard.NotNull(value, nameof(value), "Requires a function to generate the operation parent ID");
+                _generateId = value;
             }
         }
     }

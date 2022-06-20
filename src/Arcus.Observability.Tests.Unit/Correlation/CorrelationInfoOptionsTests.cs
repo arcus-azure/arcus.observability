@@ -28,5 +28,15 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             Assert.ThrowsAny<ArgumentException>(() =>
                 options.OperationParent.OperationParentIdHeaderName = operationIdPropertyName);
         }
+
+        [Fact]
+        public void OperationParentId_WithoutGeneration_Fails()
+        {
+            // Arrange
+            var options = new CorrelationInfoOptions();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => options.OperationParent.GenerateId = null);
+        }
     }
 }
