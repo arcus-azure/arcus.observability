@@ -20,10 +20,20 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// </summary>
         /// <param name="options">The consumer-configurable options to influence how the exception should be tracked.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
         public ExceptionTelemetryConverter(ApplicationInsightsSinkExceptionOptions options)
         {
             Guard.NotNull(options, nameof(options), "Requires a set of user-configurable options to influence the behavior of how exceptions are tracked");
             _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExceptionTelemetryConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        public ExceptionTelemetryConverter(ApplicationInsightsSinkOptions options) : base(options)
+        {
         }
         
         /// <summary>
@@ -40,7 +50,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             
             var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception);
 
-            if (_options.IncludeProperties)
+            if (Options?.Exception.IncludeProperties == true || _options?.IncludeProperties == true)
             {
                 EnrichWithExceptionProperties(logEvent, exceptionTelemetry);
             }
@@ -55,10 +65,28 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             
             foreach (PropertyInfo exceptionProperty in exceptionProperties)
             {
-                string key = String.Format(_options.PropertyFormat, exceptionProperty.Name);
+                string propertyFormat = DeterminePropertyFormat();
+
+                string key = String.Format(propertyFormat, exceptionProperty.Name);
                 var value = exceptionProperty.GetValue(logEvent.Exception)?.ToString();
                 exceptionTelemetry.Properties[key] = value;
             }
+        }
+
+        private string DeterminePropertyFormat()
+        {
+            if (Options != null)
+            {
+                return Options.Exception.PropertyFormat;
+            }
+
+            if (_options != null)
+            {
+                return _options.PropertyFormat;
+            }
+
+            throw new InvalidOperationException(
+                "Could not determine exception property format because the Application Insights exception converter was not initialized with any options");
         }
     }
 }

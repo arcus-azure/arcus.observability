@@ -6,6 +6,7 @@ using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configurat
 using Arcus.Observability.Tests.Core;
 using Bogus;
 using Microsoft.Azure.ApplicationInsights.Query;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -61,7 +62,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             var configuration = new LoggerConfiguration()
                 .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                .WriteTo.AzureApplicationInsights(InstrumentationKey, configureOptions)
+                .WriteTo.AzureApplicationInsightsWithInstrumentationKey(InstrumentationKey, configureOptions)
                 .WriteTo.Sink(_memoryLogSink);
 
             configureLogging?.Invoke(configuration);
@@ -80,12 +81,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         protected Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
         {
-            var operationId = Guid.NewGuid();
-            Logger.LogInformation("Testing '{TestName}' using {OperationId}", memberName, operationId);
+            var testId = Guid.NewGuid();
+            Logger.LogInformation("Testing '{TestName}' using {TestId}", memberName, testId);
 
             return new Dictionary<string, object>
             {
-                ["OperationId"] = operationId,
+                ["TestId"] = testId,
                 ["TestName"] = memberName
             };
         }
@@ -102,7 +103,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                                          .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
                         .ExecuteAsync(assertion);
         }
-
         protected ApplicationInsightsDataClient CreateApplicationInsightsClient()
         {
             var clientCredentials = new ApiKeyClientCredentials(Configuration.GetValue<string>("ApplicationInsights:ApiKey"));

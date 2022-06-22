@@ -17,16 +17,21 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     {
         private readonly RequestTelemetryConverter _requestTelemetryConverter;
         private readonly ExceptionTelemetryConverter _exceptionTelemetryConverter;
-        private readonly TraceTelemetryConverter _traceTelemetryConverter = new TraceTelemetryConverter();
-        private readonly EventTelemetryConverter _eventTelemetryConverter = new EventTelemetryConverter();
-        private readonly MetricTelemetryConverter _metricTelemetryConverter = new MetricTelemetryConverter();
-        private readonly DependencyTelemetryConverter _dependencyTelemetryConverter = new DependencyTelemetryConverter();
+        private readonly TraceTelemetryConverter _traceTelemetryConverter;
+        private readonly EventTelemetryConverter _eventTelemetryConverter;
+        private readonly MetricTelemetryConverter _metricTelemetryConverter;
+        private readonly DependencyTelemetryConverter _dependencyTelemetryConverter;
 
         private ApplicationInsightsTelemetryConverter(ApplicationInsightsSinkOptions options)
         {
             Guard.NotNull(options, nameof(options), "Requires a set of options to influence how to track to Application Insights");
-            _requestTelemetryConverter = new RequestTelemetryConverter(options.Request);
-            _exceptionTelemetryConverter = new ExceptionTelemetryConverter(options.Exception);
+
+            _requestTelemetryConverter = new RequestTelemetryConverter(options);
+            _exceptionTelemetryConverter = new ExceptionTelemetryConverter(options);
+            _traceTelemetryConverter = new TraceTelemetryConverter(options);
+            _eventTelemetryConverter = new EventTelemetryConverter(options);
+            _metricTelemetryConverter = new MetricTelemetryConverter(options);
+            _dependencyTelemetryConverter = new DependencyTelemetryConverter(options);
         }
         
         /// <summary>

@@ -161,8 +161,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                         Assert.Equal(operationId, actualOperationId);
                         Assert.Equal(transactionId, actualTransactionId);
                         Assert.Equal(operationParentId, actualOperationParentId);
-                        Assert.Equal(operationId, trace.Operation.Id);
-                        Assert.Equal(operationParentId, trace.Operation.ParentId);
+                        Assert.Equal(transactionId, trace.Operation.Id);
+                        Assert.Equal(operationId, trace.Operation.ParentId);
                     });
                 });
             }
