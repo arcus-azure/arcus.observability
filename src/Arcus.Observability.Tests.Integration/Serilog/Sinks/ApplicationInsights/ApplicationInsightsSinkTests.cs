@@ -23,6 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
+        private readonly LoggerConfiguration _loggerConfiguration;
         private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
 
@@ -40,6 +41,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             _memoryLogSink = new InMemoryLogSink();
 
             ApplicationInsightsSinkOptions = new ApplicationInsightsSinkOptions();
+            LoggerConfiguration = new LoggerConfiguration();
             InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
         }
@@ -62,18 +64,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the default integration test Serilog logger configuration which already includes the Application Insights Serilog sink.
         /// </summary>
-        protected LoggerConfiguration LoggerConfiguration
-        {
-            get
-            {
-                var config =  new LoggerConfiguration()
-                    .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
-                    .WriteTo.ApplicationInsights(InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
-                    .WriteTo.Sink(_memoryLogSink);
-
-                return config;
-            }
-        }
+        protected LoggerConfiguration LoggerConfiguration { get; }
 
         /// <summary>
         /// Gets the logger implementation that writes telemetry via Serilog to Application Insights.
@@ -82,6 +73,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             get
             {
+                LoggerConfiguration
+                    .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
+                    .WriteTo.ApplicationInsights(InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
+                    .WriteTo.Sink(_memoryLogSink);
+
                 ILogger logger = CreateLogger(LoggerConfiguration);
                 return logger;
             }

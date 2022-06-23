@@ -22,7 +22,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string componentName = BogusGenerator.Commerce.ProductName();
             LoggerConfiguration.Enrich.WithComponentName(componentName);
 
-            string dependencyType = "Azure IoT Hub";
             string iotHubName = BogusGenerator.Commerce.ProductName();
             string dependencyName = iotHubName;
             string dependencyId = BogusGenerator.Random.Guid().ToString();
@@ -41,7 +40,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal("Azure IoT Hub", result.Dependency.Type);
                     Assert.Equal(iotHubName, result.Dependency.Target);
                     Assert.Equal(componentName, result.Cloud.RoleName);
                     Assert.Equal(dependencyName, result.Dependency.Name);

@@ -38,13 +38,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
-                Assert.Contains(results, result =>
+                AssertX.Any(results, result =>
                 {
-                    return result.Dependency.Type == dependencyType
-                           && result.Dependency.Id == dependencyId
-                           && result.Dependency.Target == vaultUri
-                           && result.Dependency.Data == secretName
-                           && result.Dependency.Name == dependencyName;
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(vaultUri, result.Dependency.Target);
+                    Assert.Equal(secretName, result.Dependency.Data);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
                 });
             });
         }
