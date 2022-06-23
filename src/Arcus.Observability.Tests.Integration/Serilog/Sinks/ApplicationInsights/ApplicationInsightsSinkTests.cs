@@ -22,7 +22,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
-        private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
 
         /// <summary>
@@ -35,14 +34,19 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// </summary>
         public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
-            _outputWriter = outputWriter;
             _memoryLogSink = new InMemoryLogSink();
 
+            TestOutput = outputWriter;
             ApplicationInsightsSinkOptions = new ApplicationInsightsSinkOptions();
             LoggerConfiguration = new LoggerConfiguration();
             InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
         }
+
+        /// <summary>
+        /// Gets the to write information to the test output.
+        /// </summary>
+        protected ITestOutputHelper TestOutput { get; }
 
         /// <summary>
         /// Gets the instrumentation key to connect to the Azure Application Insights instance.
@@ -72,7 +76,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             get
             {
                 LoggerConfiguration
-                    .WriteTo.Sink(new XunitLogEventSink(_outputWriter))
+                    .WriteTo.Sink(new XunitLogEventSink(TestOutput))
                     .WriteTo.ApplicationInsights(InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
                     .WriteTo.Sink(_memoryLogSink);
 
@@ -108,7 +112,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         protected Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
         {
             var testId = Guid.NewGuid();
-            _outputWriter.WriteLine("Testing '{0}' using {1}", memberName, testId);
+            TestOutput.WriteLine("Testing '{0}' using {1}", memberName, testId);
 
             return new Dictionary<string, object>
             {

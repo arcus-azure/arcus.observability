@@ -29,11 +29,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             int httpPort = Configuration.GetValue<int>("AzureFunctions:HttpPort");
             string? requestUri = $"http://localhost:{httpPort}/api/order";
-            Logger.LogInformation("GET -> {URI}", requestUri);
+            TestOutput.WriteLine("GET -> {0}", requestUri);
 
             using (HttpResponseMessage response = await HttpClient.GetAsync(requestUri))
             {
-                Logger.LogInformation("{StatusCode} <- {URI}", response.StatusCode, requestUri);
+                TestOutput.WriteLine("{0} <- {1}", response.StatusCode, requestUri);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
