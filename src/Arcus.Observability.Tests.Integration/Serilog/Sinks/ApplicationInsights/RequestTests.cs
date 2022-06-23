@@ -42,7 +42,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogRequest(request, response, startTime, duration, telemetryContext);
+            Logger.LogRequest(request, response, operationName, startTime, duration, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -52,7 +52,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                     Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
-                    Assert.StartsWith(httpMethod.Method, result.Operation.Name);
+                    Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
                     Assert.Equal(correlation.OperationId, result.Request.Id);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);

@@ -4,6 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
+using Arcus.Observability.Correlation;
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
@@ -20,6 +23,63 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         public HttpDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
+        }
+
+         [Fact]
+        public async Task LogHttpDependencyWithRequestMessageWithCorrelation_SinksToApplicationInsights_ResultsInHttpDependencyTelemetryWithComponentName()
+        {
+            // Arrange
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}", $"parent-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+
+            string componentName = BogusGenerator.Commerce.ProductName();
+            HttpMethod httpMethod = GenerateHttpMethod();
+            string requestUrl = BogusGenerator.Image.LoremFlickrUrl();
+            string dependencyId = BogusGenerator.Random.Word();
+
+            using (ILoggerFactory loggerFactory = CreateLoggerFactory(
+                       config => config.Enrich.WithCorrelationInfo(accessor)
+                                       .Enrich.WithComponentName(componentName)))
+            {
+                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+
+                var request = new HttpRequestMessage(httpMethod, requestUrl)
+                {
+                    Content = new StringContent(BogusGenerator.Lorem.Paragraph())
+                };
+                var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+                DateTimeOffset startTime = DateTimeOffset.Now;
+                TimeSpan duration = BogusGenerator.Date.Timespan();
+                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+                // Act
+                logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId, telemetryContext);
+            }
+
+            // Assert
+            var requestUri = new Uri(requestUrl);
+            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            {
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                {
+                    EventsResults<EventsDependencyResult> results = await client.Events.GetDependencyEventsAsync(ApplicationId, PastHalfHourTimeSpan);
+                    Assert.NotEmpty(results.Value);
+                    AssertX.Any(results.Value, result =>
+                    {
+                        Assert.Equal(DependencyType, result.Dependency.Type);
+                        Assert.Equal(requestUri.Host, result.Dependency.Target);
+                        Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
+                        Assert.Equal(dependencyId, result.Dependency.Id);
+                        Assert.Equal(componentName, result.Cloud.RoleName);
+
+                        Assert.Equal(correlation.OperationId, result.Operation.ParentId);
+                        Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    });
+                });
+            }
+            
+            AssertSerilogLogProperties(httpMethod, requestUri.Host, requestUri.AbsolutePath);
         }
 
          [Fact]

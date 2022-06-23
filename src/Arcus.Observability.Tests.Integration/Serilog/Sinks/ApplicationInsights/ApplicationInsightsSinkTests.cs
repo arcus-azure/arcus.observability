@@ -8,6 +8,7 @@ using Arcus.Observability.Tests.Core;
 using Bogus;
 using GuardNet;
 using Microsoft.Azure.ApplicationInsights.Query;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
