@@ -57,7 +57,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(correlation.OperationId, result.Request.Id);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
                     Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
-
                 });
             });
         }
