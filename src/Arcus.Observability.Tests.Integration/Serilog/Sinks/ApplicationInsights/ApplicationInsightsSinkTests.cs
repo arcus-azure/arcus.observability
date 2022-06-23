@@ -8,7 +8,6 @@ using Arcus.Observability.Tests.Core;
 using Bogus;
 using GuardNet;
 using Microsoft.Azure.ApplicationInsights.Query;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -23,7 +22,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
-        private readonly LoggerConfiguration _loggerConfiguration;
         private readonly ITestOutputHelper _outputWriter;
         private readonly InMemoryLogSink _memoryLogSink;
 
