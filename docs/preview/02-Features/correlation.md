@@ -151,6 +151,18 @@ public void ConfigureServices(IServiceCollection services)
         // The function that will generate the operation ID header value.
         // (default: new `Guid`).
         options.Operation.GenerateId = () => $"Operation-{Guid.NewGuid()}";
+
+        // Configuration on the operation parent ID.
+        // -----------------------------------------
+
+        // Whether to extract the operation parent ID from the request or not (default: true).
+        options.OperationParent.ExtractFromRequest = false;
+
+        // The header that will contain the full operation parent ID (default: Request-Id).
+        options.OperationParent.OperationParentHeaderName = "Request-Id";
+        
+        // The function that will generate the operation parent ID when it shouldn't be extracted from the request.
+        options.OperationParent.GenerateId = () => $"Parent-{Guid.newGuid()}";
     });
 }
 ```

@@ -19,6 +19,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestTelemetryConverter" /> class.
         /// </summary>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
         public RequestTelemetryConverter()
             : this(new ApplicationInsightsSinkRequestOptions())
         {
@@ -29,12 +30,22 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// </summary>
         /// <param name="options">The user-defined configuration options to tracking requests.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options" /> is <c>null</c>.</exception>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
         public RequestTelemetryConverter(ApplicationInsightsSinkRequestOptions options)
         {
             Guard.NotNull(options, nameof(options), "Requires a set of user-configurable options to influence the behavior of how requests are tracked");
             _options = options;
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestTelemetryConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        public RequestTelemetryConverter(ApplicationInsightsSinkOptions options) : base(options)
+        {
+        }
+
         /// <summary>
         ///     Creates a telemetry entry for a given log event
         /// </summary>
@@ -57,8 +68,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
             var sourceSystem = logEntry.Properties.GetAsObject<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
 
-            string id = _options.GenerateId();
-
             string sourceName = DetermineSourceName(sourceSystem, requestMethod, requestUri, operationName);
             bool isSuccessfulRequest = DetermineRequestOutcome(responseStatusCode);
             Uri url = DetermineUrl(sourceSystem, requestHost, requestUri);
@@ -67,11 +76,15 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             var requestTelemetry = new RequestTelemetry(sourceName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
             {
-                Id = id,
                 Url = url,
                 Source = source,
                 Context = { Operation = { Name = requestOperationName } }
             };
+
+            if (_options != null)
+            {
+                requestTelemetry.Id = _options.GenerateId();
+            }
 
             requestTelemetry.Properties.AddRange(context);
             return requestTelemetry;

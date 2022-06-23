@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -13,8 +14,28 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class TraceTelemetryConverter : ApplicationInsightsSink.TelemetryConverters.TraceTelemetryConverter
     {
-        private readonly OperationContextConverter _operationContextConverter = new OperationContextConverter();
+        private readonly OperationContextConverter _operationContextConverter;
         private readonly CloudContextConverter _cloudContextConverter = new CloudContextConverter();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTelemetryConverter" /> class.
+        /// </summary>
+        [Obsolete("Use the constructor overload with the Application Insights options instead")]
+        public TraceTelemetryConverter()
+        {
+            _operationContextConverter = new OperationContextConverter();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTelemetryConverter" /> class.
+        /// </summary>
+        /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
+        public TraceTelemetryConverter(ApplicationInsightsSinkOptions options)
+        {
+            Guard.NotNull(options, nameof(options), "Requires a set of options to influence the behavior of the Application Insights Serilog sink");
+            _operationContextConverter = new OperationContextConverter(options);
+        }
 
         /// <summary>
         ///     Convert the given <paramref name="logEvent"/> to a series of <see cref="ITelemetry"/> instances.
