@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -20,25 +19,22 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogTableStorageDependency_SinksToApplicationInsights_ResultsInTableStorageDependencyTelemetry()
         {
             // Arrange
-            string dependencyType = "Azure table";
             string componentName = BogusGenerator.Commerce.ProductName();
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+
+            string dependencyType = "Azure table";
             string tableName = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
             string dependencyName = $"{accountName}/{tableName}";
             string dependencyId = BogusGenerator.Random.Guid().ToString();
 
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            DateTimeOffset startTime = DateTimeOffset.Now;
+            TimeSpan duration = BogusGenerator.Date.Timespan();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
-                bool isSuccessful = BogusGenerator.PickRandom(true, false);
-                DateTimeOffset startTime = DateTimeOffset.Now;
-                TimeSpan duration = BogusGenerator.Date.Timespan();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-                // Act
-                logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
-            }
+            // Act
+            Logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>

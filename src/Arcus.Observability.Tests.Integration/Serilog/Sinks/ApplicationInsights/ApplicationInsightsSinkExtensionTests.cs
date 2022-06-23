@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -29,29 +28,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                .WriteTo.AzureApplicationInsightsWithConnectionString(connectionString);
 
             var message = "Something to log with connection string";
+            ILogger logger = CreateLogger(configuration);
 
             // Act
-            using (ILoggerFactory factory = CreateLoggerFactory(configuration))
-            {
-                ILogger logger = factory.CreateLogger<ApplicationInsightsSinkExtensionTests>();
-                logger.LogInformation(message);
-            }
+            logger.LogInformation(message);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsTraceResult[] traces = await client.GetTracesAsync();
+                AssertX.Any(traces, trace =>
                 {
-                    EventsResults<EventsTraceResult> traces = 
-                        await client.Events.GetTraceEventsAsync(ApplicationId, PastHalfHourTimeSpan);
-
-                    Assert.NotEmpty(traces.Value);
-                    AssertX.Any(traces.Value, trace =>
-                    {
-                        Assert.Equal(message, trace.Trace.Message);
-                    });
+                    Assert.Equal(message, trace.Trace.Message);
                 });
-            }
+            });
         }
 
         [Fact]
@@ -62,29 +52,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(InstrumentationKey);
 
             var message = "Something to log with connection string";
+            ILogger logger = CreateLogger(configuration);
 
             // Act
-            using (ILoggerFactory factory = CreateLoggerFactory(configuration))
-            {
-                ILogger logger = factory.CreateLogger<ApplicationInsightsSinkExtensionTests>();
-                logger.LogInformation(message);
-            }
+            logger.LogInformation(message);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsTraceResult[] traces = await client.GetTracesAsync();
+                AssertX.Any(traces, trace =>
                 {
-                    EventsResults<EventsTraceResult> traces =
-                        await client.Events.GetTraceEventsAsync(ApplicationId, PastHalfHourTimeSpan);
-
-                    Assert.NotEmpty(traces.Value);
-                    AssertX.Any(traces.Value, trace =>
-                    {
-                        Assert.Equal(message, trace.Trace.Message);
-                    });
+                    Assert.Equal(message, trace.Trace.Message);
                 });
-            }
+            });
         }
     }
 }

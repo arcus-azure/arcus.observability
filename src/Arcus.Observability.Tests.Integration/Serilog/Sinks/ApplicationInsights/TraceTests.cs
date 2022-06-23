@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -25,14 +24,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Logger.LogInformation("Trace message '{Sentence}' (Context: {Context})", message, telemetryContext);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
-                {
-                    EventsTraceResult[] results = await client.GetTracesAsync();
-                    Assert.Contains(results, result => result.Trace.Message.Contains(message));
-                });
-            }
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                Assert.Contains(results, result => result.Trace.Message.Contains(message));
+            });
         }
     }
 }

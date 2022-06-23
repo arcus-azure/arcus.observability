@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -45,7 +43,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     {
                         Assert.Contains("order", result.Request.Url);
                         Assert.Equal("200", result.Request.ResultCode);
-                        Assert.True(Guid.TryParse(result.Request.Id, out Guid _));
                         Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
                     });
                 });

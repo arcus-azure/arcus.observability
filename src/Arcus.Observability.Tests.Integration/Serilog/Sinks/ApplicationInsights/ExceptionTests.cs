@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Tests.Integration.Fixture;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -49,13 +46,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options => options.Exception.IncludeProperties = true))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogCritical(exception, exception.Message);
-            }
+            ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
+            
+            // Act
+            Logger.LogCritical(exception, exception.Message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -78,17 +72,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
             string propertyFormat = "Exception.{0}";
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(configureOptions: options =>
-            {
-                options.Exception.IncludeProperties = true;
-                options.Exception.PropertyFormat = propertyFormat;
-            }))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogCritical(exception, exception.Message);
-            }
+            ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
+            ApplicationInsightsSinkOptions.Exception.PropertyFormat = propertyFormat;
+            
+            // Act
+            Logger.LogCritical(exception, exception.Message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -112,13 +100,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string componentName = BogusGenerator.Commerce.ProductName();
             var exception = new PlatformNotSupportedException(message);
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogCritical(exception, exception.Message);
-            }
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+            
+            // Act
+            Logger.LogCritical(exception, exception.Message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -145,14 +130,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
-
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                
-                // Act
-                logger.LogCritical(exception, exception.Message);
-            }
+            LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
+            
+            // Act
+            Logger.LogCritical(exception, exception.Message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -161,8 +142,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.Equal(operationId, result.Operation.Id);
-                    Assert.Equal(operationParentId, result.Operation.ParentId);
+                    Assert.Equal(transactionId, result.Operation.Id);
+                    Assert.Equal(operationId, result.Operation.ParentId);
                 });
             });
         }

@@ -48,13 +48,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string message = BogusGenerator.Lorem.Sentence();
             string componentName = BogusGenerator.Commerce.ProductName();
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogInformation(message);
-            }
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+            
+            // Act
+            Logger.LogInformation(message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -69,13 +66,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             var eventName = "Update version";
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithVersion()))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogEvent(eventName);
-            }
+            LoggerConfiguration.Enrich.WithVersion();
+            
+            // Act
+            Logger.LogEvent(eventName);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client=>
@@ -101,14 +95,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
-
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogInformation(message);
-            }
+            LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
+            
+            // Act
+            Logger.LogInformation(message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -121,11 +111,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
                     Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
 
-                    Assert.Equal(operationId, actualOperationId);
-                    Assert.Equal(transactionId, actualTransactionId);
-                    Assert.Equal(operationParentId, actualOperationParentId);
-                    Assert.Equal(operationId, trace.Operation.Id);
-                    Assert.Equal(operationParentId, trace.Operation.ParentId);
+                        Assert.Equal(operationId, actualOperationId);
+                        Assert.Equal(transactionId, actualTransactionId);
+                        Assert.Equal(operationParentId, actualOperationParentId);
+                        Assert.Equal(transactionId, trace.Operation.Id);
+                        Assert.Equal(operationId, trace.Operation.ParentId);
                 });
             });
         }
@@ -142,12 +132,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NodeNameVariable, nodeName))
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.PodNameVariable, podName))
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NamespaceVariable, @namespace))
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithKubernetesInfo()))
             {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+                LoggerConfiguration.Enrich.WithKubernetesInfo();
 
                 // Act
-                logger.LogInformation(message);
+                Logger.LogInformation(message);
             }
 
             // Assert

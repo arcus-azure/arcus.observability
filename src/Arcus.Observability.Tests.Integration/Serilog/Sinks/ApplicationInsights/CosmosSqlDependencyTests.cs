@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
