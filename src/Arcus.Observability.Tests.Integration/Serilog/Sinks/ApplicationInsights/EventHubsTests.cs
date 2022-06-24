@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,8 +19,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogEventHubsDependency_SinksToApplicationInsights_ResultsIEventHubsDependencyTelemetry()
         {
             // Arrange
-            string dependencyType = "Azure Event Hubs";
             string componentName = BogusGenerator.Commerce.ProductName();
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+
+            string dependencyType = "Azure Event Hubs";
             string eventHubName = BogusGenerator.Commerce.ProductName();
             string namespaceName = BogusGenerator.Finance.AccountName();
             string dependencyName = eventHubName;

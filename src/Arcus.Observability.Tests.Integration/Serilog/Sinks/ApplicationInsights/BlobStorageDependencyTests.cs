@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,8 +19,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task LogBlobStorageDependency_SinksToApplicationInsights_ResultsInBlobStorageDependencyTelemetry()
         {
             // Arrange
-            string dependencyType = "Azure blob";
             string componentName = BogusGenerator.Commerce.ProductName();
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+
+            string dependencyType = "Azure blob";
             string containerName = BogusGenerator.Commerce.ProductName();
             string accountName = BogusGenerator.Finance.AccountName();
             string dependencyName = $"{accountName}/{containerName}";

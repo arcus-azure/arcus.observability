@@ -18,8 +18,6 @@ namespace Arcus.Observability.Tests.Runtimes.AzureFunctions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
             using (var measurement = DurationMeasurement.Start())
             {
                 try

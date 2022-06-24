@@ -33,7 +33,7 @@ namespace Arcus.Observability.Tests.Runtimes.AzureFunctions
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.AzureApplicationInsights(instrumentationKey)
+                .WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey)
                 .CreateLogger();
 
             builder.Services.AddLogging(loggingBuilder =>

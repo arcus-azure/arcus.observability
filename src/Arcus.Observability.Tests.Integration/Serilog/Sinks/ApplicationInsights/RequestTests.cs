@@ -138,6 +138,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             var requestId = Guid.NewGuid().ToString();
 
+            LoggerConfiguration.Enrich.WithProperty(ContextProperties.Correlation.OperationId, null);
             ApplicationInsightsSinkOptions.Request.GenerateId = () => requestId;
             
             TimeSpan duration = BogusGenerator.Date.Timespan();
