@@ -29,33 +29,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             string eventName = BogusGenerator.Finance.AccountName();
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory())
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-                Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
-                // Act
-                logger.LogEvent(eventName, telemetryContext);
-            }
+            // Act
+            Logger.LogEvent(eventName, telemetryContext);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    EventsResults<EventsCustomEventResult> results = await client.Events.GetCustomEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(results.Value, result => result.CustomEvent.Name == eventName);
-                });
-            }
-
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                Assert.NotNull(logEntry);
-
-                var actualEventName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.EventName));
-                Assert.Equal(eventName, actualEventName.Value.ToDecentString());
-
-                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.Context));
+                EventsCustomEventResult[] results = await client.GetEventsAsync();
+                Assert.Contains(results, result => result.CustomEvent.Name == eventName);
             });
         }
 
@@ -65,24 +48,17 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string message = BogusGenerator.Lorem.Sentence();
             string componentName = BogusGenerator.Commerce.ProductName();
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithComponentName(componentName)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogInformation(message);
-            }
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+            
+            // Act
+            Logger.LogInformation(message);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    EventsResults<EventsTraceResult> results = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.NotEmpty(results.Value);
-                    Assert.Contains(results.Value, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
-                });
-            }
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                Assert.Contains(results, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
+            });
         }
 
         [Fact]
@@ -90,37 +66,21 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             // Arrange
             var eventName = "Update version";
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithVersion()))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogEvent(eventName);
-            }
+            LoggerConfiguration.Enrich.WithVersion();
+            
+            // Act
+            Logger.LogEvent(eventName);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client=>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsCustomEventResult[] events = await client.GetEventsAsync();
+                Assert.Contains(events, ev =>
                 {
-                    EventsResults<EventsCustomEventResult> events = await client.Events.GetCustomEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(events.Value, ev =>
-                    {
-                        return ev.CustomEvent.Name == eventName
-                               && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
-                               && !String.IsNullOrWhiteSpace(actualVersion);
-                    });
+                    return ev.CustomEvent.Name == eventName
+                           && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
+                           && !String.IsNullOrWhiteSpace(actualVersion);
                 });
-            }
-
-            AssertX.Any(GetLogEventsFromMemory(), logEvent => {
-                StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
-                Assert.NotNull(logEntry);
-
-                var actualEventName = Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.EventName));
-                Assert.Equal(eventName, actualEventName.Value.ToDecentString());
-
-                Assert.Single(logEntry.Properties, prop => prop.Name == nameof(EventLogEntry.Context));
             });
         }
 
@@ -135,37 +95,29 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
-
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithCorrelationInfo(correlationInfoAccessor)))
-            {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
-
-                // Act
-                logger.LogInformation(message);
-            }
+            LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
+            
+            // Act
+            Logger.LogInformation(message);
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsTraceResult[] traceEvents = await client.GetTracesAsync();
+                AssertX.Any(traceEvents, trace =>
                 {
-                    EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-
-                    AssertX.Any(traceEvents.Value, trace =>
-                    {
-                        Assert.Equal(message, trace.Trace.Message);
-                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId), "Requires a operation ID in the custom dimensions");
-                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
-                        Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
+                    Assert.Equal(message, trace.Trace.Message);
+                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId), "Requires a operation ID in the custom dimensions");
+                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
+                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
 
                         Assert.Equal(operationId, actualOperationId);
                         Assert.Equal(transactionId, actualTransactionId);
                         Assert.Equal(operationParentId, actualOperationParentId);
                         Assert.Equal(transactionId, trace.Operation.Id);
                         Assert.Equal(operationId, trace.Operation.ParentId);
-                    });
                 });
-            }
+            });
         }
 
         [Fact]
@@ -180,32 +132,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NodeNameVariable, nodeName))
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.PodNameVariable, podName))
             using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NamespaceVariable, @namespace))
-            using (ILoggerFactory loggerFactory = CreateLoggerFactory(config => config.Enrich.WithKubernetesInfo()))
             {
-                ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+                LoggerConfiguration.Enrich.WithKubernetesInfo();
 
                 // Act
-                logger.LogInformation(message);
+                Logger.LogInformation(message);
             }
 
             // Assert
-            using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                EventsTraceResult[] traceEvents = await client.GetTracesAsync();
+                Assert.Contains(traceEvents, trace =>
                 {
-                    EventsResults<EventsTraceResult> traceEvents = await client.Events.GetTraceEventsAsync(ApplicationId, filter: OnlyLastHourFilter);
-                    Assert.Contains(traceEvents.Value, trace =>
-                    {
-                        return message == trace.Trace.Message
-                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.NodeName, out string actualNodeName)
-                               && nodeName == actualNodeName
-                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.PodName, out string actualPodName)
-                               && podName == actualPodName
-                               && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.Namespace, out string actualNamespace)
-                               && @namespace == actualNamespace;
-                    });
+                    return message == trace.Trace.Message
+                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.NodeName, out string actualNodeName)
+                           && nodeName == actualNodeName
+                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.PodName, out string actualPodName)
+                           && podName == actualPodName
+                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.Namespace, out string actualNamespace)
+                           && @namespace == actualNamespace;
                 });
-            }
+            });
         }
     }
 }

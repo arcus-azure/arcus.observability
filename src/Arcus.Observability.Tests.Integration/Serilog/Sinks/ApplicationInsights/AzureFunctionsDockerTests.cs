@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -31,27 +29,23 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             int httpPort = Configuration.GetValue<int>("AzureFunctions:HttpPort");
             string? requestUri = $"http://localhost:{httpPort}/api/order";
-            Logger.LogInformation("GET -> {URI}", requestUri);
+            TestOutput.WriteLine("GET -> {0}", requestUri);
 
             using (HttpResponseMessage response = await HttpClient.GetAsync(requestUri))
             {
-                Logger.LogInformation("{StatusCode} <- {URI}", response.StatusCode, requestUri);
+                TestOutput.WriteLine("{0} <- {1}", response.StatusCode, requestUri);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-                using (ApplicationInsightsDataClient client = CreateApplicationInsightsClient())
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
                 {
-                    await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
+                    EventsRequestResult[] results = await client.GetRequestsAsync();
+                    AssertX.Any(results, result =>
                     {
-                        EventsResults<EventsRequestResult> results = await client.Events.GetRequestEventsAsync(ApplicationId, PastHalfHourTimeSpan);
-                        Assert.NotEmpty(results.Value);
-                        AssertX.Any(results.Value, result =>
-                        {
-                            Assert.Contains("order", result.Request.Url);
-                            Assert.Equal("200", result.Request.ResultCode);
-                            Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
-                        });
+                        Assert.Contains("order", result.Request.Url);
+                        Assert.Equal("200", result.Request.ResultCode);
+                        Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
                     });
-                }
+                });
             }
         }
     }
