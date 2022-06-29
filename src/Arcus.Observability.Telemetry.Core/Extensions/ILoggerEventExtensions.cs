@@ -63,6 +63,5 @@ namespace Microsoft.Extensions.Logging
         {
             LogCustomEvent(logger, name, context);
         }
-
     }
 }
