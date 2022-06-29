@@ -50,7 +50,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogEvent(eventName, properties);
+                logger.LogCustomEvent(eventName, properties);
 
                 // Assert
                 Assert.Empty(spySink.CurrentLogEmits);
@@ -78,7 +78,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogEvent(eventName, properties);
+                logger.LogCustomEvent(eventName, properties);
 
                 // Assert
                 LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);

@@ -32,7 +32,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogEvent(eventName, telemetryContext);
+            Logger.LogCustomEvent(eventName, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -69,7 +69,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             LoggerConfiguration.Enrich.WithVersion();
             
             // Act
-            Logger.LogEvent(eventName);
+            Logger.LogCustomEvent(eventName);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client=>

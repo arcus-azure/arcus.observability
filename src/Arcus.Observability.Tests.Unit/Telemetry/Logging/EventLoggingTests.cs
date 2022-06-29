@@ -19,7 +19,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string eventName = _bogusGenerator.Name.FullName();
 
             // Act
-            logger.LogEvent(eventName);
+            logger.LogCustomEvent(eventName);
 
             // Assert
             var logMessage = logger.WrittenMessage;
@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string eventName = null;
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogEvent(eventName));
+            Assert.Throws<ArgumentException>(() => logger.LogCustomEvent(eventName));
         }
     }
 }

@@ -945,7 +945,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["Vendor"] = "Contoso"
             };
 
-            logger.LogEvent(eventName, telemetryContext);
+            logger.LogCustomEvent(eventName, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -986,7 +986,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["OrderId"] = "ABC",
                 ["Vendor"] = "Contoso"
             };
-            logger.LogEvent(eventName, context);
+            logger.LogCustomEvent(eventName, context);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
