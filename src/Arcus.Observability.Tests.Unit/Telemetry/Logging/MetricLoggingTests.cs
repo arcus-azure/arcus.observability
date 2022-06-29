@@ -22,7 +22,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act
-            logger.LogMetric(metricName, metricValue);
+            logger.LogCustomMetric(metricName, metricValue);
 
             // Assert
             MetricLogEntry metric = logger.GetMessageAsMetric();
@@ -45,7 +45,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset timestamp = _bogusGenerator.Date.RecentOffset();
 
             // Act
-            logger.LogMetric(metricName, metricValue, timestamp);
+            logger.LogCustomMetric(metricName, metricValue, timestamp);
 
             // Assert
             MetricLogEntry metric = logger.GetMessageAsMetric();
@@ -73,7 +73,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogMetric(metricName, metricValue, timestamp, context);
+            logger.LogCustomMetric(metricName, metricValue, timestamp, context);
 
             // Assert
             MetricLogEntry metric = logger.GetMessageAsMetric();
@@ -102,7 +102,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogMetric(metricName, metricValue));
+            Assert.Throws<ArgumentException>(() => logger.LogCustomMetric(metricName, metricValue));
         }
     }
 }

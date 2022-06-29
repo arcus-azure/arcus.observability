@@ -1058,7 +1058,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Capacity"] = "0.45"
             };
-            logger.LogMetric(metricName, metricValue, timestamp, telemetryContext);
+            logger.LogCustomMetric(metricName, metricValue, timestamp, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 

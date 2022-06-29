@@ -23,7 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogMetric(metricName, metricValue, telemetryContext);
+            Logger.LogCustomMetric(metricName, metricValue, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
