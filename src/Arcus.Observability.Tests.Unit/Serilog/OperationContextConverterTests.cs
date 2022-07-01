@@ -106,7 +106,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Equal(operationParentId, telemetry.Context.Operation.ParentId);
         }
 
-
         [Fact]
         public void EnrichWithCustomCorrelationInfo_RequestWithCustomCorrelationProperties_SetOnContext()
         {
