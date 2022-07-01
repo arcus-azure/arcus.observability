@@ -5,19 +5,11 @@ layout: default
 
 # Azure Application Insights Sink
 
-## Installation
-
-This feature requires to install our NuGet package
-
-```shell
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights
-```
-
 ## What is it?
 
 The Azure Application Insights sink is an extension of the [official Application Insights sink](https://www.nuget.org/packages/Serilog.Sinks.ApplicationInsights/) that allows you to not only emit traces or events, but the whole Application Insights suite of telemetry types - Traces, Dependencies, Events, Requests & Metrics.
 
-You can easily configure the sink by providing the Azure Application Insights connection string or instrumentation key, but the connection string is prefered.
+You can easily configure the sink by providing the Azure Application Insights connection string or instrumentation key, but the connection string is preferred.
 
 ```csharp
 using Serilog;
@@ -44,6 +36,30 @@ ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
+```
+
+For more information on this sink:
+
+- [Azure Application Insights Sink](#azure-application-insights-sink)
+  - [What is it?](#what-is-it)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [Requests](#requests)
+    - [Request ID](#request-id)
+    - [Exceptions](#exceptions)
+      - [Properties](#properties)
+    - [Correlation](#correlation)
+  - [FAQ](#faq)
+    - [Q: Why is it mandatory to provide a instrumentation key?](#q-why-is-it-mandatory-to-provide-a-instrumentation-key)
+    - [Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?](#q-where-can-i-initialize-the-logger-in-an-aspnet-core-application-or-other-hosted-service)
+
+
+## Installation
+
+This feature requires to install our NuGet package
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights
 ```
 
 ## Configuration
@@ -111,6 +127,39 @@ public class OrderingException : Exception
 With this configuration, the custom dimension name for the public properties of this exception will look like this: `"CustomException.OrderNumber"`.
 
 > ⚠️ The property format should be in the correct form in order to be used. It's passed to the `String.Format` eventually which will try to insert the exception's property name.
+
+### Correlation
+
+When tracking telemetry, the correlation information is enriched via the [Arcus Serilog correlation enrichment](../telemetry-enrichment.md). 
+This Serilog enricher is capable of customizing the log properties where the correlation will be added. When such custom setup is used, the same custom property names should be used here so that the Application Insights sink knows where to get the correlation information from.
+
+```csharp
+string operationIdPropertyName = "MyOperationPropertyId";
+string transactionIdPropertyName = "MyTransactionPropertyId";
+string operationParentPropertyName = "MyOperationParentPropertyId";
+IServiceProvider serviceProvider = ...
+
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithCorrelationInfo(serviceProvider, options =>
+    {
+        options.Correlation.OperationIdPropertyName = operationIdPropertyName;
+        options.Correlation.TransactionIdPropertyName = transactionIdPropertyName;
+        options.Correlation.OperationParentIdPropertyName = operationParentIdPropertyName;
+    })
+    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", options =>
+    {
+        // Sets a custom property name where the operation ID should be added (default: 'OperationId').
+        options.Correlation.OperationIdPropertyName = operationIdPropertyName;
+
+        // Sets a custom property name where the transaction ID should be added (default: 'TransactionId');
+        options.Correlation.TransactionIdPropertyName = transactionIdPropertyName;
+
+        // Sets a custom property name where the operation parent ID should be added (default: 'OperationParentId').
+        options.Correlation.OperationParentIdPropertyName = operationParentIdPropertyName;
+    });
+```
+
+For more information on the way how Arcus handles correlation, see [this dedicated page](../correlation.md).
 
 ## FAQ
 
