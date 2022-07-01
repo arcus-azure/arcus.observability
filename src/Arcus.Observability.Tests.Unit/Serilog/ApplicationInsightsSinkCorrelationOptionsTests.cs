@@ -109,7 +109,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             options.OperationParentIdPropertyName = propertyName;
 
             // Assert
-            Assert.Equal(propertyName, options.OperationIdPropertyName);
+            Assert.Equal(propertyName, options.OperationParentIdPropertyName);
         }
 
         [Theory]
