@@ -146,6 +146,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.TransactionIdPropertyName = transactionIdPropertyName);
 
             var context = new DefaultHttpContext();
+            context.Request.Method = HttpMethods.Get;
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/service-b");
+
             using (var measurement = DurationMeasurement.Start())
             {
                 // Act
