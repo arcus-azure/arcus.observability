@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogMetric(logger, name, value, context);
+            LogMetric(logger, name, value, DateTimeOffset.UtcNow, context);
         }
 
         /// <summary>
