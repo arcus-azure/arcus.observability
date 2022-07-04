@@ -61,6 +61,11 @@ namespace Microsoft.Extensions.Logging
         [Obsolete("Use " + nameof(LogCustomEvent) + " instead")]
         public static void LogEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank event name to track an custom event");
+
+            context = context ?? new Dictionary<string, object>();
+
             LogCustomEvent(logger, name, context);
         }
     }
