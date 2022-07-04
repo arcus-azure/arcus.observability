@@ -462,7 +462,7 @@ Here is how you can report an `Order Created` event:
 ```csharp
 using Microsoft.Extensions.Logging;
 
-logger.LogEvent("Order Created");
+logger.LogCustomEvent("Order Created");
 // Output: {"EventName": "Order Created", "Context": {}}
 ```
 
@@ -488,7 +488,7 @@ Here is how you can report an `Invoices Received` metric:
 ```csharp
 using Microsoft.Extensions.Logging;
 
-logger.LogMetric("Invoices Received", 133);
+logger.LogCustomMetric("Invoices Received", 133);
 // Output: {"MetricName": "Invoices Received", "MetricValue": 133, "Timestamp": "03/23/2020 09:32:02 +00:00", "Context: {[TelemetryType, Metric]}}
 ```
 

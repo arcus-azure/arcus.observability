@@ -104,7 +104,7 @@ public class DockerHubMetricScraperFunction
             {"Image ID", $"{repoName}/{imageName}"}
         };
 
-        _logger.LogMetric("Image Pulls", pullCount, contextualInformation);
+        _logger.LogCustomMetric("Image Pulls", pullCount, contextualInformation);
     }
 }
 ```
