@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogCustomEvent(logger, name, context);
+            logger.LogWarning(MessageFormats.EventFormat, new EventLogEntry(name, context));
         }
     }
 }

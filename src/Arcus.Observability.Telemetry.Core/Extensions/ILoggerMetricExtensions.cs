@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogCustomMetric(logger, name, value, context);
+            LogMetric(logger, name, value, context);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
 
-            LogCustomMetric(logger, name, value, timestamp, context);
+            logger.LogWarning(MessageFormats.MetricFormat, new MetricLogEntry(name, value, timestamp, context));
         }
     }
 }
