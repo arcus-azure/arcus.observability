@@ -44,6 +44,11 @@ namespace Microsoft.Extensions.Logging
         [Obsolete("Use " + nameof(LogCustomMetric) + " instead")]
         public static void LogMetric(this ILogger logger, string name, double value, Dictionary<string, object> context = null)
         {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
+
+            context = context ?? new Dictionary<string, object>();
+
             LogCustomMetric(logger, name, value, context);
         }
 
