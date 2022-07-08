@@ -97,4 +97,4 @@ public class OrderController : ControllerBase
 }
 ```
 
-See [our list of telemetry types](../02-Features/writing-different-telemetry-types.md) to find out all the available types that can be written with Arcus.
+See [our list of telemetry types](../03-Features/writing-different-telemetry-types.md) to find out all the available types that can be written with Arcus.
