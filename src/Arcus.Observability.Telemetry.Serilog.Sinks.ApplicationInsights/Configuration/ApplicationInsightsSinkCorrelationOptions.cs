@@ -14,7 +14,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
                        _operationParentIdPropertyName = ContextProperties.Correlation.OperationParentId;
 
         /// <summary>
-        /// Gets or sets the Serilog application property name where the correlation operation ID is set.
+        /// Gets or sets the Serilog application property name where the operation ID is set.
         /// </summary>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="value"/> is blank.</exception>
         public string OperationIdPropertyName
