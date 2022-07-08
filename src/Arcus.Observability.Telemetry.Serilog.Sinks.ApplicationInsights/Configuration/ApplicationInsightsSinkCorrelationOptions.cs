@@ -28,7 +28,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
         }
 
         /// <summary>
-        /// Gets or sets the Serilog application property name where the correlation transaction ID is set.
+        /// Gets or sets the Serilog application property name where the transaction ID is set.
         /// </summary>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="value"/> is blank.</exception>
         public string TransactionIdPropertyName
