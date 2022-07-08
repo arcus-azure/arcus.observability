@@ -185,7 +185,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
-        [Obsolete("Use the " + nameof(LogServiceBusQueueDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
+        [Obsolete("Use the " + nameof(LogServiceBusTopicDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
         public static void LogServiceBusTopicDependency(
             this ILogger logger,
             string topicName,
@@ -241,7 +241,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
-        [Obsolete("Use the " + nameof(LogServiceBusQueueDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
+        [Obsolete("Use the " + nameof(LogServiceBusTopicDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
         public static void LogServiceBusTopicDependency(
             this ILogger logger,
             string topicName,
@@ -327,7 +327,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
-        [Obsolete("Use the " + nameof(LogServiceBusQueueDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
+        [Obsolete("Use the " + nameof(LogServiceBusDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
         public static void LogServiceBusDependency(
             this ILogger logger,
             string entityName,
@@ -387,7 +387,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
-        [Obsolete("Use the " + nameof(LogServiceBusQueueDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
+        [Obsolete("Use the " + nameof(LogServiceBusDependency) + " method overload with an Azure Service Bus namespace endpoint instead")]
         public static void LogServiceBusDependency(
             this ILogger logger,
             string entityName,
