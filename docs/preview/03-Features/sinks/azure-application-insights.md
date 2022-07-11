@@ -38,21 +38,7 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 ```
 
-For more information on this sink:
-
-- [Azure Application Insights Sink](#azure-application-insights-sink)
-  - [What is it?](#what-is-it)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-    - [Requests](#requests)
-    - [Request ID](#request-id)
-    - [Exceptions](#exceptions)
-      - [Properties](#properties)
-    - [Correlation](#correlation)
-  - [FAQ](#faq)
-    - [Q: Why is it mandatory to provide a instrumentation key?](#q-why-is-it-mandatory-to-provide-a-instrumentation-key)
-    - [Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?](#q-where-can-i-initialize-the-logger-in-an-aspnet-core-application-or-other-hosted-service)
-
+For more information on this sink: [see this section](#azure-application-insights-sink).
 
 ## Installation
 
@@ -163,7 +149,7 @@ For more information on the way how Arcus handles correlation, see [this dedicat
 
 ## FAQ
 
-### Q: Why is it mandatory to provide a instrumentation key?
+### Q: Why do I have to configure an instrumentation key (connection string) when using the Application Insights sink
 
 While the native Azure Application Insights SDK does not enforce an instrumentation key we have chosen to make it mandatory to provide one.
 
@@ -198,7 +184,6 @@ using Serilog.Configuration;
 using Arcus.Security.Core;
 
 ...
-
 IHostBuilder host = 
     Host.CreateDefaultBuilder()
     .ConfigureSecretStore((context, config, builder) =>
@@ -221,5 +206,3 @@ IHostBuilder host =
          }
     });
 ```
-
-
