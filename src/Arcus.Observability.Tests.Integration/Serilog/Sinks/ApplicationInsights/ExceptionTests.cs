@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Tests.Integration.Fixture;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -144,6 +146,87 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(transactionId, result.Operation.Id);
                     Assert.Equal(operationId, result.Operation.ParentId);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogWarning_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            Exception exception = BogusGenerator.System.Exception();
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogWarning(exception, "Exception message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogError_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            Exception exception = BogusGenerator.System.Exception();
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogError(exception, "Exception message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogCritical_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            Exception exception = BogusGenerator.System.Exception();
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogCritical(exception, "Exception message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
                 });
             });
         }

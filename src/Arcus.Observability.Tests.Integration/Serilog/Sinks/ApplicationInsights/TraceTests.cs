@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,20 +15,100 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
-        public async Task LogTrace_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        public async Task LogInformationWithoutContext_SinksToApplicationInsights_ResultsInTraceTelemetry()
         {
             // Arrange
             string message = BogusGenerator.Lorem.Sentence();
-            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogInformation("Trace message '{Sentence}' (Context: {Context})", message, telemetryContext);
+            Logger.LogInformation("Trace message '{Sentence}'", message);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsTraceResult[] results = await client.GetTracesAsync();
-                Assert.Contains(results, result => result.Trace.Message.Contains(message));
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(message, result.Trace.Message);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogInformation_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogInformation("Trace message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogTrace_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogTrace("Trace message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogDebug_SinksToApplicationInsights_ResultsInTraceTelemetry()
+        {
+            // Arrange
+            string message = BogusGenerator.Lorem.Sentence();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            string key = BogusGenerator.Lorem.Word();
+            string expected = BogusGenerator.Lorem.Word();
+            telemetryContext[key] = expected;
+
+            // Act
+            Logger.LogDebug("Trace message '{Sentence}'", telemetryContext, message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                AssertX.Any(results, result =>
+                {
+                    Assert.Contains(message, result.Trace.Message);
+                    Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
+                    Assert.Equal(expected, actual);
+                });
             });
         }
     }
