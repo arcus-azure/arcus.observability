@@ -14,5 +14,10 @@
         /// Gets the Application Insights options related to tracking exceptions.
         /// </summary>
         public ApplicationInsightsSinkExceptionOptions Exception { get; } = new ApplicationInsightsSinkExceptionOptions();
+
+        /// <summary>
+        /// Gets the Application Insights options related to telemetry correlation.
+        /// </summary>
+        public ApplicationInsightsSinkCorrelationOptions Correlation { get; } = new ApplicationInsightsSinkCorrelationOptions();
     }
 }

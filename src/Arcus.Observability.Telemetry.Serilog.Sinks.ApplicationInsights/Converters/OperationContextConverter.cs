@@ -47,7 +47,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             if (telemetryEntry is RequestTelemetry requestTelemetry)
             {
-                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
+                if (telemetryEntry.Properties.TryGetValue(_options.Correlation.OperationIdPropertyName, out string operationId))
                 {
                     if (operationId is null || operationId is "null")
                     {
@@ -57,24 +57,24 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                     requestTelemetry.Id = operationId;
                 }
 
-                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.TransactionId, out string transactionId))
+                if (telemetryEntry.Properties.TryGetValue(_options.Correlation.TransactionIdPropertyName, out string transactionId))
                 {
                     telemetryEntry.Context.Operation.Id = transactionId;
                 }
 
-                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationParentId, out string operationParentId))
+                if (telemetryEntry.Properties.TryGetValue(_options.Correlation.OperationParentIdPropertyName, out string operationParentId))
                 {
                     telemetryEntry.Context.Operation.ParentId = operationParentId;
                 }
             }
             else
             {
-                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.TransactionId, out string transactionId))
+                if (telemetryEntry.Properties.TryGetValue(_options.Correlation.TransactionIdPropertyName, out string transactionId))
                 {
                     telemetryEntry.Context.Operation.Id = transactionId;
                 }
 
-                if (telemetryEntry.Properties.TryGetValue(ContextProperties.Correlation.OperationId, out string operationId))
+                if (telemetryEntry.Properties.TryGetValue(_options.Correlation.OperationIdPropertyName, out string operationId))
                 {
                     telemetryEntry.Context.Operation.ParentId = operationId;
                 }

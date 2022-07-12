@@ -46,6 +46,34 @@ namespace Arcus.Observability.Tests.Unit.Serilog
 
         [Theory]
         [MemberData(nameof(NonRequestTelemetry))]
+        public void EnrichWithCustomCorrelationInfo_WithNonRequestTelemetry_Succeeds<TEntry>(TEntry telemetry) 
+            where TEntry : ITelemetry, ISupportProperties
+        {
+            // Arrange
+            string operationId = $"operation-{Guid.NewGuid()}", operationIdPropertyName = "My-Operation-Id";
+            string transactionId = $"transaction-{Guid.NewGuid()}", transactionIdPropertyName = "My-Transaction-Id";
+            telemetry.Properties.Add(operationIdPropertyName, operationId);
+            telemetry.Properties.Add(transactionIdPropertyName, transactionId);
+
+            var converter = new OperationContextConverter(new ApplicationInsightsSinkOptions
+            {
+                Correlation =
+                {
+                    OperationIdPropertyName = operationIdPropertyName,
+                    TransactionIdPropertyName = transactionIdPropertyName
+                }
+            });
+
+            // Act
+            converter.EnrichWithCorrelationInfo(telemetry);
+
+            // Assert
+            Assert.Equal(operationId, telemetry.Context.Operation.ParentId);
+            Assert.Equal(transactionId, telemetry.Context.Operation.Id);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonRequestTelemetry))]
         public void EnrichWithCorrelationInfo_WithNonRequestTelemetry_IgnoresCorrelation<TEntry>(TEntry telemetry)
             where TEntry : ITelemetry, ISupportProperties
         {
@@ -58,7 +86,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void EnrichWithCorrelationInfo_RequestWithOperationId_OperationIdSetOnContext()
+        public void EnrichWithCorrelationInfo_RequestWithDefaultCorrelationProperties_SetOnContext()
         {
             // Arrange
             var operationId = $"operation-{Guid.NewGuid()}";
@@ -78,6 +106,36 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             Assert.Equal(operationParentId, telemetry.Context.Operation.ParentId);
         }
 
+        [Fact]
+        public void EnrichWithCustomCorrelationInfo_RequestWithCustomCorrelationProperties_SetOnContext()
+        {
+            // Arrange
+            string operationId = $"operation-{Guid.NewGuid()}", operationIdPropertyName = "X-Operation-Id";
+            string transactionId = $"transaction-{Guid.NewGuid()}", transactionIdPropertyName = "X-Transaction-Id";
+            string operationParentId = $"parent-{Guid.NewGuid()}", operationParentIdPropertyName = "X-Parent-Id";
+            var telemetry = new RequestTelemetry();
+            telemetry.Properties.Add(operationIdPropertyName, operationId);
+            telemetry.Properties.Add(transactionIdPropertyName, transactionId);
+            telemetry.Properties.Add(operationParentIdPropertyName, operationParentId);
+
+            var converter = new OperationContextConverter(new ApplicationInsightsSinkOptions
+            {
+                Correlation =
+                {
+                    OperationIdPropertyName = operationIdPropertyName,
+                    TransactionIdPropertyName = transactionIdPropertyName,
+                    OperationParentIdPropertyName = operationParentIdPropertyName
+                }
+            });
+
+            // Act
+            converter.EnrichWithCorrelationInfo(telemetry);
+
+            // Assert
+            Assert.Equal(operationId, telemetry.Id);
+            Assert.Equal(transactionId, telemetry.Context.Operation.Id);
+            Assert.Equal(operationParentId, telemetry.Context.Operation.ParentId);
+        }
         [Fact]
         public void EnrichWithOperationName_RequestWithRequestNameAndOperationName_OperationNameSetOnContext()
         {

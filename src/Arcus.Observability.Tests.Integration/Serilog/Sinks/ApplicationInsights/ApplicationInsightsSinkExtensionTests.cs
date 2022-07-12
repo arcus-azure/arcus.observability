@@ -1,4 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Arcus.Observability.Correlation;
+using Arcus.Observability.Telemetry.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -64,6 +69,177 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(traces, trace =>
                 {
                     Assert.Equal(message, trace.Trace.Message);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task SinkWithCustomTransactionIdPropertyName_TrackNonRequest_EnrichCorrelationCorrectly()
+        {
+            // Arrange
+            string transactionIdPropertyName = "My-Transaction-Id";
+            ApplicationInsightsSinkOptions.Correlation.TransactionIdPropertyName = transactionIdPropertyName;
+
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+            LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.TransactionIdPropertyName = transactionIdPropertyName);
+
+            var message = "Something to log with custom transaction ID property name";
+
+            // Act
+            Logger.LogInformation(message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] result = await client.GetTracesAsync();
+                AssertX.Any(result, result =>
+                {
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Operation.ParentId);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task SinkWithCustomOperationIdPropertyName_TrackNonRequest_EnrichCorrelationCorrectly()
+        {
+            // Arrange
+            string operationIdPropertyName = "My-Operation-Id";
+            ApplicationInsightsSinkOptions.Correlation.OperationIdPropertyName = operationIdPropertyName;
+
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+            LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.OperationIdPropertyName = operationIdPropertyName);
+
+            var message = "Something to log with custom transaction ID property name";
+
+            // Act
+            Logger.LogInformation(message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] result = await client.GetTracesAsync();
+                AssertX.Any(result, result =>
+                {
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Operation.ParentId);
+                });
+            });
+        }
+
+         [Fact]
+        public async Task SinkWithCustomTransactionIdPropertyName_TrackRequest_EnrichCorrelationCorrectly()
+        {
+            // Arrange
+            string transactionIdPropertyName = "My-Transaction-Id";
+            ApplicationInsightsSinkOptions.Correlation.TransactionIdPropertyName = transactionIdPropertyName;
+
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}", $"parent-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+            LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.TransactionIdPropertyName = transactionIdPropertyName);
+
+            var context = new DefaultHttpContext();
+            context.Request.Method = HttpMethods.Get;
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/service-b");
+
+            using (var measurement = DurationMeasurement.Start())
+            {
+                // Act
+                Logger.LogRequest(context.Request, context.Response, measurement);
+            }
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsRequestResult[] result = await client.GetRequestsAsync();
+                AssertX.Any(result, result =>
+                {
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task SinkWithCustomOperationIdPropertyName_TrackRequest_EnrichCorrelationCorrectly()
+        {
+            // Arrange
+            string operationIdPropertyName = "My-Operation-Id";
+            ApplicationInsightsSinkOptions.Correlation.OperationIdPropertyName = operationIdPropertyName;
+
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}", $"parent-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+            LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.OperationIdPropertyName = operationIdPropertyName);
+
+            var context = new DefaultHttpContext();
+            context.Request.Method = HttpMethods.Get;
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/service-b");
+
+            using (var measurement = DurationMeasurement.Start())
+            {
+                // Act
+                Logger.LogRequest(context.Request, context.Response, measurement);
+            }
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsRequestResult[] result = await client.GetRequestsAsync();
+                AssertX.Any(result, result =>
+                {
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task SinkWithCustomOperationParentIdPropertyName_TrackRequest_EnrichCorrelationCorrectly()
+        {
+            // Arrange
+            string operationIdPropertyName = "My-OperationParent-Id";
+            ApplicationInsightsSinkOptions.Correlation.OperationParentIdPropertyName = operationIdPropertyName;
+
+            var correlation = new CorrelationInfo($"operation-{Guid.NewGuid()}", $"transaction-{Guid.NewGuid()}", $"parent-{Guid.NewGuid()}");
+            var accessor = new DefaultCorrelationInfoAccessor();
+            accessor.SetCorrelationInfo(correlation);
+            LoggerConfiguration.Enrich.WithCorrelationInfo(accessor, options => options.OperationParentIdPropertyName = operationIdPropertyName);
+
+            var context = new DefaultHttpContext();
+            context.Request.Method = HttpMethods.Get;
+            context.Request.Scheme = "http";
+            context.Request.Host = new HostString("localhost");
+            context.Request.Path = new PathString("/service-b");
+
+            using (var measurement = DurationMeasurement.Start())
+            {
+                // Act
+                Logger.LogRequest(context.Request, context.Response, measurement);
+            }
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsRequestResult[] result = await client.GetRequestsAsync();
+                AssertX.Any(result, result =>
+                {
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });
             });
         }
