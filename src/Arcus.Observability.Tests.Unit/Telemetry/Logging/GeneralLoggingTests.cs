@@ -734,7 +734,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(value, Assert.Contains(key, logEvent.Properties).ToDecentString());
         }
 
-        
         [Fact]
         public void LogDebugWithArgs_NotActivated_Ignores()
         {
