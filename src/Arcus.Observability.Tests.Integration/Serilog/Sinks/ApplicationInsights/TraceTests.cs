@@ -29,7 +29,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Contains(message, result.Trace.Message);
                 });
             });
         }
@@ -53,7 +53,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Contains(message, result.Trace.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -79,7 +79,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Contains(message, result.Trace.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
