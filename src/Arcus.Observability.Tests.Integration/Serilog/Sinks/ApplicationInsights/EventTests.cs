@@ -43,6 +43,24 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
+        public async Task LogCustomEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
+        {
+            // Arrange
+            string eventName = BogusGenerator.Finance.AccountName();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+            // Act
+            Logger.LogCustomEvent(eventName, telemetryContext);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsCustomEventResult[] results = await client.GetEventsAsync();
+                Assert.Contains(results, result => result.CustomEvent.Name == eventName);
+            });
+        }
+
+        [Fact]
         public async Task LogEventWithComponentName_SinksToApplicationInsights_ResultsInTelemetryWithComponentName()
         {
             // Arrange
@@ -73,6 +91,29 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client=>
+            {
+                EventsCustomEventResult[] events = await client.GetEventsAsync();
+                Assert.Contains(events, ev =>
+                {
+                    return ev.CustomEvent.Name == eventName
+                           && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
+                           && !String.IsNullOrWhiteSpace(actualVersion);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task LogCustomEventWithVersion_SinksToApplicationInsights_ResultsInTelemetryWithVersion()
+        {
+            // Arrange
+            var eventName = "Update version";
+            LoggerConfiguration.Enrich.WithVersion();
+
+            // Act
+            Logger.LogCustomEvent(eventName);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsCustomEventResult[] events = await client.GetEventsAsync();
                 Assert.Contains(events, ev =>

@@ -92,7 +92,7 @@ public class OrderController : ControllerBase
             {"Customer", order.Customer.Name}
         };
 
-        _logger.LogEvent("Order received", contextualInformation);
+        _logger.LogCustomEvent("Order received", contextualInformation);
     }
 }
 ```

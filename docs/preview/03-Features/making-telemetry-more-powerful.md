@@ -19,7 +19,7 @@ var telemetryContext = new Dictionary<string, object>
     {"OrderId", "ABC"},
 };
 
-logger.LogEvent("Order Created", telemetryContext);
+logger.LogCustomEvent("Order Created", telemetryContext);
 // Output: "Events Order Created (Context: [Customer, Arcus], [OrderId, ABC])"
 ```
 
@@ -34,7 +34,7 @@ Let's use an example - When measuring a metric you get an understanding of the c
 ```csharp
 using Microsoft.Extensions.Logging;
 
-logger.LogMetric("Orders Received", 133);
+logger.LogCustomMetric("Orders Received", 133);
 // Log output: "Metric Orders Received: 133 (Context: )"
 ```
 
@@ -51,7 +51,7 @@ var telemetryContext = new Dictionary<string, object>
     { "Customer", "Contoso"},
 };
 
-logger.LogMetric("Orders Received", 133, telemetryContext);
+logger.LogCustomMetric("Orders Received", 133, telemetryContext);
 // Log output: "Metric Orders Received: 133 (Context: [Customer, Contoso])"
 ```
 

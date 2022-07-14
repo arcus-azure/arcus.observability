@@ -967,6 +967,45 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
+        public void LogCustomEvent_WithEvent_CreatesEventTelemetry()
+        {
+            // Arrange
+            const string eventName = "Order Invoiced";
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink,
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["OrderId"] = "ABC",
+                ["Vendor"] = "Contoso"
+            };
+
+            logger.LogCustomEvent(eventName, telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, EventTracking.EventLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
+                Assert.Equal(eventName, eventTelemetry.Name);
+                AssertOperationContextForNonRequest(eventTelemetry, operationId, transactionId);
+                AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
+                AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
+            });
+        }
+
+        [Fact]
         public void LogEvent_WithJsonTelemetryValue_CreatesEventTelemetry()
         {
             // Arrange
@@ -987,6 +1026,47 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["Vendor"] = "Contoso"
             };
             logger.LogEvent(eventName, context);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var eventTelemetry = Assert.IsType<EventTelemetry>(telemetry);
+                Assert.Equal(eventName, eventTelemetry.Name);
+                AssertOperationContextForNonRequest(eventTelemetry, operationId, transactionId);
+                AssertContainsTelemetryProperty(eventTelemetry, "Value", json);
+                AssertContainsTelemetryProperty(eventTelemetry, "OrderId", "ABC");
+                AssertContainsTelemetryProperty(eventTelemetry, "Vendor", "Contoso");
+            });
+        }
+
+        [Fact]
+        public void LogCustomEvent_WithJsonTelemetryValue_CreatesEventTelemetry()
+        {
+            // Arrange
+            const string eventName = "Order Invoiced";
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink,
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
+
+            Order order = OrderGenerator.Generate();
+            string json = JsonSerializer.Serialize(order);
+            var context = new Dictionary<string, object>
+            {
+                ["Value"] = json,
+                ["OrderId"] = "ABC",
+                ["Vendor"] = "Contoso"
+            };
+            logger.LogCustomEvent(eventName, context);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
@@ -1059,6 +1139,47 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 ["Capacity"] = "0.45"
             };
             logger.LogMetric(metricName, metricValue, timestamp, telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, MetricTracking.MetricLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var metricTelemetry = Assert.IsType<MetricTelemetry>(telemetry);
+                Assert.Equal(metricName, metricTelemetry.Name);
+                Assert.Equal(metricValue, metricTelemetry.Sum);
+                Assert.Equal(timestamp, metricTelemetry.Timestamp);
+                AssertOperationContextForNonRequest(metricTelemetry, operationId, transactionId);
+
+                AssertContainsTelemetryProperty(metricTelemetry, "Capacity", "0.45");
+            });
+        }
+
+        [Fact]
+        public void LogCustomMetric_WithMetric_CreatesMetricTelemetry()
+        {
+            // Arrange
+            const string metricName = "Request stream";
+            const double metricValue = 0.13;
+            var timestamp = DateTimeOffset.UtcNow;
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            string transactionId = $"transaction-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink,
+                config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId)
+                                .Enrich.WithProperty(ContextProperties.Correlation.TransactionId, transactionId));
+
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Capacity"] = "0.45"
+            };
+            logger.LogCustomMetric(metricName, metricValue, timestamp, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
