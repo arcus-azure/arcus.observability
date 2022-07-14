@@ -1,4 +1,5 @@
-﻿using Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions.Fixture;
+﻿using System;
+using Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions.Fixture;
 using Microsoft.Azure.WebJobs.Script.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions
 {
+    // ReSharper disable once InconsistentNaming
     public class ILoggerBuilderExtensionsTests
     {
         [Fact]
@@ -27,6 +29,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions
             Assert.NotEmpty(services);
             Assert.Equal(2, services.Count);
             Assert.All(services, desc => Assert.NotEqual(typeof(TestLoggerProvider), desc.ImplementationType));
+        }
+
+        [Fact]
+        public void RemoveMicrosoftApplicationInsightsLoggerProvider_WithLoggerBuilderContainingProvider_RemovesProvider()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddSingleton<ApplicationInsightsLoggerProvider>();
+
+            // Act
+            services.AddLogging(logging => logging.RemoveMicrosoftApplicationInsightsLoggerProvider());
+
+            // Assert
+            Assert.NotEmpty(services);
+            Assert.All(services, desc => Assert.NotEqual(typeof(ApplicationInsightsLoggerProvider), desc.ImplementationType));
+        }
+
+        [Fact]
+        public void RemoveMicrosoftApplicationInsightsLoggerProvider_WithoutExpectedLoggerProvider_Fails()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            
+            // Act / Assert
+            Assert.ThrowsAny<InvalidOperationException>(() =>
+                services.AddLogging(logging => logging.RemoveMicrosoftApplicationInsightsLoggerProvider()));
         }
     }
 }
