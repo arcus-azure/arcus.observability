@@ -18,6 +18,6 @@
         /// <summary>
         /// Specifies that the request-source is an Azure EventHubs.
         /// </summary>
-        EventHubs = 4
+        AzureEventHubs = 4
     }
 }

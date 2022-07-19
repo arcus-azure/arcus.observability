@@ -192,7 +192,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
-            return CreateWithoutHttpRequest(RequestSourceSystem.EventHubs, operationName, isSuccessful, duration, startTime, context);
+            return CreateWithoutHttpRequest(RequestSourceSystem.AzureEventHubs, operationName, isSuccessful, duration, startTime, context);
         }
 
         private static RequestLogEntry CreateWithoutHttpRequest(
@@ -284,7 +284,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             switch (SourceSystem)
             {
                 case RequestSourceSystem.AzureServiceBus: return "Azure Service Bus";
-                case RequestSourceSystem.EventHubs: return "Azure EventHubs";
+                case RequestSourceSystem.AzureEventHubs: return "Azure EventHubs";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SourceSystem), "Cannot determine request source as it represents something outside the bounds of the enumeration");
             }

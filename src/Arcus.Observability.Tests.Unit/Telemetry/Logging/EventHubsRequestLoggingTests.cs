@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
-            Assert.Equal(RequestSourceSystem.EventHubs, entry.SourceSystem);
+            Assert.Equal(RequestSourceSystem.AzureEventHubs, entry.SourceSystem);
             Assert.Equal(name, Assert.Contains(Name, entry.Context));
             Assert.Equal(@namespace, Assert.Contains(Namespace, entry.Context));
             Assert.Equal(DefaultConsumerGroup, Assert.Contains(ConsumerGroup, entry.Context));
@@ -110,7 +110,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
-            Assert.Equal(RequestSourceSystem.EventHubs, entry.SourceSystem);
+            Assert.Equal(RequestSourceSystem.AzureEventHubs, entry.SourceSystem);
             Assert.Equal(name, Assert.Contains(Name, entry.Context));
             Assert.Equal(@namespace, Assert.Contains(Namespace, entry.Context));
             Assert.Equal(DefaultConsumerGroup, Assert.Contains(ConsumerGroup, entry.Context));
@@ -189,7 +189,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
-            Assert.Equal(RequestSourceSystem.EventHubs, entry.SourceSystem);
+            Assert.Equal(RequestSourceSystem.AzureEventHubs, entry.SourceSystem);
             Assert.Equal(@namespace, Assert.Contains(Namespace, entry.Context));
             Assert.Equal(consumerGroup, Assert.Contains(ConsumerGroup, entry.Context));
             Assert.Equal(eventHubsName, Assert.Contains(Name, entry.Context));
@@ -273,7 +273,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
-            Assert.Equal(RequestSourceSystem.EventHubs, entry.SourceSystem);
+            Assert.Equal(RequestSourceSystem.AzureEventHubs, entry.SourceSystem);
             Assert.Equal(@namespace, Assert.Contains(Namespace, entry.Context));
             Assert.Equal(consumerGroup, Assert.Contains(ConsumerGroup, entry.Context));
             Assert.Equal(eventHubsName, Assert.Contains(Name, entry.Context));
