@@ -100,7 +100,7 @@ namespace Arcus.Observability.Tests.Unit
             }
             else
             {
-                const string pattern = @"(?<source>(Azure Service Bus|Azure EventHubs)) from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, [\w\$]+\])(; \[[\w\-]+, [\w\$\.]+\])*))\}\)$";
+                const string pattern = @"(Azure Service Bus|Azure EventHubs) from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, [\w\$]+\])(; \[[\w\-]+, [\w\$\.]+\])*))\}\)$";
                 Match match = Regex.Match(logger.WrittenMessage, pattern);
 
                 string operationName = match.GetGroupValue("operationname");
@@ -109,12 +109,12 @@ namespace Arcus.Observability.Tests.Unit
                 bool isSuccessful = match.GetGroupValueAsBool("issuccessful");
                 IDictionary<string, object> context = match.GetGroupValueAsTelemetryContext("context", TelemetryType.Request);
 
-                if (logger.WrittenMessage.StartsWith("ServiceBus"))
+                if (logger.WrittenMessage.StartsWith("Azure Service Bus"))
                 {
                     return RequestLogEntry.CreateForServiceBus(operationName, isSuccessful, duration, startTime, context);
                 }
 
-                if (logger.WrittenMessage.StartsWith("EventHubs"))
+                if (logger.WrittenMessage.StartsWith("Azure EventHubs"))
                 {
                     return RequestLogEntry.CreateForEventHubs(operationName, isSuccessful, duration, startTime, context);
                 }
