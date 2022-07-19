@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 #pragma warning disable 1591
 namespace Arcus.Observability.Telemetry.Core
@@ -78,6 +77,16 @@ namespace Arcus.Observability.Telemetry.Core
                     public const string SubscriptionName = "ServiceBus-TopicSubscription";
                 }
 
+                public const string DefaultOperationName = "Process";
+            }
+
+            public static class EventHubs
+            {
+                public const string Namespace = "EventHubs-Namespace";
+                public const string Name = "EventHubs-Name";
+                public const string ConsumerGroup = "EventHubs-ConsumerGroup";
+
+                public const string DefaultConsumerGroup = "$Default";
                 public const string DefaultOperationName = "Process";
             }
         }

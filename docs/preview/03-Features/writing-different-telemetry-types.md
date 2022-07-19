@@ -7,33 +7,7 @@ layout: default
 
 Logs are a great way to gain insights, but sometimes they are not the best approach for the job.
 
-We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
-
-- [Write different telemetry types](#write-different-telemetry-types)
-  - [Installation](#installation)
-  - [Dependencies](#dependencies)
-    - [Measuring Azure Blob Storage dependencies](#measuring-azure-blob-storage-dependencies)
-    - [Measuring Azure Cosmos DB dependencies](#measuring-azure-cosmos-db-dependencies)
-    - [Measuring Azure Event Hubs dependencies](#measuring-azure-event-hubs-dependencies)
-    - [Measuring Azure IoT Hub dependencies](#measuring-azure-iot-hub-dependencies)
-    - [Measuring Azure Key Vault dependencies](#measuring-azure-key-vault-dependencies)
-    - [Measuring Azure Search dependencies](#measuring-azure-search-dependencies)
-    - [Measuring Azure Service Bus dependencies](#measuring-azure-service-bus-dependencies)
-    - [Measuring Azure Table Storage Dependencies](#measuring-azure-table-storage-dependencies)
-    - [Measuring HTTP dependencies](#measuring-http-dependencies)
-    - [Measuring SQL dependencies](#measuring-sql-dependencies)
-    - [Measuring custom dependencies](#measuring-custom-dependencies)
-    - [Making it easier to measure telemetry](#making-it-easier-to-measure-telemetry)
-      - [Making it easier to measure dependencies](#making-it-easier-to-measure-dependencies)
-      - [Making it easier to measure requests](#making-it-easier-to-measure-requests)
-    - [Making it easier to link services](#making-it-easier-to-link-services)
-  - [Events](#events)
-    - [Security Events](#security-events)
-  - [Metrics](#metrics)
-  - [Requests](#requests)
-    - [Incoming Azure Service Bus requests](#incoming-azure-service-bus-requests)
-    - [Incoming HTTP requests](#incoming-http-requests)
-
+We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog.
 For most optimal output, we recommend using our [Azure Application Insights sink](./sinks/azure-application-insights.md).
 
 **We highly encourage to provide contextual information to all your telemetry** to make it more powerful and support this for all telemetry types.
@@ -549,6 +523,37 @@ logger.LogServiceBusRequest("<my-topic-namespace>.servicebus.windows.net", "<my-
 // Providing the Azure Service Bus queue namespace name and Azure cloud separately.
 logger.LogServiceBusQueueRequestWithSuffix("<my-queue-namespace-name>", serviceBusNamespaceSuffix: ".servicebus.windows.net", "<my-queue-name>", "<operation-name>", isSuccessful: true, measurement, ServiceBusEntityType.Queue);
 ```
+
+### Incoming Azure EventHubs requests
+Requests allow you to keep track of incoming Azure EventHubs event messages.
+
+Here is how you can log an Azure EventHubs request on an event that's being processed:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+bool isSuccessful = false;
+
+// Start measuring.
+using (var measurement = DurationMeasurement.Start())
+{
+    try
+    {
+        // Processing message.
+
+        // End processing.
+        
+        isSuccessful = true;
+    }
+    finally
+    {
+        logger.LogEventHubsRequest("<my-eventhubs-namespace>", "<my-eventhubs-name>", isSuccessful, measurement);
+        // Output: Azure EventHubs from Process completed in 0.00:12:20.8290760 at 2021-10-26T05:36:03.6067975 +02:00 - (IsSuccessful: True, Context: {[EventHubs-Namespace, <my-eventhubs-namespace>]; [EventHubs-Name, <my-eventhubs-name>]; [EventHubs-ConsumerGroup, $Default]; [TelemetryType, Request]})
+    }
+}
+```
+
+We provide overloads to configure the Azure EventHubs consumer group (default: `$Default`) and a functional operation name (default: `Process`).
 
 ### Incoming HTTP requests
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.

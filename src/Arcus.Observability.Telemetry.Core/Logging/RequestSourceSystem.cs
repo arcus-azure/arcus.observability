@@ -13,6 +13,11 @@
         /// <summary>
         /// Specifies that the request-source is a HTTP request
         /// </summary>
-        Http = 2
+        Http = 2,
+
+        /// <summary>
+        /// Specifies that the request-source is an Azure EventHubs.
+        /// </summary>
+        EventHubs = 4
     }
 }
