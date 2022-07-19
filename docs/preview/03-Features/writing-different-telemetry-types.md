@@ -569,7 +569,7 @@ These traces are also linked with correlation and are therefore part of the whol
 Traces and exceptions can be logged with the general Microsoft logging extensions like: `LogInformation`, `LogWarning`, `LogError`...
 To help with logging useful traces, we provide several overloads on these existing extensions to pass in additional contextual information.
 
-> ⚠ Note that log messages that gets an exception passed-in, are tracked as exceptions in Application Insights, and not traces.
+> ⚠ Note that log messages that gets an exception passed-in, are tracked as exceptions in Application Insights, and not as traces.
 
 ```csharp
 using Microsoft.Extensions.Logging;
