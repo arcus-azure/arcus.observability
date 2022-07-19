@@ -7,33 +7,7 @@ layout: default
 
 Logs are a great way to gain insights, but sometimes they are not the best approach for the job.
 
-We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog:
-
-- [Write different telemetry types](#write-different-telemetry-types)
-  - [Installation](#installation)
-  - [Dependencies](#dependencies)
-    - [Measuring Azure Blob Storage dependencies](#measuring-azure-blob-storage-dependencies)
-    - [Measuring Azure Cosmos DB dependencies](#measuring-azure-cosmos-db-dependencies)
-    - [Measuring Azure Event Hubs dependencies](#measuring-azure-event-hubs-dependencies)
-    - [Measuring Azure IoT Hub dependencies](#measuring-azure-iot-hub-dependencies)
-    - [Measuring Azure Key Vault dependencies](#measuring-azure-key-vault-dependencies)
-    - [Measuring Azure Search dependencies](#measuring-azure-search-dependencies)
-    - [Measuring Azure Service Bus dependencies](#measuring-azure-service-bus-dependencies)
-    - [Measuring Azure Table Storage Dependencies](#measuring-azure-table-storage-dependencies)
-    - [Measuring HTTP dependencies](#measuring-http-dependencies)
-    - [Measuring SQL dependencies](#measuring-sql-dependencies)
-    - [Measuring custom dependencies](#measuring-custom-dependencies)
-    - [Making it easier to measure telemetry](#making-it-easier-to-measure-telemetry)
-      - [Making it easier to measure dependencies](#making-it-easier-to-measure-dependencies)
-      - [Making it easier to measure requests](#making-it-easier-to-measure-requests)
-    - [Making it easier to link services](#making-it-easier-to-link-services)
-  - [Events](#events)
-    - [Security Events](#security-events)
-  - [Metrics](#metrics)
-  - [Requests](#requests)
-    - [Incoming Azure Service Bus requests](#incoming-azure-service-bus-requests)
-    - [Incoming HTTP requests](#incoming-http-requests)
-
+We provide the capability to track the following telemetry types on top of ILogger with good support on Serilog.
 For most optimal output, we recommend using our [Azure Application Insights sink](./sinks/azure-application-insights.md).
 
 **We highly encourage to provide contextual information to all your telemetry** to make it more powerful and support this for all telemetry types.
@@ -587,3 +561,40 @@ using (var measurement = DurationMeasurement.Start())
 ```
 
 > 💡 Note that [Arcus Web API request tracking middleware](https://webapi.arcus-azure.net/features/logging#logging-incoming-requests) can already do this for you in a ASP.NET Core application
+
+## Traces & Exceptions
+Application Insights telemetry traces and exceptions are log messages not directly linked by an incoming request, outgoing dependency, or metric. 
+These traces are also linked with correlation and are therefore part of the whole application component in Application Insights.
+
+Traces and exceptions can be logged with the general Microsoft logging extensions like: `LogInformation`, `LogWarning`, `LogError`...
+To help with logging useful traces, we provide several overloads on these existing extensions to pass in additional contextual information.
+
+> ⚠ Note that log messages that gets an exception passed-in, are tracked as exceptions in Application Insights, and not as traces.
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+var telemetryContext = new Dictionary<string, object>
+{
+    ["Order_Id"] = "abc-def",
+    ["Order_Date"] = DateTimeOffset.UtcNow
+};
+
+ILogger logger = ...
+
+// Informational messages (traces)
+logger.LogInformation("This is an informational message!", telemetryContext);
+// > Result in trace with telemetry context.
+
+logger.LogInformation("this is an informational message with an {Argument}!", telemetryContext, "The argument");
+// > Result in trace with telemetry context.
+
+
+// Error messages (traces / exceptions)
+logger.LogError("This is an error message!", telemetryContext);
+// > Result in trace with telemetry context.
+
+var exception = new ApplicationException("Something happened in the application!");
+logger.LogError(exception, "This is an error message!", telemetryContext);
+// > Result in exception with telemetry context.
+```

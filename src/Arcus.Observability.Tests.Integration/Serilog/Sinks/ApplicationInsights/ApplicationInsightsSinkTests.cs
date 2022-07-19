@@ -76,6 +76,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             get
             {
                 LoggerConfiguration
+                    .MinimumLevel.Verbose()
                     .WriteTo.Sink(new XunitLogEventSink(TestOutput))
                     .WriteTo.ApplicationInsights(InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
                     .WriteTo.Sink(_memoryLogSink);
