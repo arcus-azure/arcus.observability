@@ -524,6 +524,37 @@ logger.LogServiceBusRequest("<my-topic-namespace>.servicebus.windows.net", "<my-
 logger.LogServiceBusQueueRequestWithSuffix("<my-queue-namespace-name>", serviceBusNamespaceSuffix: ".servicebus.windows.net", "<my-queue-name>", "<operation-name>", isSuccessful: true, measurement, ServiceBusEntityType.Queue);
 ```
 
+### Incoming Azure EventHubs requests
+Requests allow you to keep track of incoming Azure EventHubs event messages.
+
+Here is how you can log an Azure EventHubs request on an event that's being processed:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+bool isSuccessful = false;
+
+// Start measuring.
+using (var measurement = DurationMeasurement.Start())
+{
+    try
+    {
+        // Processing message.
+
+        // End processing.
+        
+        isSuccessful = true;
+    }
+    finally
+    {
+        logger.LogEventHubsRequest("<my-eventhubs-namespace>", "<my-eventhubs-name>", isSuccessful, measurement);
+        // Output: Azure EventHubs from Process completed in 0.00:12:20.8290760 at 2021-10-26T05:36:03.6067975 +02:00 - (IsSuccessful: True, Context: {[EventHubs-Namespace, <my-eventhubs-namespace>]; [EventHubs-Name, <my-eventhubs-name>]; [EventHubs-ConsumerGroup, $Default]; [TelemetryType, Request]})
+    }
+}
+```
+
+We provide overloads to configure the Azure EventHubs consumer group (default: `$Default`) and a functional operation name (default: `Process`).
+
 ### Incoming HTTP requests
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
 

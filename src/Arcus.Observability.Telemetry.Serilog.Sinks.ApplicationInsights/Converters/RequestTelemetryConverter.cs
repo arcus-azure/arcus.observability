@@ -122,6 +122,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 return $"type:Azure Service Bus | name:{entityName} | endpoint:sb://{namespaceEndpoint}/";
             }
 
+            if (sourceSystem is RequestSourceSystem.AzureEventHubs)
+            {
+                string name = context[ContextProperties.RequestTracking.EventHubs.Name];
+                string namespaceEndpoint = context[ContextProperties.RequestTracking.EventHubs.Namespace];
+                
+                return $"{namespaceEndpoint}.servicebus.windows.net/{name}";
+            }
+
             return null;
         }
 

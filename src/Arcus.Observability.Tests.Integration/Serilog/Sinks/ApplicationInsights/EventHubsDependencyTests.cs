@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Arcus.Observability.Correlation;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -9,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
-    public class EventHubsTests : ApplicationInsightsSinkTests
+    public class EventHubsDependencyTests : ApplicationInsightsSinkTests
     {
-        public EventHubsTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        public EventHubsDependencyTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
 
         [Fact]
-        public async Task LogEventHubsDependency_SinksToApplicationInsights_ResultsIEventHubsDependencyTelemetry()
+        public async Task LogEventHubsDependency_SinksToApplicationInsights_ResultsInEventHubsDependencyTelemetry()
         {
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();
@@ -26,7 +27,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string eventHubName = BogusGenerator.Commerce.ProductName();
             string namespaceName = BogusGenerator.Finance.AccountName();
             string dependencyName = eventHubName;
-            string dependencyId = BogusGenerator.Random.Guid().ToString();
+            string dependencyId = "test-parent";
 
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = DateTimeOffset.Now;

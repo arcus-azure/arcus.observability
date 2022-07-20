@@ -171,13 +171,45 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
             
+            return CreateWithoutHttpRequest(RequestSourceSystem.AzureServiceBus, operationName, isSuccessful, duration, startTime, context);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="RequestLogEntry"/> instance for Azure EventHubs requests.
+        /// </summary>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the Azure EventHubs request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the Azure EventHubs request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="context">The telemetry context that provides more insights on the Azure EventHubs request.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static RequestLogEntry CreateForEventHubs(
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            IDictionary<string, object> context)
+        {
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
+
+            return CreateWithoutHttpRequest(RequestSourceSystem.AzureEventHubs, operationName, isSuccessful, duration, startTime, context);
+        }
+
+        private static RequestLogEntry CreateWithoutHttpRequest(
+            RequestSourceSystem source,
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            IDictionary<string, object> context)
+        {
             return new RequestLogEntry(
                 method: "<not-applicable>",
                 host: "<not-applicable>",
                 uri: "<not-applicable>",
                 operationName: operationName,
                 statusCode: isSuccessful ? 200 : 500,
-                sourceSystem: RequestSourceSystem.AzureServiceBus,
+                sourceSystem: source,
                 requestTime: startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
                 duration: duration,
                 context: context);
@@ -235,15 +267,26 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         public override string ToString()
         {
             var contextFormatted = $"{{{String.Join("; ", Context.Select(item => $"[{item.Key}, {item.Value}]"))}}}";
+            
+            if (SourceSystem is RequestSourceSystem.Http)
+            {
+                return $"{RequestMethod} {RequestHost}/{RequestUri} from {OperationName} completed with {ResponseStatusCode} in {RequestDuration} at {RequestTime} - (Context: {contextFormatted})";
+            }
+
+            string source = DetermineSource();
+            bool isSuccessful = ResponseStatusCode is 200;
+            
+            return $"{source} from {OperationName} completed in {RequestDuration} at {RequestTime} - (IsSuccessful: {isSuccessful}, Context: {contextFormatted})";
+        }
+
+        private string DetermineSource()
+        {
             switch (SourceSystem)
             {
-                case RequestSourceSystem.AzureServiceBus:
-                    bool isSuccessful = ResponseStatusCode is 200;
-                    return $"Azure Service Bus from {OperationName} completed in {RequestDuration} at {RequestTime} - (IsSuccessful: {isSuccessful}, Context: {contextFormatted})";
-                case RequestSourceSystem.Http:
-                    return $"{RequestMethod} {RequestHost}/{RequestUri} from {OperationName} completed with {ResponseStatusCode} in {RequestDuration} at {RequestTime} - (Context: {contextFormatted})";
+                case RequestSourceSystem.AzureServiceBus: return "Azure Service Bus";
+                case RequestSourceSystem.AzureEventHubs: return "Azure EventHubs";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(SourceSystem), SourceSystem, "Unknown request source system");
+                    throw new ArgumentOutOfRangeException(nameof(SourceSystem), "Cannot determine request source as it represents something outside the bounds of the enumeration");
             }
         }
     }
