@@ -48,12 +48,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Contains(namespaceEndpoint, result.Dependency.Target);
                     Assert.Contains(entityName, result.Dependency.Target);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
+                    AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);
 
                     Assert.Equal(correlation.OperationId, result.Operation.ParentId);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
@@ -87,12 +87,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Contains(namespaceEndpoint, result.Dependency.Target);
                     Assert.Contains(entityName, result.Dependency.Target);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
+                    AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);
                 });
             });
         }
