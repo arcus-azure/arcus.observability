@@ -174,35 +174,44 @@ ILogger logger = loggerConfig.CreateLogger();
 
 ### Q: Where can I initialize the logger in an ASP.NET Core application or other hosted service?
 
-Simply use the `UseSerilog` extension method on `IHostBuilder` which accepts an `Action<HostBuilderContext, IServiceProvider, LoggerConfiguration>`.
-This Action gives you access to the configuration and the configured services.
-
 If the connection string is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus secret store](https://security.arcus-azure.net/features/secret-store) can be used to retrieve the connection string.
 
+Use the `UseSerilog` extension method on `IHostBuilder` which accepts an `ILogger` and use the Serilog's static `Log.Logger` property to setup the logger. This makes sure that we can reload the logger afterwards (`CreateBootstrapLogger`). This is needed because otherwise an endless loop will occur when the Arcus secret store is used (secret store required logging, logging requires secret store).
+
 ```csharp
+using Serilog;
 using Serilog.Configuration;
 using Arcus.Security.Core;
 
-...
-IHostBuilder host = 
+// Setup temporary logger to log any setup errors.
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+
+// Build application.
+IHost host = 
     Host.CreateDefaultBuilder()
-    .ConfigureSecretStore((context, config, builder) =>
-    {
-        // Configure the secret store here.
-        // See: https://security.arcus-azure.net/features/secret-store/
-    })
-    .UseSerilog((context, serviceProvider, loggerConfig) =>
-    {
-         loggerConf.Enrich.FromLogContext()
-                   .WriteTo.Console();
+        .ConfigureSecretStore((context, config, builder) =>
+        {
+            // Configure the secret store here.
+            // See: https://security.arcus-azure.net/features/secret-store/
+        })
+        .UseSerilog(Log.Logger)
+        .Build();
 
-         var secretProvider = serviceProvider.GetService<ISecretProvider>();
+// Initialize Application Insights.
+var secretProvider = host.Services.GetRequiredService<ISecretProvider>();
+string connectionString = await secretProvider.GetRawSecretAsync("APPLICATIONINSIGHTS_CONNECTION_STRING");
 
-         string connectionString = secretProvider.GetRawSecretAsync("ApplicationInsights:ConnectionString").GetAwaiter().GetResult();
+var reloadLogger = (ReloadableLogger) Log.Logger;
+reloadLogger.Reload(config =>
+{
+    return config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString);
+});
 
-         if (!string.IsNullOrWhiteSpace(connectionString))
-         {
-             loggerConfiguration.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, LogEventLevel.Information);
-         }
-    });
+// Start application.
+await host.RunAsync();
 ```
+
+This approach is by default used in the [Arcus templates](https://templates.arcus-azure.net/) so you don't have to set this up yourself.
