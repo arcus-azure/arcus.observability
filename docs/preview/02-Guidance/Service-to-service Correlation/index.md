@@ -25,9 +25,9 @@ Adding service-to-service correlation to your application adds many advantages:
 
 ## What Arcus components support service-to-service correlation?
 Currently, we support service-to-service correlation with two types of components:
-* [Arcus Web API]()
-* [Arcus Azure Service Bus message pump]() / [Arcus Azure Service Bus message router]()
-* And [other built-in and custom dependencies]()
+* [Arcus Web API](https://webapi.arcus-azure.net/features/correlation)
+* [Arcus Azure Service Bus message pump/router](https://messaging.arcus-azure.net/)
+* And [other built-in and custom dependencies](https://observability.arcus-azure.net/Features/writing-different-telemetry-types)
 
 We're working on adding Azure EventHubs message pump to the mix.
 
