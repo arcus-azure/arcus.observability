@@ -26,11 +26,16 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Guard.Net" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
     <PackageReference Include="Guard.Net" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
   </ItemGroup>
 
 </Project>

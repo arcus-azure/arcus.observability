@@ -327,10 +327,7 @@ namespace Microsoft.Extensions.Logging
         ///     the <paramref name="request"/>'s scheme contains whitespace,
         ///     the <paramref name="request"/>'s host contains whitespace,
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     Thrown when the <paramref name="responseStatusCode"/>'s status code is outside the 0-999 inclusively,
-        ///     the <paramref name="duration"/> is a negative time range.
-        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static void LogRequest(
             this ILogger logger,
             HttpRequestMessage request,

@@ -21,7 +21,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
         }
 
-         [Fact]
+        [Fact]
         public async Task LogRequest_SinksToApplicationInsightsWithCorrelation_ResultsInRequestTelemetry()
         {
             // Arrange

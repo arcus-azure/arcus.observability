@@ -555,7 +555,7 @@ using (var measurement = DurationMeasurement.Start())
 
 We provide overloads to configure the Azure EventHubs consumer group (default: `$Default`) and a functional operation name (default: `Process`).
 
-### Incoming HTTP requests
+### Incoming HTTP requests in API's
 Requests allow you to keep track of the HTTP requests that are performed against your API and what the response was that was sent out.
 
 **Installation**
@@ -592,6 +592,50 @@ using (var measurement = DurationMeasurement.Start())
 ```
 
 > 💡 Note that [Arcus Web API request tracking middleware](https://webapi.arcus-azure.net/features/logging#logging-incoming-requests) can already do this for you in a ASP.NET Core application
+
+### Incoming HTTP requests in Azure Function HTTP trigger
+Requests allow you to keep track of the HTTP requests that are performed against your Azure Function HTTP trigger and what the response was that was sent out.
+
+**Installation**
+
+If you want to track the `HttpRequestData` of an isolated Azure Functions HTTP trigger project, you'll have to install an additional package to include these dependencies:
+
+```shell
+PM > Install-Package Arcus.Observability.Telemetry.AzureFunctions
+```
+
+**Example**
+
+Here is how you can keep track of requests:
+
+```csharp
+using Sytem.Net;
+using Microsoft.Extensions.Logging;
+
+public async Task<HttpResponseData> Run(
+    [HttpTrigger(AuthorizationLevel.Function, "post", Route = "v1/order")] HttpRequestData request,
+    FunctionContext executionContext)
+{
+    var statusCode = default(HttpStatusCode);
+
+    // Start tracking request.
+    using (var measurement = DurationMeasurement.Start())
+    {
+        try
+        {
+            // Processing...
+
+            statusCode = HttpStatusCode.Ok;
+            return request.CreateResponse(statusCode)
+        }
+        finally
+        {
+            logger.LogRequest(request, statusCode, measurement);
+            // Output: {"RequestMethod": "POST", "RequestHost": "http://localhost:5000/", "RequestUri": "http://localhost:5000/v1/order", "ResponseStatusCode": 200, "RequestDuration": "00:00:00.0191554", "RequestTime": "03/23/2020 10:12:55 +00:00", "Context": {}}
+        }
+    }
+}
+```
 
 ## Traces & Exceptions
 Application Insights telemetry traces and exceptions are log messages not directly linked by an incoming request, outgoing dependency, or metric. 

@@ -22,7 +22,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act
-            logger.LogMetric(metricName, metricValue);
+            logger.LogMetric(metricName, metricValue, context: null);
 
             // Assert
             MetricLogEntry metric = logger.GetMessageAsMetric();
@@ -182,7 +182,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogMetric(metricName, metricValue));
+            Assert.Throws<ArgumentException>(() => logger.LogMetric(metricName, metricValue, context: null));
         }
 
         [Fact]
