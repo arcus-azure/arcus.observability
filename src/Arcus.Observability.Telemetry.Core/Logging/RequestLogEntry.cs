@@ -87,6 +87,21 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             string uri,
             string operationName,
             int statusCode,
+            string customRequestSource,
+            string requestTime,
+            TimeSpan duration,
+            IDictionary<string, object> context)
+            : this(method, host, uri, operationName, statusCode, RequestSourceSystem.Custom, requestTime, duration, context)
+        {
+            CustomRequestSource = customRequestSource;
+        }
+
+        private RequestLogEntry(
+            string method,
+            string host,
+            string uri,
+            string operationName,
+            int statusCode,
             RequestSourceSystem sourceSystem,
             string requestTime,
             TimeSpan duration,
@@ -190,6 +205,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             DateTimeOffset startTime,
             IDictionary<string, object> context)
         {
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank operation name");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
             return CreateWithoutHttpRequest(RequestSourceSystem.AzureEventHubs, operationName, isSuccessful, duration, startTime, context);
@@ -210,6 +226,51 @@ namespace Arcus.Observability.Telemetry.Core.Logging
                 operationName: operationName,
                 statusCode: isSuccessful ? 200 : 500,
                 sourceSystem: source,
+                requestTime: startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
+                duration: duration,
+                context: context);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="RequestLogEntry"/> instance for custom requests.
+        /// </summary>
+        /// <param name="requestSource">The source for the request telemetry to identifying the caller (ex. entity name of Azure Service Bus).</param>
+        /// <param name="operationName">The name of the operation of the request.</param>
+        /// <param name="isSuccessful">The indication whether or not the custom request was successfully processed.</param>
+        /// <param name="duration">The duration it took to process the custom request.</param>
+        /// <param name="startTime">The time when the request was received.</param>
+        /// <param name="context">The telemetry context that provides more insights on the custom request.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static RequestLogEntry CreateForCustomRequest(
+            string requestSource,
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            IDictionary<string, object> context)
+        {
+            Guard.NotNullOrWhitespace(requestSource, nameof(requestSource), "Requires a non-blank request source to identify the caller");
+            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank operation name");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request duration");
+
+            return CreateWithoutHttpRequest(requestSource, operationName, isSuccessful, duration, startTime, context);
+        }
+
+        private static RequestLogEntry CreateWithoutHttpRequest(
+            string requestSource,
+            string operationName,
+            bool isSuccessful,
+            TimeSpan duration,
+            DateTimeOffset startTime,
+            IDictionary<string, object> context)
+        {
+            return new RequestLogEntry(
+                method: "<not-applicable>",
+                host: "<not-applicable>",
+                uri: "<not-applicable>",
+                operationName: operationName,
+                statusCode: isSuccessful ? 200 : 500,
+                customRequestSource: requestSource,
                 requestTime: startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
                 duration: duration,
                 context: context);
@@ -251,6 +312,11 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         public RequestSourceSystem SourceSystem { get; set; }
 
         /// <summary>
+        /// Gets the custom request source if the <see cref="SourceSystem"/> is <see cref="RequestSourceSystem.Custom"/>.
+        /// </summary>
+        public string CustomRequestSource { get; }
+
+        /// <summary>
         /// Gets the name of the operation of the source system from where the request came from.
         /// </summary>
         public string OperationName { get; }
@@ -285,6 +351,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             {
                 case RequestSourceSystem.AzureServiceBus: return "Azure Service Bus";
                 case RequestSourceSystem.AzureEventHubs: return "Azure EventHubs";
+                case RequestSourceSystem.Custom: return "Custom " + CustomRequestSource;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SourceSystem), "Cannot determine request source as it represents something outside the bounds of the enumeration");
             }
