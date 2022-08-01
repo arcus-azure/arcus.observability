@@ -33,7 +33,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var operationName = "sampleoperation";
             HttpMethod httpMethod = GenerateHttpMethod();
             var requestUri = new Uri(BogusGenerator.Internet.UrlWithPath());
-            HttpRequestData request = CreateStubRequest(httpMethod, requestUri.Scheme, requestUri.Host, requestUri.AbsolutePath);
+            HttpRequestData request = CreateStubRequest(httpMethod, requestUri);
             var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             
             TimeSpan duration = BogusGenerator.Date.Timespan();
@@ -73,13 +73,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 HttpMethod.Trace);
         }
 
-        private static HttpRequestData CreateStubRequest(HttpMethod method, string host, string path, string scheme)
+        private static HttpRequestData CreateStubRequest(HttpMethod method, Uri requestUri)
         {
             var context = Mock.Of<FunctionContext>();
 
             var stub = new Mock<HttpRequestData>(context);
             stub.Setup(s => s.Method).Returns(method.Method);
-            stub.Setup(s => s.Url).Returns(new Uri(scheme + "://" + host + path));
+            stub.Setup(s => s.Url).Returns(requestUri);
 
             return stub.Object;
         }
