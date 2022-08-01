@@ -138,7 +138,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     var client = new ApplicationInsightsClient(dataClient, ApplicationId);
                     await assertion(client);
-                }, timeout: TimeSpan.FromMinutes(1)); 
+                }, timeout: TimeSpan.FromMinutes(8)); 
             }
         }
 
