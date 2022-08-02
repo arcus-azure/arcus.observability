@@ -7,7 +7,7 @@ layout: default
 The concept of service-to-service correlation is big and complex and spans multiple Arcus libraries. This user-guide will walk through all the available Arcus features that work together to facilitate service-to-service correlation in your application.
 
 ## What is service-to-service correlation?
-Service-to-service correlation is a way to describe a relationship between different components where each 'component' represents a separated application. This could be, for example, an API call that results in an Azure Service Bus message that will be picked up by a message pump, or Azure Service Bus Azure Function that calls an additional API after receiving a message from a queue.
+Service-to-service correlation is a way to describe a relationship between different components where each 'component' represents a separated application. This could be, for example, an API call that results in an Azure Service Bus message that will be picked up by a message pump, or an Azure Function that calls an additional API after receiving a message from a queue.
 
 Anywhere where one application calls another, that's where service-to-service correlation comes in. This way of correlation makes sure that the relationship of a single (business) transaction doesn't stop at the borders of one application or component, but continues in the other application. The end result is a clear overview of all the components involved.
 
