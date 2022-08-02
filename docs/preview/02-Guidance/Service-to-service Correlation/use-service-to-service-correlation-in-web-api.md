@@ -6,7 +6,7 @@ layout: default
 # Use service-to-service correlation in Web API solutions
 The concept of service-to-service correlation is big and complex and spans multiple Arcus libraries. This user-guide will walk through all the available Arcus features that work together to facilitate service-to-service correlation in your Web API solutions. For a general introduction, see the [introduction page on service-to-service correlation](index.md).
 
-To use service-to-service correlation in Web API solutions, both the sending and receiving side of the separate API components has to be adapted. The HTTP correlation will be passed through from one service to another via the HTTP headers which the internal Arcus system will use to link your services together.
+To use service-to-service correlation in Web API solutions, both the sending and receiving side of the separate API components have to be adapted. The HTTP correlation will be passed through from one service to another via the HTTP headers which the internal Arcus system will use to link your services together.
 
 The following diagram shows this communication more clearly:
 ![HTTP correlation diagram](/media/http-correlation.png)
