@@ -1,5 +1,5 @@
 ---
-title: "Service-to-service Correlation?"
+title: "Service-to-service correlation?"
 layout: default
 ---
 
