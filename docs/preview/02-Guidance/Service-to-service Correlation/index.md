@@ -20,7 +20,7 @@ When using Arcus for service-to-service correlation, you'll see the this relatio
 ## Why should I use service-to-service correlation?
 Adding service-to-service correlation to your application adds many advantages:
 * ✔ Quickly spot performance bottlenecks and failures
-* ✔ Clear overview of used (Azure) resources (cost effective)
+* ✔ Clear overview of used (Azure) resources
 * ✔ Effective architectural decision-making on application flow
 
 ## What Arcus components support service-to-service correlation?
