@@ -37,8 +37,6 @@ The user interacts with the **Product API** to order their product. Internally, 
 
 > ⚠ Take into account that this sample should only be used for demonstration purposes and does not reflect a fully production-ready implementation. We have chosen to only provide the bare bones of the application so the changes are clear.
 
-> ⚠ Service-to-service correlation is currently only supported for projects that uses Application Insights as their Serilog logging system. If you want to use Arcus' service-to-service functionality outside Application Insights, [please let us know](https://github.com/arcus-azure/arcus.observability/issues/new/choose).
-
 ### Product API: startup code
 First, lets look the initial code for the **Product API**. The startup code has the hosting and routing functionality to use API controllers. The configuration value `STOCK_API_URL` already reveals that this API will contact another API. This is also the reason why we added `.AddHttpClient()` to the startup code so we can create `HttpClient` instances. ([More information on creating HTTP clients in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-6.0)). 
 ```csharp
