@@ -31,7 +31,7 @@ Currently, we support service-to-service correlation with two types of component
 
 We're working on adding Azure EventHubs message pump to the mix.
 
-> ⚠ Service-to-service correlation is only built-in available for Azure Functions that run in-process. Out-of-process / isolated Azure Functions doesn't have (yet) the necessary built-in Arcus functionality to facilitate service-to-service correlation.
+> ⚠ Service-to-service correlation is only available for Azure Functions that run in-process. Out-of-process / isolated Azure Functions doesn't have (yet) the necessary built-in Arcus functionality to facilitate service-to-service correlation.
 
 > ⚠ Service-to-service correlation is currently only supported for projects that uses Application Insights as their Serilog logging system. If you want to use Arcus' service-to-service functionality outside Application Insights, [please let us know](https://github.com/arcus-azure/arcus.observability/issues/new/choose).
 
