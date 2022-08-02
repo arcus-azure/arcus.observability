@@ -293,7 +293,7 @@ The real result, though, happens in Application Insights.
 The application map (`Application Insights > Investigate > Application Map`) shows a clear relationship between the two services:
 ![Product API <> Stock API application map example](/media/product-stock-api-service-correlation-example-applicationmap.png)
 
-If you copy the `X-Transaction-ID` in from the response (`8a622fa4-a757-47a0-9db9-e22d00328087`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Product API**. You clearly see how the initial request to the **Product API** is the caller of the dependency towards the **Stock API**:
+If you copy the `X-Transaction-ID` from the response (`8a622fa4-a757-47a0-9db9-e22d00328087`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Product API**. You clearly see how the initial request to the **Product API** is the caller of the dependency towards the **Stock API**:
 ![Product API <> Stock API transaction search example](/media/product-stock-api-service-correlation-example-transactionsearch.png)
 
 ## Conclusion
