@@ -104,7 +104,7 @@ public class ProductController : ControllerBase
             return Accepted();
         }
 
-        return StatusCode(StatusCodes.Status406NotAcceptable);
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
 ```
