@@ -127,7 +127,7 @@ public class OrderController : ControllerBase
 {
     private readonly ILogger _logger;
 
-    public OrderController(ILogger <OrderController> logger)
+    public OrderController(ILogger<OrderController> logger)
     {
         _logger = logger;
     }
