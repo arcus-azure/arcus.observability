@@ -554,7 +554,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.True(dependencyTelemetry.Success);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
-                AssertContainsTelemetryProperty(dependencyTelemetry, "EntityType", entityType.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, entityType.ToString());
             });
         }
 
@@ -593,7 +593,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.True(dependencyTelemetry.Success);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
-                AssertContainsTelemetryProperty(dependencyTelemetry, "EntityType", ServiceBusEntityType.Queue.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, ServiceBusEntityType.Queue.ToString());
             });
         }
 
@@ -632,7 +632,137 @@ namespace Arcus.Observability.Tests.Unit.Serilog
                 Assert.True(dependencyTelemetry.Success);
 
                 AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
-                AssertContainsTelemetryProperty(dependencyTelemetry, "EntityType", ServiceBusEntityType.Topic.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, ServiceBusEntityType.Topic.ToString());
+            });
+        }
+
+         [Fact]
+        public void LogServiceBusDependencyWithNamespace_WithServiceBusDependency_CreatesDependencyTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string entityName = $"entity-name-{Guid.NewGuid()}";
+            string endpoint = $"servicebus-endpoint-{Guid.NewGuid()}";
+            string dependencyId = $"dependency-{Guid.NewGuid()}";
+            const ServiceBusEntityType entityType = ServiceBusEntityType.Unknown;
+            var startTime = DateTimeOffset.UtcNow;
+            var duration = TimeSpan.FromSeconds(5);
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Namespace"] = "azure.servicebus.namespace"
+            };
+            logger.LogServiceBusDependency(endpoint, entityName, isSuccessful: true, startTime, duration, dependencyId, entityType, telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, DependencyTracking.DependencyLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
+                Assert.Equal(entityName, dependencyTelemetry.Target);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
+                Assert.Equal(duration, dependencyTelemetry.Duration);
+                Assert.True(dependencyTelemetry.Success);
+                Assert.Equal(dependencyId, dependencyTelemetry.Id);
+
+                AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, entityType.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.Endpoint, endpoint);
+            });
+        }
+
+        [Fact]
+        public void LogServiceBusQueueDependencyWithNamespace_WithServiceBusDependency_CreatesDependencyTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string queueName = $"queue-name-{Guid.NewGuid()}";
+            string endpoint = $"servicebus-endpoint-{Guid.NewGuid()}";
+            string dependencyId = $"dependency-{Guid.NewGuid()}";
+            var startTime = DateTimeOffset.UtcNow;
+            var duration = TimeSpan.FromSeconds(5);
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Namespace"] = "azure.servicebus.namespace"
+            };
+            logger.LogServiceBusQueueDependency(endpoint, queueName, isSuccessful: true, startTime, duration, dependencyId, telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, DependencyTracking.DependencyLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
+                Assert.Equal(queueName, dependencyTelemetry.Target);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
+                Assert.Equal(duration, dependencyTelemetry.Duration);
+                Assert.True(dependencyTelemetry.Success);
+                Assert.Equal(dependencyId, dependencyTelemetry.Id);
+
+                AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, ServiceBusEntityType.Queue.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.Endpoint, endpoint);
+            });
+        }
+
+        [Fact]
+        public void LogServiceBusTopicDependencyWithNamespace_WithServiceBusDependency_CreatesDependencyTelemetry()
+        {
+            // Arrange
+            var spySink = new InMemoryLogSink();
+            string operationId = $"operation-id-{Guid.NewGuid()}";
+            ILogger logger = CreateLogger(spySink, config => config.Enrich.WithProperty(ContextProperties.Correlation.OperationId, operationId));
+            string topicName = $"topic-name-{Guid.NewGuid()}";
+            string endpoint = $"servicebus-endpoint-{Guid.NewGuid()}";
+            string dependencyId = $"dependency-{Guid.NewGuid()}";
+            var startTime = DateTimeOffset.UtcNow;
+            var duration = TimeSpan.FromSeconds(5);
+            var telemetryContext = new Dictionary<string, object>
+            {
+                ["Namespace"] = "azure.servicebus.namespace"
+            };
+            logger.LogServiceBusTopicDependency(endpoint, topicName, isSuccessful: true, startTime, duration, dependencyId, telemetryContext);
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+
+            var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            // Act
+            IEnumerable<ITelemetry> telemetries = converter.Convert(logEvent, formatProvider: null);
+
+            // Assert
+            AssertDoesContainLogProperty(logEvent, DependencyTracking.DependencyLogEntry);
+            Assert.Collection(telemetries, telemetry =>
+            {
+                var dependencyTelemetry = Assert.IsType<DependencyTelemetry>(telemetry);
+                Assert.Equal("Azure Service Bus", dependencyTelemetry.Type);
+                Assert.Equal(topicName, dependencyTelemetry.Target);
+                Assert.Equal(startTime, dependencyTelemetry.Timestamp);
+                Assert.Equal(duration, dependencyTelemetry.Duration);
+                Assert.True(dependencyTelemetry.Success);
+                Assert.Equal(dependencyId, dependencyTelemetry.Id);
+
+                AssertContainsTelemetryProperty(dependencyTelemetry, "Namespace", "azure.servicebus.namespace");
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.EntityType, ServiceBusEntityType.Topic.ToString());
+                AssertContainsTelemetryProperty(dependencyTelemetry, DependencyTracking.ServiceBus.Endpoint, endpoint);
             });
         }
 

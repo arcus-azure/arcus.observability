@@ -29,7 +29,8 @@ namespace Arcus.Observability.Telemetry.Core
 
             public static class ServiceBus
             {
-                public const string EntityType = "EntityType";
+                public const string EntityType = "ServiceBus-EntityType";
+                public const string Endpoint = "ServiceBus-Endpoint";
             }
         }
 
