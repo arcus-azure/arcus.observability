@@ -31,7 +31,7 @@ It is recommended to configure the Arcus Application Insights Serilog sink with 
 As this user guide shows how a fully working API application is set up for Application Insights tracking, we will also use `Arcus.WebApi.Logging`. The Arcus WebApi library builds on top of Arcus Observability, specific for API applications. This will make sure that the application correlation is stored in the HTTP context during send/receive operations ([more info](https://webapi.arcus-azure.net/)).
 
 ## Setting up Serilog with Arcus
-The following shows a complete code sample of how Arcus and Serilog are configured together. Each critical point is explained afterwards. In short, what's happening is that Serilog is first configured as a basic debug logger so that startup failures are logged to the console (1). After the application is build, the 'real' Serilog setup is configured that uses the Arcus Application Insights Serilog sink (4) with the connection string that is stored in the Arcus secret store (3).
+The following shows a complete code sample of how Arcus and Serilog are configured together. Each critical point is explained afterwards. In short, what's happening is that Serilog is first configured as a basic debug logger so that startup failures are logged to the console (1). After the application is build, the 'real' Serilog setup is configured that uses the Arcus Application Insights Serilog sink (6) with the connection string that is stored in the Arcus secret store (3).
 
 ```csharp
 using Microsoft.AspNetCore.Builder;
@@ -54,14 +54,18 @@ public class Program
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.Services.AddRouting();
             builder.Services.AddControllers();
+            // 2. Register the HTTP correlation services to access the current correlation information during the HTTP request processing.
+            builder.Services.AddHttpCorrelation();
 
-            // 2. Configure Arcus secret store with Application Insights connection string (more info on secret store: https://security.arcus-azure.net/features/secret-store).
+            // 3. Configure Arcus secret store with Application Insights connection string (more info on secret store: https://security.arcus-azure.net/features/secret-store).
             builder.Host.ConfigureSecretStore((context, stores) => stores.AddAzureKeyVaultWithManagedServiceIdentity(...));
             
-            // 3. Use Serilog's static Logger as application logger.
+            // 4. Use Serilog's static Logger as application logger.
             builder.Host.UserSerilog(Log.Logger);
 
             WebApplication app = builder.Build();
+            // 5. Use the Arcus HTTP correlation middleware to set the correlation information on received HTTP requests. 
+            app.UseHttpCorrelation();
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
             
@@ -81,7 +85,7 @@ public class Program
         }
     }
 
-    // 4. Retrieve Application Insights connection string to configure the 'real' application logger.
+    // 6. Retrieve Application Insights connection string to configure the 'real' application logger.
     private static async Task ConfigureSerilogAsync(WebApplication app)
     {
         var secretProvider = app.Services.GetRequiredService<ISecretProvider>();
@@ -107,11 +111,12 @@ public class Program
 
 1. Before the application is build, we should set up a basic Serilog logger to log any startup failures. That's what the `try/catch/finally` block is all about. This is a safe and reliable way to setup Serilog ([more info](https://github.com/serilog/serilog-aspnetcore)). Note that the `.CreateBootstrapLogger()` means that the Serilog logger can be 'reloaded' afterwards.
 2. The connection string to contact the Application Insights resource should be stored safely. The `.ConfigureSecretStore` will register a composite `ISecretProvider` interface to interact with all the registered secret providers ([more info](https://security.arcus-azure.net/features/secret-store)).
-3. Make sure that Serilog uses the static configured logger as application logger that gets injected as `ILogger` in your application ([more info](https://github.com/serilog/serilog-aspnetcore)).
-4. When the application is build, the 'real' Serilog configuration can be set up. This will extract the Application Insights connection string from the Arcus secret store and use it to configure the Arcus Serilog sink, using `AzureApplicationInsightsWithConnectionString`. This example also adds `WithHttpCorrelationInfo` from the `Arcus.WebApi.Logging` library to include the HTTP correlation ([more info](https://webapi.arcus-azure.net/features/correlation)).
+3. To make sure that any written telemetry to Application Insights is correlated, the Serilog sink should be able to access the current HTTP correlation of the received request. The `.AddHttpCorrelation()` makes sure that the HTTP correlation services are available.
+4. Make sure that Serilog uses the static configured logger as application logger that gets injected as `ILogger` in your application ([more info](https://github.com/serilog/serilog-aspnetcore)).
+5. To set the current HTTP correlation information of the received HTTP request, the Arcus HTTP correlation middleware has to be registered with `.UseHttpCorrelation()`. This will make sure that the HTTP correlation information will be set, using the previously registered HTTP correlation services (3).
+6. When the application is build, the 'real' Serilog configuration can be set up. This will extract the Application Insights connection string from the Arcus secret store and use it to configure the Arcus Serilog sink, using `AzureApplicationInsightsWithConnectionString`. This example also adds `WithHttpCorrelationInfo` from the `Arcus.WebApi.Logging` library to include the HTTP correlation ([more info](https://webapi.arcus-azure.net/features/correlation)).
 
-
-> 💡 Note: this 4-step setup is by default available in the [Arcus web API template](https://templates.arcus-azure.net/features/web-api-template).
+> 💡 Note: this setup is by default available in the [Arcus web API project template](https://templates.arcus-azure.net/features/web-api-template).
 
 ## Writing telemetry with ILogger
 Once Serilog is set up, you can write telemetry data with the general `ILogger` instance injected in your application. This example uses the Arcus logger extension to track custom events in Application Insights, but there is a lot more that can be tracked. See [our list of telemetry types](../03-Features/writing-different-telemetry-types.md) to find out all the available types that can be written with Arcus.
