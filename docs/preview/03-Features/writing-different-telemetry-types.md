@@ -598,7 +598,7 @@ Requests allow you to keep track of the HTTP requests that are performed against
 
 **Installation**
 
-If you want to track the `HttpRequestData` of an isolated Azure Functions HTTP trigger project, you'll have to install an additional package to include these dependencies:
+For isolated Azure Functions, you'll have to install an additional package if you want to track the `HttpRequestData`:
 
 ```shell
 PM > Install-Package Arcus.Observability.Telemetry.AzureFunctions
