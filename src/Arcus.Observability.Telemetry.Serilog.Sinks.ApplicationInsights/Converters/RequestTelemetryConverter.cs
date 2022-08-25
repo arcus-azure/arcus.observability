@@ -67,11 +67,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
             var sourceSystem = logEntry.Properties.GetAsObject<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
+            string customRequestSource = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.CustomRequestSource));
 
             string sourceName = DetermineSourceName(sourceSystem, requestMethod, requestUri, operationName);
             bool isSuccessfulRequest = DetermineRequestOutcome(responseStatusCode);
             Uri url = DetermineUrl(sourceSystem, requestHost, requestUri);
-            string source = DetermineRequestSource(sourceSystem, context);
+            string source = DetermineRequestSource(sourceSystem, customRequestSource, context);
             string requestOperationName = DetermineRequestOperationName(sourceSystem, requestMethod, operationName);
 
             var requestTelemetry = new RequestTelemetry(sourceName, requestTime, requestDuration, responseStatusCode, isSuccessfulRequest)
@@ -112,7 +113,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             return null;
         }
 
-        private static string DetermineRequestSource(RequestSourceSystem sourceSystem, IDictionary<string, string> context)
+        private static string DetermineRequestSource(RequestSourceSystem sourceSystem, string customRequestSource, IDictionary<string, string> context)
         {
             if (sourceSystem is RequestSourceSystem.AzureServiceBus)
             {
@@ -128,6 +129,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
                 string namespaceEndpoint = context[ContextProperties.RequestTracking.EventHubs.Namespace];
                 
                 return $"{namespaceEndpoint}.servicebus.windows.net/{name}";
+            }
+
+            if (sourceSystem is RequestSourceSystem.Custom)
+            {
+                return customRequestSource;
             }
 
             return null;

@@ -100,7 +100,7 @@ namespace Arcus.Observability.Tests.Unit
             }
             else
             {
-                const string pattern = @"(Azure Service Bus|Azure EventHubs) from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, [\w\$]+\])(; \[[\w\-]+, [\w\$\.]+\])*))\}\)$";
+                const string pattern = @"(Azure Service Bus|Azure EventHubs|Custom \w+) from (?<operationname>[\w\s]+) completed in (?<duration>(\d{1}\.)?\d{2}:\d{2}:\d{2}\.\d{7}) at (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}) - \(IsSuccessful: (?<issuccessful>(True|False)), Context: \{(?<context>((\[[\w\-]+, [\w\$]+\])(; \[[\w\-]+, [\w\$\.]+\])*))\}\)$";
                 Match match = Regex.Match(logger.WrittenMessage, pattern);
 
                 string operationName = match.GetGroupValue("operationname");
@@ -117,6 +117,14 @@ namespace Arcus.Observability.Tests.Unit
                 if (logger.WrittenMessage.StartsWith("Azure EventHubs"))
                 {
                     return RequestLogEntry.CreateForEventHubs(operationName, isSuccessful, duration, startTime, context);
+                }
+
+                if (logger.WrittenMessage.StartsWith("Custom"))
+                {
+                    int length = logger.WrittenMessage.IndexOf(" from ", StringComparison.CurrentCulture);
+                    int startIndex = "Custom ".Length;
+                    string customRequestSource = logger.WrittenMessage.Substring(startIndex, length - startIndex);
+                    return RequestLogEntry.CreateForCustomRequest(customRequestSource, operationName, isSuccessful, duration, startTime, context);
                 }
 
                 throw new InvalidOperationException("Cannot determine request source system during parsing of logged request");

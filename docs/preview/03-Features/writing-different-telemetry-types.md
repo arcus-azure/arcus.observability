@@ -593,6 +593,38 @@ using (var measurement = DurationMeasurement.Start())
 
 > 💡 Note that [Arcus Web API request tracking middleware](https://webapi.arcus-azure.net/features/logging#logging-incoming-requests) can already do this for you in a ASP.NET Core application
 
+### Incoming custom requests
+Requests allow you to keep track of incoming messages. We provide an extension to track type of requests that aren't out-of-the-box so you can track your custom systems.
+
+Here is how you can log a custom request on an event that's being processed:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+bool isSuccessful = false;
+
+// Start measuring.
+using (var measurement = DurationMeasurement.Start())
+{
+    try
+    {
+        // Processing message.
+
+        // End processing.
+        
+        isSuccessful = true;
+    }
+    finally
+    {
+        logger.LogCustomRequest("<my-request-source>", "<operation-name>", isSuccessful, measurement);
+        // Output: Custom <my-request-source> from Process completed in 0.00:12:20.8290760 at 2021-10-26T05:36:03.6067975 +02:00 - (IsSuccessful: True, Context: {[TelemetryType, Request]})
+    }
+}
+```
+
+The `<my-request-source>` will reflect the `Source` in Application Insights telemetry. This is set automatically in our HTTP, Azure Service Bus, Azure EventHubs, etc. requests but is configurable when you track custom requests.
+We provide overloads to configure the functional operation name (default: `Process`).
+
 ## Traces & Exceptions
 Application Insights telemetry traces and exceptions are log messages not directly linked by an incoming request, outgoing dependency, or metric. 
 These traces are also linked with correlation and are therefore part of the whole application component in Application Insights.

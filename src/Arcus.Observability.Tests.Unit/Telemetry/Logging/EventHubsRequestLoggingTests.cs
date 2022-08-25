@@ -106,7 +106,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogEventHubsRequest(@namespace, name, isSuccessful, duration, startTime, context);
+            logger.LogEventHubsRequest(@namespace, name, isSuccessful, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -133,7 +133,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, startTime, duration));
         }
 
         [Theory]
@@ -149,7 +149,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, eventHubsName, isSuccessful, startTime, duration));
         }
 
          [Fact]
@@ -269,7 +269,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, duration, startTime, context);
+            logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration, context);
 
             // Assert
             RequestLogEntry entry = logger.GetMessageAsRequest();
@@ -299,7 +299,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration));
         }
 
         [Theory]
@@ -317,7 +317,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration));
         }
 
         [Fact]
@@ -335,7 +335,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, duration, startTime));
+                () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration));
         }
     }
 }

@@ -66,7 +66,9 @@ namespace Arcus.Observability.Telemetry.Core
             public const string ResponseStatusCode = "ResponseStatusCode";
             public const string RequestDuration = "RequestDuration";
             public const string RequestTime = "RequestTime";
-            
+
+            public const string DefaultOperationName = "Process";
+
             public static class ServiceBus
             {
                 public const string Endpoint = "ServiceBus-Endpoint";
