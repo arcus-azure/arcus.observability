@@ -450,13 +450,14 @@ namespace Microsoft.Extensions.Logging
 
             context = context ?? new Dictionary<string, object>();
             context[ContextProperties.DependencyTracking.ServiceBus.EntityType] = entityType;
+            context[ContextProperties.DependencyTracking.ServiceBus.Endpoint] = serviceBusNamespaceEndpoint;
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Service Bus",
                 dependencyName: entityName,
                 dependencyData: null,
                 dependencyId: dependencyId,
-                targetName: $"{serviceBusNamespaceEndpoint} | {entityName}",
+                targetName: entityName,
                 duration: duration,
                 startTime: startTime,
                 resultCode: null,

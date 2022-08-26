@@ -29,7 +29,8 @@ namespace Arcus.Observability.Telemetry.Core
 
             public static class ServiceBus
             {
-                public const string EntityType = "EntityType";
+                public const string EntityType = "ServiceBus-EntityType";
+                public const string Endpoint = "ServiceBus-Endpoint";
             }
         }
 
@@ -65,7 +66,9 @@ namespace Arcus.Observability.Telemetry.Core
             public const string ResponseStatusCode = "ResponseStatusCode";
             public const string RequestDuration = "RequestDuration";
             public const string RequestTime = "RequestTime";
-            
+
+            public const string DefaultOperationName = "Process";
+
             public static class ServiceBus
             {
                 public const string Endpoint = "ServiceBus-Endpoint";

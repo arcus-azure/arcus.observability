@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using static Arcus.Observability.Telemetry.Core.ContextProperties.DependencyTracking;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 {
@@ -57,15 +57,14 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
-            Assert.Contains(entityName, dependency.TargetName);
+            Assert.Equal(entityName, dependency.TargetName);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(dependencyId, dependency.DependencyId);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(entityType.ToString(), entityTypeItem.Value);
+            Assert.Equal(entityType.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Fact]
@@ -152,8 +151,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(entityType.ToString(), entityTypeItem.Value);
+            Assert.Equal(entityType.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
         }
 
         [Fact]
@@ -162,8 +160,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Arrange
             var logger = new TestLogger();
             var entityType = BogusGenerator.Random.Enum<ServiceBusEntityType>();
-            string namespaceEndpoint = BogusGenerator.Commerce.Product();
-            string entityName = BogusGenerator.Commerce.Product();
+            string namespaceEndpoint = BogusGenerator.Lorem.Word();
+            string entityName = BogusGenerator.Lorem.Word();
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
             var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
@@ -176,16 +174,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
-            Assert.Contains(entityName, dependency.TargetName);
+            Assert.Equal(entityName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(entityName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(entityType.ToString(), entityTypeItem.Value);
+            Assert.Equal(entityType.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Theory]
@@ -316,7 +313,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
             Assert.Contains(queueName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(queueName, dependency.DependencyName);
@@ -324,8 +320,8 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Queue.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Fact]
@@ -408,8 +404,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Queue.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
         }
 
         [Fact]
@@ -431,16 +426,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
-            Assert.Contains(queueName, dependency.TargetName);
+            Assert.Equal(queueName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(queueName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Queue.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Queue.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Theory]
@@ -557,16 +551,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
-            Assert.Contains(topicName, dependency.TargetName);
+            Assert.Equal(topicName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(topicName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Topic.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Theory]
@@ -699,8 +692,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Topic.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
         }
 
         [Fact]
@@ -722,16 +714,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains(namespaceEndpoint, dependency.TargetName);
-            Assert.Contains(topicName, dependency.TargetName);
+            Assert.Equal(topicName, dependency.TargetName);
             Assert.Equal("Azure Service Bus", dependency.DependencyType);
             Assert.Equal(topicName, dependency.DependencyName);
             Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(isSuccessful, dependency.IsSuccessful);
             Assert.Equal(dependencyId, dependency.DependencyId);
-            KeyValuePair<string, object> entityTypeItem = Assert.Single(dependency.Context, item => item.Key == ContextProperties.DependencyTracking.ServiceBus.EntityType);
-            Assert.Equal(ServiceBusEntityType.Topic.ToString(), entityTypeItem.Value);
+            Assert.Equal(ServiceBusEntityType.Topic.ToString(), Assert.Contains(ServiceBus.EntityType, dependency.Context));
+            Assert.Equal(namespaceEndpoint, Assert.Contains(ServiceBus.Endpoint, dependency.Context));
         }
 
         [Theory]

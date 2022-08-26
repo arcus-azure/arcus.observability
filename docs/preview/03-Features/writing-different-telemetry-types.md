@@ -257,8 +257,8 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency("sample-server", "sample-database", "my-table", "get-products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+logger.LogSqlDependency("Company SQL server", "Stock Database", "SELECT ProductName FROM Products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database", "DependencyData": "SELECT ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
@@ -276,7 +276,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Sql
 ```csharp
 using Microsoft.Extensions.Logging;
 
-string connectionString = "Server=sample-server;Database=sample-database;User=admin;Password=123";
+string connectionString = "Server=Company SQL Server;Database=Stock Database;User=admin;Password=123";
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -286,8 +286,8 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency(connectionString, "my-table", "get-products", isSuccessful: true, measurement: measurement);
-// Output: {"DependencyType": "Sql", "DependencyName": "sample-database/my-table", "DependencyData": "get-products", "TargetName": "sample-server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+logger.LogSqlDependency(connectionString, "SELECT ProductName FROM Products", isSuccessful: true, startTime, durationMeasurement.Elapsed);
+// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database", "DependencyData": "SELECT ProductName FROM Proucts", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring custom dependencies
@@ -636,6 +636,38 @@ public async Task<HttpResponseData> Run(
     }
 }
 ```
+
+### Incoming custom requests
+Requests allow you to keep track of incoming messages. We provide an extension to track type of requests that aren't out-of-the-box so you can track your custom systems.
+
+Here is how you can log a custom request on an event that's being processed:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+bool isSuccessful = false;
+
+// Start measuring.
+using (var measurement = DurationMeasurement.Start())
+{
+    try
+    {
+        // Processing message.
+
+        // End processing.
+        
+        isSuccessful = true;
+    }
+    finally
+    {
+        logger.LogCustomRequest("<my-request-source>", "<operation-name>", isSuccessful, measurement);
+        // Output: Custom <my-request-source> from Process completed in 0.00:12:20.8290760 at 2021-10-26T05:36:03.6067975 +02:00 - (IsSuccessful: True, Context: {[TelemetryType, Request]})
+    }
+}
+```
+
+The `<my-request-source>` will reflect the `Source` in Application Insights telemetry. This is set automatically in our HTTP, Azure Service Bus, Azure EventHubs, etc. requests but is configurable when you track custom requests.
+We provide overloads to configure the functional operation name (default: `Process`).
 
 ## Traces & Exceptions
 Application Insights telemetry traces and exceptions are log messages not directly linked by an incoming request, outgoing dependency, or metric. 
