@@ -18,7 +18,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string metricName = _bogusGenerator.Name.FullName();
+            string metricName = _bogusGenerator.Lorem.Word();
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act
@@ -40,7 +40,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         {
             // Arrange
             var logger = new TestLogger();
-            string metricName = _bogusGenerator.Name.FullName();
+            string metricName = _bogusGenerator.Lorem.Word();
             double metricValue = _bogusGenerator.Random.Double();
 
             // Act
