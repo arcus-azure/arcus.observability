@@ -177,7 +177,7 @@ ILogger logger = loggerConfig.CreateLogger();
 If the connection string is stored as a secret in -for instance- Azure KeyVault, the `ISecretProvider` from [Arcus secret store](https://security.arcus-azure.net/features/secret-store) can be used to retrieve the connection string.
 
 Use the `UseSerilog` extension method on `IHostBuilder` which accepts an `ILogger` and use the Serilog's static `Log.Logger` property to setup the logger. 
-This allows the Startup code to have preliminary logging before we can setup logging to Application Insights. This temporary logger is used during the execution of the startup code, including the secret store retrieval for the Application Insights connection string. Setting up the preliminary logger as a 'bootstrap' logger allows to reload the logger after we've setup logging to Application Insights.
+This allows the Startup code to have preliminary logging before we can setup logging to Application Insights. This temporary logger is used during the execution of the startup code, including the secret store retrieval for the Application Insights connection string. Setting up the preliminary logger as a 'bootstrap' logger allows to reload the logger after we've set up logging to Application Insights.
 
 ```csharp
 using Serilog;
