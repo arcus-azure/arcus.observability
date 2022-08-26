@@ -169,7 +169,7 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsi
 
 > For more information on `Arcus.WebApi.Logging`, see [these dedicated feature docs](https://webapi.arcus-azure.net/features/logging), for more information on `Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights`, see [these dedicated feature docs](https://observability.arcus-azure.net/Features/sinks/azure-application-insights).
 
-The following additions has to be made to the startup code for the **Product API** to be able to track the incoming/outgoing HTTP requests, and to log to Application Insights.
+The following additions have to be made to the startup code for the **Product API** to be able to track the incoming/outgoing HTTP requests, and to log to Application Insights.
 ```csharp
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
