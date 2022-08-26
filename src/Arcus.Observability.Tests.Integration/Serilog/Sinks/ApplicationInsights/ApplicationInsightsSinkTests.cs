@@ -138,7 +138,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     var client = new ApplicationInsightsClient(dataClient, ApplicationId);
                     await assertion(client);
-                }, timeout: TimeSpan.FromMinutes(7)); 
+                }, timeout: TimeSpan.FromMinutes(8)); 
             }
         }
 
@@ -152,18 +152,36 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
         {
+            Exception lastException = null;
             PolicyResult result =
                 await Policy.TimeoutAsync(timeout)
                             .WrapAsync(Policy.Handle<Exception>()
                                              .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
-                            .ExecuteAndCaptureAsync(assertion);
+                            .ExecuteAndCaptureAsync(async () =>
+                            {
+                                try
+                                {
+                                    await assertion();
+                                }
+                                catch (Exception exception)
+                                {
+                                    lastException = exception;
+                                    throw;
+                                }
+                            });
 
             if (result.Outcome is OutcomeType.Failure)
             {
                 if (result.FinalException is TimeoutRejectedException
-                    && result.FinalException.InnerException != null)
+                    && result.FinalException.InnerException != null
+                    && result.FinalException.InnerException is not TaskCanceledException)
                 {
                     throw result.FinalException.InnerException;
+                }
+
+                if (lastException != null)
+                {
+                    throw lastException;
                 }
 
                 throw result.FinalException;

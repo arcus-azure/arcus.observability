@@ -1158,7 +1158,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             measurement.Dispose();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, measurement));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: (HttpRequestMessage) null, statusCode, measurement));
         }
 
         [Fact]
@@ -1220,7 +1220,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, startTime: startTime, duration: duration));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: (HttpRequestMessage) null, responseStatusCode: statusCode, startTime: startTime, duration: duration));
         }
 
         [Fact]
@@ -1287,7 +1287,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             measurement.Dispose();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, statusCode, operationName, measurement));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: (HttpRequestMessage) null, statusCode, operationName, measurement));
         }
 
         [Fact]
@@ -1352,7 +1352,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
 
             // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: null, responseStatusCode: statusCode, operationName: operationName, startTime: startTime, duration: duration));
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request: (HttpRequestMessage) null, responseStatusCode: statusCode, operationName: operationName, startTime: startTime, duration: duration));
         }
 
         [Fact]
