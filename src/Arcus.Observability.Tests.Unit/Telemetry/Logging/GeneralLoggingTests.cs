@@ -62,6 +62,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
+        public void LogInformation_WithNullScalarValue_FailSafe()
+        {
+            // Arrange
+            var message = "This is a log message!";
+            string key = BogusGenerator.Commerce.Product();
+            var context = new Dictionary<string, object> { [key] = null };
+            
+            // ACt
+            _logger.LogInformation(message, context);
+
+            // Assert
+            LogEvent logEvent = Assert.Single(_spySink.CurrentLogEmits);
+            Assert.Equal(LogEventLevel.Information, logEvent.Level);
+            Assert.Equal(message, logEvent.RenderMessage());
+            Assert.Null(Assert.Contains(key, logEvent.Properties).ToDecentString());
+        }
+
+        [Fact]
         public void LogInformationWithoutArgs_NotActivated_Ignores()
         {
             // Arrange
