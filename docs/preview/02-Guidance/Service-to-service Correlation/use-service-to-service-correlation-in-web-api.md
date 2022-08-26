@@ -273,6 +273,10 @@ public class Program
 }
 ```
 
+> ⚠ Note that when initializing the Application Insights Serilog sink, you should use the Arcus secret store to retrieve this connection string. Setting this up requires you to reload the logger after the application is build. For more information, see [this dedicated section](https://observability.arcus-azure.net/Features/sinks/azure-application-insights#q-where-can-i-initialize-the-logger-in-an-aspnet-core-application-or-other-hosted-service) that describes how to do this.
+
+> ⚠ Note that the order of the middleware component registrations is important. The HTTP request tracking needs the endpoint routing to figure out if the request should be tracked, for example. For more information on our different middleware components, see [our Web API feature documentation](https://webapi.arcus-azure.net/features/logging).
+
 ### Run the API solution
 When both services are adapted to use Arcus' HTTP correlation, we can run the solution. It's worth noting that during these changes, we didn't once change the application code (controllers); only the startup code. This one of the many benefits from Arcus as it abstracts away all the infrastructure and boilerplate code and doesn't pollute application code with something infrastructure-like as service-to-service correlation.
 
