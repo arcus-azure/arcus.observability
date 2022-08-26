@@ -214,7 +214,7 @@ namespace Serilog.Events
 
             if (logEventPropertyValue is ScalarValue scalar)
             {
-                var result = scalar.Value.ToString();
+                var result = scalar.Value?.ToString();
                 return result;
             }
             else
