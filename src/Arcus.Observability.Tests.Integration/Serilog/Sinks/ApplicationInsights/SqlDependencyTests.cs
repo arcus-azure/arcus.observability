@@ -21,7 +21,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "SQL";
             string serverName = BogusGenerator.Database.Engine();
             string databaseName = BogusGenerator.Database.Collation();
-            string sqlCommand = $"SELECT {BogusGenerator.Database.Column()} FROM Some_Table";
+            string column = BogusGenerator.Database.Column();
+            string sqlCommand = $"SELECT {column} FROM Some_Table";
+            string operationName = $"Get all {column}";
             string dependencyId = BogusGenerator.Random.Guid().ToString();
 
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
@@ -30,7 +32,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, startTime, duration, dependencyId, telemetryContext);
+            Logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -40,7 +42,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal(dependencyType, result.Dependency.Type);
                     Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Equal($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains(operationName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });
@@ -54,7 +57,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string serverName = BogusGenerator.Database.Engine();
             string databaseName = BogusGenerator.Database.Collation();
             var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
-            string sqlCommand = $"SELECT {BogusGenerator.Database.Column()} FROM Some_Table";
+            string column = BogusGenerator.Database.Column();
+            string sqlCommand = $"SELECT {column} FROM Some_Table";
+            string operationName = $"Get all {column}";
             string dependencyId = BogusGenerator.Random.Guid().ToString();
 
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
@@ -63,7 +68,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogSqlDependency(connectionString, sqlCommand, isSuccessful, startTime, duration, dependencyId, telemetryContext);
+            Logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
@@ -73,7 +78,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal(dependencyType, result.Dependency.Type);
                     Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Equal($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains(operationName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });

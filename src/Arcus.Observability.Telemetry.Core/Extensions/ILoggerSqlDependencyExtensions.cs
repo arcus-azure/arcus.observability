@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, <paramref name="tableName"/>, or <paramref name="operationName"/> is blank.
         /// </exception>
-        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -92,6 +92,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -122,6 +123,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -157,7 +159,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="serverName"/>, <paramref name="databaseName"/>, <paramref name="tableName"/>, or <paramref name="operationName"/> is blank.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
-        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command instead of specifying the table and operation name")]
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -206,6 +208,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -241,6 +244,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Use the " + nameof(LogSqlDependency) + " with a pseudo SQL command and operation name instead of specifying the table name")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -263,6 +267,89 @@ namespace Microsoft.Extensions.Logging
                 dependencyType: "Sql",
                 targetName: serverName,
                 dependencyName: databaseName,
+                dependencyData: sqlCommand,
+                duration: duration,
+                startTime: startTime,
+                dependencyId: dependencyId,
+                resultCode: null,
+                isSuccessful: isSuccessful,
+                context: context));
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="serverName">The name of server hosting the database.</param>
+        /// <param name="databaseName">The name of database.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="operationName">The functional description of the operation that was performed on the SQL database.</param>	
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="measurement">The measuring the latency to call the SQL dependency.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string serverName,
+            string databaseName,
+            string sqlCommand,
+            string operationName,
+            bool isSuccessful,
+            DurationMeasurement measurement,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serverName, nameof(serverName), "Requires a non-blank SQL server name to track a SQL dependency");
+            Guard.NotNullOrWhitespace(databaseName, nameof(databaseName), "Requires a non-blank SQL database name to track a SQL dependency");
+            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to measure the latency of the SQL storage when tracking an SQL dependency");
+
+            context = context ?? new Dictionary<string, object>();
+
+            LogSqlDependency(logger, serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
+        }
+
+        /// <summary>
+        /// Logs a SQL dependency.
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="serverName">The name of server hosting the database.</param>
+        /// <param name="databaseName">The name of database.</param>
+        /// <param name="sqlCommand">The pseudo SQL command information that gets executed against the SQL dependency.</param>
+        /// <param name="operationName">The functional description of the operation that was performed on the SQL database.</param>	
+        /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>
+        /// <param name="startTime">The point in time when the interaction with the SQL dependency was started.</param>
+        /// <param name="duration">The duration of the operation.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        public static void LogSqlDependency(
+            this ILogger logger,
+            string serverName,
+            string databaseName,
+            string sqlCommand,
+            string operationName,
+            bool isSuccessful,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNullOrWhitespace(serverName, nameof(serverName), "Requires a non-blank SQL server name to track a SQL dependency");
+            Guard.NotNullOrWhitespace(databaseName, nameof(databaseName), "Requires a non-blank SQL database name to track a SQL dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the SQL dependency operation");
+
+            context = context ?? new Dictionary<string, object>();
+
+            logger.LogWarning(MessageFormats.SqlDependencyFormat, new DependencyLogEntry(
+                dependencyType: "Sql",
+                targetName: serverName,
+                dependencyName: databaseName + "/" + operationName,
                 dependencyData: sqlCommand,
                 duration: duration,
                 startTime: startTime,

@@ -257,8 +257,8 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency("Company SQL server", "Stock Database", "SELECT ProductName FROM Products", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
-// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database", "DependencyData": "SELECT ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+logger.LogSqlDependency("Company SQL Server", "Stock Database", "GET ProductName FROM Products", "Get product names", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database/Get product names", "DependencyData": "GET ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
@@ -286,8 +286,8 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency(connectionString, "SELECT ProductName FROM Products", isSuccessful: true, startTime, durationMeasurement.Elapsed);
-// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database", "DependencyData": "SELECT ProductName FROM Proucts", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
+logger.LogSqlDependency(connectionString, "GET ProductName FROM Products", "Get product names", isSuccessful: true, measurement: measurement);
+// Output: {"DependencyType": "Sql", "DependencyName": "Stock Database/Get product names", "DependencyData": "GET ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
 ### Measuring custom dependencies
