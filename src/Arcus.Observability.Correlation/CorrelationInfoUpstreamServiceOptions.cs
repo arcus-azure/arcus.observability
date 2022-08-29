@@ -6,6 +6,7 @@ namespace Arcus.Observability.Correlation
     /// <summary>
     /// Correlation options specific to the upstream services, used in the <see cref="CorrelationInfoOptions"/>.
     /// </summary>
+    [Obsolete("Use HTTP or messaging-specific correlation options instead")]
     public class CorrelationInfoUpstreamServiceOptions
     {
         private string _operationParentIdHeaderName = "Request-Id";
