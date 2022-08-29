@@ -22,7 +22,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddCorrelation<CorrelationInfo>(services);
         }
 
-
         /// <summary>
         /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor"/>
         /// </summary>
@@ -38,7 +37,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddCorrelation(services, new DefaultCorrelationInfoAccessor(), configureOptions);
         }
 
-        
         /// <summary>
         /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/>
         /// </summary>
