@@ -727,7 +727,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(value, Assert.Contains(key, dependency.Context));
         }
 
-
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutConnectionString_Fails(string connectionString)
@@ -980,7 +979,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
-        
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogSqlDependencyConnectionString_EmptyConnectionString_Fails(string connectionString)
