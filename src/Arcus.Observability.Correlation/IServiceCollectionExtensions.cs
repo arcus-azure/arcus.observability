@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation(
             this IServiceCollection services,
             Action<CorrelationInfoOptions> configureOptions)
@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TCorrelationInfo">The type of the <see cref="CorrelationInfo"/> model.</typeparam>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TCorrelationInfo>(
             this IServiceCollection services,
             Action<CorrelationInfoOptions> configureOptions) 
@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TOptions">The type of the custom <see cref="CorrelationInfoOptions"/> model.</typeparam>
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TCorrelationInfo, TOptions>(
             this IServiceCollection services,
             Action<TOptions> configureOptions = null)
@@ -99,7 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="customCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TAccessor>(
             this IServiceCollection services,
             TAccessor customCorrelationAccessor,
@@ -136,7 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TAccessor>(
             this IServiceCollection services, 
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor,
@@ -183,7 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TAccessor, TCorrelationInfo>(
             this IServiceCollection services,
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor,
@@ -206,7 +206,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <param name="configureOptions">The function to configure additional options how the correlation works.</param>
-        [Obsolete("Use HTTP or messaging-specific correlation registration instead")]
+        [Obsolete("Use HTTP, messaging, or custom-specific correlation registration instead")]
         public static IServiceCollection AddCorrelation<TAccessor, TCorrelationInfo, TOptions>(
             this IServiceCollection services,
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor,
