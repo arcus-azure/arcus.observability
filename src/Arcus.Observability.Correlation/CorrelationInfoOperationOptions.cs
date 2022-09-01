@@ -6,7 +6,7 @@ namespace Arcus.Observability.Correlation
     /// <summary>
     /// Correlation options specific for the operation ID.
     /// </summary>
-    [Obsolete("Use HTTP or messaging-specific correlation options instead")]
+    [Obsolete("Use HTTP, messaging, or custom-specific correlation options instead")]
     public class CorrelationInfoOperationOptions
     {
         private string _headerName = "RequestId";
