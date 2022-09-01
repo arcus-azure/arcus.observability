@@ -73,6 +73,39 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
+        public void LogSqlDependencyWithSqlCommandAndOperationName_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Lorem.Word();
+            string databaseName = BogusGenerator.Lorem.Word();
+            string sqlCommand = BogusGenerator.Lorem.Word();
+            string operationName = BogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
+            TimeSpan duration = BogusGenerator.Date.Timespan();
+            string key = BogusGenerator.Lorem.Word();
+            string value = BogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+
+            // Act
+            logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(serverName, dependency.TargetName);
+            Assert.Contains(databaseName, dependency.DependencyName);
+            Assert.Contains(operationName, dependency.DependencyName);
+            Assert.Equal(sqlCommand, dependency.DependencyData);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(value, Assert.Contains(key, dependency.Context));
+            Assert.Equal(dependencyId, dependency.DependencyId);
+        }
+
+        [Fact]
         public void LogSqlDependencyWithSqlCommandWithDependencyId_ValidArguments_Succeeds()
         {
             // Arrange
@@ -89,7 +122,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
+            logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
@@ -118,6 +151,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, tableName, operationName, isSuccessful, startTime, duration));
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithSqlCommandAndOperationName_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
+            TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -238,7 +289,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, measurement, dependencyId, context);
+            logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, measurement, dependencyId, context);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
@@ -305,7 +356,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, measurement, dependencyId));
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithSqlCommandAndOperationNameWithDurationMeasurement_WithoutServerName_Fails(string serverName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement, dependencyId));
         }
 
         [Theory]
@@ -361,7 +432,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, measurement, dependencyId));
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyWithSqlCommandAndOperationNameWithDurationMeasurementWithDependencyId_WithoutDatabaseName_Fails(string databaseName)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement, dependencyId));
         }
 
         [Theory]
@@ -446,7 +537,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, measurement: null, dependencyId));
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithSqlCommandAndOperationNameWithDurationMeasurementWithDependencyId_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement: null, dependencyId));
         }
 
         [Fact]
@@ -581,6 +689,44 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(value, Assert.Contains(key, dependency.Context));
         }
 
+        [Fact]
+        public void LogSqlDependencyConnectionStringWithSqlCommandAndOperationNameWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Lorem.Word();
+            string databaseName = BogusGenerator.Lorem.Word();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = BogusGenerator.Lorem.Word();
+            string operationName = BogusGenerator.Lorem.Word();
+            string dependencyId = BogusGenerator.Lorem.Word();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            DateTimeOffset startTime = measurement.StartTime;
+            measurement.Dispose();
+            TimeSpan duration = measurement.Elapsed;
+
+            string key = BogusGenerator.Lorem.Word();
+            string value = BogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object> { [key] = value };
+
+            // Act
+            logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, measurement, dependencyId, context);
+
+            // Assert
+            DependencyLogEntry dependency = logger.GetMessageAsDependency();
+            Assert.Equal(serverName, dependency.TargetName);
+            Assert.Contains(databaseName, dependency.DependencyName);
+            Assert.Contains(operationName, dependency.DependencyName);
+            Assert.Equal(sqlCommand, dependency.DependencyData);
+            Assert.Equal(dependencyId, dependency.DependencyId);
+            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
+            Assert.Equal(duration, dependency.Duration);
+            Assert.Equal(isSuccessful, dependency.IsSuccessful);
+            Assert.Equal(value, Assert.Contains(key, dependency.Context));
+        }
+
         [Theory]
         [ClassData(typeof(Blanks))]
         public void LogSqlDependencyConnectionStringWithDurationMeasurement_WithoutConnectionString_Fails(string connectionString)
@@ -632,6 +778,25 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogSqlDependency(connectionString, sqlCommand, isSuccessful, measurement, dependencyId));
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void LogSqlDependencyConnectionStringWithSqlCommandAndOperationNameWithDurationMeasurementWithDependencyId_WithoutConnectionString_Fails(string connectionString)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, measurement, dependencyId));
         }
 
         [Theory]
@@ -725,6 +890,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
+        public void LogSqlDependencyConnectionStringWithSqlCommandAndOperationNameWithDurationMeasurementWithDependencyId_WithoutMeasurement_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
         public void LogSqlDependencyConnectionString_WithNegativeDuration_Fails()
         {
             // Arrange
@@ -775,6 +958,25 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(connectionString, sqlCommand, isSuccessful, startTime, duration, dependenyId));
+        }
+
+        [Fact]
+        public void LogSqlDependencyConnectionStringWithSqlCommandAndOperationNameWithDependencyId_WithNegativeDuration_Fails()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
+            TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Theory]
@@ -859,7 +1061,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var duration = BogusGenerator.Date.Timespan();
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, startTime, duration, dependencyId));
+            Assert.Throws<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId));
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithSqlCommandAndOperationNameWithDependencyId_NoServerNameWasSpecified_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = null;
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
+            var duration = BogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -909,7 +1130,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var duration = BogusGenerator.Date.Timespan();
 
             // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, sqlCommand, isSuccessful, startTime, duration, dependencyId));
+            Assert.Throws<ArgumentException>(() => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId));
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithSqlCommandAndOperationNameWithDependencyId_NoDatabaseNameWasSpecified_ThrowsException()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = null;
+            string sqlCommand = BogusGenerator.Name.FullName();
+            string operationName = BogusGenerator.Name.FullName();
+            string dependencyId = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
+            var duration = BogusGenerator.Date.Timespan();
+
+            // Act & Arrange
+            Assert.Throws<ArgumentException>(
+                () => logger.LogSqlDependency(serverName, databaseName, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
