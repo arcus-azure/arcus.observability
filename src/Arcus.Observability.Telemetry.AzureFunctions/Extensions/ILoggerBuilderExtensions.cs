@@ -54,15 +54,11 @@ namespace Microsoft.Extensions.Logging
             ServiceDescriptor descriptor = 
                 builder.Services.FirstOrDefault(service => service.ImplementationType?.Name == "ApplicationInsightsLoggerProvider");
             
-            if (descriptor is null)
+            if (descriptor != null)
             {
-                throw new InvalidOperationException(
-                    "Cannot find the type 'ApplicationInsightsLoggerProvider' in the registered logging providers " 
-                    + "so can't guarantee a correct Arcus implementation that sinks telemetry to Microsoft Application Insights , "
-                    + "please remove this logger provider before sending telemetry via the Arcus Application Insights logging");
+                builder.Services.Remove(descriptor);
             }
 
-            builder.Services.Remove(descriptor);
             return builder;
         }
     }

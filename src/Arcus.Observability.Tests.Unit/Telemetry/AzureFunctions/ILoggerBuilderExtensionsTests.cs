@@ -53,8 +53,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions
             var services = new ServiceCollection();
             
             // Act / Assert
-            Assert.ThrowsAny<InvalidOperationException>(() =>
-                services.AddLogging(logging => logging.RemoveMicrosoftApplicationInsightsLoggerProvider()));
+            services.AddLogging(logging => logging.RemoveMicrosoftApplicationInsightsLoggerProvider());
         }
     }
 }
