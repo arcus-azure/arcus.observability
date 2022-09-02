@@ -25,7 +25,7 @@ The following list shows each step in the diagram:
 5. Service B responds to service A with the same information as the call to service B.
 6. The user receives both the **transaction ID** and **operation parent ID** in their final response.
 
-> Additional configuration is available to tweak this functionality, see the [dedicated Arcus Web API feature documentation](https://webapi.arcus-azure.net/features/correlation) for more in-depth information on HTTP correlation.
+> 💡 Additional configuration is available to tweak this functionality, see the [dedicated Arcus Web API feature documentation](https://webapi.arcus-azure.net/features/correlation) for more in-depth information on HTTP correlation.
 
 ## API Demonstration
 In this user-guide, two fictive API applications will be used to represent Service A and Service B of the diagram. Both services will be adapted to use service-to-service correlation.
@@ -288,8 +288,8 @@ curl -Method POST `
   -Body '{ "ProductName": "Fancy desk", "Amount": 3 }'
 
 // StatusCode : 202
-// Headers:   : X-Transaction-ID=8a622f
-//              X-Operation-ID=8a622fa4-a757-47a0-9db9-e22d00328087
+// Headers:   : X-Transaction-ID=8a622fa4-a757-47a0-9db9-e22d00328087
+//              X-Operation-ID=05353d3b-de3f-44e6-90cb-9a622884f290
 ```
 
 The real result, though, happens in Application Insights.
@@ -314,3 +314,4 @@ In this user guide, you've seen how the Arcus HTTP correlation functionality can
   * [Announcing Arcus Observability](https://www.codit.eu/blog/announcing-arcus-observability/)
   * [Measure a Variety of Azure Dependencies with Observability v0.2](https://www.codit.eu/blog/measure-a-variety-of-azure-dependencies-with-observability-v0-2/)
   * [Service Correlation Preparation & .NET 6 Support in Arcus Observability v2.4](https://www.codit.eu/blog/service-correlation-preparation-net-6-support-in-arcus-observability-v2-4/)
+  * [Service-to-Service Correlation, One of the Biggest Arcus Features in Observability v2.5](https://www.codit.eu/blog/service-to-service-correlation-one-of-the-biggest-arcus-features-in-observability-v2-5/)
