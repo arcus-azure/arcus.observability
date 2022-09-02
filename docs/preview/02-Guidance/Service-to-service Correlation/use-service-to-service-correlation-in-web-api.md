@@ -314,3 +314,4 @@ In this user guide, you've seen how the Arcus HTTP correlation functionality can
   * [Announcing Arcus Observability](https://www.codit.eu/blog/announcing-arcus-observability/)
   * [Measure a Variety of Azure Dependencies with Observability v0.2](https://www.codit.eu/blog/measure-a-variety-of-azure-dependencies-with-observability-v0-2/)
   * [Service Correlation Preparation & .NET 6 Support in Arcus Observability v2.4](https://www.codit.eu/blog/service-correlation-preparation-net-6-support-in-arcus-observability-v2-4/)
+  * [Service-to-Service Correlation, One of the Biggest Arcus Features in Observability v2.5](https://www.codit.eu/blog/service-to-service-correlation-one-of-the-biggest-arcus-features-in-observability-v2-5/)
