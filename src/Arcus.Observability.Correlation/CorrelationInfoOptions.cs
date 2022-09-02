@@ -1,8 +1,11 @@
-﻿namespace Arcus.Observability.Correlation
+﻿using System;
+
+namespace Arcus.Observability.Correlation
 {
     /// <summary>
     /// Options for handling correlation id on incoming requests.
     /// </summary>
+    [Obsolete("Use HTTP, messaging, or custom-specific correlation options instead")]
     public class CorrelationInfoOptions
     {
         /// <summary>
