@@ -609,7 +609,7 @@ PM > Install-Package Arcus.Observability.Telemetry.AzureFunctions
 Here is how you can keep track of requests:
 
 ```csharp
-using Sytem.Net;
+using System.Net;
 using Microsoft.Extensions.Logging;
 
 public async Task<HttpResponseData> Run(
