@@ -34,7 +34,7 @@ In this user-guide, a fictive API and Service Bus application will be used to re
 
 The user interacts with the **Product API** to order their product. Internally, the **Order API** will contact the **Order Worker** to further process the order request.
 
-> ⚠ Take into account that this sample should only be used for demonstration purposes and does not reflect a fully production-ready implementation. We have chosen to only provide the bare bones of the application so the changes are clear.
+> ⚠ Take into account that this sample should only be used for demonstration purposes and does not reflect a fully production-ready implementation. We have chosen to only provide the bare bones of the application to be able to focus on the changes required for service-to-service correlation.
 
 ### Order API: startup code
 First, lets look at the initial code for the **Order API**. The startup code has the hosting and routing functionality to use API controllers.
