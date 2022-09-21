@@ -38,5 +38,5 @@ We're working on adding Azure EventHubs message pump to the mix.
 ## How do I add service-to-service correlation to my application components?
 Service-to-service correlation should be added on both the sending and receiving components of your project so the internal Arcus functionality can link the request/response correctly in Application Insights. The following user-guides will go over the sending and receiving side of Web API's and Azure Service Bus resources:
 
-* [Use service-to-service correlation to Web API solutions](use-service-to-service-correlation-in-web-api.md)
+* [Use service-to-service correlation in Web API solutions](use-service-to-service-correlation-in-web-api.md)
 * [Use service-to-service correlation in Service Bus solutions](use-service-to-service-correlation-in-service-bus.md)
