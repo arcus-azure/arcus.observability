@@ -6,7 +6,7 @@ layout: default
 # Use service-to-service correlation in Azure Service Bus solutions
 The concept of service-to-service correlation is big and complex and spans multiple Arcus libraries. This user-guide will walk through all the available Arcus features that work together to facilitate service-to-service correlation in your Azure Service Bus solutions. For a general introduction, see the [introduction page on service-to-service correlation](index.md).
 
-To use service-to-service correlation in Azure Service Bus solutions, both the sending and receiving side of the separate components have to be adapted. The correlation will be passed through from one service to another via the Azure Service Bus message application properties which the internal Arcus system will use to link your services together.
+To use service-to-service correlation in Azure Service Bus solutions, both the sending and receiving side of the separate components have to be adapted. The correlation will be passed through from one service to another via the Azure Service Bus message application properties which Arcus will use to link your services together.
 
 The following diagram shows how an Web API calls a Service Bus with correlation tracking:
 ![Messaging correlation diagram](/media/service-to-service-api-worker-diagram-example.png)
