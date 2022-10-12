@@ -4,23 +4,9 @@ layout: default
 ---
 
 # Telemetry Enrichment
-
-We provide a variety of enrichers for Serilog:
-
-- [Telemetry Enrichment](#telemetry-enrichment)
-  - [Installation](#installation)
-  - [Application Enricher](#application-enricher)
-    - [Custom Serilog property names](#custom-serilog-property-names)
-  - [Correlation Enricher](#correlation-enricher)
-    - [Custom Serilog property names](#custom-serilog-property-names-1)
-  - [Kubernetes Enricher](#kubernetes-enricher)
-    - [Custom Serilog property names](#custom-serilog-property-names-2)
-  - [Version Enricher](#version-enricher)
-    - [Custom application version](#custom-application-version)
-    - [Custom Serilog property names](#custom-serilog-property-names-3)
+We provide a variety of enrichers for Serilog
 
 ## Installation
-
 This feature requires to install our NuGet package
 
 ```shell
@@ -28,7 +14,6 @@ PM > Install-Package Arcus.Observability.Telemetry.Serilog.Enrichers
 ```
 
 ## Application Enricher
-
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
 that adds the application's component name to the log event as a log property with the name `ComponentName` and gives the opportunity to choose the location from where the application 'instance' should be retrieved.
 
@@ -63,8 +48,33 @@ logger.Information("Some event");
 // Output: Some event {ComponentName: My application component, MachineName: MachineName: MyComputer, PodName: demo-app}
 ```
 
-### Custom Serilog property names
+### Automatic Application Insights `Cloud.RoleName` assignment in `TelemetryClient`
+When tracking telemetry in Application Insights via the regular `TelemetryClient`, the application enrichment can be configured to use an `IAppName` registered instance so that both the Serilog enrichment as the Microsoft tracking can benefit from this component name assignment.
 
+First, the `IAppName` should be configured in the application services:
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddAppName("My application component");
+}
+```
+
+Afterwards, when the application enricher is added, you can pass in the `IServiceProvider` so that the application name is assigned via the `IAppName` instance:
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+
+IServiceProvider provider = ... 
+ILogger logger = new LoggerConfiguration()
+    .Enrich.WithComponentName(provider)
+    .CreateLogger();
+```
+
+This setup will make sure that both for Arcus tracking as well as for Microsoft tracking, the same component name will be used.
+
+### Custom Serilog property names
 The application enricher allows you to specify the name of the log property that will be added to the log event during enrichment.
 By default this is set to `ComponentName`.
 
@@ -82,7 +92,6 @@ logger.Information("Some event");
 ```
 
 ## Correlation Enricher
-
 The `Arcus.ObservabilityTelemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment)
 that adds the `CorrelationInfo` information from the current context as log properties with the names `OperationId` and `TransactionId`.
 
@@ -127,7 +136,6 @@ logger.Information("This event will be enriched with the correlation information
 ```
 
 ### Custom Serilog property names
-
 The correlation information enricher allows you to specify the names of the log properties that will be added to the log event during enrichment.
 This is available on all extension overloads. By default the operation ID is set to `OperationId` and the transaction ID to `TransactionId`.
 
@@ -148,7 +156,6 @@ logger.Information("Some event");
 ```
 
 ## Kubernetes Enricher
-
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Kubernetes](https://kubernetes.io/) [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
 that adds several machine information from the environment (variables).
 
@@ -220,7 +227,6 @@ spec:
 ```
 
 ### Custom Serilog property names
-
 The Kubernetes enricher allows you to specify the names of the log properties that will be added to the log event during enrichment.
 By default the node name is set to `NodeName`, the pod name to `PodName`, and the namespace to `Namespace`.
 
@@ -239,7 +245,6 @@ logger.Information("Some event");
 ```
 
 ## Version Enricher
-
 The `Arcus.Observability.Telemetry.Serilog.Enrichers` library provides a [Serilog enricher](https://github.com/serilog/serilog/wiki/Enrichment) 
 that adds (by default) the current runtime assembly version of the product to the log event as a log property with the name `version`.
 
@@ -261,7 +266,6 @@ logger.Information("Some event");
 ```
 
 ### Custom application version
-
 The version enricher allows you to specify an `IAppVersion` instance that retrieves your custom application version, which will be used during enrichment.
 By default this is set to the version of the current executing assembly.
 
@@ -270,13 +274,10 @@ By default this is set to the version of the current executing assembly.
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 
-public class Startup
+public void ConfigureServices(IServiceCollection services)
 {
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Register the `AssemblyAppVersion` instance to retrieve the application version from the assembly where the passed-along `Startup` type is located.
-        services.AddAssemblyAppVersion<Startup>();
-    }
+    // Register the `AssemblyAppVersion` instance to retrieve the application version from the assembly where the passed-along `Startup` type is located.
+    services.AddAssemblyAppVersion<Startup>();
 }
 ```
 
@@ -301,20 +302,17 @@ Or alternatively, you can choose to register the application version so you can 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-public class Startup
+public void ConfigureServivces(IServiceCollection services)
 {
-    public void ConfigureServivces(IServiceCollection services)
-    {
-        // Register the `MyApplicationVersion` instance to the registered services (using empty constructor).
-        services.AddAppVersion<MyApplicationVersion>();
+    // Register the `MyApplicationVersion` instance to the registered services (using empty constructor).
+    services.AddAppVersion<MyApplicationVersion>();
 
-        // Register the `MyApplicationVersion` instance using the service provider.
-        services.AddAppVersion(serviceProvider => 
-        {
-            var logger = serviceProvider.GetRequiredService<ILogger<MyApplicationVersion>>();
-            return new MyApplicationVersion(logger);
-        });
-    }
+    // Register the `MyApplicationVersion` instance using the service provider.
+    services.AddAppVersion(serviceProvider => 
+    {
+        var logger = serviceProvider.GetRequiredService<ILogger<MyApplicationVersion>>();
+        return new MyApplicationVersion(logger);
+    });
 }
 ```
 
@@ -331,7 +329,6 @@ ILogger logger = new LoggerConfiguration()
 ```
 
 ### Custom Serilog property names
-
 The version enricher allows you to specify the name of the property that will be added to the log event during enrichment.
 By default this is set to `version`.
 
@@ -345,5 +342,3 @@ ILogger logger = new LoggerConfiguration()
 logger.Information("Some event");
 // Output: Some event {MyVersion: 1.0.0-preview}
 ```
-
-

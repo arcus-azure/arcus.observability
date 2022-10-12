@@ -93,6 +93,36 @@ namespace Serilog
         }
 
         /// <summary>
+        /// Adds the <see cref="ApplicationEnricher"/> to the logger enrichment configuration which adds the given application's name,
+        /// where the name is retrieved from a registered <see cref="IAppName"/> in the <paramref name="serviceProvider"/>.
+        /// </summary>
+        /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
+        /// <param name="serviceProvider">The service provider instance that has a registered <see cref="IAppName"/>.</param>
+        /// <param name="propertyName">The name of the property to enrich the log event with the application's name.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceProvider"/> or <paramref name="propertyName"/> is blank.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when no <see cref="IAppName"/> is registered in the <paramref name="serviceProvider"/>.</exception>
+        public static LoggerConfiguration WithComponentName(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
+            IServiceProvider serviceProvider,
+            string propertyName = ApplicationEnricher.ComponentName)
+        {
+            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the application enricher");
+            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppName)}' implementations");
+            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current application's name");
+
+            var appName = serviceProvider.GetService<IAppName>();
+            if (appName is null)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot retrieve component name because no {nameof(IAppName)} is registered in the application's services");
+            }
+
+            string componentName = appName.GetApplicationName();
+            return enrichmentConfiguration.With(new ApplicationEnricher(componentName, propertyName));
+        }
+
+        /// <summary>
         /// Adds the <see cref="KubernetesEnricher"/> to the logger enrichment configuration which adds Kubernetes information from the environment.
         /// </summary>
         /// <param name="enrichmentConfiguration">The configuration to add the enricher.</param>
