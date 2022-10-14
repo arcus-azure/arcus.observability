@@ -1,13 +1,22 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Tests.Unit.Telemetry.Logging;
+using Bogus;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry
 {
+    // ReSharper disable once InconsistentNaming
     public class IServiceCollectionExtensionsTests
     {
-        [Fact]
+        private static readonly Faker BogusGenerator = new Faker();
+
+            [Fact]
         public void AddAppVersion_WithType_RegistersAppVersion()
         {
             // Arrange
@@ -34,7 +43,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
 
             // Assert
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var service = serviceProvider.GetRequiredService<IAppVersion>();
+            var service = serviceProvider.GetService<IAppVersion>();
             Assert.NotNull(service);
             Assert.IsType<DummyAppVersion>(service);
         }
@@ -48,6 +57,76 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => services.AddAppVersion(createImplementation: null));
+        }
+
+        [Fact]
+        public void AddAppName_WithComponentName_Succeeds()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            string componentName = BogusGenerator.Commerce.ProductName();
+
+            // Act
+            services.AddAppName(componentName);
+
+            // Assert
+            IServiceProvider provider = services.BuildServiceProvider();
+            var appName = provider.GetService<IAppName>();
+            Assert.NotNull(appName);
+            Assert.Equal(componentName, appName.GetApplicationName());
+
+            var initializer = provider.GetService<ITelemetryInitializer>();
+            Assert.NotNull(initializer);
+            var telemetry = new TraceTelemetry();
+            initializer.Initialize(telemetry);
+            Assert.Equal(componentName, telemetry.Context.Cloud.RoleName);
+        }
+
+        [Theory]
+        [ClassData(typeof(Blanks))]
+        public void AddAppName_WithoutComponentName_Fails(string componentName)
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => services.AddAppName(componentName));
+        }
+
+        [Fact]
+        public void AddAppName_WithImplementationFactory_Succeeds()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            string componentName = BogusGenerator.Commerce.ProductName();
+            var stub = new DefaultAppName(componentName);
+
+            // Act
+            services.AddAppName(provider => stub);
+
+            // Assert
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var appName = serviceProvider.GetService<IAppName>();
+            Assert.NotNull(appName);
+            Assert.Same(stub, appName);
+
+            var initializer = serviceProvider.GetService<ITelemetryInitializer>();
+            Assert.NotNull(initializer);
+            var telemetry = new TraceTelemetry();
+            initializer.Initialize(telemetry);
+            Assert.Equal(componentName, telemetry.Context.Cloud.RoleName);
+        }
+
+        [Fact]
+        public void AddAppName_WithoutImplementationFactory_Throws()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(
+                () => services.AddAppName(implementationFactory: null));
         }
     }
 }
