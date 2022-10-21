@@ -198,7 +198,7 @@ namespace Serilog.Configuration
             var options = new ApplicationInsightsSinkOptions();
             configureOptions?.Invoke(options);
 
-            return loggerSinkConfiguration.ApplicationInsights(instrumentationKey, ApplicationInsightsTelemetryConverter.Create(options), restrictedToMinimumLevel);
+            return loggerSinkConfiguration.ApplicationInsights("InstrumentationKey=" + instrumentationKey, ApplicationInsightsTelemetryConverter.Create(options), restrictedToMinimumLevel);
         }
 
         /// <summary>

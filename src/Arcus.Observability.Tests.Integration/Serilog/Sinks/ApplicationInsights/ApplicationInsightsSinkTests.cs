@@ -78,7 +78,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 LoggerConfiguration
                     .MinimumLevel.Verbose()
                     .WriteTo.Sink(new XunitLogEventSink(TestOutput))
-                    .WriteTo.ApplicationInsights(InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
+                    .WriteTo.ApplicationInsights("InstrumentationKey=" + InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
                     .WriteTo.Sink(_memoryLogSink);
 
                 ILogger logger = CreateLogger(LoggerConfiguration);

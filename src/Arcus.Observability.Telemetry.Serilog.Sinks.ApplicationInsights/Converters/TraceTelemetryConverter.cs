@@ -5,14 +5,13 @@ using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
-using ApplicationInsightsSink = Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
     /// <summary>
     /// Represents a conversion from a Serilog <see cref="LogEvent"/> to an Application Insights <see cref="TraceTelemetry"/> instance.
     /// </summary>
-    public class TraceTelemetryConverter : ApplicationInsightsSink.TelemetryConverters.TraceTelemetryConverter
+    public class TraceTelemetryConverter : global::Serilog.Sinks.ApplicationInsights.TelemetryConverters.TraceTelemetryConverter
     {
         private readonly OperationContextConverter _operationContextConverter;
         private readonly CloudContextConverter _cloudContextConverter = new CloudContextConverter();
