@@ -7,18 +7,18 @@ using Microsoft.ApplicationInsights.Extensibility;
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration
 {
     /// <summary>
-    /// Represents an <see cref="ITelemetryInitializer"/> that configures the application information.
+    /// Represents an <see cref="ITelemetryInitializer"/> that configures the application's name.
     /// </summary>
-    public class ApplicationTelemetryInitializer : ITelemetryInitializer
+    public class ApplicationNameTelemetryInitializer : ITelemetryInitializer
     {
         private readonly IAppName _applicationName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationTelemetryInitializer" /> class.
+        /// Initializes a new instance of the <see cref="ApplicationNameTelemetryInitializer" /> class.
         /// </summary>
         /// <param name="applicationName">The instance to retrieve the application name.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> is <c>null</c>.</exception>
-        public ApplicationTelemetryInitializer(IAppName applicationName)
+        public ApplicationNameTelemetryInitializer(IAppName applicationName)
         {
             Guard.NotNull(applicationName, nameof(applicationName), $"Requires an application name ({nameof(IAppName)}) implementation to retrieve the application name to initialize in the telemetry");
             _applicationName = applicationName;
@@ -32,7 +32,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             if (telemetry?.Context?.Cloud != null)
             {
                 string componentName = _applicationName.GetApplicationName();
-                telemetry.Context.Cloud.RoleName = componentName; 
+                telemetry.Context.Cloud.RoleName = componentName;
             }
         }
     }

@@ -128,5 +128,30 @@ namespace Arcus.Observability.Tests.Unit.Telemetry
             Assert.ThrowsAny<ArgumentException>(
                 () => services.AddAppName(implementationFactory: null));
         }
+
+        [Fact]
+        public void AddAppVersion_WithImplementation_Succeeds()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            var version = BogusGenerator.System.Version().ToString();
+            var stub = new Mock<IAppVersion>();
+            stub.Setup(v => v.GetVersion()).Returns(version);
+
+            // Act
+            services.AddAppVersion(provider => stub.Object);
+
+            // Assert
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var appVersion = serviceProvider.GetService<IAppVersion>();
+            Assert.NotNull(appVersion);
+            Assert.Same(stub.Object, appVersion);
+
+            var initializer = serviceProvider.GetService<ITelemetryInitializer>();
+            Assert.NotNull(initializer);
+            var telemetry = new TraceTelemetry();
+            initializer.Initialize(telemetry);
+            Assert.Equal(version, telemetry.Context.Component.Version);
+        }
     }
 }
