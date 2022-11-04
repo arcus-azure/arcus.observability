@@ -38,6 +38,18 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 ```
 
+> ⚡ When you want to initialize Microsoft's `TelemetryClient` directly from the sink, you can pass in the `IServiceProvider` so that the sink registration re-uses your registered `TelemetryClient`.
+
+```csharp
+using Serilog;
+using Serilog.Configuration;
+
+ILogger logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.AzureApplicationInsightsWithConnectionString(serviceProvider, "<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
+    .CreateLogger();
+```
+
 For more information on this sink: [see this section](#azure-application-insights-sink).
 
 ## Installation
@@ -208,7 +220,7 @@ string connectionString = await secretProvider.GetRawSecretAsync("APPLICATIONINS
 var reloadLogger = (ReloadableLogger) Log.Logger;
 reloadLogger.Reload(config =>
 {
-    return config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString);
+    return config.WriteTo.AzureApplicationInsightsWithConnectionString(host.Services, connectionString);
 });
 
 // Start application.

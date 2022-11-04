@@ -4,6 +4,7 @@ using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 using GuardNet;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog.Events;
 
 // ReSharper disable once CheckNamespace
@@ -208,6 +209,117 @@ namespace Serilog.Configuration
         ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
         /// </remarks>
         /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="instrumentationKey">The required Application Insights key.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithInstrumentationKey(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string instrumentationKey)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, LogEventLevel.Verbose);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="instrumentationKey">The required Application Insights key.</param>
+        /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithInstrumentationKey(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string instrumentationKey,
+            Action<ApplicationInsightsSinkOptions> configureOptions)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, LogEventLevel.Verbose, configureOptions);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="instrumentationKey">The required Application Insights key.</param>
+        /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithInstrumentationKey(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string instrumentationKey,
+            LogEventLevel restrictedToMinimumLevel)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, restrictedToMinimumLevel, configureOptions: null);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="instrumentationKey">The required Application Insights key.</param>
+        /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+        /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="instrumentationKey"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithInstrumentationKey(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string instrumentationKey,
+            LogEventLevel restrictedToMinimumLevel,
+            Action<ApplicationInsightsSinkOptions> configureOptions)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            var options = new ApplicationInsightsSinkOptions();
+            configureOptions?.Invoke(options);
+
+            return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, "InstrumentationKey=" + instrumentationKey, restrictedToMinimumLevel, configureOptions);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
         /// <param name="connectionString">The required Application Insights connection string.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
@@ -290,6 +402,128 @@ namespace Serilog.Configuration
             configureOptions?.Invoke(options);
 
             var client = new TelemetryClient(TelemetryConfiguration.CreateDefault());
+            client.TelemetryConfiguration.ConnectionString = connectionString;
+
+            return loggerSinkConfiguration.ApplicationInsights(client, ApplicationInsightsTelemetryConverter.Create(options), restrictedToMinimumLevel);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="connectionString">The required Application Insights connection string.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithConnectionString(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string connectionString)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, configureOptions: null);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="connectionString">The required Application Insights connection string.</param>
+        /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithConnectionString(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string connectionString,
+            Action<ApplicationInsightsSinkOptions> configureOptions)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, LogEventLevel.Verbose, configureOptions);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="connectionString">The required Application Insights connection string.</param>
+        /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithConnectionString(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string connectionString,
+            LogEventLevel restrictedToMinimumLevel)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, restrictedToMinimumLevel, configureOptions: null);
+        }
+
+        /// <summary>
+        ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
+        /// </summary>
+        /// <remarks>
+        ///     Supported telemetry types are Traces, Dependencies, Events, Requests and Metrics for which we provide extensions on <see cref="ILogger" />.
+        /// </remarks>
+        /// <param name="loggerSinkConfiguration">The logger configuration.</param>
+        /// <param name="serviceProvider">
+        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
+        ///     Note that this is only required when the application requires W3C correlation.
+        /// </param>
+        /// <param name="connectionString">The required Application Insights connection string.</param>
+        /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+        /// <param name="configureOptions">The optional function to configure additional options to influence the behavior of how the telemetry is logged to Azure Application Insights.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="loggerSinkConfiguration"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        public static LoggerConfiguration AzureApplicationInsightsWithConnectionString(
+            this LoggerSinkConfiguration loggerSinkConfiguration,
+            IServiceProvider serviceProvider,
+            string connectionString,
+            LogEventLevel restrictedToMinimumLevel,
+            Action<ApplicationInsightsSinkOptions> configureOptions)
+        {
+            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
+            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+
+            var options = new ApplicationInsightsSinkOptions();
+            configureOptions?.Invoke(options);
+
+            var client = serviceProvider.GetService<TelemetryClient>();
+            if (client is null)
+            {
+                throw new InvalidOperationException(
+                    "Could not retrieve Microsoft telemetry client from the application registered services, this happens when the Application Insights services are not registered in the application services," 
+                    + "please use one of Arcus' extensions like 'services.AddHttpCorrelation()' to automatically register the Application Insights when using the W3C correlation system, "
+                    + $"when using the Hierarchical correlation system, use the {nameof(AzureApplicationInsightsWithConnectionString)} extension without the service provider instead");
+            }
+
             client.TelemetryConfiguration.ConnectionString = connectionString;
 
             return loggerSinkConfiguration.ApplicationInsights(client, ApplicationInsightsTelemetryConverter.Create(options), restrictedToMinimumLevel);
