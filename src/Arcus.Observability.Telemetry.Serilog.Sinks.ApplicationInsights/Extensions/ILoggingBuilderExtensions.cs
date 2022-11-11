@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Logging
             Func<IServiceProvider, Serilog.ILogger> implementationFactory)
         {
             Guard.NotNull(builder, nameof(builder), "Requires a logging builder instance to add the Serilog logger provider");
-            Guard.NotNull(implementationFactory, nameof(implementationFactory), "Requires an implementation factory to built up the Serilog logger");
+            Guard.NotNull(implementationFactory, nameof(implementationFactory), "Requires an implementation factory to build up the Serilog logger");
 
             builder.Services.AddSingleton<ILoggerProvider>(provider =>
             {
