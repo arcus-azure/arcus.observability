@@ -38,7 +38,7 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 ```
 
-> ⚡ When you want to initialize Microsoft's `TelemetryClient` directly from the sink, you can pass in the `IServiceProvider` so that the sink registration re-uses your registered `TelemetryClient`.
+> ⚡ When you want to re-use an already registered `TelemetryClient`, pass in the `IServiceProvider` to the method that registers the Application Insights sink. `TelemetryClient`s are automatically registered behind the scenes when using W3C correlation in Arcus Web API middleware (>= v1.7) or Arcus Messaging (>= v1.4).
 
 ```csharp
 using Serilog;
