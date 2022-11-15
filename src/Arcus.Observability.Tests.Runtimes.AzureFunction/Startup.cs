@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
@@ -25,21 +26,23 @@ namespace Arcus.Observability.Tests.Runtimes.AzureFunctions
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var config = builder.GetContext().Configuration;
+            IConfiguration appConfig = builder.GetContext().Configuration;
+            var instrumentationKey = appConfig.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
 
-            var instrumentationKey = config.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
-
-            var logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey)
-                .CreateLogger();
-
-            builder.Services.AddLogging(loggingBuilder =>
+            builder.Services.AddApplicationInsightsTelemetryWorkerService();
+            builder.Services.AddLogging(logging =>
             {
-                loggingBuilder.RemoveMicrosoftApplicationInsightsLoggerProvider()
-                              .AddSerilog(logger);
+                logging.RemoveMicrosoftApplicationInsightsLoggerProvider();
+                logging.Services.AddSingleton<ILoggerProvider>(provider =>
+                {
+                    var logConfig = new LoggerConfiguration()
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.FromLogContext()
+                        .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, instrumentationKey);
+
+                    return new SerilogLoggerProvider(logConfig.CreateLogger(), dispose: true);
+                });
             });
         }
     }

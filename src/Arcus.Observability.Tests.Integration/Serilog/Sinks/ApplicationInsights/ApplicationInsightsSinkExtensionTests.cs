@@ -3,8 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
@@ -50,11 +52,67 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         }
 
         [Fact]
+        public async Task Sink_WithConnectionStringWithServiceProvider_WritesTelemetry()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddSingleton<TelemetryClient>();
+            IServiceProvider provider = services.BuildServiceProvider();
+
+            string connectionString = $"InstrumentationKey={InstrumentationKey}";
+            var configuration = new LoggerConfiguration()
+                .WriteTo.AzureApplicationInsightsWithConnectionString(provider, connectionString);
+
+            var message = "Something to log with connection string";
+            ILogger logger = CreateLogger(configuration);
+
+            // Act
+            logger.LogInformation(message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] traces = await client.GetTracesAsync();
+                AssertX.Any(traces, trace =>
+                {
+                    Assert.Equal(message, trace.Trace.Message);
+                });
+            });
+        }
+
+        [Fact]
         public async Task Sink_WithInstrumentationKey_WritesTelemetry()
         {
             // Arrange
             var configuration = new LoggerConfiguration()
                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(InstrumentationKey);
+
+            var message = "Something to log with connection string";
+            ILogger logger = CreateLogger(configuration);
+
+            // Act
+            logger.LogInformation(message);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] traces = await client.GetTracesAsync();
+                AssertX.Any(traces, trace =>
+                {
+                    Assert.Equal(message, trace.Trace.Message);
+                });
+            });
+        }
+
+          [Fact]
+        public async Task Sink_WithInstrumentationKeyWithServiceProvider_WritesTelemetry()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddSingleton<TelemetryClient>();
+            IServiceProvider provider = services.BuildServiceProvider();
+            var configuration = new LoggerConfiguration()
+                .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, InstrumentationKey);
 
             var message = "Something to log with connection string";
             ILogger logger = CreateLogger(configuration);

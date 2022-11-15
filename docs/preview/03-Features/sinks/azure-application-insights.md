@@ -38,6 +38,18 @@ ILogger logger = new LoggerConfiguration()
     .CreateLogger();
 ```
 
+> ⚡ When you want to re-use an already registered `TelemetryClient`, pass in the `IServiceProvider` to the method that registers the Application Insights sink. `TelemetryClient`s are automatically registered behind the scenes when using W3C correlation in Arcus Web API middleware (>= v1.7) or Arcus Messaging (>= v1.4).
+
+```csharp
+using Serilog;
+using Serilog.Configuration;
+
+ILogger logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.AzureApplicationInsightsWithConnectionString(serviceProvider, "<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
+    .CreateLogger();
+```
+
 For more information on this sink: [see this section](#azure-application-insights-sink).
 
 ## Installation
@@ -208,7 +220,7 @@ string connectionString = await secretProvider.GetRawSecretAsync("APPLICATIONINS
 var reloadLogger = (ReloadableLogger) Log.Logger;
 reloadLogger.Reload(config =>
 {
-    return config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString);
+    return config.WriteTo.AzureApplicationInsightsWithConnectionString(host.Services, connectionString);
 });
 
 // Start application.
