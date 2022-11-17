@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using Arcus.Observability.Telemetry.Core;
 using GuardNet;
+using Microsoft.Data.SqlClient;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
