@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Sql;
 using GuardNet;
-using Microsoft.Data.SqlClient;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -153,8 +153,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrEmpty(connectionString, nameof(connectionString));
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name of the SQL operation to track a SQL dependency");
 
-            var connection = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
+            var result = SqlConnectionStringParser.Parse(connectionString);
+            logger.LogSqlDependency(result.DataSource, result.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
         }
 
         /// <summary>
@@ -182,8 +182,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var connection = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, context);
+            var result = SqlConnectionStringParser.Parse(connectionString);
+            logger.LogSqlDependency(result.DataSource, result.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, context);
         }
 
         /// <summary>
@@ -213,8 +213,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var connection = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
+            var result = SqlConnectionStringParser.Parse(connectionString);
+            logger.LogSqlDependency(result.DataSource, result.InitialCatalog, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
         }
 
         /// <summary>
@@ -275,8 +275,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var connection = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
+            var result = SqlConnectionStringParser.Parse(connectionString);
+            logger.LogSqlDependency(result.DataSource, result.InitialCatalog, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
         }
     }
 }
