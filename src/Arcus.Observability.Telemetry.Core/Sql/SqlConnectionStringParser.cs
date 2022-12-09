@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using GuardNet;
 
-namespace Arcus.Observability.Telemetry.Sql
+namespace Arcus.Observability.Telemetry.Core.Sql
 {
     /// <summary>
     /// Represents the instance to parse the SQL connection string to a strongly-typed <see cref="SqlConnectionStringParserResult"/>.
     /// </summary>
-    public static class SqlConnectionStringParser
+    internal static class SqlConnectionStringParser
     {
         private enum SqlProperties { DataSource, InitialCatalog }
 
@@ -17,7 +17,7 @@ namespace Arcus.Observability.Telemetry.Sql
         /// </summary>
         /// <param name="connectionString">The SQL connection string that needs to be parsed into separate SQL properties.</param>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
-        public static SqlConnectionStringParserResult Parse(string connectionString)
+        internal static SqlConnectionStringParserResult Parse(string connectionString)
         {
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a non-blank SQL connection string to retrieve specific SQL properties");
 

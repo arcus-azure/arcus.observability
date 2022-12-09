@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Arcus.Observability.Telemetry.Sql;
 using Bogus;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,30 +40,33 @@ namespace Arcus.Observability.Tests.Unit.Sql
         {
             // Arrange
             _outputWriter.WriteLine("Parsing: {0}", connectionString);
+            var logger = new TestLogger();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            var dependencyId = Bogus.Random.Guid().ToString();
+            var sqlCommand = "GET something FROM something";
+            var operationName = "Get somethings";
 
             // Act
-            var result = SqlConnectionStringParser.Parse(connectionString);
+            logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId);
 
             // Assert
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            Assert.Equal(builder.DataSource, result.DataSource);
-            Assert.Equal(builder.InitialCatalog, result.InitialCatalog);
+            (string dataSource, string initialCatalog) = DetermineSqlProperties(connectionString);
+            Assert.StartsWith($"Sql {initialCatalog}/{operationName} {sqlCommand} named {dataSource}", logger.WrittenMessage);
         }
 
-        [Fact]
-        public void Parse_WithOnlyWhiteSpaceSqlProperties_Succeeds()
+        private static (string dataSource, string initialCatalog) DetermineSqlProperties(string connectionString)
         {
-            // Arrange
-            string connectionString = string.Join(";", 
-                Bogus.Make(Bogus.Random.Int(min: 1, max: 100), RandomWhiteSpace));
-
-            // Act
-            var result = SqlConnectionStringParser.Parse(connectionString);
-
-            // Assert
             var builder = new SqlConnectionStringBuilder(connectionString);
-            Assert.Equal(builder.DataSource, result.DataSource);
-            Assert.Equal(builder.InitialCatalog, result.InitialCatalog);
+
+            string initialCatalog = builder.InitialCatalog;
+            if (string.IsNullOrEmpty(initialCatalog))
+            {
+                initialCatalog = "<not-available>";
+            }
+
+            return (builder.DataSource, initialCatalog);
         }
 
         [Fact]
@@ -71,21 +74,17 @@ namespace Arcus.Observability.Tests.Unit.Sql
         {
             // Arrange
             var connectionString = Bogus.Lorem.Sentence();
+            var logger = new TestLogger();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            var dependencyId = Bogus.Random.Guid().ToString();
+            var sqlCommand = "GET something FROM something";
+            var operationName = "Get somethings";
 
-            // Act
-            var result = SqlConnectionStringParser.Parse(connectionString);
-
-            // Assert
-            Assert.Empty(result.DataSource);
-            Assert.Empty(result.InitialCatalog);
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void Parse_WithoutConnectionString_Fails(string connectionString)
-        {
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => SqlConnectionStringParser.Parse(connectionString));
+                () => logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId));
         }
 
         private static string RandomConnectionString()
@@ -123,7 +122,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
             string authentication = Bogus.PickRandom(userAuthentication, integratedSecurity);
 
             string dataSource = CreateProperty(
-                RandomCase(Bogus.PickRandom("Data Source", "Server", "Addr", "Network Address")),
+                Bogus.PickRandom("Data Source", "Server", "Addr", "Network Address"),
                 Bogus.PickRandom(
                     CreateWordValue(),
                     Bogus.Internet.Ip(),
@@ -133,7 +132,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
                 Bogus.PickRandom("AttachDBFilename", "extended properties", "Initial File Name"),
                 Bogus.System.FilePath());
             
-            string initialCatalog = CreateOptionalProperty(
+            string initialCatalog = CreateProperty(
                 Bogus.PickRandom("Initial Catalog", "Database"),
                 CreateWordValue());
 

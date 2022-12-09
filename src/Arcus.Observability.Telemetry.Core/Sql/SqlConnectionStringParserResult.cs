@@ -1,18 +1,18 @@
 ﻿using GuardNet;
 
-namespace Arcus.Observability.Telemetry.Sql
+namespace Arcus.Observability.Telemetry.Core.Sql
 {
     /// <summary>
     /// Represents the result of the <see cref="SqlConnectionStringParser"/> when parsing a SQL connection string.
     /// </summary>
-    public class SqlConnectionStringParserResult
+    internal class SqlConnectionStringParserResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlConnectionStringParserResult" /> class.
         /// </summary>
         /// <param name="dataSource">The data source SQL property parsed from the SQL connection string.</param>
         /// <param name="initialCatalog">The database name SQL property parsed from the SQL connection string.</param>
-        public SqlConnectionStringParserResult(string dataSource, string initialCatalog)
+        internal SqlConnectionStringParserResult(string dataSource, string initialCatalog)
         {
             DataSource = dataSource ?? string.Empty;
             InitialCatalog = initialCatalog ?? string.Empty;
@@ -69,7 +69,7 @@ namespace Arcus.Observability.Telemetry.Sql
         ///  ]]></format>
         ///             </remarks>
         /// <exception cref="T:System.ArgumentNullException">To set the value to null, use <see cref="F:System.DBNull.Value" />.</exception>
-        public string DataSource {get;}
+        internal string DataSource {get;}
 
         /// <summary>Gets or sets the name of the database associated with the connection.</summary>
         /// <value>The value of the <see cref="P:Microsoft.Data.SqlClient.SqlConnectionStringBuilder.InitialCatalog" /> property, or <see langword="String.Empty" /> if none has been supplied.</value>
@@ -89,6 +89,6 @@ namespace Arcus.Observability.Telemetry.Sql
         ///  ]]></format>
         ///             </remarks>
         /// <exception cref="T:System.ArgumentNullException">To set the value to null, use <see cref="F:System.DBNull.Value" />.</exception>
-        public string InitialCatalog { get; }
+        internal string InitialCatalog { get; }
     }
 }
