@@ -23,7 +23,7 @@ namespace Arcus.Observability.Telemetry.Core.Sql
 
             string[] parts = 
                 connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
-                                .Select(TrimWhiteSpace)
+                                .Select(part => part.Trim())
                                 .ToArray();
 
             string dataSource = FindProperty(parts, SqlProperties.DataSource);
@@ -45,17 +45,7 @@ namespace Arcus.Observability.Telemetry.Core.Sql
                 return null;
             }
 
-            string propertyValue = string.Join("", potentialFind?.SkipWhile(ch => ch != '=').Skip(1));
-            return TrimWhiteSpace(propertyValue);
-        }
-
-        private static string TrimWhiteSpace(string item)
-        {
-            return string.Join("",
-                item.SkipWhile(char.IsWhiteSpace)
-                    .Reverse()
-                    .SkipWhile(char.IsWhiteSpace)
-                    .Reverse());
+            return string.Join("", potentialFind?.SkipWhile(ch => ch != '=').Skip(1)).Trim();
         }
 
         private static string[] GetSqlPropertyAliases(SqlProperties propertyName)
