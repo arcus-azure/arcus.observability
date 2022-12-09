@@ -153,8 +153,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrEmpty(connectionString, nameof(connectionString));
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name of the SQL operation to track a SQL dependency");
 
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(builder.DataSource, builder.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, tableName, operationName, isSuccessful, startTime, duration, context);
         }
 
         /// <summary>
@@ -182,8 +182,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(builder.DataSource, builder.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, context);
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, isSuccessful, startTime, duration, context);
         }
 
         /// <summary>
@@ -213,8 +213,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(builder.DataSource, builder.InitialCatalog, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand: sqlCommand, isSuccessful, startTime, duration, dependencyId, context);
         }
 
         /// <summary>
@@ -277,8 +277,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
 
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            logger.LogSqlDependency(builder.DataSource, builder.InitialCatalog, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
+            var connection = new SqlConnectionStringBuilder(connectionString);
+            logger.LogSqlDependency(connection.DataSource, connection.InitialCatalog, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
         }
     }
 }

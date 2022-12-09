@@ -68,7 +68,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogSqlDependency(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
+            Logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand: sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
