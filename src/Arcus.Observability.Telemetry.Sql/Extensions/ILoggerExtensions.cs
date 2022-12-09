@@ -230,6 +230,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        [Obsolete("Use the 'LogSqlDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.Sql' package from your project")]
         public static void LogSqlDependency(
             this ILogger logger,
             string connectionString,
@@ -261,6 +262,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        [Obsolete("Use the 'LogSqlDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.Sql' package from your project")]
         public static void LogSqlDependency(
             this ILogger logger,
             string connectionString,
