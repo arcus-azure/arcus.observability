@@ -249,6 +249,7 @@ Here is how you can report a SQL dependency:
 using Microsoft.Extensions.Logging;
 
 var durationMeasurement = new Stopwatch();
+string dependencyId = Guid.NewGuid().ToString();
 
 // Start measuring
 var startTime = DateTimeOffset.UtcNow;
@@ -257,7 +258,7 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency("Company SQL Server", "Stock Database", "GET ProductName FROM Products", "Get product names", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogSqlDependency("Company SQL Server", "Stock Database", "GET ProductName FROM Products", "Get product names", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed, dependencyId);
 // Output: {"DependencyType": "Sql", "DependencyName": "Stock Database/Get product names", "DependencyData": "GET ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
@@ -267,6 +268,7 @@ Or alternatively, when one already got the SQL connection string, you can use th
 using Microsoft.Extensions.Logging;
 
 string connectionString = "Server=Company SQL Server;Database=Stock Database;User=admin;Password=123";
+string dependencyId = Guid.NewGuid().ToString();
 var durationMeasurement = new Stopwatch();
 
 // Start measuring
@@ -276,7 +278,7 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependencyWithConnectionString(connectionString, "GET ProductName FROM Products", "Get product names", isSuccessful: true, measurement: measurement);
+logger.LogSqlDependencyWithConnectionString(connectionString, "GET ProductName FROM Products", "Get product names", isSuccessful: true, measurement: measurement, dependencyId);
 // Output: {"DependencyType": "Sql", "DependencyName": "Stock Database/Get product names", "DependencyData": "GET ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
 
