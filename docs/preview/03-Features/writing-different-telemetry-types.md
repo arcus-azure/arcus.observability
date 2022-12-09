@@ -263,16 +263,6 @@ logger.LogSqlDependency("Company SQL Server", "Stock Database", "GET ProductName
 
 Or alternatively, when one already got the SQL connection string, you can use the overload that takes this directly:
 
-**Installation**
-
-This feature requires to install our NuGet package
-
-```shell
-PM > Install-Package Arcus.Observability.Telemetry.Sql
-```
-
-**Example**
-
 ```csharp
 using Microsoft.Extensions.Logging;
 
@@ -286,9 +276,11 @@ durationMeasurement.Start();
 // Interact with database
 var products = await _repository.GetProducts();
 
-logger.LogSqlDependency(connectionString, "GET ProductName FROM Products", "Get product names", isSuccessful: true, measurement: measurement);
+logger.LogSqlDependencyWithConnectionString(connectionString, "GET ProductName FROM Products", "Get product names", isSuccessful: true, measurement: measurement);
 // Output: {"DependencyType": "Sql", "DependencyName": "Stock Database/Get product names", "DependencyData": "GET ProductName FROM Products", "TargetName": "Company SQL Server", "Duration": "00:00:01.2396312", "StartTime": "03/23/2020 09:32:02 +00:00", "IsSuccessful": true, "Context": {}}
 ```
+
+> ⚠ This functionality was previously called `.LogSqlDependency` and was availabl in the `Arcus.Observability.Telemetry.Sql` package. This package is now deprecated. Use the `.LogSqlDependencyWithConnectionString` instead which is by-default available in the `Arcus.Observability.Telemetry.Core` package.
 
 ### Measuring custom dependencies
 
