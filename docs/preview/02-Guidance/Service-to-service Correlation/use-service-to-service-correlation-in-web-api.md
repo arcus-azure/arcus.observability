@@ -9,7 +9,7 @@ The concept of service-to-service correlation is big and complex and spans multi
 To use service-to-service correlation in Web API solutions, both the sending and receiving side of the separate API components have to be adapted. The HTTP correlation will be passed through from one service to another via the HTTP headers which the internal Arcus system will use to link your services together.
 
 The following diagram shows this communication more clearly:
-![HTTP correlation diagram](/media/http-correlation.png)
+![HTTP correlation diagram](/media/http-correlation-w3c.png)
 
 ## How does this work?
 Three kind of correlation ID's are used to create the relationship:
@@ -163,7 +163,7 @@ Now that we have explained the application code, we can add the Arcus functional
 
 First, these packages need to be installed:
 ```shell
-PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.6.0
+PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.7.0
 PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.5.0
 ```
 
@@ -189,9 +189,7 @@ public class Program
         {
             new KeyValuePair<string, string>("STOCK_API_URL", "http://localhost:788")
         });
-        builder.Services.AddHttpClient("Stock API")
-                        // [Add] Adds telemetry to outgoing request
-                        .WithHttpCorrelationTracking();
+        builder.Services.AddHttpClient("Stock API");
 
         // [Add] Serilog configuration that writes to Application Insights
         builder.Host.UseSerilog((context, provider, config) =>
@@ -217,7 +215,6 @@ public class Program
 
 Following additions are made:
 * `builder.Services.AddHttpCorrelation()`: adds the HTTP correlation services to the application services. This registers the `IHttpCorrelationInfoAccessor` that is used to get/set the HTTP correlation throughout the application. ([more info](https://webapi.arcus-azure.net/features/correlation))
-* `.WithHttpCorrelationTracking()`: enhances the injected `HttpClient`'s so that outgoing HTTP requests are enriched with the available application's HTTP correlation. This will also make sure that the send request will be tracked as a HTTP dependency ([more info](https://webapi.arcus-azure.net/features/correlation))
 * `WriteTo.AzureApplicationInsightsWithConnectionString`: Serilog's sink that writes all the logged telemetry to Application Insights ([more info](https://observability.arcus-azure.net/Features/sinks/azure-application-insights))
 * `app.UseHttpCorrelation()`: retrieves the HTTP correlation from the incoming request or generates a new set (first request). This correlation information is set into the `IHttpCorrelationInfoAccessor`. ([more info](https://webapi.arcus-azure.net/features/correlation)).
 * `app.UseRequestTracking()`: tracks the incoming HTTP request as a telemetry request. ([more info](https://webapi.arcus-azure.net/features/logging)).
@@ -231,7 +228,7 @@ The **Stock API** will need similar changes, but different from the **Product AP
 
 The same packages needs to be installed:
 ```shell
-PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.6.0
+PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.7.0
 PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.5.0
 ```
 
