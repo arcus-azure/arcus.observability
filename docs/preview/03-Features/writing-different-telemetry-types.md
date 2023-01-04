@@ -491,6 +491,8 @@ using (var measurement = DurationMeasurement.Start())
 }
 ```
 
+💡 See [other possible domain names for Azure Service Bus](https://learn.microsoft.com/en-us/rest/api/servicebus/) to pass along as suffix with your Azure Service Bus namespace.
+
 We provide support for all Azure Service Bus entity types such as queues, topics and subscriptions. 
 All these types can be tracked by passing along the full Azure Service namespace, or with providing the namespace name and the Azure cloud separately.
 
