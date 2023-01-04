@@ -123,7 +123,10 @@ First, these packages need to be installed:
 ```shell
 PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.6.1
 PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.6.0
+PM > Install-Package Azure.Messaging.ServiceBus -MinimumVersion 7.11.1
 ```
+
+> ⚡ Note that these Arcus packages and additions are built-in into the [Arcus project templates](https://templates.arcus-azure.net/).
 
 > For more information on `Arcus.WebApi.Logging`, see [these dedicated feature docs](https://webapi.arcus-azure.net/features/logging), for more information on `Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights`, see [these dedicated feature docs](https://observability.arcus-azure.net/Features/sinks/azure-application-insights).
 
@@ -152,12 +155,17 @@ public class Program
                  .WithCredential(new ManagedIdentityCredential());
         });
 
+        // [Add] Arcus + Microsoft component name/version registration
+        builder.Services.AddAppName("Order API");
+        builder.Services.AddAssemblyAppVersion<Program>();
+
         // [Add] Serilog configuration that writes to Application Insights
         builder.Host.UseSerilog((context, provider, config) =>
         {
-            config.MinimumLevel.Verbose()
+            config.MinimumLevel.Information()
                   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                  .Enrich.WithComponentName("Order API")
+                  .Enrich.WithComponentName(provider)
+                  .Enrich.WithVersion(provider)
                   .Enrich.WithHttpCorrelationInfo(provider)
                   .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>");
         });
@@ -176,6 +184,7 @@ public class Program
 
 Following additions are made:
 * `builder.Services.AddHttpCorrelation()`: adds the HTTP correlation services to the application services. This registers the `IHttpCorrelationInfoAccessor` that is used to get/set the HTTP correlation throughout the application. ([more info](https://webapi.arcus-azure.net/features/correlation))
+* `AddAppName`/`Add...AppVersion`: configures for both Arcus & Microsoft the component's name and version when tracking telemetry via either Arcus technology or directly via Microsoft's `TelemetryClient` ([more info](https://observability.arcus-azure.net/Features/telemetry-enrichment)).
 * `WriteTo.AzureApplicationInsightsWithConnectionString`: Serilog's sink that writes all the logged telemetry to Application Insights ([more info](https://observability.arcus-azure.net/Features/sinks/azure-application-insights))
 * `app.UseHttpCorrelation()`: retrieves the HTTP correlation from the incoming request or generates a new set (first request). This correlation information is set into the `IHttpCorrelationInfoAccessor`. ([more info](https://webapi.arcus-azure.net/features/correlation)).
 * `app.UseRequestTracking()`: tracks the incoming HTTP request as a telemetry request. ([more info](https://webapi.arcus-azure.net/features/logging)).
@@ -184,11 +193,9 @@ Following additions are made:
 
 > ⚠ Note that the order of the middleware component registrations is important. The HTTP request tracking needs the endpoint routing to figure out if the request should be tracked, for example. For more information on our different middleware components, see [our Web API feature documentation](https://webapi.arcus-azure.net/features/logging).
 
-With these HTTP correlation additions, we can alter our API controller to include the correlation tracking when a new product order request is placed on the Service Bus queue:
+With these HTTP correlation additions, we can easily place a message on the Service Bus queue, without any additional Arcus-related functionality:
 ```csharp
 using Azure.Messaging.ServiceBus;
-using Arcus.Observability.Correlation;
-using Arcus.WebApi.Logging.Core.Correlation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Azure;
 
@@ -197,19 +204,11 @@ using Microsoft.Extensions.Azure;
 public class OrderController : ControllerBase
 {
     private readonly ServiceBusSender _serviceBusSender;
-    private readonly ILogger<OrderController> _logger;
-    private readonly IHttpCorrelationInfoAccessor _correlationAccessor;
 
-    public OrderController(
-        // [Add] Inject the application's available correlation accessor
-        IHttpCorrelationInfoAccessor correlationAccessor,
-        IAzureClientFactory<ServiceBusClient> clientFactory,
-        ILogger<OrderController> logger)
+    public OrderController(IAzureClientFactory<ServiceBusClient> clientFactory)
     {
          ServiceBusClient client = clientFactory.CreateClient("Order Worker");
         _serviceBusSender = client.CreateSender("orders");
-        _correlationAccessor = correlationAccessor;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -217,18 +216,13 @@ public class OrderController : ControllerBase
     {
         var order = new Order(productRequest);
 
-        // [Add] Retrieve the current application correlation
-        CorrelationInfo correlationInfo = _correlationAccessor.GetCorrelationInfo();
+        var data = BinaryData.FromObjectAsJson(order);
+        await _serviceBusSender.SendMessageAsync(data);
 
-        // [Add] Send the application correlation and logger when the message is send, using one of Arcus' extensions
-        await _serviceBusSender.SendMessageAsync(order, correlationInfo, _logger);
+        return Accepted();
     }
 }
 ```
-
-Following additions are made:
-* `IHttpCorrelationInfoAccessor`: is the correlation accessor implementation for Web API applications. This instance is used to get and set the correlation for a scoped HTTP request. For more information on HTTP correlation, see [our Web API feature documentation](https://webapi.arcus-azure.net/features/correlation).
-* `SendMessageAsync(message, correlationInfo, _logger)`: is an extensions on the `ServiceBusSender` that allows consumers to track the Service Bus message. This will make sure that the send operation is tracked as an Azure Service Bus dependency and that the **Order Worker** will be able to link the correlation. For more information on Azure Service Bus tracking, see [our Service Bus feature documentation](https://messaging.arcus-azure.net/Features/service-bus).
 
 ### Order Worker: add Arcus functionality
 The **Order Worker** didn't had any implementation, so let's add this now. We want to receive a message on an Azure Service Bus queue, and track that as a linked request in Application Insights.
@@ -236,10 +230,12 @@ We will be using the [Arcus message pump](https://messaging.arcus-azure.net/Feat
 
 First, let's install these packages:
 ```shell
-PM > Install-Package Arcus.Messaging.Pumps.ServiceBus -MinimumVersion 1.3.0
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.6.0
+PM > Install-Package Arcus.Messaging.Pumps.ServiceBus -MinimumVersion 1.4.0
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.7.0
 PM > Install-Package Serilog.Extensions.Hosting
 ```
+
+> ⚡ Note that these additions are built-in into the [Arcus project templates](https://templates.arcus-azure.net/).
 
 These packages allows us to register the message pump and the Serilog logging:
 ```csharp
@@ -253,35 +249,43 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        IHost host =
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices(services =>
+                {
+                    // [Add] Arcus + Microsoft component name/version registration
+                    services.AddAppName("Order Worker");
+                    services.AddAssemblyAppVersion<Program>();
+
+                    // [Add] Arcus message pump on Service Bus 'orders' queue
+                    services.AddServiceBusQueueMessagePumpUsingManagedIdentity("orders", "<fully-qualified-servicebus-namespace>")
+                            // [Add] Arcus message handler that processes the received 'order' on the Service Bus queue
+                            .WithServiceBusMessageHandler<OrderMessageHandler, Order>();
+               })
+               // [Add] Register the Serilog logger as the application's logger
+               .UseSerilog(Log.Logger)
+               .Build();
+
         // [Add] Serilog configuration that writes to Application Insights
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
+            .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .Enrich.WithComponentName("Order Worker")
+            .Enrich.WithVersion(host.Services)
+            .Enrich.WithComponentName(host.Services)
             .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>")
             .CreateLogger();
 
-       Host.CreateDefaultBuilder(args)
-           .ConfigureServices(services =>
-           {
-                // [Add] Arcus message pump on Service Bus 'orders' queue
-                services.AddServiceBusQueueMessagePumpUsingManagedIdentity("orders", "<fully-qualified-servicebus-namespace>")
-                        // [Add] Arcus message handler that processes the received 'order' on the Service Bus queue
-                        .WithServiceBusMessageHandler<OrderMessageHandler, Order>();
-           })
-           .Build()
-           // [Add] Register the Serilog logger as the application's logger
-           .UseSerilog(Log.Logger)
-           .Run();
+        host.Run();
     }
 }
 ```
 
 Following additions are made:
-* `WriteTo.AzureApplicationInsightsWithConnectionString`: Serilog's sink that writes all the logged telemetry to Application Insights ([more info](https://observability.arcus-azure.net/Features/sinks/azure-application-insights))
+* `AddAppName`/`Add...AppVersion`: configures for both Arcus & Microsoft the component's name and version when tracking telemetry via either Arcus technology or directly via Microsoft's `TelemetryClient` ([more info](https://observability.arcus-azure.net/Features/telemetry-enrichment)).
 * `AddServiceBusQueueMessagePumpUsingManagedIdentity`: registers an Arcus message pump listening on an Azure Service Bus 'orders' queue. Received messages will automatically be tracked as Service Bus requests in Application Insights.
-* `WithServiceBusMessageHandler`: registers a custom `OrderMessageHandler` to process the deserialized `Order` message.
+  * `WithServiceBusMessageHandler`: registers a custom `OrderMessageHandler` to process the deserialized `Order` message.
+* `WriteTo.AzureApplicationInsightsWithConnectionString`: Serilog's sink that writes all the logged telemetry to Application Insights ([more info](https://observability.arcus-azure.net/Features/sinks/azure-application-insights))
 
 > ⚠ Note that when initializing the Application Insights Serilog sink, you should use the Arcus secret store to retrieve this connection string. Setting this up requires you to reload the logger after the application is build. For more information, see [this dedicated section](https://observability.arcus-azure.net/Features/sinks/azure-application-insights#q-where-can-i-initialize-the-logger-in-an-aspnet-core-application-or-other-hosted-service) that describes how to do this.
 
@@ -325,17 +329,17 @@ curl -Method POST `
    -Body '{ "ProductName": "Fancy desk", "Amount": 3 }'
 
 // StatusCode : 202
-// Headers:   : X-Transaction-ID=fb088835-a8f7-4cfe-9434-5ea4892e63b9
-//              X-Operation-ID=585ea273-eaa9-44bb-905a-6805bd418566
+// Headers:   : X-Transaction-ID=9d02c0f4782b45618181e84c4221b056
+//              X-Operation-ID=f63bcab4b52b8373
 ```
 
 The real result, though, happens in Application Insights.
 
 The application map (`Application Insights > Investigate > Application Map`) shows a clear relationship between the two services:
-![Product API <> Stock API application map example](/media/servicebus-worker-service-correlation-example-applicationmap.png)
+![Product API <> Stock API application map example](/media/servicebus-worker-service-w3c-correlation-example-applicationmap.png)
 
 If you copy the `X-Transaction-ID` from the response (`585ea273-eaa9-44bb-905a-6805bd418566`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Order API**. You clearly see how the initial request to the **Order API** is the caller of the dependency towards the **Order Worker**:
-![Product API <> Stock API transaction search example](/media/servicebus-worker-service-correlation-example-transactionsearch.png)
+![Product API <> Stock API transaction search example](/media/servicebus-worker-service-w3c-correlation-example-transactionsearch.png)
 
 ## Further reading
 * [Arcus Service Bus messaging documentation](https://messaging.arcus-azure.net/Features/message-pumps/service-bus)
