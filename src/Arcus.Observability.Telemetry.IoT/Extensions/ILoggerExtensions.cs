@@ -41,6 +41,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Use the 'LogIotHubDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.IoT' package from your project")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubConnectionString,
@@ -69,6 +70,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Use the 'LogIotHubDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.IoT' package from your project")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubConnectionString,
@@ -98,6 +100,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Use the 'LogIotHubDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.IoT' package from your project")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubConnectionString,
@@ -127,6 +130,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Use the 'LogIotHubDependencyWithConnectionString' instead in the 'Arcus.Observability.Telemetry.Core' package and remove the 'Arcus.Observability.Telemetry.IoT' package from your project")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubConnectionString,
