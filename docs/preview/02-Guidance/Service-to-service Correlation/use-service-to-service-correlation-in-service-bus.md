@@ -122,7 +122,7 @@ Now that we have explained the application code, we can add the Arcus functional
 First, these packages need to be installed:
 ```shell
 PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.6.1
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.6.0
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.7.0
 PM > Install-Package Azure.Messaging.ServiceBus -MinimumVersion 7.11.1
 ```
 
@@ -167,7 +167,7 @@ public class Program
                   .Enrich.WithComponentName(provider)
                   .Enrich.WithVersion(provider)
                   .Enrich.WithHttpCorrelationInfo(provider)
-                  .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>");
+                  .WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>");
         });
 
         WebApplication app = builder.Build();
@@ -273,7 +273,7 @@ public class Program
             .Enrich.FromLogContext()
             .Enrich.WithVersion(host.Services)
             .Enrich.WithComponentName(host.Services)
-            .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>")
+            .WriteTo.AzureApplicationInsightsWithConnectionString(host.Services, "<connection-string>")
             .CreateLogger();
 
         host.Run();
