@@ -7,7 +7,7 @@ sidebar_label: Welcome
 
 # Introduction
 
-Arcus Observability allows you to work easily with Azure Application Insights telemetry. Instead of managing logging, correlation, tracking, Arcus Observability allows you to work with the common `ILogger` infrastructure and still be able to write multi-dimensional telemetry data. The library supports multiple telemetry types like tracking dependencies, requests, events, metrics, while also be able to filter with Serilog filters and enrich with custom correlation.
+Arcus Observability allows you to work easily with Azure Application Insights telemetry by making use of the common `ILogger` infrastructure to track dependencies, log custom metrics and log multi-dimensional telemetry data. The library supports multiple telemetry types like tracking dependencies, requests, events, metrics, while also be able to filter with Serilog filters and enrich with custom correlation.
 
 ![Logger Arcus - Application Insights](/img/logger-arcus-appinsights.png)
 
