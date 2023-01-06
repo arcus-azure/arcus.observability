@@ -193,7 +193,7 @@ Following additions are made:
 
 > ⚠ Note that the order of the middleware component registrations is important. The HTTP request tracking needs the endpoint routing to figure out if the request should be tracked, for example. For more information on our different middleware components, see [our Web API feature documentation](https://webapi.arcus-azure.net/features/logging).
 
-With these HTTP correlation additions, we can easily place a message on the Service Bus queue, without any additional Arcus-related functionality:
+With these HTTP correlation additions, we can easily put a message on the Service Bus queue, without any additional Arcus-related functionality:
 ```csharp
 using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Mvc;
