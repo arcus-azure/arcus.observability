@@ -111,14 +111,6 @@ logger.LogIotHubDependency(iotHubName: "sensors", isSuccessful: true, startTime:
 
 Or, alternatively you can pass along the IoT connection string itself so the host name will be selected for you.
 
-**Installation**
-
-This feature requires to install our NuGet package
-
-```shell
-PM > Install-Package Arcus.Observability.Telemetry.IoT
-```
-
 **Example**
 
 Here is how you can report a dependency call:
@@ -132,9 +124,11 @@ var durationMeasurement = new Stopwatch();
 durationMeasurement.Start();
 var startTime = DateTimeOffset.UtcNow;
 
-logger.LogIotHubDependency(iotHubConnectionString: "Hostname=sensors;", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
+logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: "HostName=sensors.azure-devices.net;...", isSuccessful: true, startTime: startTime, duration: durationMeasurement.Elapsed);
 // Output: {"DependencyType": "Azure IoT Hub", "TargetName": "sensors", "Duration": "00:00:00.2521801", "StartTime": "03/23/2020 09:56:31 +00:00", "IsSuccessful": true, "Context": {}}
 ```
+
+> ⚠ Previously, an `LogIotHubDependency` IoT Hub connection string overload was available in the `Arcus.Observability.Telemetry.IoT` package but is now deprecated and renamed to `LogIotHubDependencyWithConnectionString` which is located in the `Arcus.Observability.Telemetry.Core` package.
 
 ### Measuring Azure Key Vault dependencies
 
