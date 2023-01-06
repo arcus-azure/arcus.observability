@@ -8,7 +8,7 @@ namespace Arcus.Observability.Tests.Unit.Correlation
     public class DefaultCorrelationInfoAccessorTests
     {
         [Fact]
-        public async Task SetCorrelationInfo_Twice_UsesMostRecentValue()
+        public async Task SetCorrelationInfo_Twice_UsesMostRecentValueInAsynchContext()
         {
             // Arrange
             var firstOperationId = $"operation-{Guid.NewGuid()}";
