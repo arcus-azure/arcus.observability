@@ -96,10 +96,10 @@ public class ProductController : ControllerBase
     {
         HttpClient httpClient = _httpClientFactory.CreateClient("Stock API");
         
-        var endpoint = $"{_configuration["STOCK_API_URL"]}/api/v1/stock?productName={orderRequest.ProductName}";
+        var endpoint = $"{_configuration["STOCK_API_URL"]}/api/v1/stock?productName={request.ProductName}";
 
         var response = await httpClient.GetFromJsonAsync<ProductStockResponse>(endpoint);
-        if (response.AvailableItems >= orderRequest.Amount)
+        if (response.AvailableItems >= request.Amount)
         {
             return Accepted();
         }
@@ -164,8 +164,10 @@ Now that we have explained the application code, we can add the Arcus functional
 First, these packages need to be installed:
 ```shell
 PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.7.0
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.5.0
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.7.0
 ```
+
+> ⚡ Note that all these packages and additions are by default available in the [Arcus project templates](https://templates.arcus-azure.net/).
 
 > For more information on `Arcus.WebApi.Logging`, see [these dedicated feature docs](https://webapi.arcus-azure.net/features/logging), for more information on `Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights`, see [these dedicated feature docs](https://observability.arcus-azure.net/Features/sinks/azure-application-insights).
 
@@ -185,6 +187,10 @@ public class Program
         // [Add] Makes HTTP correlation available throughout application
         builder.Services.AddHttpCorrelation();
 
+        // [Add] Arcus + Microsoft component name/version registration
+        builder.Services.AddAppName("Product API");
+        builder.Services.AddAssemblyAppVersion<Program>();
+
         builder.Configuration.AddInMemoryCollection(new[]
         {
             new KeyValuePair<string, string>("STOCK_API_URL", "http://localhost:788")
@@ -196,9 +202,10 @@ public class Program
         {
             config.MinimumLevel.Verbose()
                   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                  .Enrich.WithComponentName("Product API")
+                  .Enrich.WithComponentName(provider)
+                  .Enrich.WithVersion(provider)
                   .Enrich.WithHttpCorrelationInfo(provider)
-                  .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>");
+                  .WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>");
         });
 
         WebApplication app = builder.Build();
@@ -215,6 +222,7 @@ public class Program
 
 Following additions are made:
 * `builder.Services.AddHttpCorrelation()`: adds the HTTP correlation services to the application services. This registers the `IHttpCorrelationInfoAccessor` that is used to get/set the HTTP correlation throughout the application. ([more info](https://webapi.arcus-azure.net/features/correlation))
+* `AddAppName`/`Add...AppVersion`: configures for both Arcus & Microsoft the component's name and version when tracking telemetry via either Arcus technology or directly via Microsoft's `TelemetryClient` ([more info](https://observability.arcus-azure.net/Features/telemetry-enrichment)).
 * `WriteTo.AzureApplicationInsightsWithConnectionString`: Serilog's sink that writes all the logged telemetry to Application Insights ([more info](https://observability.arcus-azure.net/Features/sinks/azure-application-insights))
 * `app.UseHttpCorrelation()`: retrieves the HTTP correlation from the incoming request or generates a new set (first request). This correlation information is set into the `IHttpCorrelationInfoAccessor`. ([more info](https://webapi.arcus-azure.net/features/correlation)).
 * `app.UseRequestTracking()`: tracks the incoming HTTP request as a telemetry request. ([more info](https://webapi.arcus-azure.net/features/logging)).
@@ -229,8 +237,10 @@ The **Stock API** will need similar changes, but different from the **Product AP
 The same packages needs to be installed:
 ```shell
 PM > Install-Package Arcus.WebApi.Logging -MinimumVersion 1.7.0
-PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.5.0
+PM > Install-Package Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights -MinimumVersion 2.7.0
 ```
+
+> ⚡ Note that all these packages and additions are by default available in the [Arcus project templates](https://templates.arcus-azure.net/).
 
 The new startup code is very similar. The only difference is missing HTTP client registration:
 ```csharp
@@ -248,14 +258,19 @@ public class Program
         // [Add] Makes HTTP correlation available throughout application
         builder.Services.AddHttpCorrelation();
 
+         // [Add] Arcus + Microsoft component name/version registration
+        builder.Services.AddAppName("Stock API");
+        builder.Services.AddAssemblyAppVersion<Program>();
+
         // [Add] Serilog configuration that writes to Application Insights
         builder.Host.UseSerilog((context, provider, config) =>
         {
             config.MinimumLevel.Verbose()
                   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                  .Enrich.WithComponentName("Stock API")
+                  .Enrich.WithComponentName(provider)
+                  .Enrich.WithVersion(provider)
                   .Enrich.WithHttpCorrelationInfo(provider)
-                  .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>");
+                  .WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>");
         });
 
         WebApplication app = builder.Build();
@@ -285,8 +300,8 @@ curl -Method POST `
   -Body '{ "ProductName": "Fancy desk", "Amount": 3 }'
 
 // StatusCode : 202
-// Headers:   : X-Transaction-ID=8a622fa4-a757-47a0-9db9-e22d00328087
-//              X-Operation-ID=05353d3b-de3f-44e6-90cb-9a622884f290
+// Headers:   : X-Transaction-ID=6fe3ca03cab168d171a4baa6bd965f7e
+//              X-Operation-ID=b8229991ef6c5fd4
 ```
 
 The real result, though, happens in Application Insights.
@@ -295,7 +310,7 @@ The application map (`Application Insights > Investigate > Application Map`) sho
 ![Product API <> Stock API application map example](/media/product-stock-api-service-correlation-example-applicationmap.png)
 
 If you copy the `X-Transaction-ID` from the response (`8a622fa4-a757-47a0-9db9-e22d00328087`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Product API**. You clearly see how the initial request to the **Product API** is the caller of the dependency towards the **Stock API**:
-![Product API <> Stock API transaction search example](/media/product-stock-api-service-correlation-example-transactionsearch.png)
+![Product API <> Stock API transaction search example](/media/product-stock-api-service-w3c-correlation-example-transactionsearch.png)
 
 ## Conclusion
 In this user guide, you've seen how the Arcus HTTP correlation functionality can be used to set up service-to-service correlation in Web API solutions. The service-to-service correlation is a very wide topic and can be configured with many options. See the [this documentation page](https://webapi.arcus-azure.net/features/correlation) to learn more about HTTP correlation in Web API applications.
