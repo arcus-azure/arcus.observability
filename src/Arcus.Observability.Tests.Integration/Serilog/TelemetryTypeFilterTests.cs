@@ -504,7 +504,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var statusCode = (HttpStatusCode)_bogusGenerator.Random.Int(100, 599);
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();
@@ -535,7 +535,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         {
             // Arrange
             var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            var statusCode = (HttpStatusCode)_bogusGenerator.Random.Int(100, 599);
             DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             string propertyName = _bogusGenerator.Random.Word();

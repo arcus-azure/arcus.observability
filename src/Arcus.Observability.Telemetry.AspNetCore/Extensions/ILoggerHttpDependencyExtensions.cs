@@ -41,8 +41,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-            Guard.For(() => !Enum.IsDefined(typeof(HttpStatusCode), statusCode),
-                new ArgumentException("Requires a response HTTP status code that's within the bound of the enumeration to track a HTTP dependency"));
+            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -71,8 +71,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-            Guard.For(() => !Enum.IsDefined(typeof(HttpStatusCode), statusCode),
-                new ArgumentException("Requires a response HTTP status code that's within the bound of the enumeration to track a HTTP dependency"));
+            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
@@ -102,8 +102,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
-            Guard.For(() => !Enum.IsDefined(typeof(HttpStatusCode), statusCode),
-                new ArgumentException("Requires a response HTTP status code that's within the bound of the enumeration to track a HTTP dependency"));
+            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             context = context ?? new Dictionary<string, object>();
 
@@ -137,8 +137,8 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
-            Guard.For(() => !Enum.IsDefined(typeof(HttpStatusCode), statusCode),
-                new ArgumentException("Requires a response HTTP status code that's within the bound of the enumeration to track a HTTP dependency"));
+            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             context = context ?? new Dictionary<string, object>();
 
