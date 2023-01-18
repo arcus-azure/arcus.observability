@@ -38,8 +38,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
-            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -129,8 +127,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
             Guard.For(() => request.RequestUri is null, new ArgumentException("Requires a HTTP request URI to track a HTTP dependency", nameof(request)));
             Guard.For(() => request.Method is null, new ArgumentException("Requires a HTTP request method to track a HTTP dependency", nameof(request)));
-            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
-            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             context = context ?? new Dictionary<string, object>();
 
@@ -164,10 +160,41 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
+
+            LogHttpDependency(logger, request, (int)statusCode, startTime, duration, dependencyId, context);
+        }
+
+        /// <summary>
+        /// Logs an HTTP dependency
+        /// </summary>
+        /// <param name="logger">The logger to track the telemetry.</param>
+        /// <param name="request">The request that started the HTTP communication.</param>
+        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
+        /// <param name="startTime">The point in time when the interaction with the HTTP dependency was started.</param>
+        /// <param name="duration">The duration of the operation.</param>
+        /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
+        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="request"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside the bounds of the enumeration.
+        /// </exception>
+        public static void LogHttpDependency(
+            this ILogger logger,
+            HttpRequestMessage request,
+            int statusCode,
+            DateTimeOffset startTime,
+            TimeSpan duration,
+            string dependencyId,
+            Dictionary<string, object> context = null)
+        {
+            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
+            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
+            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
             Guard.For(() => request.RequestUri is null, new ArgumentException("Requires a HTTP request URI to track a HTTP dependency", nameof(request)));
             Guard.For(() => request.Method is null, new ArgumentException("Requires a HTTP request method to track a HTTP dependency", nameof(request)));
-            Guard.NotLessThan((int)statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
-            Guard.NotGreaterThan((int)statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
             context = context ?? new Dictionary<string, object>();
 
@@ -175,7 +202,7 @@ namespace Microsoft.Extensions.Logging
             string targetName = requestUri.Host;
             HttpMethod requestMethod = request.Method;
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
-            bool isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
+            bool isSuccessful = statusCode >= 200 && statusCode < 300;
 
             logger.LogWarning(MessageFormats.HttpDependencyFormat, new DependencyLogEntry(
                 dependencyType: "Http",
@@ -185,7 +212,7 @@ namespace Microsoft.Extensions.Logging
                 duration: duration,
                 startTime: startTime,
                 dependencyId: dependencyId,
-                resultCode: (int)statusCode,
+                resultCode: statusCode,
                 isSuccessful: isSuccessful,
                 context: context));
         }

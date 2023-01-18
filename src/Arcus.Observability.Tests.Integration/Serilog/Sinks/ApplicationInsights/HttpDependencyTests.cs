@@ -12,7 +12,7 @@ using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
 {
     public class HttpDependencyTests : ApplicationInsightsSinkTests
     {
@@ -38,7 +38,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyId = BogusGenerator.Random.Word();
 
             HttpRequestMessage request = CreateHttpRequestMessage(httpMethod, requestUrl);
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             DateTimeOffset startTime = DateTimeOffset.Now;
             TimeSpan duration = BogusGenerator.Date.Timespan();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
@@ -77,7 +77,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyId = BogusGenerator.Random.Word();
 
             HttpRequestMessage request = CreateHttpRequestMessage(httpMethod, requestUrl);
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             DateTimeOffset startTime = DateTimeOffset.Now;
             TimeSpan duration = BogusGenerator.Date.Timespan();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
@@ -117,8 +117,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             HttpMethod httpMethod = GenerateHttpMethod();
             HttpRequest request = CreateHttpRequest(httpMethod, "arcus.test", "/integration", "https");
             string dependencyId = BogusGenerator.Random.Guid().ToString();
-
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
+            
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
             DateTimeOffset startTime = DateTimeOffset.Now;
             var duration = BogusGenerator.Date.Timespan();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();

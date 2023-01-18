@@ -426,6 +426,38 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: null, dependencyId));
         }
 
+        [Theory]
+        [InlineData(99)]
+        [InlineData(600)]
+        public void LogHttpDependencyWithRequest_WithHttpStatusCodeOutsideAllowedRange_Fails(int statusCode)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, DateTimeOffset.Now, TimeSpan.Zero, dependencyId));
+        }
+
+        [Theory]
+        [InlineData(99)]
+        [InlineData(600)]
+        public void LogHttpDependencyWithRequestMessage_WithHttpStatusCodeOutsideAllowedRange_Fails(int statusCode)
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, BogusGenerator.Internet.Url());
+            var measurement = DurationMeasurement.Start();
+            measurement.Dispose();
+            string dependencyId = BogusGenerator.Lorem.Word();
+
+            // Act / Assert
+            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, DateTimeOffset.Now, TimeSpan.Zero, dependencyId));
+        }
+
         private static HttpRequest CreateStubRequest(HttpMethod method, string host, string path, string scheme)
         {
             var stubRequest = new Mock<HttpRequest>();
