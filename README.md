@@ -1,5 +1,5 @@
 # Arcus - Observability
-[![Build Status](https://dev.azure.com/codit/Arcus/_apis/build/status/Commit%20builds/CI%20-%20Arcus.Observability?branchName=master)](https://dev.azure.com/codit/Arcus/_build/latest?definitionId=733&branchName=master)
+[![Build Status](https://dev.azure.com/codit/Arcus/_apis/build/status/Commit%20builds/CI%20-%20Arcus.Observability?branchName=main)](https://dev.azure.com/codit/Arcus/_build/latest?definitionId=733&branchName=main)
 [![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
 
 Observability with Microsoft Azure in a breeze.
