@@ -426,32 +426,32 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: null, dependencyId));
         }
 
-        [Theory]
-        [InlineData(99)]
-        [InlineData(600)]
-        public void LogHttpDependencyWithRequest_WithHttpStatusCodeOutsideAllowedRange_Fails(int statusCode)
+        [Fact]
+        public void LogHttpDependencyWithRequest_WithHttpStatusCodeOutsideAllowedRange_Fails()
         {
             // Arrange
             var logger = new TestLogger();
             HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
+            var statusCode = BogusGenerator.PickRandom(
+                BogusGenerator.Random.Int(max: 99),
+                BogusGenerator.Random.Int(min: 600)
+            );
             string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, DateTimeOffset.Now, TimeSpan.Zero, dependencyId));
         }
 
-        [Theory]
-        [InlineData(99)]
-        [InlineData(600)]
-        public void LogHttpDependencyWithRequestMessage_WithHttpStatusCodeOutsideAllowedRange_Fails(int statusCode)
+        [Fact]
+        public void LogHttpDependencyWithRequestMessage_WithHttpStatusCodeOutsideAllowedRange_Fails()
         {
             // Arrange
             var logger = new TestLogger();
             var request = new HttpRequestMessage(HttpMethod.Get, BogusGenerator.Internet.Url());
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
+            var statusCode = BogusGenerator.PickRandom(
+                BogusGenerator.Random.Int(max: 99),
+                BogusGenerator.Random.Int(min: 600)
+            );
             string dependencyId = BogusGenerator.Lorem.Word();
 
             // Act / Assert
