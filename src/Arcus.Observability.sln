@@ -25,11 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.AzureFunctions", "Arcus.Observability.Telemetry.AzureFunctions\Arcus.Observability.Telemetry.AzureFunctions.csproj", "{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.Sql", "Arcus.Observability.Telemetry.Sql\Arcus.Observability.Telemetry.Sql.csproj", "{9EFD7715-304C-42AB-BC2B-40CED0E14050}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.AspNetCore", "Arcus.Observability.Telemetry.AspNetCore\Arcus.Observability.Telemetry.AspNetCore.csproj", "{72573A95-8B8A-4EE0-8067-099305B211B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcus.Observability.Tests.Runtimes.AzureFunction", "Arcus.Observability.Tests.Runtimes.AzureFunction\Arcus.Observability.Tests.Runtimes.AzureFunction.csproj", "{6F45A438-8C84-4279-8AE5-21346AB05102}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Tests.Runtimes.AzureFunction", "Arcus.Observability.Tests.Runtimes.AzureFunction\Arcus.Observability.Tests.Runtimes.AzureFunction.csproj", "{6F45A438-8C84-4279-8AE5-21346AB05102}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +75,6 @@ Global
 		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9EFD7715-304C-42AB-BC2B-40CED0E14050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EFD7715-304C-42AB-BC2B-40CED0E14050}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EFD7715-304C-42AB-BC2B-40CED0E14050}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EFD7715-304C-42AB-BC2B-40CED0E14050}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
