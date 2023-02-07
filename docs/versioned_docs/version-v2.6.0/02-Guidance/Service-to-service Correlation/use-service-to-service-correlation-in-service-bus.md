@@ -91,7 +91,8 @@ public class OrderController : ControllerBase
     public async Task<IActionResult> Post([FromBody] ProductOrderRequest productRequest)
     {
         var order = new Order(productRequest);
-        var message = new ServiceBusMessage(order);
+        var data = BinaryData.FromObjectAsJson(order);
+        var message = new ServiceBusMessage(data);
 
         await _serviceBusSender.SendMessageAsync(message);
     }
