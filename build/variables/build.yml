@@ -1,5 +1,5 @@
 variables:
-  DotNet.Sdk.Version: '6.0.100'
-  DotNet.Sdk.PreviousVersion: '3.1.201'
+  DotNet.Sdk.Version: '8.0.100-preview.7'
+  DotNet.Sdk.PreviousVersion: '6.0.100'
   Project: 'Arcus.Observability'
   Vm.Image: 'ubuntu-latest'
