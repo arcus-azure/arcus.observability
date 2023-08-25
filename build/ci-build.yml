@@ -48,6 +48,12 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '$(DotNet.Sdk.PreviousVersion)'
+          - task: UseDotNet@2
+            displayName: 'Import .NET Core SDK (${{ parameters.dotnetSdkVersion }})'
+            inputs:
+              packageType: 'sdk'
+              version: '$(DotNet.Sdk.Version)'
+              includePreviewVersions: true
           - template: 'build/build-solution.yml@templates'
             parameters:
               dotnetSdkVersion: '$(DotNet.Sdk.Version)'
