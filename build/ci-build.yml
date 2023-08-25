@@ -49,7 +49,7 @@ stages:
               packageType: 'sdk'
               version: '$(DotNet.Sdk.PreviousVersion)'
           - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK (${{ parameters.dotnetSdkVersion }})'
+            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
             inputs:
               packageType: 'sdk'
               version: '$(DotNet.Sdk.Version)'
