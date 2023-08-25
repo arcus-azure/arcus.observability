@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/azure-functions/dotnet:4.0 AS base
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.100-preview.7-bullseye-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.100-preview.7-jammy AS build
 WORKDIR /src
 COPY ["Arcus.Observability.Tests.Runtimes.AzureFunction/Arcus.Observability.Tests.Runtimes.AzureFunction.csproj", "Arcus.Observability.Tests.Runtimes.AzureFunction/"]
 RUN dotnet restore "Arcus.Observability.Tests.Runtimes.AzureFunction/Arcus.Observability.Tests.Runtimes.AzureFunction.csproj"
