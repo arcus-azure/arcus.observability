@@ -40,6 +40,7 @@ steps:
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+      includePreviewVersions: true
       projectName: '$(Project).Tests.Integration'
       category: 'Docker'
   - task: Bash@3
