@@ -37,6 +37,8 @@ steps:
       ports: '${{ parameters.httpPort }}:80'
       envVars: |
         APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
+        FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+        AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
