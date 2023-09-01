@@ -1,7 +1,7 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/azure-functions/dotnet:4.0 AS base
-WORKDIR /home/site/wwwroot
+WORKDIR /app
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0.100-preview.7-jammy AS build
@@ -16,7 +16,7 @@ FROM build AS publish
 RUN dotnet publish "Arcus.Observability.Tests.Runtimes.AzureFunction.csproj" -c Release -o /app/publish
 
 FROM base AS final
-WORKDIR /home/site/wwwroot
-COPY --from=publish /app/publish .
-ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
+WORKDIR /app
+COPY --from=publish /app .
+ENV AzureWebJobsScriptRoot=/app \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
