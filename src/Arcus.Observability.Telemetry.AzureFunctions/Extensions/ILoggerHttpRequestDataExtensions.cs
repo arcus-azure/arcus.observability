@@ -4,14 +4,14 @@ using System.Net;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
-#if !NETSTANDARD2_1
+#if !(NETSTANDARD2_1)
 using Microsoft.Azure.Functions.Worker.Http; 
 #endif
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
 {
-#if !NETSTANDARD2_1
+#if !(NETSTANDARD2_1)
     /// <summary>
     /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
     /// </summary>
