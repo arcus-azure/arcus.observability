@@ -24,8 +24,10 @@ steps:
   - task: Docker@1
     displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
     inputs:
-      dockerFile: ./${{ parameters.dockerProjectName }}/Dockerfile
+      dockerFile: src/${{ parameters.dockerProjectName }}/Dockerfile
       imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
+      useDefaultContext: false
+      buildContext: src
   - task: Docker@1
     displayName: 'Run new  project Docker image from ${{ parameters.dockerProjectName }}'
     inputs:
@@ -35,8 +37,6 @@ steps:
       ports: '${{ parameters.httpPort }}:80'
       envVars: |
         APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
-        FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-        AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
