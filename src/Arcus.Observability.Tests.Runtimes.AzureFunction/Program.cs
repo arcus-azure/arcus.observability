@@ -38,8 +38,7 @@ namespace Arcus.Observability.Tests.Runtimes.AzureFunction
                                  .Enrich.FromLogContext()
                                  .Enrich.WithComponentName("Timer")
                                  .Enrich.WithCorrelationInfo(provider)
-                                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, instrumentationKey)
-                                 .CreateLogger();
+                                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, instrumentationKey);
                     })
                     .Build();
 
