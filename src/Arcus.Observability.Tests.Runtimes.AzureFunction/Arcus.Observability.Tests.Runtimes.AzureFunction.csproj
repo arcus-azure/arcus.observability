@@ -7,10 +7,6 @@
     <Nullable>enable</Nullable>
     <DockerFastModeProjectMountDirectory>/home/site/wwwroot</DockerFastModeProjectMountDirectory>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
-    <FunctionsEnableWorkerIndexing>True</FunctionsEnableWorkerIndexing>
-    <FunctionsAutoRegisterGeneratedMetadataProvider>True</FunctionsAutoRegisterGeneratedMetadataProvider>-->
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
