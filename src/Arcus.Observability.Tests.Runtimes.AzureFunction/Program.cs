@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Arcus.Observability.Telemetry.Core;
+﻿using Arcus.Observability.Telemetry.Core;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Configuration;
@@ -11,53 +10,57 @@ using Serilog.Configuration;
 using Serilog.Events;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-public class Program
+namespace Arcus.Observability.Tests.Runtimes.AzureFunction
 {
-    public static void Main(string[] args)
+    public class Program
     {
-        var host = 
-            new HostBuilder()
-                .ConfigureFunctionsWorkerDefaults(builder =>
-                {
-                    builder.UseMiddleware<RequestTrackingMiddleware>();
-
-                    builder.Services.AddApplicationInsightsTelemetryWorkerService();
-                    builder.Services.ConfigureFunctionsApplicationInsights();
-                })
-                .UseSerilog((context, provider, logConfig) =>
-                {
-                    var config = provider.GetRequiredService<IConfiguration>();
-                    string instrumentationKey = config.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
-
-                    logConfig.MinimumLevel.Debug()
-                             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                             .Enrich.FromLogContext()
-                             .Enrich.WithComponentName("Timer")
-                             .Enrich.WithCorrelationInfo(provider)
-                             .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, instrumentationKey)
-                             .CreateLogger();
-                })
-                .Build();
-
-        host.Run();
-    }
-}
-
-public class RequestTrackingMiddleware : IFunctionsWorkerMiddleware
-{
-    public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
-    {
-        using (var measurement = DurationMeasurement.Start())
+        public static void Main(string[] args)
         {
-            try
+            var host = 
+                Host.CreateDefaultBuilder(args)
+                    .ConfigureFunctionsWorkerDefaults(builder =>
+                    {
+                        builder.UseMiddleware<RequestTrackingMiddleware>();
+
+                        builder.Services.AddApplicationInsightsTelemetryWorkerService();
+                        builder.Services.ConfigureFunctionsApplicationInsights();
+                    })
+                    .UseSerilog((context, provider, logConfig) =>
+                    {
+                        var config = provider.GetRequiredService<IConfiguration>();
+                        string instrumentationKey = config.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
+
+                        logConfig.MinimumLevel.Debug()
+                                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                                 .Enrich.FromLogContext()
+                                 .Enrich.WithComponentName("Timer")
+                                 .Enrich.WithCorrelationInfo(provider)
+                                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, instrumentationKey)
+                                 .CreateLogger();
+                    })
+                    .Build();
+
+            host.Run();
+        }
+    }
+
+    public class RequestTrackingMiddleware : IFunctionsWorkerMiddleware
+    {
+        public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
+        {
+            using (var measurement = DurationMeasurement.Start())
             {
-                await next(context);
+                try
+                {
+                    await next(context);
+                }
+                finally
+                {
+                    ILogger log = context.GetLogger<RequestTrackingMiddleware>();
+                    log.LogCustomRequest("Timer", "Triggered", isSuccessful: true, measurement);
+                }
             }
-            finally
-            {
-                ILogger log = context.GetLogger<RequestTrackingMiddleware>();
-                log.LogCustomRequest("Timer", "Triggered", isSuccessful: true, measurement);
-            }
+            await next(context);
         }
     }
 }
