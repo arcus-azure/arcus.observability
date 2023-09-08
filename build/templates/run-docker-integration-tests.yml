@@ -26,7 +26,7 @@ steps:
     inputs:
       dockerFile: src/${{ parameters.dockerProjectName }}/Dockerfile
       imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
-      useDefaultContext: false	
+      useDefaultContext: false
       buildContext: src
   - task: Docker@1
     displayName: 'Run new  project Docker image from ${{ parameters.dockerProjectName }}'
