@@ -24,7 +24,7 @@ steps:
   - task: Docker@1
     displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
     inputs:
-      dockerFile: ./${{ parameters.dockerProjectName }}/Dockerfile
+      dockerFile: /src/${{ parameters.dockerProjectName }}/Dockerfile
       imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
   - task: Docker@1
     displayName: 'Run new  project Docker image from ${{ parameters.dockerProjectName }}'
