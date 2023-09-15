@@ -20,6 +20,7 @@ steps:
     inputs:
       packageType: 'sdk'
       version: '$(DotNet.Sdk.Version)'
+      includePreviewVersions: true
   - task: Docker@1
     displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
     inputs:
@@ -36,9 +37,11 @@ steps:
       ports: '${{ parameters.httpPort }}:80'
       envVars: |
         APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
+        AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+      includePreviewVersions: true
       projectName: '$(Project).Tests.Integration'
       category: 'Docker'
   - task: Bash@3

@@ -1,9 +1,6 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,27 +23,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         [Fact]
         public async Task LogRequest_WithRequestsOperationName_SinksToApplicationInsights()
         {
-            // Arrange
-            int httpPort = Configuration.GetValue<int>("AzureFunctions:HttpPort");
-            string? requestUri = $"http://localhost:{httpPort}/api/order";
-            TestOutput.WriteLine("GET -> {0}", requestUri);
-
-            using (HttpResponseMessage response = await HttpClient.GetAsync(requestUri))
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TestOutput.WriteLine("{0} <- {1}", response.StatusCode, requestUri);
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+                EventsRequestResult[] results = await client.GetRequestsAsync();
+                AssertX.Any(results, result =>
                 {
-                    EventsRequestResult[] results = await client.GetRequestsAsync();
-                    AssertX.Any(results, result =>
-                    {
-                        Assert.Contains("order", result.Request.Url);
-                        Assert.Equal("200", result.Request.ResultCode);
-                        Assert.Equal(HttpMethod.Get.Method + " /api/order", result.Operation.Name);
-                    });
+                    Assert.Equal("200", result.Request.ResultCode);
+                    Assert.Equal("Timer", result.Request.Source);
+                    Assert.Equal("Triggered", result.Operation.Name);
                 });
-            }
+            });
         }
     }
 }
