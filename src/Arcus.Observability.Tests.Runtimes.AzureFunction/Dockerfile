@@ -13,7 +13,7 @@ WORKDIR "/src/Arcus.Observability.Tests.Runtimes.AzureFunction"
 RUN dotnet build "Arcus.Observability.Tests.Runtimes.AzureFunction.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Arcus.Observability.Tests.Runtimes.AzureFunction.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Arcus.Observability.Tests.Runtimes.AzureFunction.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /home/site/wwwroot
