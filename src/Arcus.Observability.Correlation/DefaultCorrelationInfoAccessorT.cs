@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 
 namespace Arcus.Observability.Correlation
 {
@@ -10,13 +9,6 @@ namespace Arcus.Observability.Correlation
         where TCorrelationInfo : CorrelationInfo 
     {
         private TCorrelationInfo _correlationInfo;
-
-        /// <summary>
-        /// Prevents a new instance of the <see cref="DefaultCorrelationInfoAccessor"/> class from being created.
-        /// </summary>
-        public DefaultCorrelationInfoAccessor()
-        {
-        }
 
         /// <summary>
         /// Gets the current correlation information initialized in this context.
@@ -34,11 +26,5 @@ namespace Arcus.Observability.Correlation
         {
             Interlocked.Exchange(ref _correlationInfo, correlationInfo);
         }
-
-        /// <summary>
-        /// Gets the default instance for the <see cref="DefaultCorrelationInfoAccessor{TCorrelation}"/> class.
-        /// </summary>
-        [Obsolete("Create a new instance instead of using this static value")]
-        public static DefaultCorrelationInfoAccessor<TCorrelationInfo> Instance { get; } = new DefaultCorrelationInfoAccessor<TCorrelationInfo>();
     }
 }
