@@ -113,8 +113,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(iotHubName, nameof(iotHubName), "Requires a non-blank resource name of the IoT Hub resource to track a IoT Hub dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the IoT Hub operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogIotHubDependency(logger, iotHubName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -141,8 +139,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track the IoT Hub dependency");
             Guard.NotNullOrWhitespace(iotHubConnectionString, nameof(iotHubConnectionString), "Requires an IoT Hub connection string to retrieve the IoT host name to track the IoT Hub dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to measure the duration of interaction with the IoT Hub dependency");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogIotHubDependencyWithConnectionString(logger, iotHubConnectionString, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
@@ -171,8 +167,6 @@ namespace Microsoft.Extensions.Logging
         {
             Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track the IoT Hub dependency");
             Guard.NotNullOrWhitespace(iotHubConnectionString, nameof(iotHubConnectionString), "Requires an IoT Hub connection string to retrieve the IoT host name to track the IoT Hub dependency");
-
-            context = context ?? new Dictionary<string, object>();
 
             var result = IotHubConnectionStringParser.Parse(iotHubConnectionString);
             LogIotHubDependency(logger, iotHubName: result.HostName, isSuccessful, startTime, duration, dependencyId, context);
@@ -204,7 +198,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(iotHubName, nameof(iotHubName), "Requires a non-blank resource name of the IoT Hub resource to track a IoT Hub dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the IoT Hub operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure IoT Hub",

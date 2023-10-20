@@ -5,17 +5,14 @@ using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
-#if NET6_0
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http; 
-#endif
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 {
-#if NET6_0
     public class HttpRequestDataDataLoggingTests
     {
         private static readonly Faker BogusGenerator = new Faker();
@@ -398,6 +395,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(stubRequest, statusCode, operationName, startTime, duration, context));
         }
 
+        [Fact]
+        public void LogRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
+            var path = $"/{BogusGenerator.Lorem.Word()}";
+            string host = BogusGenerator.Lorem.Word();
+            var scheme = "https";
+            HttpMethod method = HttpMethod.Post;
+            HttpRequestData stubRequest = CreateStubRequest(method, host, path, scheme);
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogRequest(stubRequest, statusCode, measurement, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
         private static HttpRequestData CreateStubRequest(HttpMethod method, string host, string path, string scheme)
         {
             var context = Mock.Of<FunctionContext>();
@@ -409,5 +427,4 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             return stub.Object;
         }
     }
-#endif
 }

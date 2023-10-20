@@ -58,5 +58,19 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act & Assert
             Assert.Throws<ArgumentException>(() => logger.LogSecurityEvent(eventName));
         }
+
+        [Fact]
+        public void LogSecurityEvent_WithContext_DoesNotAlterContext()
+        {
+            var logger = new TestLogger();
+            const string message = "something was invalidated wrong";
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogSecurityEvent(message, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

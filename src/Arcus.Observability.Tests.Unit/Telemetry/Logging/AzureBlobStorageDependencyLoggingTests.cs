@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
@@ -196,7 +197,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement));
         }
@@ -214,7 +215,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             measurement.Dispose();
             string dependencyId = _bogusGenerator.Lorem.Word();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement, dependencyId));
         }
@@ -231,7 +232,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var measurement = DurationMeasurement.Start();
             measurement.Dispose();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement));
         }
@@ -249,7 +250,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             measurement.Dispose();
             string dependencyId = _bogusGenerator.Lorem.Word();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement, dependencyId));
         }
@@ -263,7 +264,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string containerName = _bogusGenerator.Finance.AccountName();
             bool isSuccessful = _bogusGenerator.Random.Bool();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement: (DurationMeasurement)null));
         }
@@ -278,9 +279,48 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             bool isSuccessful = _bogusGenerator.Random.Bool();
             string dependencyId = _bogusGenerator.Lorem.Word();
 
-            // Act / 
+            // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogBlobStorageDependencyWithDurationMeasurement_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            string containerName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogBlobStorageDependencyWithStartDuration_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Finance.AccountName();
+            string containerName = _bogusGenerator.Finance.AccountName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

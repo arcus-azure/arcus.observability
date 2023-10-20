@@ -70,7 +70,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
 
-            context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement, dependencyId: null, context);
         }
 
@@ -135,7 +134,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Key Vault when tracking an Azure Key Vault dependency");
 
-            context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -168,7 +166,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
 
-            context = context ?? new Dictionary<string, object>();
             LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -203,7 +200,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(secretName, nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure key vault",

@@ -559,5 +559,47 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string dependencyName = iotHubName;
             Assert.Contains("Azure IoT Hub " + dependencyName, logMessage);
         }
+
+        [Fact]
+        public void LogIoTHubDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = BogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
+
+            DateTimeOffset startTime = BogusGenerator.Date.RecentOffset();
+            TimeSpan duration = BogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogIotHubDependencyConnectionString_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string iotHubName = BogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
+            string deviceId = BogusGenerator.Internet.Ip();
+            string sharedAccessKey = BogusGenerator.Random.Hash();
+            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
+
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString, isSuccessful: isSuccessful, measurement, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

@@ -27,8 +27,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogCustomMetric(logger, name, value, DateTimeOffset.UtcNow, context);
         }
 
@@ -67,7 +65,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.MetricFormat, new MetricLogEntry(name, value, timestamp, context));
         }

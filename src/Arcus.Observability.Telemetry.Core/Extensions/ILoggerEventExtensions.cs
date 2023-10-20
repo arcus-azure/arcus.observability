@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name of the event to track an security event");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context["EventType"] = "Security";
 
             LogCustomEvent(logger, name, context);
