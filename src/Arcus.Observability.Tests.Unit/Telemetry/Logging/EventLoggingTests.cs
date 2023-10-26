@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Bogus;
 using Microsoft.Extensions.Logging;
@@ -63,6 +64,21 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act & Arrange
             Assert.Throws<ArgumentException>(() => logger.LogCustomEvent(eventName));
+        }
+
+        [Fact]
+        public void LogCustomEvent_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string eventName = _bogusGenerator.Lorem.Word();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogCustomEvent(eventName, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

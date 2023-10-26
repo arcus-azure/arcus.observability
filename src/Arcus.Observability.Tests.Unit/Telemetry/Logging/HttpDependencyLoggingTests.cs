@@ -620,6 +620,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Empty(context);
         }
 
+        [Fact]
+        public void LogHttpDependencyWithRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "https");
+            int statusCode = (int) BogusGenerator.PickRandom<HttpStatusCode>();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
 
         private static HttpRequest CreateStubRequest(HttpMethod method, string host, string path, string scheme)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
@@ -800,6 +801,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogServiceBusTopicDependency(namespaceEndpoint, topicName, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogServiceBusDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string namespaceEndpoint = BogusGenerator.Commerce.Product();
+            string topicName = BogusGenerator.Commerce.Product();
+            bool isSuccessful = BogusGenerator.PickRandom(true, false);
+            string dependencyId = BogusGenerator.Lorem.Word();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var entityType = BogusGenerator.PickRandom<ServiceBusEntityType>();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusDependency(namespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId, entityType, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

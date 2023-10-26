@@ -365,5 +365,25 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement: null, dependencyId));
         }
+
+        [Fact]
+        public void LogEventHubsDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string namespaceName = BogusGenerator.Commerce.ProductName();
+            string eventHubName = BogusGenerator.Commerce.ProductName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

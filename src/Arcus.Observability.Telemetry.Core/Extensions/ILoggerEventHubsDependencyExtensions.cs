@@ -124,8 +124,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -158,7 +156,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Event Hubs",

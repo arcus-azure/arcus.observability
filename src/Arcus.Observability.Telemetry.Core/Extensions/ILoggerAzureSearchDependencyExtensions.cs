@@ -67,8 +67,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Search resource when tracking the Azure Search dependency");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -98,8 +96,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Search resource when tracking the Azure Search dependency");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -128,8 +124,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
@@ -162,7 +156,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType: "Azure Search",

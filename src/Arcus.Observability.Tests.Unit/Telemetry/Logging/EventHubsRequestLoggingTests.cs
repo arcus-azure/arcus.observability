@@ -337,5 +337,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration));
         }
+
+        [Fact]
+        public void LogEventHubsRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string @namespace = BogusGenerator.Lorem.Word();
+            string consumerGroup = BogusGenerator.Lorem.Word();
+            string eventHubsName = BogusGenerator.Lorem.Word();
+            string operationName = BogusGenerator.Lorem.Word();
+            bool isSuccessful = BogusGenerator.PickRandom(false, true);
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogEventHubsRequest(@namespace, consumerGroup, eventHubsName, operationName, isSuccessful, startTime, duration, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

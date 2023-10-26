@@ -349,5 +349,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement: null, dependencyId));
         }
+
+        [Fact]
+        public void LogCosmosSqlDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string database = BogusGenerator.Commerce.ProductName();
+            string container = BogusGenerator.Commerce.ProductName();
+            string accountName = BogusGenerator.Finance.AccountName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

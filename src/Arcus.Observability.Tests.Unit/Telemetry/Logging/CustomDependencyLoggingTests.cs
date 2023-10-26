@@ -1474,5 +1474,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogDependency(dependencyType, dependencyData, targetName, isSuccessful, measurement: null, dependencyId));
         }
+
+        [Fact]
+        public void LogDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string dependencyType = _bogusGenerator.Lorem.Word();
+            var dependencyData = _bogusGenerator.Random.Int().ToString();
+            string targetName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            string dependencyId = _bogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogDependency(dependencyType, dependencyData, isSuccessful, targetName, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }
