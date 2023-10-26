@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Bogus;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,57 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
     [Trait("Category", "Unit")]
     public class AzureKeyVaultDependencyLoggingTests
     {
-        private readonly Faker _bogusGenerator = new Faker();
+        private static readonly Faker Bogus = new Faker();
+
+        [Fact]
+        public void LogAzureKeyVaultDependency_WithValidArguments_Succeeds()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var vaultUri = Bogus.Internet.Url();
+            var secretName = Bogus.Lorem.Word();
+            bool isSuccessful = Bogus.Random.Bool();
+            var startTime = Bogus.Date.RecentOffset();
+            var duration = Bogus.Date.Timespan();
+            var dependencyId = Bogus.Random.Guid().ToString();
+            var key = Bogus.Lorem.Word();
+            var value = Bogus.Random.Guid().ToString();
+            var context = new Dictionary<string, object> { [key] = value };
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            string message = logger.WrittenMessage;
+            Assert.Contains(vaultUri, message);
+            Assert.Contains(secretName, message);
+            Assert.Contains(isSuccessful.ToString(), message);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), message);
+            Assert.Contains(duration.ToString(), message);
+            Assert.Contains(dependencyId, message);
+            Assert.Contains(key, message);
+            Assert.Contains(value, message);
+        }
+
+        [Fact]
+        public void LogAzureKeyVaultDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var vaultUri = Bogus.Internet.Url();
+            var secretName = Bogus.Lorem.Word();
+            bool isSuccessful = Bogus.Random.Bool();
+            var startTime = Bogus.Date.RecentOffset();
+            var duration = Bogus.Date.Timespan();
+            var dependencyId = Bogus.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogAzureKeyVaultDependency(vaultUri, secretName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
 
         [Theory]
         [ClassData(typeof(Blanks))]

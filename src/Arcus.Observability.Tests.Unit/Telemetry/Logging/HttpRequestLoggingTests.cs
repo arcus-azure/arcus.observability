@@ -1375,6 +1375,30 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(() => logger.LogRequest(request, statusCode, operationName, startTime, duration));
         }
 
+        [Fact]
+        public void LogRequestMessage_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var scheme = "https";
+            var host = _bogusGenerator.Lorem.Word();
+            var path = _bogusGenerator.Lorem.Word();
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{scheme}://{host}/{path}");
+
+            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
+            string operationName = _bogusGenerator.Lorem.Word();
+
+            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogRequest(request, statusCode, operationName, startTime, duration, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
         private static HttpResponse CreateStubResponse(int statusCode)
         {
             var stubResponse = new Mock<HttpResponse>();

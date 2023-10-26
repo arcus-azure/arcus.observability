@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.RequestFormat,
                 RequestLogEntry.CreateForHttpRequest(request.Method,

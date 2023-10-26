@@ -152,8 +152,6 @@ namespace Microsoft.Extensions.Logging
             Guard.For(() => request.RequestUri is null, new ArgumentException("Requires a HTTP request URI to track a HTTP dependency", nameof(request)));
             Guard.For(() => request.Method is null, new ArgumentException("Requires a HTTP request method to track a HTTP dependency", nameof(request)));
 
-            context = context ?? new Dictionary<string, object>();
-
             LogHttpDependency(logger, request, statusCode, startTime, duration, dependencyId: null, context);
         }
 
@@ -220,7 +218,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
             Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             Uri requestUri = request.RequestUri;
             string targetName = requestUri.Host;

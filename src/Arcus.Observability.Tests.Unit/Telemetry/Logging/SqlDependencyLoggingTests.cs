@@ -850,5 +850,93 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand, operationName, isSuccessful, measurement: null, dependencyId));
         }
+
+        [Fact]
+        public void LogSqlDependencyWithDurationMeasurement_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = "GET something FROM something";
+            string operationName = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithStartDuration_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            string sqlCommand = "GET something FROM something";
+            string operationName = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogSqlDependency(serverName, databaseName, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithConnectionStringWithDurationMeasurement_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = "GET something FROM something";
+            string operationName = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand, operationName, isSuccessful, measurement, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogSqlDependencyWithConnectionStringWithStartDuration_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string serverName = BogusGenerator.Name.FullName();
+            string databaseName = BogusGenerator.Name.FullName();
+            var connectionString = $"Server={serverName};Database={databaseName};User=admin;Password=123";
+            string sqlCommand = "GET something FROM something";
+            string operationName = BogusGenerator.Name.FullName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogSqlDependencyWithConnectionString(connectionString, sqlCommand, operationName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

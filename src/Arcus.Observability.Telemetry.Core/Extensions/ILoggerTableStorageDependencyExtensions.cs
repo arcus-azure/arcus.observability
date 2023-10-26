@@ -124,8 +124,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Table storage operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogTableStorageDependency(logger, accountName, tableName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -158,7 +156,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(tableName, nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Table storage operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             string dependencyName = $"{accountName}/{tableName}";
 

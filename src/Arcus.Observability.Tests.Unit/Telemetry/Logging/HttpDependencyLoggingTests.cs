@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
@@ -581,6 +582,44 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, DateTimeOffset.Now, TimeSpan.Zero, dependencyId));
         }
+
+        [Fact]
+        public void LogHttpDependencyWithDurationMeasurement_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, BogusGenerator.Internet.Url());
+            var statusCode = (int) BogusGenerator.PickRandom<HttpStatusCode>();
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
+            using var measurement = DurationMeasurement.Start();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, measurement, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogHttpDependencyWithStartDuration_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            var request = new HttpRequestMessage(HttpMethod.Get, BogusGenerator.Internet.Url());
+            var statusCode = (int) BogusGenerator.PickRandom<HttpStatusCode>();
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
+            var startTIme = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, startTIme, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
 
         private static HttpRequest CreateStubRequest(HttpMethod method, string host, string path, string scheme)
         {

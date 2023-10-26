@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
@@ -281,6 +282,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogTableStorageDependency(accountName, tableName, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogTableStorageDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string accountName = _bogusGenerator.Commerce.ProductName();
+            string tableName = _bogusGenerator.Commerce.ProductName();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            string dependencyId = _bogusGenerator.Lorem.Word();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogTableStorageDependency(accountName, tableName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

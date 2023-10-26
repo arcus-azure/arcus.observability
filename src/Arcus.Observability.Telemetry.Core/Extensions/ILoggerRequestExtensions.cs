@@ -307,8 +307,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, responseStatusCode, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -339,8 +337,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
         }
@@ -419,8 +415,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, responseStatusCode, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -457,7 +451,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the request operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.RequestFormat,
                 RequestLogEntry.CreateForHttpRequest(

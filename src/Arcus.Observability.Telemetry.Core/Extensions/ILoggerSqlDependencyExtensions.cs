@@ -307,8 +307,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(databaseName, nameof(databaseName), "Requires a non-blank SQL database name to track a SQL dependency");
             Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to measure the latency of the SQL storage when tracking an SQL dependency");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogSqlDependency(logger, serverName, databaseName, sqlCommand, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -345,7 +343,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(databaseName, nameof(databaseName), "Requires a non-blank SQL database name to track a SQL dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the SQL dependency operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.SqlDependencyFormat, new DependencyLogEntry(
                 dependencyType: "Sql",

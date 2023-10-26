@@ -124,8 +124,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(containerName, nameof(containerName), "Requires a non-blank container name in the Azure BLob storage resource to track an Azure Blob storage dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Blob storage operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -158,7 +156,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(containerName, nameof(containerName), "Requires a non-blank container name in the Azure BLob storage resource to track an Azure Blob storage dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Blob storage operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             string dependencyName = $"{accountName}/{containerName}";
 
