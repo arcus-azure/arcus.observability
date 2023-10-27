@@ -53,6 +53,37 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
             config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, ExampleConnectionString);
         }
 
+        [Fact]
+        public void AzureApplicationInsightsWithConnectionStringWithoutExistingTelemetryClient_WithDefault_Succeeds()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsWithConnectionString(ExampleConnectionString);
+        }
+
+        [Fact]
+        public void AzureApplicationInsightsWithInstrumentationKey_WithDefault_Succeeds()
+        {
+            // Arrange
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, "<key>");
+        }
+
+        [Fact]
+        public void AzureApplicationInsightsWithInstrumentationKeyWithoutExistingTelemetryClient_WithDefault_Succeeds()
+        {
+            // Arrange
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>");
+        }
+
         private static IServiceProvider CreateServiceProviderWithTelemetryClient()
         {
             var services = new ServiceCollection();
