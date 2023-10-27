@@ -1,6 +1,7 @@
 ﻿using System;
 using Azure.Identity;
 using Bogus;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Configuration;
@@ -11,7 +12,54 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 {
     public class LoggerConfigurationExtensionsTests
     {
+        private const string ExampleConnectionString = "InstrumentationKey=<key>";
+
         private static readonly Faker BogusGenerator = new Faker();
+
+        [Fact]
+        public void AzureApplicationInsightsUsingManagedIdentity_WithDefault_Succeeds()
+        {
+            // Arrange
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            string clientId = BogusGenerator.Random.Guid().ToString().OrNull(BogusGenerator);
+
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsUsingManagedIdentity(provider, ExampleConnectionString, clientId);
+        }
+
+        [Fact]
+        public void AzureApplicationInsightsUsingAuthentication_WithDefault_Succeeds()
+        {
+            // Arrange
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            var credential = new DefaultAzureCredential();
+
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ExampleConnectionString, credential);
+        }
+
+        [Fact]
+        public void AzureApplicationInsightsWithConnectionString_WithDefault_Succeeds()
+        {
+            // Arrange
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            var config = new LoggerConfiguration();
+
+            // Act
+            config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, ExampleConnectionString);
+        }
+
+        private static IServiceProvider CreateServiceProviderWithTelemetryClient()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<TelemetryClient>();
+
+            return services.BuildServiceProvider();
+        }
 
         [Theory]
         [ClassData(typeof(Blanks))]
@@ -67,7 +115,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
-                () => config.WriteTo.AzureApplicationInsightsUsingManagedIdentity(provider, "<connection-string>", "<client-id>"));
+                () => config.WriteTo.AzureApplicationInsightsUsingManagedIdentity(provider, ExampleConnectionString, "<client-id>"));
         }
 
         [Fact]
@@ -80,7 +128,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, "<connection-string>", tokenCredential: null));
+                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ExampleConnectionString, tokenCredential: null));
         }
 
         [Fact]
@@ -94,7 +142,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, "<connection-string>", tokenCredential: null, level));
+                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ExampleConnectionString, tokenCredential: null, level));
         }
         
         [Fact]
@@ -108,7 +156,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, "<connection-string>", tokenCredential: null, level, opt => { }));
+                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ExampleConnectionString, tokenCredential: null, level, opt => { }));
         }
 
         [Theory]
@@ -170,7 +218,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
-                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, "<connection-string>", credential));
+                () => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ExampleConnectionString, credential));
         }
 
         [Fact]
@@ -237,7 +285,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>"));
+                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, ExampleConnectionString));
         }
 
         [Fact]
@@ -251,7 +299,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>", level));
+                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, ExampleConnectionString, level));
         }
 
         [Fact]
@@ -278,7 +326,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
 
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>", level, options => { }));
+                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, ExampleConnectionString, level, options => { }));
         }
 
         [Theory]
