@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Tests.Integration.Fixture;
+using Azure.Identity;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
@@ -24,6 +27,79 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public ApplicationInsightsSinkExtensionTests(ITestOutputHelper outputWriter)
             : base(outputWriter)
         {
+        }
+
+        private string TenantId => Configuration.GetRequiredValue("Arcus:TenantId");
+        private string ClientId => Configuration.GetRequiredValue("Arcus:ServicePrincipal:ClientId");
+        private string ClientSecret => Configuration.GetRequiredValue("Arcus:ServicePrincipal:ClientSecret");
+        private string ConnectionString => Configuration.GetRequiredValue("ApplicationInsights:ConnectionString");
+
+        [Fact]
+        public async Task Sink_UsingAuthentication_WritesTelemetry()
+        {
+            // Arrange
+            using var conn = TemporaryManagedIdentityConnection.Create(TenantId, ClientId, ClientSecret);
+
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            var credential = new ClientSecretCredential(TenantId, ClientId, ClientSecret);
+
+            // Act / Assert
+            await TestSendingTelemetryAsync(
+                config => config.WriteTo.AzureApplicationInsightsUsingAuthentication(provider, ConnectionString, credential));
+        }
+
+        [Fact]
+        public async Task Sink_UsingManagedIdentity_WritesTelemetry()
+        {
+            // Arrange
+            using var conn = TemporaryManagedIdentityConnection.Create(TenantId, ClientId, ClientSecret);
+
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            string clientId = conn.ClientId;
+            
+            // Act / Assert
+            await TestSendingTelemetryAsync(
+                config => config.WriteTo.AzureApplicationInsightsUsingManagedIdentity(provider, ConnectionString, clientId));
+        }
+
+        [Fact]
+        public async Task Sink_UsingInvalidClientManagedIdentity_DoesNotWriteTelemetry()
+        {
+            // Arrange
+            using var conn = TemporaryManagedIdentityConnection.Create(TenantId, ClientId, ClientSecret);
+
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
+            var invalidClientId = Guid.NewGuid().ToString();
+
+            // Act / Assert
+            await Assert.ThrowsAnyAsync<XunitException>(
+                () => TestSendingTelemetryAsync(
+                        config => config.WriteTo.AzureApplicationInsightsUsingManagedIdentity(provider, ConnectionString, invalidClientId),
+                        timeout: TimeSpan.FromMinutes(1)));
+        }
+
+        private async Task TestSendingTelemetryAsync(
+            Action<LoggerConfiguration> configureLogger,
+            TimeSpan? timeout = null)
+        {
+            var configuration = new LoggerConfiguration();
+            configureLogger(configuration);
+
+            var uniqueMessageId = Guid.NewGuid().ToString();
+            ILogger logger = CreateLogger(configuration);
+
+            // Act
+            logger.LogInformation("Something to log with unique: {Id}", uniqueMessageId);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsTraceResult[] traces = await client.GetTracesAsync();
+                AssertX.Any(traces, trace =>
+                {
+                    Assert.Contains(uniqueMessageId, trace.Trace.Message);
+                });
+            }, timeout ?? TimeSpan.FromMinutes(8));
         }
 
         [Fact]
@@ -55,9 +131,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task Sink_WithConnectionStringWithServiceProvider_WritesTelemetry()
         {
             // Arrange
-            var services = new ServiceCollection();
-            services.AddSingleton<TelemetryClient>();
-            IServiceProvider provider = services.BuildServiceProvider();
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
 
             string connectionString = $"InstrumentationKey={InstrumentationKey}";
             var configuration = new LoggerConfiguration()
@@ -104,13 +178,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-          [Fact]
+        [Fact]
         public async Task Sink_WithInstrumentationKeyWithServiceProvider_WritesTelemetry()
         {
             // Arrange
-            var services = new ServiceCollection();
-            services.AddSingleton<TelemetryClient>();
-            IServiceProvider provider = services.BuildServiceProvider();
+            IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
             var configuration = new LoggerConfiguration()
                 .WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, InstrumentationKey);
 
@@ -129,6 +201,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(message, trace.Trace.Message);
                 });
             });
+        }
+
+        private static IServiceProvider CreateServiceProviderWithTelemetryClient()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<TelemetryClient>();
+            IServiceProvider provider = services.BuildServiceProvider();
+            return provider;
         }
 
         [Fact]

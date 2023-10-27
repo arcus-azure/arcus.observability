@@ -132,13 +132,26 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             Guard.NotNull(assertion, nameof(assertion), "Requires an assertion function to correctly verify if the logged telemetry is tracked in Application Insights");
 
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(assertion, timeout: TimeSpan.FromMinutes(8));
+        }
+
+        /// <summary>
+        /// Asserts on whether the logged telemetry availability on Application Insights by retrying the provided <paramref name="assertion"/>.
+        /// </summary>
+        /// <param name="assertion">The assertion function that takes in an Application Insights client which provides access to the available telemetry.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assertion"/> is <c>null</c>.</exception>
+        /// <exception cref="TimeoutRejectedException">Thrown when the <paramref name="assertion"/> failed to be verified within the configured timeout.</exception>
+        protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ApplicationInsightsClient, Task> assertion, TimeSpan timeout)
+        {
+            Guard.NotNull(assertion, nameof(assertion), "Requires an assertion function to correctly verify if the logged telemetry is tracked in Application Insights");
+
             using (ApplicationInsightsDataClient dataClient = CreateApplicationInsightsClient())
             {
                 await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
                 {
                     var client = new ApplicationInsightsClient(dataClient, ApplicationId);
                     await assertion(client);
-                }, timeout: TimeSpan.FromMinutes(8)); 
+                }, timeout: timeout); 
             }
         }
 

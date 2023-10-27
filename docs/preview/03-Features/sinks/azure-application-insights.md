@@ -11,42 +11,50 @@ The Azure Application Insights sink is an extension of the [official Application
 
 You can easily configure the sink by providing the Azure Application Insights connection string or instrumentation key, but the connection string is preferred.
 
-```csharp
-using Serilog;
-using Serilog.Configuration;
-
-ILogger logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>")
-    .CreateLogger();
-
-ILogger logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsightsWithInstrumentationKey("<key>")
-    .CreateLogger();
-```
-
-Alternatively, you can override the default minimum log level to reduce amount of telemetry being tracked :
-
-```csharp
-using Serilog;
-using Serilog.Configuration;
-
-ILogger logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsightsWithConnectionString("<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
-    .CreateLogger();
-```
+You can easily configure the sink by using one of the following options:
+* 🎖️ [Managed Identity (ingestion connection string + client ID](https://learn.microsoft.com/en-us/azure/azure-monitor/app/azure-ad-authentication?tabs=net)
+* [Custom token credential (ingestion connection string)](https://learn.microsoft.com/en-us/azure/azure-monitor/app/azure-ad-authentication?tabs=net)
+* Azure Application Insights connection
+* ⛔ Azure Application Insights instrumentation key
 
 > ⚡ When you want to re-use an already registered `TelemetryClient`, pass in the `IServiceProvider` to the method that registers the Application Insights sink. `TelemetryClient`s are automatically registered behind the scenes when using W3C correlation in Arcus Web API middleware (>= v1.7) or Arcus Messaging (>= v1.4).
 
 ```csharp
+using Azure.Identity;
+using Serilog;
+using Serilog.Configuration;
+
+// Application registered services when the application is created.
+IServiceProvider serviceProvider = ...
+
+var loggerConfiguration = new LoggerConfiguration()
+    .MinimumLevel.Debug();
+
+// 🎖️ Managed Identity.
+loggerConfiguration.WriteTo.AzureApplicationInsightsUsingManagedIdentity("<connection-string-w-ingestion-endpoint>", "<client-id>");
+
+// Custom token credential.
+var credential = new ClientSecretCredential("<tenant-id>", "<client-id>", "<client-secret>");
+loggerConfiguration.WriteTo.AzureApplicationInsightsUsingAuthentication("<connection-string-w-ingestion-endpoint>", credential);
+
+// Azure Application Insights connection string.
+loggerConfiguration.WriteTo.AzureApplicationInsightsWithConnectionString(serviceProvider, "<connection-string>");
+
+// ⛔ Azure Application Insights instrumentation key.
+loggerConfiguration.WriteTo.AzureApplicationInsightsWithInstrumentationKey(serviceProvider, "<key>");
+
+ILogger logger = loggerConfiguration.CreateLogger();
+```
+
+Alternatively, you can override the default minimum log level to reduce amount of telemetry being tracked:
+
+```csharp
 using Serilog;
 using Serilog.Configuration;
 
 ILogger logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.AzureApplicationInsightsWithConnectionString(serviceProvider, "<connection-string>", restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.AzureApplicationInsightsUsingManagedIdentity(serviceProvider, "<connection-string>", "<client-id>", restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 ```
 
