@@ -67,8 +67,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, response, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -98,8 +96,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
         }
@@ -160,8 +156,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
             Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, response, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -190,8 +184,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request operation");
             Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
         }
@@ -254,8 +246,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, responseStatusCode, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -286,8 +276,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            context = context ?? new Dictionary<string, object>();
 
             LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
         }
@@ -353,8 +341,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogRequest(logger, request, responseStatusCode, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -388,7 +374,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.RequestFormat, 
                 RequestLogEntry.CreateForHttpRequest(

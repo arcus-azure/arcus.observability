@@ -136,8 +136,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -173,7 +171,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             string data = $"{database}/{container}";
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(

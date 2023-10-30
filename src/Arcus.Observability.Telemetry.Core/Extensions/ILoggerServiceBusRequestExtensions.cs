@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus topic request operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
             LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, topicName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Topic, context);
@@ -159,7 +159,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus topic request operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
             LogServiceBusRequest(logger, serviceBusNamespace, topicName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Topic, context);
@@ -431,7 +431,7 @@ namespace Microsoft.Extensions.Logging
                 operationName = ContextProperties.RequestTracking.ServiceBus.DefaultOperationName;
             }
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Endpoint] = serviceBusNamespace;
             context[ContextProperties.RequestTracking.ServiceBus.EntityName] = entityName;
             context[ContextProperties.RequestTracking.ServiceBus.EntityType] = entityType;

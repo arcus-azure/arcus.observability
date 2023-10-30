@@ -448,7 +448,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires a non-blank Azure Service Bus entity name to track an Azure Service Bus dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.DependencyTracking.ServiceBus.EntityType] = entityType;
             context[ContextProperties.DependencyTracking.ServiceBus.Endpoint] = serviceBusNamespaceEndpoint;
 

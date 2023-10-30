@@ -1764,5 +1764,115 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogServiceBusRequestWithSuffix(serviceBusNamespace, serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, negativeDuration, startTime, entryType, context));
         }
+
+        [Fact]
+        public void LogServiceBusTopicRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            string subscriptionName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusTopicRequest(serviceBusNamespace, topicName, subscriptionName, operationName, isSuccessful, duration, startTime, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogServiceBusTopicRequestWithSuffix_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string suffix = _bogusGenerator.Lorem.Word();
+            string topicName = _bogusGenerator.Lorem.Word();
+            string subscriptionName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusTopicRequestWithSuffix(serviceBusNamespace, suffix, topicName, subscriptionName, operationName, isSuccessful, duration, startTime, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogServiceBusQueueRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string queueName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusQueueRequest(serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogServiceBusQueueRequestWithSuffix_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string suffix = _bogusGenerator.Lorem.Word();
+            string queueName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusQueueRequestWithSuffix(serviceBusNamespace, suffix, queueName, operationName, isSuccessful, duration, startTime, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
+        [Fact]
+        public void LogServiceBusRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            // Arrange
+            var logger = new TestLogger();
+            string serviceBusNamespace = _bogusGenerator.Lorem.Word();
+            string entityName = _bogusGenerator.Lorem.Word();
+            string operationName = _bogusGenerator.Lorem.Word();
+            bool isSuccessful = _bogusGenerator.Random.Bool();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var entityType = _bogusGenerator.Random.Enum<ServiceBusEntityType>();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entityType, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
     }
 }

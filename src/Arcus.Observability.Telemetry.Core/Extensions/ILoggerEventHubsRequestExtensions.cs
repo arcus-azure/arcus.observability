@@ -143,7 +143,7 @@ namespace Microsoft.Extensions.Logging
                 operationName = ContextProperties.RequestTracking.EventHubs.DefaultOperationName;
             }
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.EventHubs.Namespace] = eventHubsNamespace;
             context[ContextProperties.RequestTracking.EventHubs.ConsumerGroup] = consumerGroup;
             context[ContextProperties.RequestTracking.EventHubs.Name] = eventHubsName;

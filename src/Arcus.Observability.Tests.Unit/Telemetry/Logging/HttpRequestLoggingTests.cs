@@ -1399,6 +1399,25 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Empty(context);
         }
 
+        [Fact]
+        public void LogRequestWithHttpRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "https");
+            var statusCode = (int) _bogusGenerator.PickRandom<HttpStatusCode>();
+            string operationName = _bogusGenerator.Lorem.Word();
+            var startTime = _bogusGenerator.Date.RecentOffset();
+            var duration = _bogusGenerator.Date.Timespan();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogRequest(request, statusCode, operationName, startTime, duration, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
+
         private static HttpResponse CreateStubResponse(int statusCode)
         {
             var stubResponse = new Mock<HttpResponse>();

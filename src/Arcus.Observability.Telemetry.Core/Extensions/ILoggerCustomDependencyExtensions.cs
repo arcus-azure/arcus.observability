@@ -636,8 +636,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, startTime, duration, dependencyId: null, context);
         }
 
@@ -676,7 +674,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(dependencyData, nameof(dependencyData), "Requires custom dependency data when tracking the custom dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(
                 dependencyType,
