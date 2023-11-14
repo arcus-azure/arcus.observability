@@ -17,34 +17,6 @@ namespace Microsoft.Extensions.Logging
         /// Logs an Azure Blob Storage Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="accountName">Account of the storage resource</param>
-        /// <param name="containerName">Name of the Blob Container resource</param>
-        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="measurement">Measuring the latency to call the dependency</param>
-        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="containerName"/> is blank.</exception>
-        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track an Azure Blob storage dependency")]
-        public static void LogBlobStorageDependency(
-            this ILogger logger,
-            string accountName,
-            string containerName,
-            bool isSuccessful,
-            DependencyMeasurement measurement,
-            Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name for the Azure Blob storage resource to track an Azure Blob storage dependency");
-            Guard.NotNullOrWhitespace(containerName, nameof(containerName), "Requires a non-blank container name in the Azure BLob storage resource to track an Azure Blob storage dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Blob storage when tracking an Azure Blob storage dependency");
-
-            LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
-        }
-
-        /// <summary>
-        /// Logs an Azure Blob Storage Dependency.
-        /// </summary>
-        /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">The account of the storage resource.</param>
         /// <param name="containerName">The name of the Blob Container resource.</param>
         /// <param name="isSuccessful">The indication whether or not the operation was successful.</param>

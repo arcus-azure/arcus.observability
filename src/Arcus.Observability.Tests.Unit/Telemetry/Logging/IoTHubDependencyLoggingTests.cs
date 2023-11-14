@@ -131,34 +131,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogIotHubDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string iotHubName = BogusGenerator.Commerce.ProductName();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogIotHubDependency(iotHubName: iotHubName, isSuccessful: isSuccessful, measurement: measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(iotHubName, logMessage);
-            Assert.Contains(iotHubName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = iotHubName;
-            Assert.Contains("Azure IoT Hub " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogIotHubDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
