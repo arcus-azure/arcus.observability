@@ -91,7 +91,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
         }
 
         [Fact]
-        public void LogServiceBusDependencyWithNamespace_WithServiceBusDependency_CreatesDependencyTelemetry()
+            public void LogServiceBusDependencyWithNamespace_WithServiceBusDependency_CreatesDependencyTelemetry()
         {
             // Arrange
             var spySink = new InMemoryLogSink();
