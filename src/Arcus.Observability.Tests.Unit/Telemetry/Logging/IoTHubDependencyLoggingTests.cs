@@ -218,33 +218,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var iotHubName = "acme.azure-devices.net";
-            var iotHubConnectionString = $"HostName={iotHubName};SharedAccessKeyName=AllAccessKey;DeviceId=fake;SharedAccessKey=dGVzdFN0cmluZzE=";
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DurationMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Equal(iotHubName, dependency.TargetName);
-            Assert.Equal("Azure IoT Hub", dependency.DependencyType);
-            Assert.Equal(iotHubName, dependency.DependencyName);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(isSuccessful, dependency.IsSuccessful);
-        }
-
-        [Fact]
         public void LogIotHubDependencyConnectionStringWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
         {
             // Arrange
@@ -264,7 +237,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement, dependencyId, context);
+            logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement, dependencyId, context);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
@@ -340,22 +313,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
-        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_WithoutConnectionString_Fails(string iotHubConnectionString)
-        {
-            // Arrange
-            var logger = new TestLogger();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
         public void LogIotHubDependencyConnectionStringWithDurationMeasurementWithDependencyId_WithoutConnectionString_Fails(string iotHubConnectionString)
         {
             // Arrange
@@ -368,20 +325,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement, dependencyId));
-        }
-
-        [Fact]
-        public void LogIotHubDependencyConnectionStringWithDurationMeasurement_WithoutMeasurement_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-            string iotHubConnectionString = BogusGenerator.Commerce.ProductName();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement: (DurationMeasurement)null));
+                () => logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement, dependencyId));
         }
 
         [Fact]
@@ -395,35 +339,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement: null, dependencyId));
-        }
-
-        [Fact]
-        public void LogIotHubConnectionStringDependency_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string iotHubName = BogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
-            string deviceId = BogusGenerator.Internet.Ip();
-            string sharedAccessKey = BogusGenerator.Random.Hash();
-            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
-            bool isSuccessful = BogusGenerator.Random.Bool();
-            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
-            TimeSpan duration = BogusGenerator.Date.Timespan();
-
-            // Act
-            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(iotHubName, logMessage);
-            Assert.Contains(iotHubName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = iotHubName;
-            Assert.Contains("Azure IoT Hub " + dependencyName, logMessage);
+                () => logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, measurement: null, dependencyId));
         }
 
         [Fact]
@@ -445,7 +361,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var context = new Dictionary<string, object> { [key] = value };
 
             // Act
-            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId, context);
+            logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId, context);
 
             // Assert
             DependencyLogEntry dependency = logger.GetMessageAsDependency();
@@ -457,22 +373,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Equal(duration, dependency.Duration);
             Assert.Equal(dependencyId, dependency.DependencyId);
             Assert.Equal(value, Assert.Contains(key, dependency.Context));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void LogIotHubDependencyConnectionString_WithoutConnectionString_Fails(string iotHubConnectionString)
-        {
-            // Arrange
-            var logger = new TestLogger();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
-            TimeSpan duration = BogusGenerator.Date.Timespan();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration));
         }
 
         [Theory]
@@ -489,25 +389,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId));
-        }
-
-        [Fact]
-        public void LogIoTHubConnectionStringDependency_WithNegativeDuration_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string iotHubName = BogusGenerator.Commerce.ProductName().Replace(" ", String.Empty);
-            string deviceId = BogusGenerator.Internet.Ip();
-            string sharedAccessKey = BogusGenerator.Random.Hash();
-            var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
-            bool isSuccessful = BogusGenerator.Random.Bool();
-            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
-            TimeSpan duration = TimeSpanGenerator.GeneratePositiveDuration().Negate();
-
-            // Act
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration));
+                () => logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -526,7 +408,7 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act
             Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId));
+                () => logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString: iotHubConnectionString, isSuccessful, startTime, duration, dependencyId));
         }
 
         [Fact]
@@ -539,14 +421,15 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string sharedAccessKey = BogusGenerator.Random.Hash();
             var iotHubConnectionString = $"HostName={iotHubName}.;DeviceId={deviceId};SharedAccessKey={sharedAccessKey}";
             bool isSuccessful = BogusGenerator.Random.Bool();
+            string dependencyId = BogusGenerator.Random.Guid().ToString();
 
-            var measurement = DependencyMeasurement.Start();
+            var measurement = DurationMeasurement.Start();
             DateTimeOffset startTime = measurement.StartTime;
             measurement.Dispose();
             TimeSpan duration = measurement.Elapsed;
 
             // Act
-            logger.LogIotHubDependency(iotHubConnectionString: iotHubConnectionString, isSuccessful: isSuccessful, measurement: measurement);
+            logger.LogIotHubDependencyWithConnectionString(iotHubConnectionString, isSuccessful, measurement, dependencyId);
 
             // Assert
             var logMessage = logger.WrittenMessage;
