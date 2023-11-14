@@ -23,14 +23,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomTelemetryConverter{TEntry}" /> class.
         /// </summary>
-        [Obsolete("Use the constructor overload with the Application Insights options instead")]
-        protected CustomTelemetryConverter() : this(new ApplicationInsightsSinkOptions())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CustomTelemetryConverter{TEntry}" /> class.
-        /// </summary>
         /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
         protected CustomTelemetryConverter(ApplicationInsightsSinkOptions options)
@@ -58,17 +50,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
             TEntry telemetryEntry = CreateTelemetryEntry(logEvent, formatProvider);
 
-#pragma warning disable 618 // Until we go to a new major.
             AssignTelemetryContextProperties(logEvent, telemetryEntry);
-#pragma warning restore 618
             _cloudContextConverter.EnrichWithAppInfo(logEvent, telemetryEntry);
 
             RemoveIntermediaryProperties(logEvent);
             logEvent.RemovePropertyIfPresent(ContextProperties.TelemetryContext);
-
-#pragma warning disable 618 // Until we remove the obsolete 'EventDescription'.
-            logEvent.RemovePropertyIfPresent(ContextProperties.EventTracking.EventContext);
-#pragma warning restore 618
 
             ForwardPropertiesToTelemetryProperties(logEvent, telemetryEntry, formatProvider);
             _operationContextConverter.EnrichWithCorrelationInfo(telemetryEntry);
@@ -85,10 +71,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         protected void AssignTelemetryContextProperties(LogEvent logEvent, ISupportProperties telemetry)
         {
             AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.TelemetryContext);
-
-#pragma warning disable 618 // Until we remove obsolete 'EventDescription'.
-            AssignContextPropertiesFromDictionaryProperty(logEvent, telemetry, ContextProperties.EventTracking.EventContext);
-#pragma warning restore 618
         }
 
         private static void AssignContextPropertiesFromDictionaryProperty(LogEvent logEvent, ISupportProperties telemetry, string propertyName)
