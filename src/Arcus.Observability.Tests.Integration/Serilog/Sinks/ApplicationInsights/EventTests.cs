@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -22,24 +17,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     {
         public EventTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
-        }
-
-        [Fact]
-        public async Task LogEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
-        {
-            // Arrange
-            string eventName = BogusGenerator.Finance.AccountName();
-            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-            // Act
-            Logger.LogEvent(eventName, telemetryContext);
-
-            // Assert
-            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
-            {
-                EventsCustomEventResult[] results = await client.GetEventsAsync();
-                Assert.Contains(results, result => result.CustomEvent.Name == eventName);
-            });
         }
 
         [Fact]
@@ -76,29 +53,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 Assert.Contains(results, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
-            });
-        }
-
-        [Fact]
-        public async Task LogEventWithVersion_SinksToApplicationInsights_ResultsInTelemetryWithVersion()
-        {
-            // Arrange
-            var eventName = "Update version";
-            LoggerConfiguration.Enrich.WithVersion();
-            
-            // Act
-            Logger.LogEvent(eventName);
-
-            // Assert
-            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client=>
-            {
-                EventsCustomEventResult[] events = await client.GetEventsAsync();
-                Assert.Contains(events, ev =>
-                {
-                    return ev.CustomEvent.Name == eventName
-                           && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
-                           && !String.IsNullOrWhiteSpace(actualVersion);
-                });
             });
         }
 

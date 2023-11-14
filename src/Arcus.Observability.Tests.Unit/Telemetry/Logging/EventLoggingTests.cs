@@ -13,22 +13,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         private readonly Faker _bogusGenerator = new Faker();
 
         [Fact]
-        public void LogEvent_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string eventName = _bogusGenerator.Name.FullName();
-
-            // Act
-            logger.LogEvent(eventName);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Events.ToString(), logMessage);
-            Assert.Contains(eventName, logMessage);
-        }
-
-        [Fact]
         public void LogCustomEvent_ValidArguments_Succeeds()
         {
             // Arrange
@@ -42,17 +26,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var logMessage = logger.WrittenMessage;
             Assert.Contains(TelemetryType.Events.ToString(), logMessage);
             Assert.Contains(eventName, logMessage);
-        }
-
-        [Fact]
-        public void LogEvent_NoEventNameSpecified_ThrowsException()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string eventName = null;
-
-            // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogEvent(eventName));
         }
 
         [Fact]

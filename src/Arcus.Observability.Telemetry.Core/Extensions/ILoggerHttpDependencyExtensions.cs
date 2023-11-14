@@ -16,33 +16,6 @@ namespace Microsoft.Extensions.Logging
     public static partial class ILoggerExtensions
     {
         /// <summary>
-        /// Logs an HTTP dependency
-        /// </summary>
-        /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="request">The request that started the HTTP communication.</param>
-        /// <param name="statusCode">The status code that was returned by the service for this HTTP communication.</param>
-        /// <param name="measurement">The measuring the latency of the HTTP dependency.</param>
-        /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="request"/>, or <paramref name="measurement"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">
-        ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
-        /// </exception>
-        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a HTTP dependency")]
-        public static void LogHttpDependency(
-            this ILogger logger,
-            HttpRequestMessage request,
-            HttpStatusCode statusCode,
-            DependencyMeasurement measurement,
-            Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-
-            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
-        }
-
-        /// <summary>
         /// Logs an HTTP dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>

@@ -31,33 +31,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public static IEnumerable<object[]> TelemetryTypesWithoutRequest => GetTelemetryTypesWithout(TelemetryType.Request);
 
         [Fact]
-        public void LogEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
-        {
-            // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
-
-            var spySink = new InMemoryLogSink();
-            Logger serilogLogger = new LoggerConfiguration()
-                .Filter.With(TelemetryTypeFilter.On(TelemetryType.Events))
-                .WriteTo.Sink(spySink)
-                .CreateLogger();
-
-            using (var factory = new SerilogLoggerFactory(serilogLogger))
-            {
-                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-
-                // Act
-                logger.LogEvent(eventName, properties);
-
-                // Assert
-                Assert.Empty(spySink.CurrentLogEmits);
-            }
-        }
-
-        [Fact]
         public void LogCustomEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
         {
             // Arrange
@@ -81,39 +54,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog
 
                 // Assert
                 Assert.Empty(spySink.CurrentLogEmits);
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(TelemetryTypesWithoutEvent))]
-        public void LogEvent_WithTelemetryTypeFilterOnOtherType_DoesNotFilterOutEntry(TelemetryType telemetryType)
-        {
-            // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
-
-            var spySink = new InMemoryLogSink();
-            Logger serilogLogger = new LoggerConfiguration()
-                .Filter.With(TelemetryTypeFilter.On(telemetryType, isTrackingEnabled: false))
-                .WriteTo.Sink(spySink)
-                .CreateLogger();
-
-            using (var factory = new SerilogLoggerFactory(serilogLogger))
-            {
-                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-
-                // Act
-                logger.LogEvent(eventName, properties);
-
-                // Assert
-                LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
-                Assert.NotNull(logEvent);
-                string writtenMessage = logEvent.RenderMessage();
-                Assert.Contains(propertyName, writtenMessage);
-                Assert.Contains(propertyValue, writtenMessage);
-                Assert.Contains(TelemetryType.Events.ToString(), writtenMessage);
             }
         }
 
