@@ -602,7 +602,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             {
                 ["Statement"] = "Query"
             };
-            logger.LogSqlDependency("Server", "Database", "Users", "GET", isSuccessful: true, startTime: startTime, duration: duration, dependencyId, telemetryContext);
+            logger.LogSqlDependency("Server", "Database", sqlCommand: "GET", operationName: "Users", isSuccessful: true, startTime: startTime, duration: duration, dependencyId, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
