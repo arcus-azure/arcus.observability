@@ -479,11 +479,12 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             
             var startTime = DateTimeOffset.UtcNow;
             var duration = TimeSpan.FromSeconds(5);
+            string dependencyId = Guid.NewGuid().ToString();
             var telemetryContext = new Dictionary<string, object>
             {
                 ["Statement"] = "Query"
             };
-            logger.LogSqlDependency("Server", "Database", "Users", "GET", isSuccessful: true, startTime: startTime, duration: duration, telemetryContext);
+            logger.LogSqlDependency("Server", "Database", sqlCommand: "GET", operationName: "Users", isSuccessful: true, startTime: startTime, duration: duration, dependencyId, telemetryContext);
             LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
             Assert.NotNull(logEvent);
 
