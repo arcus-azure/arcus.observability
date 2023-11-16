@@ -495,10 +495,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
+            string serviceBusNamespace = _bogusGenerator.Lorem.Sentence();
             string topicName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
+            string dependencyId = _bogusGenerator.Random.Guid().ToString();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
@@ -514,7 +516,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, properties);
+                logger.LogServiceBusTopicDependency(serviceBusNamespace, topicName, isSuccessful, startTime, duration, dependencyId, properties);
 
                 // Assert
                 Assert.Empty(spySink.CurrentLogEmits);
@@ -526,10 +528,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
+            string serviceBusNamespace = _bogusGenerator.Lorem.Sentence();
             string topicName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
+            string dependencyId = _bogusGenerator.Random.Guid().ToString();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
@@ -545,7 +549,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogServiceBusTopicDependency(topicName, isSuccessful, startTime, duration, properties);
+                logger.LogServiceBusTopicDependency(serviceBusNamespace, topicName, isSuccessful, startTime, duration, dependencyId, properties);
 
                 // Assert
                 LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
@@ -566,10 +570,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
+            string serviceBusNamespace = _bogusGenerator.Lorem.Sentence();
             string queueName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
+            string dependencyId = _bogusGenerator.Random.Guid().ToString();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
@@ -585,7 +591,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, properties);
+                logger.LogServiceBusQueueDependency(serviceBusNamespace, queueName, isSuccessful, startTime, duration, dependencyId, properties);
 
                 // Assert
                 Assert.Empty(spySink.CurrentLogEmits);
@@ -597,10 +603,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
+            string serviceBusNamespace = _bogusGenerator.Lorem.Sentence();
             string queueName = _bogusGenerator.Commerce.Product();
             bool isSuccessful = _bogusGenerator.PickRandom(true, false);
             TimeSpan duration = _bogusGenerator.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
+            string dependencyId = _bogusGenerator.Random.Guid().ToString();
             string propertyName = _bogusGenerator.Random.Word();
             string propertyValue = _bogusGenerator.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
@@ -616,7 +624,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogServiceBusQueueDependency(queueName, isSuccessful, startTime, duration, properties);
+                logger.LogServiceBusQueueDependency(serviceBusNamespace, queueName, isSuccessful, startTime, duration, dependencyId, properties);
 
                 // Assert
                 LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);

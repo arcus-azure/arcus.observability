@@ -99,35 +99,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogBlobStorageDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string containerName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogBlobStorageDependency(accountName, containerName, isSuccessful, measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(containerName, logMessage);
-            Assert.Contains(accountName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = $"{accountName}/{containerName}";
-            Assert.Contains("Azure blob " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogBlobStorageDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange

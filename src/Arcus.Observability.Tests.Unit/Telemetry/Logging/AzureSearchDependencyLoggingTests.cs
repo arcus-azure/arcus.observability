@@ -132,34 +132,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogAzureSearchDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string searchServiceName = _bogusGenerator.Commerce.Product();
-            string operationName = _bogusGenerator.Commerce.ProductName();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DependencyMeasurement measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogAzureSearchDependency(searchServiceName, operationName, isSuccessful, measurement);
-
-            // Assert
-            string logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(searchServiceName, logMessage);
-            Assert.Contains(operationName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = searchServiceName;
-            Assert.Contains("Azure Search " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogAzureSearchDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
