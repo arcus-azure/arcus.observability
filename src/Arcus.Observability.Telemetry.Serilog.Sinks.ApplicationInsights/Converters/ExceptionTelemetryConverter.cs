@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
@@ -13,20 +12,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
     /// </summary>
     public class ExceptionTelemetryConverter : CustomTelemetryConverter<ExceptionTelemetry>
     {
-        private readonly ApplicationInsightsSinkExceptionOptions _options;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionTelemetryConverter" /> class.
-        /// </summary>
-        /// <param name="options">The consumer-configurable options to influence how the exception should be tracked.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
-        [Obsolete("Use the constructor overload with the Application Insights options instead")]
-        public ExceptionTelemetryConverter(ApplicationInsightsSinkExceptionOptions options)
-        {
-            Guard.NotNull(options, nameof(options), "Requires a set of user-configurable options to influence the behavior of how exceptions are tracked");
-            _options = options;
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExceptionTelemetryConverter" /> class.
         /// </summary>
@@ -50,7 +35,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             
             var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception);
 
-            if (Options?.Exception.IncludeProperties == true || _options?.IncludeProperties == true)
+            if (Options?.Exception.IncludeProperties == true)
             {
                 EnrichWithExceptionProperties(logEvent, exceptionTelemetry);
             }
@@ -78,11 +63,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             if (Options != null)
             {
                 return Options.Exception.PropertyFormat;
-            }
-
-            if (_options != null)
-            {
-                return _options.PropertyFormat;
             }
 
             throw new InvalidOperationException(
