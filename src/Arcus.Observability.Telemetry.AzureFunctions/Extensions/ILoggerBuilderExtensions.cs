@@ -13,33 +13,6 @@ namespace Microsoft.Extensions.Logging
     public static class ILoggingBuilderExtensions
     {
         /// <summary>
-        /// Clears the <see cref="ILoggerProvider"/> registrations from the given <paramref name="loggingBuilder"/>,
-        /// except the specific Azure Functions registrations.
-        /// </summary>
-        /// <param name="loggingBuilder">The builder containing the <see cref="ILoggerProvider"/> registrations.</param>
-        [Obsolete("Calling this method causes issues with correctly writing log-information to Application Insights. It is advised to no longer use it.")]
-        public static ILoggingBuilder ClearProvidersExceptFunctionProviders(this ILoggingBuilder loggingBuilder)
-        {
-            Guard.NotNull(loggingBuilder, nameof(loggingBuilder));
-
-            // Kudos to katrash: https://stackoverflow.com/questions/45986517/remove-console-and-debug-loggers-in-asp-net-core-2-0-when-in-production-mode
-            foreach (ServiceDescriptor serviceDescriptor in loggingBuilder.Services)
-            {
-                if (serviceDescriptor.ServiceType == typeof(ILoggerProvider))
-                {
-                    if (serviceDescriptor.ImplementationType.FullName != "Microsoft.Azure.WebJobs.Script.Diagnostics.HostFileLoggerProvider"
-                        && serviceDescriptor.ImplementationType.FullName != "Microsoft.Azure.WebJobs.Script.Diagnostics.FunctionFileLoggerProvider")
-                    {
-                        loggingBuilder.Services.Remove(serviceDescriptor);
-                        break;
-                    }
-                }
-            }
-
-            return loggingBuilder;
-        }
-
-        /// <summary>
         /// Removes Microsoft's 'ApplicationInsightsLoggerProvider' type from the registered logging providers
         /// so that Arcus' Serilog Application Insights sink is the only one place telemetry is created and sent to Microsoft Application Insights.
         /// </summary>
