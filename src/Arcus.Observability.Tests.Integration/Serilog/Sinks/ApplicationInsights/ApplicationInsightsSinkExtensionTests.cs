@@ -19,6 +19,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
+    [Collection("Sink")]
     public class ApplicationInsightsSinkExtensionTests : ApplicationInsightsSinkTests
     {
         /// <summary>
@@ -85,18 +86,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var configuration = new LoggerConfiguration();
             configureLogger(configuration);
 
-            var uniqueMessageId = Guid.NewGuid().ToString();
+            string sentence = BogusGenerator.Lorem.Sentence();
             ILogger logger = CreateLogger(configuration);
 
             // Act
-            logger.LogInformation("Something to log with unique: {Id}", uniqueMessageId);
+            logger.LogInformation(sentence);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsTraceResult[] results = await client.GetTracesAsync();
-                Assert.Contains(results, result => result.Trace.Message.Contains(uniqueMessageId));
-            }, timeout ?? TimeSpan.FromMinutes(8));
+                Assert.Contains(results, result => result.Trace.Message.Contains(sentence));
+            }, timeout ?? TimeSpan.FromMinutes(10));
         }
 
         [Fact]

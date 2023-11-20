@@ -431,10 +431,7 @@ namespace Serilog.Configuration
         ///     Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Azure Application Insights.
         /// </summary>
         /// <param name="loggerSinkConfiguration">The logger configuration to add the Azure Application Insights sink to.</param>
-        /// <param name="serviceProvider">
-        ///     The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.
-        ///     Note that this is only required when the application requires W3C correlation.
-        /// </param>
+        /// <param name="serviceProvider">The provider instance to retrieve the <see cref="TelemetryClient"/> in the application services.</param>
         /// <param name="connectionString">The required connection string to the Azure Application Insights resource - required to have an ingestion endpoint.</param>
         /// <param name="clientId">
         ///     The optional client id to authenticate for a user assigned managed identity.
@@ -585,6 +582,7 @@ namespace Serilog.Configuration
         {
             Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
             Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an Azure Application Insights connection string with an ingestion endpoint to interact with the Azure Application Insights resource");
+            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a service principal to retrieve the registered telemetry client in the application services");
             Guard.NotNull(tokenCredential, nameof(tokenCredential), "Requires a token credential instance to authenticate the telemetry client with the Azure Application Insights resource");
 
             var options = new ApplicationInsightsSinkOptions();
