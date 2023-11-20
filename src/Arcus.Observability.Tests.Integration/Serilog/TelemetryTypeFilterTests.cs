@@ -8,9 +8,7 @@ using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Filters;
 using Arcus.Observability.Tests.Core;
 using Bogus;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -23,7 +21,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
     [Trait("Category", "Integration")]
     public class TelemetryTypeFilterTests
     {
-        private readonly Faker _bogusGenerator = new Faker();
+        private static readonly Faker Bogus = new Faker();
 
         public static IEnumerable<object[]> TelemetryTypesWithoutEvent => GetTelemetryTypesWithout(TelemetryType.Events);
         public static IEnumerable<object[]> TelemetryTypesWithoutMetric => GetTelemetryTypesWithout(TelemetryType.Metrics);
@@ -34,9 +32,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogCustomEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
         {
             // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventName = Bogus.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -62,9 +60,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogCustomEvent_WithTelemetryTypeFilterOnOtherType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventName = Bogus.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -94,9 +92,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogSecurityEvent_WithTelemetryTypeFilter_IgnoresLogEvent()
         {
             // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventName = Bogus.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -122,9 +120,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogSecurityEvent_WithTelemetryTypeFilterOnOtherType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string eventName = _bogusGenerator.Random.Word();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventName = Bogus.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -151,13 +149,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         }
 
         [Fact]
-        public void LogMetric_WithTelemetryTypeFilter_IgnoresMetric()
+        public void LogCustomMetric_WithTelemetryTypeFilter_IgnoresMetric()
         {
             // Arrange
-            string metricName = _bogusGenerator.Random.Word();
-            double metricValue = _bogusGenerator.Random.Double();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string metricName = Bogus.Random.Word();
+            double metricValue = Bogus.Random.Double();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -171,123 +169,124 @@ namespace Arcus.Observability.Tests.Integration.Serilog
                 ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
                 // Act
-                logger.LogMetric(metricName, metricValue, properties);
+                logger.LogCustomMetric(metricName, metricValue, properties);
 
                 // Assert
                 Assert.Empty(spySink.CurrentLogEmits);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TelemetryTypesWithoutMetric))]
+        public void LogCustomMetric_WithTelemetryTypeFilterOnDifferentType_DoesNotFilterOutEntry(TelemetryType telemetryType)
+        {
+            // Arrange
+            string metricName = Bogus.Random.Word();
+            double metricValue = Bogus.Random.Double();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
+
+            var spySink = new InMemoryLogSink();
+            Logger serilogLogger = new LoggerConfiguration()
+                .Filter.With(TelemetryTypeFilter.On(telemetryType))
+                .WriteTo.Sink(spySink)
+                .CreateLogger();
+
+            using (var factory = new SerilogLoggerFactory(serilogLogger))
+            {
+                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
+
+                // Act
+                logger.LogCustomMetric(metricName, metricValue, properties);
+
+                // Assert
+                LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+                Assert.NotNull(logEvent);
+                string writtenMessage = logEvent.RenderMessage();
+                Assert.Contains(metricName, writtenMessage);
+                Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), writtenMessage);
+                Assert.Contains(propertyName, writtenMessage);
+                Assert.Contains(propertyValue, writtenMessage);
+                Assert.Contains(TelemetryType.Metrics.ToString(), writtenMessage);
             }
         }
 
         [Fact]
-        public void LogCustomMetric_WithTelemetryTypeFilter_IgnoresMetric()
+        public void LogCustomRequest_WithTelemetryTypeFilter_IgnoresRequest()
         {
             // Arrange
-            string metricName = _bogusGenerator.Random.Word();
-            double metricValue = _bogusGenerator.Random.Double();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
-
             var spySink = new InMemoryLogSink();
-            Logger serilogLogger = new LoggerConfiguration()
-                .Filter.With(TelemetryTypeFilter.On(TelemetryType.Metrics))
+            var serilogLogger = new LoggerConfiguration()
+                .Filter.With(TelemetryTypeFilter.On(TelemetryType.Request))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
 
-            using (var factory = new SerilogLoggerFactory(serilogLogger))
-            {
-                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
+            using var factory = new SerilogLoggerFactory(serilogLogger);
+            ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
-                // Act
-                logger.LogCustomMetric(metricName, metricValue, properties);
+            string requestSource = Bogus.Random.Word();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
+            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
-                // Assert
-                Assert.Empty(spySink.CurrentLogEmits);
-            }
+            // Act
+            logger.LogCustomRequest(requestSource, isSuccessful, startTime, duration, properties);
+
+            // Assert
+            Assert.Empty(spySink.CurrentLogEmits);
         }
 
         [Theory]
-        [MemberData(nameof(TelemetryTypesWithoutMetric))]
-        public void LogMetric_WithTelemetryTypeFilterOnDifferentTyp_DoesNotFilterOutEntry(TelemetryType telemetryType)
+        [MemberData(nameof(TelemetryTypesWithoutRequest))]
+        public void LogCustomRequest_WithTelemetryTypeFilterOnDifferentType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string metricName = _bogusGenerator.Random.Word();
-            double metricValue = _bogusGenerator.Random.Double();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
-            var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
-
             var spySink = new InMemoryLogSink();
-            Logger serilogLogger = new LoggerConfiguration()
+            var serilogLogger = new LoggerConfiguration()
                 .Filter.With(TelemetryTypeFilter.On(telemetryType))
                 .WriteTo.Sink(spySink)
                 .CreateLogger();
 
-            using (var factory = new SerilogLoggerFactory(serilogLogger))
-            {
-                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
+            using var factory = new SerilogLoggerFactory(serilogLogger);
+            ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
 
-                // Act
-                logger.LogMetric(metricName, metricValue, properties);
-
-                // Assert
-                LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
-                Assert.NotNull(logEvent);
-                string writtenMessage = logEvent.RenderMessage();
-                Assert.Contains(metricName, writtenMessage);
-                Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), writtenMessage);
-                Assert.Contains(propertyName, writtenMessage);
-                Assert.Contains(propertyValue, writtenMessage);
-                Assert.Contains(TelemetryType.Metrics.ToString(), writtenMessage);
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(TelemetryTypesWithoutMetric))]
-        public void LogCustomMetric_WithTelemetryTypeFilterOnDifferentTyp_DoesNotFilterOutEntry(TelemetryType telemetryType)
-        {
-            // Arrange
-            string metricName = _bogusGenerator.Random.Word();
-            double metricValue = _bogusGenerator.Random.Double();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string requestSource = Bogus.Random.Word();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
-            var spySink = new InMemoryLogSink();
-            Logger serilogLogger = new LoggerConfiguration()
-                .Filter.With(TelemetryTypeFilter.On(telemetryType))
-                .WriteTo.Sink(spySink)
-                .CreateLogger();
+            // Act
+            logger.LogCustomRequest(requestSource, isSuccessful, startTime, duration, properties);
 
-            using (var factory = new SerilogLoggerFactory(serilogLogger))
-            {
-                ILogger logger = factory.CreateLogger<TelemetryTypeFilterTests>();
-
-                // Act
-                logger.LogCustomMetric(metricName, metricValue, properties);
-
-                // Assert
-                LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
-                Assert.NotNull(logEvent);
-                string writtenMessage = logEvent.RenderMessage();
-                Assert.Contains(metricName, writtenMessage);
-                Assert.Contains(metricValue.ToString(CultureInfo.InvariantCulture), writtenMessage);
-                Assert.Contains(propertyName, writtenMessage);
-                Assert.Contains(propertyValue, writtenMessage);
-                Assert.Contains(TelemetryType.Metrics.ToString(), writtenMessage);
-            }
+            // Assert
+            LogEvent logEvent = Assert.Single(spySink.CurrentLogEmits);
+            Assert.NotNull(logEvent);
+            string writtenMessage = logEvent.RenderMessage();
+            Assert.Contains(requestSource, writtenMessage);
+            Assert.Contains((isSuccessful ? 200 : 500).ToString(), writtenMessage);
+            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), writtenMessage);
+            Assert.Contains(duration.ToString(), writtenMessage);
+            Assert.Contains(propertyName, writtenMessage);
+            Assert.Contains(propertyValue, writtenMessage);
         }
 
         [Fact]
         public void LogHttpDependency_WithTelemetryTypeFilter_IgnoresHttpDependency()
         {
             // Arrange
-            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            var request = new HttpRequestMessage(HttpMethod.Get, Bogus.Internet.UrlWithPath());
+            var statusCode = Bogus.PickRandom<HttpStatusCode>();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -313,12 +312,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogHttpDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            var request = new HttpRequestMessage(HttpMethod.Get, _bogusGenerator.Internet.UrlWithPath());
-            var statusCode = _bogusGenerator.PickRandom<HttpStatusCode>();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            var request = new HttpRequestMessage(HttpMethod.Get, Bogus.Internet.UrlWithPath());
+            var statusCode = Bogus.PickRandom<HttpStatusCode>();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -355,15 +354,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogSqlDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string serverName = _bogusGenerator.Name.FullName();
-            string databaseName = _bogusGenerator.Name.FullName();
-            string tableName = _bogusGenerator.Name.FullName();
-            string operationName = _bogusGenerator.Name.FullName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string serverName = Bogus.Name.FullName();
+            string databaseName = Bogus.Name.FullName();
+            string tableName = Bogus.Name.FullName();
+            string operationName = Bogus.Name.FullName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -389,15 +388,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogSqlDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string serverName = _bogusGenerator.Name.FullName();
-            string databaseName = _bogusGenerator.Name.FullName();
-            string tableName = _bogusGenerator.Name.FullName();
-            string operationName = _bogusGenerator.Name.FullName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string serverName = Bogus.Name.FullName();
+            string databaseName = Bogus.Name.FullName();
+            string tableName = Bogus.Name.FullName();
+            string operationName = Bogus.Name.FullName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -435,12 +434,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string topicName = Bogus.Commerce.Product();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            TimeSpan duration = Bogus.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -466,12 +465,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusTopicDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string topicName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string topicName = Bogus.Commerce.Product();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            TimeSpan duration = Bogus.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -506,12 +505,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string queueName = Bogus.Commerce.Product();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            TimeSpan duration = Bogus.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -537,12 +536,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogServiceBusQueueDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string queueName = _bogusGenerator.Commerce.Product();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
+            string queueName = Bogus.Commerce.Product();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            TimeSpan duration = Bogus.Date.Timespan();
             DateTimeOffset startTime = DateTimeOffset.UtcNow;
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -577,13 +576,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogAzureSearchDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string searchServiceName = _bogusGenerator.Commerce.Product();
-            string operationName = _bogusGenerator.Commerce.ProductName();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string searchServiceName = Bogus.Commerce.Product();
+            string operationName = Bogus.Commerce.ProductName();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -609,13 +608,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogAzureSearchDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string searchServiceName = _bogusGenerator.Commerce.Product();
-            string operationName = _bogusGenerator.Commerce.ProductName();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string searchServiceName = Bogus.Commerce.Product();
+            string operationName = Bogus.Commerce.ProductName();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -652,11 +651,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             var vaultUri = "https://myvault.vault.azure.net";
             string secretName = "MySecret";
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -684,11 +683,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             var vaultUri = "https://myvault.vault.azure.net";
             string secretName = "MySecret";
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DateTimeOffset startTime = _bogusGenerator.Date.RecentOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            DateTimeOffset startTime = Bogus.Date.RecentOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -722,14 +721,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogDependencyTarget_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string dependencyType = _bogusGenerator.Name.FullName();
-            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
-            string targetName = _bogusGenerator.Lorem.Word();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string dependencyType = Bogus.Name.FullName();
+            var dependencyData = Bogus.Finance.Amount().ToString("F");
+            string targetName = Bogus.Lorem.Word();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -755,15 +754,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogDependencyTarget_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string dependencyType = _bogusGenerator.Name.FullName();
-            var dependencyData = _bogusGenerator.Finance.Amount().ToString("F");
-            string targetName = _bogusGenerator.Lorem.Word();
-            bool isSuccessful = _bogusGenerator.PickRandom(true, false);
-            string dependencyName = _bogusGenerator.Random.Word();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string dependencyType = Bogus.Name.FullName();
+            var dependencyData = Bogus.Finance.Amount().ToString("F");
+            string targetName = Bogus.Lorem.Word();
+            bool isSuccessful = Bogus.PickRandom(true, false);
+            string dependencyName = Bogus.Random.Word();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -799,14 +798,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogCosmosSqlDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string container = _bogusGenerator.Commerce.ProductName();
-            string database = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string container = Bogus.Commerce.ProductName();
+            string database = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -832,14 +831,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogCosmosSqlDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string container = _bogusGenerator.Commerce.ProductName();
-            string database = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string container = Bogus.Commerce.ProductName();
+            string database = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -875,12 +874,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogIotHubDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string iotHubName = _bogusGenerator.Commerce.ProductName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string iotHubName = Bogus.Commerce.ProductName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -906,12 +905,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogIotHubDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string iotHubName = _bogusGenerator.Commerce.ProductName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string iotHubName = Bogus.Commerce.ProductName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -946,13 +945,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogEventHubsDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventHubName = Bogus.Commerce.ProductName();
+            string namespaceName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -978,13 +977,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogEventHubsDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string eventHubName = _bogusGenerator.Commerce.ProductName();
-            string namespaceName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string eventHubName = Bogus.Commerce.ProductName();
+            string namespaceName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -1019,13 +1018,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogTableStorageDependency_WithTelemetryTypeFilter_FiltersOutDependency()
         {
             // Arrange
-            string tableName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string tableName = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -1051,13 +1050,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogTableStorageDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string tableName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string tableName = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -1092,13 +1091,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogBlobStorageDependency_WithTelemetryTypeFilter_IgnoresDependency()
         {
             // Arrange
-            string containerName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string containerName = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
@@ -1124,13 +1123,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         public void LogBlobStorageDependency_WithTelemetryTypeFilterOnDifferentTelemetryType_DoesNotFilterOutEntry(TelemetryType telemetryType)
         {
             // Arrange
-            string containerName = _bogusGenerator.Commerce.ProductName();
-            string accountName = _bogusGenerator.Finance.AccountName();
-            bool isSuccessful = _bogusGenerator.Random.Bool();
-            DateTimeOffset startTime = _bogusGenerator.Date.PastOffset();
-            TimeSpan duration = _bogusGenerator.Date.Timespan();
-            string propertyName = _bogusGenerator.Random.Word();
-            string propertyValue = _bogusGenerator.Random.Word();
+            string containerName = Bogus.Commerce.ProductName();
+            string accountName = Bogus.Finance.AccountName();
+            bool isSuccessful = Bogus.Random.Bool();
+            DateTimeOffset startTime = Bogus.Date.PastOffset();
+            TimeSpan duration = Bogus.Date.Timespan();
+            string propertyName = Bogus.Random.Word();
+            string propertyValue = Bogus.Random.Word();
             var properties = new Dictionary<string, object> { [propertyName] = propertyValue };
 
             var spySink = new InMemoryLogSink();
