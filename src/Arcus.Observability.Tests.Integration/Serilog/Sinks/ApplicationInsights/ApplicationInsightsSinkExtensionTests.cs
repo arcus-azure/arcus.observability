@@ -94,11 +94,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] traces = await client.GetTracesAsync();
-                AssertX.Any(traces, trace =>
-                {
-                    Assert.Contains(uniqueMessageId, trace.Trace.Message);
-                });
+                EventsTraceResult[] results = await client.GetTracesAsync();
+                Assert.Contains(results, result => result.Trace.Message.Contains(uniqueMessageId));
             }, timeout ?? TimeSpan.FromMinutes(8));
         }
 
