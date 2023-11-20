@@ -1,5 +1,5 @@
 # Arcus - Observability
-[![Build Status](https://dev.azure.com/codit/Arcus/_apis/build/status/Commit%20builds/CI%20-%20Arcus.Observability?branchName=main)](https://dev.azure.com/codit/Arcus/_build/latest?definitionId=733&branchName=main)
+[![Build Status](https://dev.azure.com/codit/Arcus/_apis/build/status/Commit%20builds/CI%20-%20Arcus.Observability?branchName=main)](https://dev.azure.com/codit/Arcus/_build/latest?definitionId=800&branchName=main)
 [![NuGet Badge](https://buildstats.info/nuget/Arcus.Observability.Correlation?includePreReleases=true)](https://www.nuget.org/packages/Arcus.Observability.Correlation/)
 [![codecov](https://codecov.io/gh/arcus-azure/arcus.observability/branch/main/graph/badge.svg?token=59ITMASWGX)](https://codecov.io/gh/arcus-azure/arcus.observability)
 

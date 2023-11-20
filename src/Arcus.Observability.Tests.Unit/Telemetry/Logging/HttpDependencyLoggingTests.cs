@@ -160,38 +160,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogHttpDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var request = new HttpRequestMessage(HttpMethod.Get, BogusGenerator.Internet.UrlWithPath());
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(request.RequestUri.Host, logMessage);
-            Assert.Contains(request.RequestUri.PathAndQuery, logMessage);
-            Assert.Contains(request.Method.ToString(), logMessage);
-            Assert.Contains(((int)statusCode).ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            var isSuccessful = (int)statusCode >= 200 && (int)statusCode < 300;
-            Assert.Contains($"Successful: {isSuccessful}", logMessage);
-            Uri requestUri = request.RequestUri;
-            HttpMethod requestMethod = request.Method;
-            string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
-            Assert.Contains("Http " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogHttpDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -620,6 +588,24 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             Assert.Empty(context);
         }
 
+        [Fact]
+        public void LogHttpDependencyWithRequest_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "https");
+            int statusCode = (int) BogusGenerator.PickRandom<HttpStatusCode>();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
+        }
 
         private static HttpRequest CreateStubRequest(HttpMethod method, string host, string path, string scheme)
         {

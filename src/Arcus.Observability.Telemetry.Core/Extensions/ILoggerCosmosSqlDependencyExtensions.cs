@@ -17,37 +17,6 @@ namespace Microsoft.Extensions.Logging
         /// Logs a Cosmos SQL dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
-        /// <param name="accountName">Name of the storage resource</param>
-        /// <param name="database">Name of the database</param>
-        /// <param name="container">Name of the container</param>
-        /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
-        /// <param name="measurement">Measuring the latency of the dependency</param>
-        /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/>, <paramref name="database"/>, or <paramref name="container"/> is blank.</exception>
-        [Obsolete("Use the overload with " + nameof(DurationMeasurement) + " instead to track a Cosmos SQL dependency")]
-        public static void LogCosmosSqlDependency(
-            this ILogger logger,
-            string accountName,
-            string database,
-            string container,
-            bool isSuccessful,
-            DependencyMeasurement measurement,
-            Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(accountName, nameof(accountName), "Requires a non-blank account name of the Cosmos SQL storage to track a Cosmos SQL dependency");
-            Guard.NotNullOrWhitespace(database, nameof(database), "Requires a non-blank database name of the Cosmos SQL storage to track a Cosmos SQL dependency");
-            Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Cosmos SQL storage when tracking an Cosmos SQL dependency");
-
-            LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
-        }
-
-        /// <summary>
-        /// Logs a Cosmos SQL dependency.
-        /// </summary>
-        /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="accountName">The name of the storage resource.</param>
         /// <param name="database">The name of the database.</param>
         /// <param name="container">The name of the container.</param>
@@ -136,8 +105,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -173,7 +140,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNullOrWhitespace(container, nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             string data = $"{database}/{container}";
 
             logger.LogWarning(MessageFormats.DependencyFormat, new DependencyLogEntry(

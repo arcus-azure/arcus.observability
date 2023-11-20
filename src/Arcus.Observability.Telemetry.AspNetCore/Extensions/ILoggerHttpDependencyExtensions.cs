@@ -127,8 +127,6 @@ namespace Microsoft.Extensions.Logging
             Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
             Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
 
-            context = context ?? new Dictionary<string, object>();
-
             LogHttpDependency(logger, request, statusCode, startTime, duration, dependencyId: null, context);
         }
 
@@ -193,7 +191,7 @@ namespace Microsoft.Extensions.Logging
             Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
             Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             string requestUri = request.Path;
             string targetName = request.Host.Host;

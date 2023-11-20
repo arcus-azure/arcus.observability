@@ -107,37 +107,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogCosmosSqlDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string container = BogusGenerator.Commerce.ProductName();
-            string database = BogusGenerator.Commerce.ProductName();
-            string accountName = BogusGenerator.Finance.AccountName();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(container, logMessage);
-            Assert.Contains(database, logMessage);
-            Assert.Contains(accountName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = $"{database}/{container}";
-            Assert.Contains("Azure DocumentDB " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogCosmosSqlDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -348,6 +317,27 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogCosmosSqlDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string database = BogusGenerator.Commerce.ProductName();
+            string container = BogusGenerator.Commerce.ProductName();
+            string accountName = BogusGenerator.Finance.AccountName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogCosmosSqlDependency(accountName, database, container, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

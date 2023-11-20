@@ -171,35 +171,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogEventHubsDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string eventHubName = BogusGenerator.Commerce.ProductName();
-            string namespaceName = BogusGenerator.Finance.AccountName();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(namespaceName, logMessage);
-            Assert.Contains(eventHubName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = eventHubName;
-            Assert.Contains("Azure Event Hubs " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogEventHubsDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange
@@ -364,6 +335,26 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(
                 () => logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement: null, dependencyId));
+        }
+
+        [Fact]
+        public void LogEventHubsDependency_WithContext_DoesNotAlterContext()
+        {
+            // Arrange
+            var logger = new TestLogger();
+            string namespaceName = BogusGenerator.Commerce.ProductName();
+            string eventHubName = BogusGenerator.Commerce.ProductName();
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            var startTime = BogusGenerator.Date.RecentOffset();
+            var duration = BogusGenerator.Date.Timespan();
+            var dependencyId = BogusGenerator.Random.Guid().ToString();
+            var context = new Dictionary<string, object>();
+
+            // Act
+            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId, context);
+
+            // Assert
+            Assert.Empty(context);
         }
     }
 }

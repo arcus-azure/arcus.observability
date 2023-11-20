@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.Logging
                 operationName = ContextProperties.RequestTracking.DefaultOperationName;
             }
 
-            context = context ?? new Dictionary<string, object>();
+            context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
             logger.LogWarning(MessageFormats.RequestFormat, RequestLogEntry.CreateForCustomRequest(requestSource, operationName, isSuccessful, duration, startTime, context));
         }
