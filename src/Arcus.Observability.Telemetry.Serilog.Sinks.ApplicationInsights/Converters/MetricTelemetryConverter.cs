@@ -17,14 +17,6 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <summary>
         /// Initializes a new instance of the <see cref="MetricTelemetryConverter" /> class.
         /// </summary>
-        [Obsolete("Use the constructor overload with the Application Insights options instead")]
-        public MetricTelemetryConverter()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MetricTelemetryConverter" /> class.
-        /// </summary>
         /// <param name="options">The user-defined configuration options to influence the behavior of the Application Insights Serilog sink.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
         public MetricTelemetryConverter(ApplicationInsightsSinkOptions options) : base(options)

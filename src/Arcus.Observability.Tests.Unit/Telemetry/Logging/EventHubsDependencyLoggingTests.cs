@@ -171,35 +171,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogEventHubsDependencyWithDependencyMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string eventHubName = BogusGenerator.Commerce.ProductName();
-            string namespaceName = BogusGenerator.Finance.AccountName();
-            bool isSuccessful = BogusGenerator.Random.Bool();
-
-            var measurement = DependencyMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogEventHubsDependency(namespaceName, eventHubName, isSuccessful, measurement);
-
-            // Assert
-            var logMessage = logger.WrittenMessage;
-            Assert.Contains(TelemetryType.Dependency.ToString(), logMessage);
-            Assert.Contains(namespaceName, logMessage);
-            Assert.Contains(eventHubName, logMessage);
-            Assert.Contains(isSuccessful.ToString(), logMessage);
-            Assert.Contains(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), logMessage);
-            Assert.Contains(duration.ToString(), logMessage);
-            string dependencyName = eventHubName;
-            Assert.Contains("Azure Event Hubs " + dependencyName, logMessage);
-        }
-
-        [Fact]
         public void LogEventHubsDependencyWithDurationMeasurement_ValidArguments_Succeeds()
         {
             // Arrange

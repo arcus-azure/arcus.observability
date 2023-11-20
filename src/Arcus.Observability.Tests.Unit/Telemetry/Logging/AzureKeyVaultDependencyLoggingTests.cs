@@ -136,54 +136,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
         [Theory]
         [ClassData(typeof(Blanks))]
-        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithIdWithoutVaultUri_Fails(string vaultUri)
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogAzureKeyVaultDependency(vaultUri, "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start(), "dependency ID"));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void LogAzureKeyVaultDependency_WithIdWithoutSecretNameDependencyMeasurement_Fails(string secretName)
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DependencyMeasurement.Start(), "dependency ID"));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void LogAzureKeyVaultDependencyDependencyMeasurement_WithoutVaultUri_Fails(string vaultUri)
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogAzureKeyVaultDependency(vaultUri, "MySecret", isSuccessful: true, measurement: DependencyMeasurement.Start()));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void LogAzureKeyVaultDependency_WithoutSecretNameDependencyMeasurement_Fails(string secretName)
-        {
-            // Arrange
-            var logger = new TestLogger();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(
-                () => logger.LogAzureKeyVaultDependency("https://my-vault.vault.azure.net", secretName, isSuccessful: true, measurement: DependencyMeasurement.Start()));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
         public void LogAzureKeyVaultDependencyDurationMeasurement_WithIdWithoutVaultUri_Fails(string vaultUri)
         {
             // Arrange
