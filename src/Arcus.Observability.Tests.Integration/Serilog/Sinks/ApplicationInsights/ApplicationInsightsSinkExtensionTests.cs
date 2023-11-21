@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Tests.Integration.Fixture;
 using Azure.Identity;
+using GuardNet;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
@@ -39,8 +41,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task Sink_UsingAuthentication_WritesTelemetry()
         {
             // Arrange
-            using var conn = TemporaryManagedIdentityConnection.Create(TenantId, ClientId, ClientSecret);
-
             IServiceProvider provider = CreateServiceProviderWithTelemetryClient();
             var credential = new ClientSecretCredential(TenantId, ClientId, ClientSecret);
 
@@ -81,22 +81,22 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         private async Task TestSendingTelemetryAsync(
             Action<LoggerConfiguration> configureLogger,
+            [CallerMemberName] string logMessage = "",
             TimeSpan? timeout = null)
         {
             var configuration = new LoggerConfiguration();
             configureLogger(configuration);
 
-            string sentence = "Something to log with authentication";
             ILogger logger = CreateLogger(configuration);
 
             // Act
-            logger.LogInformation(sentence);
+            logger.LogInformation(logMessage);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsTraceResult[] results = await client.GetTracesAsync();
-                Assert.Contains(results, result => result.Trace.Message.Contains(sentence));
+                Assert.Contains(results, result => result.Trace.Message.Contains(logMessage));
             }, timeout ?? TimeSpan.FromMinutes(10));
         }
 
