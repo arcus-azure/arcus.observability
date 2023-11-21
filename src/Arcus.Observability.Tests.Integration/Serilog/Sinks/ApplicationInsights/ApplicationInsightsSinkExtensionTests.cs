@@ -86,7 +86,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var configuration = new LoggerConfiguration();
             configureLogger(configuration);
 
-            string sentence = BogusGenerator.Lorem.Sentence();
+            string sentence = "Something to log with authentication";
             ILogger logger = CreateLogger(configuration);
 
             // Act
