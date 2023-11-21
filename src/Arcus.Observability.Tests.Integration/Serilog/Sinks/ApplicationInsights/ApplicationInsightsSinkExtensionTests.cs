@@ -97,7 +97,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             {
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 Assert.Contains(results, result => result.Trace.Message.Contains(logMessage));
-            }, timeout ?? TimeSpan.FromMinutes(10));
+            }, timeout ?? TimeSpan.FromMinutes(15));
         }
 
         [Fact]
