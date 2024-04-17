@@ -17,14 +17,17 @@
     "@docusaurus/core": "^3.2.1",
     "@docusaurus/preset-classic": "^3.2.1",
     "@docusaurus/theme-search-algolia": "^3.2.1",
-    "@mdx-js/react": "^1.6.21",
-    "@svgr/webpack": "^6.3.1",
-    "clsx": "^1.1.1",
+    "@mdx-js/react": "^3.0.1",
+    "@svgr/webpack": "^8.1.0",
+    "clsx": "^2.1.0",
     "file-loader": "^6.2.0",
-    "prism-react-renderer": "^1.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "prism-react-renderer": "^2.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "url-loader": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=18.0"
   },
   "browserslist": {
     "production": [
