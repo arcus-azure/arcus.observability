@@ -29,11 +29,11 @@ We provide the capability to track the following telemetry types on top of ILogg
   - [Metrics](#metrics)
   - [Requests](#requests)
 
-For most optimal output, we recommend using our [Azure Application Insights sink](/features/sinks/azure-application-insights).
+For most optimal output, we recommend using our [Azure Application Insights sink](./sinks/azure-application-insights).
 
 **We highly encourage to provide contextual information to all your telemetry** to make it more powerful and support this for all telemetry types.
 
-> :bulb: For sake of simplicity we have not included how to track contextual information, for more information see [our documentation](/features/making-telemetry-more-powerful).
+> :bulb: For sake of simplicity we have not included how to track contextual information, for more information see [our documentation](./making-telemetry-more-powerful).
 
 ## Installation
 
