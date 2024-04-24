@@ -11,8 +11,8 @@ module.exports = {
       // Set `contextualSearch` to `true` when having multiple versions!!!
       contextualSearch: true,
       searchParameters: {
-        facetFilters: ["tags:observability"]
+        facetFilters: ['tags:observability'],
       },
     },
-  }
-}
+  },
+};
