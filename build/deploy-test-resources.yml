@@ -7,9 +7,9 @@ parameters:
   - name: azureServiceConnection
     type: string
   - name: resourceGroupName
-    value: 'codit-arcus-observability-rg'
+    default: 'codit-arcus-observability-rg'
   - name: appInsightsName
-    value: 'arcus-observability-dev-we-app-insights'
+    default: 'arcus-observability-dev-we-app-insights'
 
 variables:
   - template: ./variables/build.yml
