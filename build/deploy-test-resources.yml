@@ -7,6 +7,7 @@ parameters:
   - name: azureServiceConnection
     displayName: 'Azure service connection'
     type: string
+    default: 'Azure Codit-Arcus Service Principal'
   - name: resourceGroupName
     displayName: 'Resource group name'
     default: codit-arcus-observability-rg
