@@ -37,8 +37,7 @@ stages:
               inlineScript: |
                 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
                 Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
-                Install-Module Az.ApplicationInsights
-                Import-Module Az.ApplicationInsights
+                az extension add --name application-insights
 
                 $appInsightsOutput = az deployment sub create `
                   --location westeurope `
@@ -46,6 +45,7 @@ stages:
                   --parameters location=westeurope `
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   | ConvertFrom-Json
+
 
                 $apiKeyOutput = az monitor app-insights api-key create --api-key 'Arcus Observability Integration Tests API Key' --app ${{ parameters.appInsightsName }} --resource-group ${{ parameters.resourceGroupName }} --permissions ReadTelemetry | ConvertFrom-Json
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
