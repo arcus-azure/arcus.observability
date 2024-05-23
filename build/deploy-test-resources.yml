@@ -41,7 +41,7 @@ stages:
 
                 $parameters = @{
                   "location" = "westeurope"
-                  "appInsightsName" = "${{ parameters.appInsightsName }" } | ConvertTo-Json
+                  "appInsightsName" = "${{ parameters.appInsightsName }}" } | ConvertTo-Json
                 $appInsightsOutput = az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
