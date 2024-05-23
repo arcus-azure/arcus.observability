@@ -36,6 +36,7 @@ stages:
               inlineScript: |
                 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
                 Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
+                Install-Module Az.ApplicationInsights
                 Import-Module Az.ApplicationInsights
 
                 $appInsightsOutput = az deployment sub create `
