@@ -51,4 +51,4 @@ stages:
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
 
                 $env:ArmOutputs = $appInsightsOutput
-                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName ${{ parameters.variableGroupName }}
+                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'
