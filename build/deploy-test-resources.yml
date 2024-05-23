@@ -48,11 +48,6 @@ stages:
                   --parameters $parameters `
                   | ConvertFrom-Json
 
-                $context = az account show | ConvertFrom-Json
-                $securePassword = ConvertTo-SecureString $context.user.password -AsPlainText -Force
-                $credential = New-Object System.Management.Automation.PSCredential ($context.user.name, $securePassword)
-                Connect-AzAccount -ServicePrincipal -Credential $credential -Tenant $context.tenantId
-
                 $apiKeyOutput = New-AzApplicationInsightsApiKey -ResourceGroupName ${{ parameters.resourceGroupName }} -Name ${{ parameters.appInsightsName }} -Description 'Asserting tracked telemetry' -Permissions @('ReadTelemetry')
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
 
