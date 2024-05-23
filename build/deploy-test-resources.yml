@@ -42,11 +42,11 @@ stages:
                 $appInsightsOutput = az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/test-resources.json `
-                  --parameters '{ \"location\": \"westeurope\", \"appInsightsName\": \"$($env:appInsightsName)" }' `
+                  --parameters '{ \"location\": \"westeurope\", \"appInsightsName\": \"${{ parameters.appInsightsName }}" }' `
                   | ConvertFrom-Json
 
-                $apiKeyOutput = New-AzApplicationInsightsApiKey -ResourceGroupName $env:resourceGroupName -Name $env:appInsightsName -Description 'Asserting tracked telemetry' -Permissions @('ReadTelemetry')
+                $apiKeyOutput = New-AzApplicationInsightsApiKey -ResourceGroupName ${{ parameters.resourceGroupName }} -Name ${{ parameters.appInsightsName }} -Description 'Asserting tracked telemetry' -Permissions @('ReadTelemetry')
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
 
                 $env:ArmOutputs = $appInsightsOutput
-                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName $env:variableGroupName
+                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName ${{ parameters.variableGroupName }}
