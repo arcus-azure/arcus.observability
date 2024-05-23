@@ -39,10 +39,13 @@ stages:
                 Install-Module Az.ApplicationInsights
                 Import-Module Az.ApplicationInsights
 
+                $parameters = @{
+                  "location" = "westeurope"
+                  "appInsightsName" = "${{ parameters.appInsightsName }" } | ConvertTo-Json
                 $appInsightsOutput = az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
-                  --parameters '{ \"location\": \"westeurope\", \"appInsightsName\": \"${{ parameters.appInsightsName }}" }' `
+                  --parameters $parameters `
                   | ConvertFrom-Json
 
                 $context = az account show | ConvertFrom-Json
