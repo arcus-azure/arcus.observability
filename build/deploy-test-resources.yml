@@ -44,7 +44,7 @@ stages:
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
-                  --parameters appInsightsName=${{ parameters.appInsightsName }}`
+                  --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   | ConvertFrom-Json
 
                 $subscriptionId = (az account show | ConvertFrom-Json).id
