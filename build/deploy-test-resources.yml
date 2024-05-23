@@ -45,15 +45,10 @@ stages:
                   --parameters '{ \"location\": \"westeurope\", \"appInsightsName\": \"${{ parameters.appInsightsName }}" }' `
                   | ConvertFrom-Json
 
-                # Get the current service principal details
-                $servicePrincipalConnection = (Get-VstsServiceEndpoint -Context $distributedTaskContext -Id $env:ENDPOINT_AUTH_PARAMETER_SYSTEMVSSCONNECTION_SERVICEENDPOINTID).Auth.Parameters
-                $spn = @{
-                    "tenantId" = $servicePrincipalConnection.TenantId
-                    "applicationId" = $servicePrincipalConnection.ServicePrincipalId
-                    "certificateThumbprint" = $servicePrincipalConnection.ServicePrincipalKey
-                }
-
-                Connect-AzAccount -ServicePrincipal @spn
+                $context = az account show | ConvertFrom-Json
+                $securePassword = ConvertTo-SecureString $context.user.password -AsPlainText -Force
+                $credential = New-Object System.Management.Automation.PSCredential ($context.user.name, $securePassword)
+                Connect-AzAccount -ServicePrincipal -Credential $credential -Tenant $context.tenantId
 
                 $apiKeyOutput = New-AzApplicationInsightsApiKey -ResourceGroupName ${{ parameters.resourceGroupName }} -Name ${{ parameters.appInsightsName }} -Description 'Asserting tracked telemetry' -Permissions @('ReadTelemetry')
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
