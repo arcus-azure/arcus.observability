@@ -25,7 +25,7 @@ stages:
           - task: AzureCLI@2
             inputs:
               azureSubscription: '${{ parameters.azureServiceConnection }}'
-              scriptType: 'bash'
+              scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
                 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
