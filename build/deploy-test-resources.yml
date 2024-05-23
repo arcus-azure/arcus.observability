@@ -17,7 +17,8 @@ variables:
 stages:
   - stage: Deploy
     jobs:
-      - job: Deploy Bicep
+      - job: DeployBicep
+        displayName: 'Deploy test resources'
         pool:
           vmImage: '$(Vm.Image)'
         steps:
