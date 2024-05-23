@@ -6,19 +6,15 @@ pr: none
 parameters:
   - name: azureServiceConnection
     displayName: 'Azure service connection'
-    description: 'The Azure service connection to deploy the resources with'
     type: string
   - name: resourceGroupName
     displayName: 'Resource group name'
-    description: 'The name of the resource group to create the resources in'
     default: 'codit-arcus-observability-rg'
   - name: appInsightsName
     displayName: 'Application Insights name'
-    description: 'The name of the Application Insights instance to create'
     default: 'arcus-observability-dev-we-app-insights'
   - name: variableGroupName
     displayName: 'Variable group name'
-    description: 'The name of the variable group to store the outputs in'
     default: 'Arcus Observability - Integration Testing'
 
 variables:
