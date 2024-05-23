@@ -1,4 +1,4 @@
-name: Deploy test resources
+name: Arcus Observability - Deploy test resources
 
 trigger: none
 pr: none
@@ -9,13 +9,13 @@ parameters:
     type: string
   - name: resourceGroupName
     displayName: 'Resource group name'
-    default: 'codit-arcus-observability-rg'
+    default: codit-arcus-observability-rg
   - name: appInsightsName
     displayName: 'Application Insights name'
-    default: 'arcus-observability-dev-we-app-insights'
+    default: arcus-observability-dev-we-app-insights
   - name: variableGroupName
     displayName: 'Variable group name'
-    default: 'Arcus Observability - Integration Testing'
+    default: Arcus Observability - Integration Testing
 
 variables:
   - template: ./variables/build.yml
