@@ -36,8 +36,10 @@ stages:
               inlineScript: |
                 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
                 Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
+                Import-Module Az.ApplicationInsights
 
                 $appInsightsOutput = az deployment sub create `
+                  --location westeurope `
                   --template-file ./build/templates/test-resources.json `
                   --parameters '{ \"location\": \"westeurope\", \"appInsightsName\": \"$($env:appInsightsName)" }' `
                   | ConvertFrom-Json
