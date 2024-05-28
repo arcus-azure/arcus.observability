@@ -30,6 +30,8 @@ stages:
           vmImage: '$(Vm.Image)'
         steps:
           - task: AzureCLI@2
+            env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
             inputs:
               azureSubscription: '${{ parameters.azureServiceConnection }}'
               scriptType: 'pscore'
@@ -48,7 +50,6 @@ stages:
                   | ConvertFrom-Json
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
-
                 if (az monitor app-insights api-key show `
                       --app ${{ parameters.appInsightsName }} `
                       --resource-group ${{ parameters.resourceGroupName }} `
