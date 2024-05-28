@@ -73,7 +73,7 @@ stages:
                 
                 az keyvault secret set `
                   --vault-name ${{ variables.keyVaultName }} `
-                  --name 'ApplicationInsights_ApiKey' `
+                  --name 'ApplicationInsights-ApiKey' `
                   --value $apiKeyOutput.apiKey `
 
                 $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs
