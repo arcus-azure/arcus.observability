@@ -48,8 +48,8 @@ stages:
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
-                  --parameters appInsightsName=${{ parameters.appInsightsName }}
-                  --parameters keyVaultName=${{ variables.keyVaultName }}`
+                  --parameters appInsightsName=${{ parameters.appInsightsName }} `
+                  --parameters keyVaultName=${{ variables.keyVaultName }} `
                   | ConvertFrom-Json
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
