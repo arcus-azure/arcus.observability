@@ -19,6 +19,8 @@ parameters:
     default: Arcus Observability - Integration Testing
 
 variables:
+  - name: keyVaultName
+    value: 'arcus-observability-dev-we-kv'
   - template: ./variables/build.yml
 
 stages:
@@ -46,7 +48,8 @@ stages:
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
-                  --parameters appInsightsName=${{ parameters.appInsightsName }} `
+                  --parameters appInsightsName=${{ parameters.appInsightsName }}
+                  --parameters keyVaultName=${{ variables.keyVaultName }}`
                   | ConvertFrom-Json
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
@@ -67,7 +70,11 @@ stages:
                   --resource-group ${{ parameters.resourceGroupName }} `
                   --read-properties ReadTelemetry `
                   | ConvertFrom-Json
-                $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.apiKey
+                
+                az keyvault secret set `
+                  --vault-name ${{ variables.keyVaultName }} `
+                  --name 'ApplicationInsights_ApiKey' `
+                  --value $apiKeyOutput.apiKey `
 
                 $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs
                 Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'

@@ -7,6 +7,9 @@ param resourceGroupName string
 // Define the name of the Application Insights component.
 param appInsightsName string
 
+// Define the name of the Key Vault.
+param keyVaultName string
+
 targetScope='subscription'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -33,6 +36,20 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
   }
 }
 
+module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
+  name: 'vaultDeployment'
+  scope: resourceGroup
+  params: {
+    name: keyVaultName
+    location: location
+    secrets: [
+      {
+        name: 'ApplicationInsights_ConnectionString'
+        value: component.outputs.connectionString
+      }
+    ]
+  }
+}
+
 output ApplicationInsights_WorkspaceId string = workspace.outputs.resourceId
 output ApplicationInsights_ApplicationId string = component.outputs.applicationId
-output ApplicationInsights_ConnectionString string = component.outputs.connectionString
