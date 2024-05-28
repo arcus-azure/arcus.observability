@@ -49,14 +49,17 @@ stages:
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
 
-                if (az monitor app-insights api-key show --app ${{ parameters.appInsightsName }} --resource-group ${{ parameters.resourceGroupName }} --api-key $apiKeyName) {
+                if (az monitor app-insights api-key show `
+                      --app ${{ parameters.appInsightsName }} `
+                      --resource-group ${{ parameters.resourceGroupName }} `
+                      --api-key $apiKeyName) {
                   az monitor app-insights api-key delete `
                   --api-key $apiKeyName `
                   --app ${{ parameters.appInsightsName }} `
                   --resource-group ${{ parameters.resourceGroupName }} `
                   --yes
                 }
-                
+
                 $apiKeyOutput = az monitor app-insights api-key create `
                   --api-key $apiKeyName `
                   --app ${{ parameters.appInsightsName }} `
@@ -64,7 +67,6 @@ stages:
                   --read-properties ReadTelemetry `
                   | ConvertFrom-Json
                 $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.apiKey
-                Write-Host $appInsightsOutput
 
-                $env:ArmOutputs = ConvertTo-Json $appInsightsOutput
+                $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs
                 Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'
