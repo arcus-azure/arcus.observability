@@ -33,5 +33,6 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
   }
 }
 
+output ApplicationInsights_WorkspaceId string = workspace.outputs.resourceId
 output ApplicationInsights_ApplicationId string = component.outputs.applicationId
 output ApplicationInsights_ConnectionString string = component.outputs.connectionString
