@@ -48,12 +48,15 @@ stages:
                   | ConvertFrom-Json
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
-                az monitor app-insights api-key delete `
+
+                if (az monitor app-insights api-key show --app ${{ parameters.appInsightsName }} --resource-group ${{ parameters.resourceGroupName }} --api-key $apiKeyName) {
+                  az monitor app-insights api-key delete `
                   --api-key $apiKeyName `
                   --app ${{ parameters.appInsightsName }} `
                   --resource-group ${{ parameters.resourceGroupName }} `
-                  --yes -ErrorAction SilentlyContinue
-
+                  --yes
+                }
+                
                 $apiKeyOutput = az monitor app-insights api-key create `
                   --api-key $apiKeyName `
                   --app ${{ parameters.appInsightsName }} `
