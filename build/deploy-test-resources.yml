@@ -20,7 +20,7 @@ parameters:
 
 variables:
   - name: keyVaultName
-    value: 'arcus-observability-dev-we-kv'
+    value: 'arcus-observability-kv'
   - template: ./variables/build.yml
 
 stages:
