@@ -1,13 +1,16 @@
 // Define the location for the deployment of the components.
 param location string
 
+// Define the name of the resource group where the components will be deployed.
+param resourceGroupName string
+
 // Define the name of the Application Insights component.
 param appInsightsName string
 
 targetScope='subscription'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: 'arcus-observability-dev-we-rg'
+  name: resourceGroupName
   location: location
 }
 

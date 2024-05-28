@@ -10,7 +10,7 @@ parameters:
     default: 'Azure Codit-Arcus Service Principal'
   - name: resourceGroupName
     displayName: 'Resource group name'
-    default: codit-arcus-observability-rg
+    default: arcus-observability-dev-we-rg
   - name: appInsightsName
     displayName: 'Application Insights name'
     default: arcus-observability-dev-we-app-insights
@@ -43,6 +43,7 @@ stages:
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
+                  --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   | ConvertFrom-Json
 
