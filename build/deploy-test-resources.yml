@@ -47,9 +47,8 @@ stages:
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   | ConvertFrom-Json
 
-                az monitor app-insights api-key create --api-key 'Arcus Observability Integration Tests API Key' --app ${{ parameters.appInsightsName }} --resource-group ${{ parameters.resourceGroupName }} --read-properties ReadTelemetry
-                
-                #$appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value $apiKeyOutput.ApiKey
+                $apiKeyOutput = az monitor app-insights api-key create --api-key 'Arcus Observability Integration Tests API Key' --app ${{ parameters.appInsightsName }} --resource-group ${{ parameters.resourceGroupName }} --read-properties ReadTelemetry
+                $appInsightsOutput.properties.outputs | Add-Member -Type NoteProperty -Name 'ApplicationInsights_ApiKey' -Value (ConvertFrom-Json $apiKeyOutput).ApiKey
 
-                $env:ArmOutputs = $appInsightsOutput
+                $env:ArmOutputs = ConvertTo-Json $appInsightsOutput
                 Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'
