@@ -20,12 +20,6 @@ module resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
   params: {
     name: resourceGroupName
     location: location
-    roleAssignments: [
-      {
-        principalId: servicePrincipalId
-        roleDefinitionIdOrName: 'Owner'
-      }
-    ]
   }
 }
 
@@ -61,7 +55,7 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     roleAssignments: [
       {
         principalId: servicePrincipalId
-        roleDefinitionIdOrName: 'Key Vault Secrets Contributor'
+        roleDefinitionIdOrName: 'Key Vault Secrets officer'
       }
     ]
     secrets: [
