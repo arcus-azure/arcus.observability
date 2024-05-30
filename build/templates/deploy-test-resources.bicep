@@ -11,7 +11,7 @@ param appInsightsName string
 param keyVaultName string
 
 // Define the Service Principal ID that needs access full access to the deployed resource group.
-param servicePrincipalId string
+param servicePrincipal_objectId string
 
 targetScope='subscription'
 
@@ -54,7 +54,7 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     location: location
     roleAssignments: [
       {
-        principalId: servicePrincipalId
+        principalId: servicePrincipal_objectId
         roleDefinitionIdOrName: 'Key Vault Secrets officer'
       }
     ]
