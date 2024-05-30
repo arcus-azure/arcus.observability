@@ -52,7 +52,7 @@ stages:
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   --parameters keyVaultName=${{ variables.keyVaultName }} `
-                  --parameters servicePrincipalId=$env:servicePrincipalId `
+                  --parameters servicePrincipal_objectId=$objectId `
                   | ConvertFrom-Json
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
