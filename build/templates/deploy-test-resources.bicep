@@ -60,8 +60,8 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     ]
     secrets: [
       {
-        name: 'ApplicationInsights-ConnectionString'
-        value: component.outputs.connectionString
+        name: 'ApplicationInsights-InstrumentationKey'
+        value: component.outputs.instrumentationKey
       }
     ]
   }
