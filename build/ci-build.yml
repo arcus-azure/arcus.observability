@@ -119,23 +119,10 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
-            inputs:
-              packageType: 'sdk'
-              version: '$(DotNet.Sdk.PreviousVersion)'
-          - task: AzureKeyVault@2
-            displayName: 'Import secrets from Azure Key Vault'
-            inputs:
-              azureSubscription: '${{ parameters.azureServiceConnection }}'
-              KeyVaultName: '${{ parameters.keyVaultName }}'
-              SecretsFilter: '*'
-          - template: test/run-integration-tests.yml@templates
+          - template: test/run-self-contained-integration-tests.yml
             parameters:
-              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-              includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-              projectName: '$(Project).Tests.Integration'
-              category: 'Integration'
+              azureServiceConnection: '${{ parameters.azureServiceConnection }}'
+              keyVaultName: '${{ parameters.keyVaultName }}'
 
   - stage: DockerTests
     displayName: Docker Tests
@@ -152,11 +139,6 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
-            inputs:
-              packageType: 'sdk'
-              version: '$(DotNet.Sdk.PreviousVersion)'
           - template: templates/run-docker-integration-tests.yml
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'

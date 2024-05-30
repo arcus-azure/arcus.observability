@@ -6,6 +6,14 @@ pr: none
 parameters:
   - name: 'Package.Version'
     type: 'string'
+  - name: azureServiceConnection
+    displayName: 'Azure service connection'
+    type: string
+    default: 'Azure Codit-Arcus Service Principal'
+  - name: keyVaultName
+    displayName: 'Azure Key vault with integration test secrets'
+    type: string
+    default: 'arcus-observability-kv'
 
 resources:
   repositories:
@@ -93,17 +101,10 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
-            inputs:
-              packageType: 'sdk'
-              version: '$(DotNet.Sdk.PreviousVersion)'
-          - template: test/run-integration-tests.yml@templates
+          - template: test/run-self-contained-integration-tests.yml
             parameters:
-              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-              includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-              projectName: '$(Project).Tests.Integration'
-              category: 'Integration'
+              azureServiceConnection: '${{ parameters.azureServiceConnection }}'
+              keyVaultName: '${{ parameters.keyVaultName }}'
 
   - stage: DockerTests
     displayName: Docker Tests
@@ -120,11 +121,6 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
-            inputs:
-              packageType: 'sdk'
-              version: '$(DotNet.Sdk.PreviousVersion)'
           - template: templates/run-docker-integration-tests.yml
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'

@@ -1,0 +1,22 @@
+parameters:
+  azureServiceConnection: ''
+  keyVaultName: ''
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+    inputs:
+      packageType: 'sdk'
+      version: '$(DotNet.Sdk.PreviousVersion)'
+  - task: AzureKeyVault@2
+    displayName: 'Import secrets from Azure Key Vault'
+    inputs:
+      azureSubscription: '${{ parameters.azureServiceConnection }}'
+      KeyVaultName: '${{ parameters.keyVaultName }}'
+      SecretsFilter: '*'
+  - template: test/run-integration-tests.yml@templates
+    parameters:
+      dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+      includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+      projectName: '$(Project).Tests.Integration'
+      category: 'Integration'
