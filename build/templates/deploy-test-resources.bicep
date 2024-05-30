@@ -10,14 +10,22 @@ param appInsightsName string
 // Define the name of the Key Vault.
 param keyVaultName string
 
-// Define the Service Principal ID that needs access to the Key Vault.
+// Define the Service Principal ID that needs access full access to the deployed resource group.
 param servicePrincipalId string
 
 targetScope='subscription'
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
   name: resourceGroupName
-  location: location
+  params: {
+    location: location
+    roleAssignments: [
+      {
+        principalId: servicePrincipalId
+        roleDefinitionIdOrName: 'Owner'
+      }
+    ]
+  }
 }
 
 module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
