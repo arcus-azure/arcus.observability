@@ -67,5 +67,5 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
   }
 }
 
-output ApplicationInsights_WorkspaceId string = workspace.outputs.resourceId
+output ApplicationInsights_ResourceId string = component.outputs.resourceId
 output ApplicationInsights_ApplicationId string = component.outputs.applicationId
