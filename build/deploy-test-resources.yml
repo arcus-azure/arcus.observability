@@ -36,6 +36,7 @@ stages:
               SYSTEM_ACCESSTOKEN: $(System.AccessToken)
             inputs:
               azureSubscription: '${{ parameters.azureServiceConnection }}'
+              addSpnToEnvironment: true
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |

@@ -10,6 +10,9 @@ param appInsightsName string
 // Define the name of the Key Vault.
 param keyVaultName string
 
+// Define the Service Principal ID that needs access to the Key Vault.
+param servicePrincipalId string
+
 targetScope='subscription'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
@@ -42,6 +45,12 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
   params: {
     name: keyVaultName
     location: location
+    roleAssignments: [
+      {
+        principalId: servicePrincipalId
+        roleDefinitionIdOrName: 'Key Vault Secrets Contributor'
+      }
+    ]
     secrets: [
       {
         name: 'ApplicationInsights_ConnectionString'
