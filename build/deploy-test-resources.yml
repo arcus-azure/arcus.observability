@@ -44,7 +44,7 @@ stages:
                 Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
                 az extension add --name application-insights
 
-                $objectId = az ad sp show --id $env:servicePrincipalId --query objectId --output tsv
+                $objectId = (az ad sp show --id $env:servicePrincipalId | ConvertFrom-Json).id
                 $appInsightsOutput = az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
