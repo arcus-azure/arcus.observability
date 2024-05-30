@@ -101,7 +101,7 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - template: test/run-self-contained-integration-tests.yml
+          - template: templates/run-self-contained-integration-tests.yml
             parameters:
               azureServiceConnection: '${{ parameters.azureServiceConnection }}'
               keyVaultName: '${{ parameters.keyVaultName }}'
