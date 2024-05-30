@@ -15,9 +15,10 @@ param servicePrincipalId string
 
 targetScope='subscription'
 
-resource resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
-  name: resourceGroupName
+module resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
+  name: 'resourceGroupDeployment'
   params: {
+    name: resourceGroupName
     location: location
     roleAssignments: [
       {
@@ -28,9 +29,13 @@ resource resourceGroup 'br/public:avm/res/resources/resource-group:0.2.3' = {
   }
 }
 
+resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
+  name: resourceGroupName
+}
+
 module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
   name: 'workspaceDeployment'
-  scope: resourceGroup
+  scope: rg
   params: {
     name: 'arcus-observability-dev-we-workspace'
     location: location
@@ -39,7 +44,7 @@ module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
 
 module component 'br/public:avm/res/insights/component:0.3.0' = {
   name: 'componentDeployment'
-  scope: resourceGroup
+  scope: rg
   params: {
     name: appInsightsName
     workspaceResourceId: workspace.outputs.resourceId
@@ -49,7 +54,7 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
 
 module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
   name: 'vaultDeployment'
-  scope: resourceGroup
+  scope: rg
   params: {
     name: keyVaultName
     location: location
