@@ -1,2 +1,4 @@
 variables:
   AzureFunctions.HttpPort: 5000
+  ApplicationInsights.InstrumentationKeySecretName: ApplicationInsights-InstrumentationKey
+  ApplicationInsights.ApiKeySecretName: ApplicationInsights-ApiKey

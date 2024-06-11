@@ -7,6 +7,9 @@ param resourceGroupName string
 // Define the name of the Application Insights component.
 param appInsightsName string
 
+// Define the name of the secret that will store the Application Insights Instrumentation Key.
+param instrumentationKey_secretName string
+
 // Define the name of the Key Vault.
 param keyVaultName string
 
@@ -60,7 +63,7 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     ]
     secrets: [
       {
-        name: 'ApplicationInsights-InstrumentationKey'
+        name: instrumentationKey_secretName
         value: component.outputs.instrumentationKey
       }
     ]

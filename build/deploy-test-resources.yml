@@ -22,6 +22,7 @@ variables:
   - name: keyVaultName
     value: 'arcus-observability-kv'
   - template: ./variables/build.yml
+  - template: ./variables/test.yml
 
 stages:
   - stage: Deploy
@@ -51,6 +52,7 @@ stages:
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
+                  --parameters instrumentationKey_secretName=${{ variables.ApplicationInsights.InstrumentationKeySecretName }} `
                   --parameters keyVaultName=${{ variables.keyVaultName }} `
                   --parameters servicePrincipal_objectId=$objectId `
                   | ConvertFrom-Json
@@ -76,7 +78,7 @@ stages:
                 
                 az keyvault secret set `
                   --vault-name ${{ variables.keyVaultName }} `
-                  --name 'ApplicationInsights-ApiKey' `
+                  --name ${{ variables.ApplicationInsights.ApiKeySecretName }} `
                   --value $apiKeyOutput.apiKey `
 
                 $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs

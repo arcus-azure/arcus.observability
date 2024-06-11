@@ -8,12 +8,14 @@ steps:
     inputs:
       packageType: 'sdk'
       version: '$(DotNet.Sdk.PreviousVersion)'
-  - task: AzureKeyVault@2
+  - task: AzureCLI@2
     displayName: 'Import secrets from Azure Key Vault'
     inputs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
-      KeyVaultName: '${{ parameters.keyVaultName }}'
-      SecretsFilter: '*'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
