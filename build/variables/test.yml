@@ -1,4 +1,5 @@
 variables:
   AzureFunctions.HttpPort: 5000
+  KeyVault.Name: 'arcus-observability-kv'
   ApplicationInsights.InstrumentationKeySecretName: ApplicationInsights-InstrumentationKey
   ApplicationInsights.ApiKeySecretName: ApplicationInsights-ApiKey

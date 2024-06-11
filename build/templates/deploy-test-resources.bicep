@@ -32,6 +32,9 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
 
 module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
   name: 'workspaceDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
     name: 'arcus-observability-dev-we-workspace'
@@ -41,6 +44,9 @@ module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
 
 module component 'br/public:avm/res/insights/component:0.3.0' = {
   name: 'componentDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
     name: appInsightsName
@@ -51,6 +57,9 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
 
 module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
   name: 'vaultDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
     name: keyVaultName

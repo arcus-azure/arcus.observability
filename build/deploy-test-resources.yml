@@ -19,8 +19,6 @@ parameters:
     default: Arcus Observability - Integration Testing
 
 variables:
-  - name: keyVaultName
-    value: 'arcus-observability-kv'
   - template: ./variables/build.yml
   - template: ./variables/test.yml
 
@@ -53,7 +51,7 @@ stages:
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters appInsightsName=${{ parameters.appInsightsName }} `
                   --parameters instrumentationKey_secretName=${{ variables.ApplicationInsights.InstrumentationKeySecretName }} `
-                  --parameters keyVaultName=${{ variables.keyVaultName }} `
+                  --parameters keyVaultName=${{ variables.KeyVault.Name }} `
                   --parameters servicePrincipal_objectId=$objectId `
                   | ConvertFrom-Json
 
@@ -77,7 +75,7 @@ stages:
                   | ConvertFrom-Json
                 
                 az keyvault secret set `
-                  --vault-name ${{ variables.keyVaultName }} `
+                  --vault-name ${{ variables.KeyVault.Name }} `
                   --name ${{ variables.ApplicationInsights.ApiKeySecretName }} `
                   --value $apiKeyOutput.apiKey `
 
