@@ -29,7 +29,7 @@ steps:
       includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
   - template: import-keyvault-secrets.yml
     parameters:
-      azureServiceConnection: '$(azureServiceConnection)'
+      azureServiceConnection: '${{ parameters.azureServiceConnection }}'
   - task: Docker@1
     displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
     inputs:

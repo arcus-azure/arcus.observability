@@ -9,7 +9,7 @@ steps:
       version: '$(DotNet.Sdk.PreviousVersion)'
   - template: import-keyvault-secrets.yml
     parameters:
-      azureServiceConnection: '$(azureServiceConnection)'
+      azureServiceConnection: '${{ parameters.azureServiceConnection }}'
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
