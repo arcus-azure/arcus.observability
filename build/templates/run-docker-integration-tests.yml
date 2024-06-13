@@ -1,6 +1,7 @@
 parameters:
   dockerProjectName: ''
   httpPort: ''
+  azureServiceConnection: ''
 
 steps:
   - bash: |
@@ -26,6 +27,9 @@ steps:
       packageType: 'sdk'
       version: '$(DotNet.Sdk.Version)'
       includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+  - template: templates/import-keyvault-secrets.yml
+    parameters:
+      azureServiceConnection: '$(azureServiceConnection)'
   - task: Docker@1
     displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
     inputs:
@@ -41,7 +45,7 @@ steps:
       containerName: '${{ parameters.dockerProjectName }}'
       ports: '${{ parameters.httpPort }}:80'
       envVars: |
-        APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
+        APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights_InstrumentationKey)
         AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
   - template: test/run-integration-tests.yml@templates
     parameters:

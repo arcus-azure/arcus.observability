@@ -122,7 +122,6 @@ stages:
           - template: templates/run-self-contained-integration-tests.yml
             parameters:
               azureServiceConnection: '${{ parameters.azureServiceConnection }}'
-              keyVaultName: '${{ parameters.keyVaultName }}'
 
   - stage: DockerTests
     displayName: Docker Tests
