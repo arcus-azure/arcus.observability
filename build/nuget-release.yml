@@ -104,7 +104,6 @@ stages:
           - template: templates/run-self-contained-integration-tests.yml
             parameters:
               azureServiceConnection: '${{ parameters.azureServiceConnection }}'
-              keyVaultName: '${{ parameters.keyVaultName }}'
 
   - stage: DockerTests
     displayName: Docker Tests
@@ -125,6 +124,7 @@ stages:
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
               httpPort: '$(AzureFunctions.HttpPort)'
+              azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
   - stage: Release
     displayName: 'Release to NuGet.org'
