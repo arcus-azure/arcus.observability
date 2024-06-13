@@ -25,6 +25,9 @@ steps:
         $apiKeySecret = az keyvault secret show --name $env:APPINSIGHTS_APIKEY_SECRETNAME --vault-name $vaultName | ConvertFrom-Json
         $instrumentationKeySecret = az keyvault secret show --name $env:APPINSIGHTS_INSTRUMENTATIONKEY_SECRETNAME --vault-name $vaultName | ConvertFrom-Json
 
+        Write-Host "Set Application Insights API key as secret $apiKeySecret"
+        Write-Host "Set Application Insights Instrumentation key as secret $instrumentationKeySecret"
+
         Set-AzDevOpsVariable 'ApplicationInsights_InstrumentationKey' -Value $instrumentationKeySecret.value -AsSecret
         Set-AzDevOpsVariable 'ApplicationInsights_ApiKey' -Value $apiKeySecret.value -AsSecret
   - template: test/run-integration-tests.yml@templates
