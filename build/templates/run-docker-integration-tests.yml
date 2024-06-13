@@ -27,7 +27,7 @@ steps:
       packageType: 'sdk'
       version: '$(DotNet.Sdk.Version)'
       includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-  - template: templates/import-keyvault-secrets.yml
+  - template: import-keyvault-secrets.yml
     parameters:
       azureServiceConnection: '$(azureServiceConnection)'
   - task: Docker@1

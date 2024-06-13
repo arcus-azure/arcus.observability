@@ -7,7 +7,7 @@ steps:
     inputs:
       packageType: 'sdk'
       version: '$(DotNet.Sdk.PreviousVersion)'
-  - template: templates/import-keyvault-secrets.yml
+  - template: import-keyvault-secrets.yml
     parameters:
       azureServiceConnection: '$(azureServiceConnection)'
   - template: test/run-integration-tests.yml@templates
