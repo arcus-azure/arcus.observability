@@ -142,6 +142,7 @@ stages:
             parameters:
               dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
               httpPort: '$(AzureFunctions.HttpPort)'
+              azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
   - stage: ReleaseToMyget
     displayName: 'Release to MyGet'
