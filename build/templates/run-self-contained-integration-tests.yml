@@ -10,12 +10,23 @@ steps:
       version: '$(DotNet.Sdk.PreviousVersion)'
   - task: AzureCLI@2
     displayName: 'Import secrets from Azure Key Vault'
+    env:
+      APPINSIGHTS_INSTRUMENTATIONKEY_SECRETNAME: $(ApplicationInsights.InstrumentationKeySecretName)
+      APPINSIGHTS_APIKEY_SECRETNAME: $(ApplicationInsights.ApiKeySecretName)
     inputs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
       inlineScript: |
-        
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
+
+        $vaultName = 'arcus-observability-kv'
+        $apiKeySecret = az keyvault secret show --name $env:APPINSIGHTS_APIKEY_SECRETNAME --vault-name $vaultName | ConvertFrom-Json
+        $instrumentationKeySecret = az keyvault secret show --name $env:APPINSIGHTS_INSTRUMENTATIONKEY_SECRETNAME --vault-name $vaultName | ConvertFrom-Json
+
+        Set-AzDevOpsVariable 'ApplicationInsights_InstrumentationKey' -Value $instrumentationKeySecret.value -AsSecret
+        Set-AzDevOpsVariable 'ApplicationInsights_ApiKey' -Value $apiKeySecret.value -AsSecret
   - template: test/run-integration-tests.yml@templates
     parameters:
       dotnetSdkVersion: '$(DotNet.Sdk.Version)'
