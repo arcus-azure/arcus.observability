@@ -11,9 +11,6 @@ parameters:
   - name: resourceGroupName
     displayName: 'Resource group name'
     default: arcus-observability-dev-we-rg
-  - name: appInsightsName
-    displayName: 'Application Insights name'
-    default: arcus-observability-dev-we-app-insights
   - name: variableGroupName
     displayName: 'Variable group name'
     default: Arcus Observability - Integration Testing
@@ -49,7 +46,7 @@ stages:
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
-                  --parameters appInsightsName=${{ parameters.appInsightsName }} `
+                  --parameters appInsightsName=${{ variables['ApplicationInsights.Name'] }} `
                   --parameters instrumentationKey_secretName=${{ variables.ApplicationInsights.InstrumentationKeySecretName }} `
                   --parameters keyVaultName=${{ variables['KeyVault.Name'] }} `
                   --parameters servicePrincipal_objectId=$objectId `
@@ -57,19 +54,19 @@ stages:
 
                 $apiKeyName = 'Arcus Observability Integration Tests API Key'
                 if (az monitor app-insights api-key show `
-                      --app ${{ parameters.appInsightsName }} `
+                      --app ${{ variables['ApplicationInsights.Name'] }} `
                       --resource-group ${{ parameters.resourceGroupName }} `
                       --api-key $apiKeyName) {
                   az monitor app-insights api-key delete `
                   --api-key $apiKeyName `
-                  --app ${{ parameters.appInsightsName }} `
+                  --app ${{ variables['ApplicationInsights.Name'] }} `
                   --resource-group ${{ parameters.resourceGroupName }} `
                   --yes
                 }
 
                 $apiKeyOutput = az monitor app-insights api-key create `
                   --api-key $apiKeyName `
-                  --app ${{ parameters.appInsightsName }} `
+                  --app ${{ variables['ApplicationInsights.Name'] }} `
                   --resource-group ${{ parameters.resourceGroupName }} `
                   --read-properties ReadTelemetry `
                   | ConvertFrom-Json
