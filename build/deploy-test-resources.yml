@@ -71,4 +71,4 @@ stages:
                 az keyvault secret set `
                   --vault-name ${{ variables['KeyVault.Name'] }} `
                   --name ${{ variables['ApplicationInsights.ApiKey.SecretName'] }} `
-                  --value $apiKeyOutput.apiKey `
+                  --value $apiKeyOutput.apiKey
