@@ -1,0 +1,23 @@
+jobs:
+  - job: UnitTests
+    displayName: 'Run unit tests'
+    pool:
+      vmImage: '$(Vm.Image)'
+    steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download build artifacts'
+        inputs:
+          artifact: 'Build'
+          path: '$(Build.SourcesDirectory)'
+
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.PreviousVersion)'
+
+      - template: test/run-unit-tests.yml@templates
+        parameters:
+          dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+          projectName: '$(Project).Tests.Unit'
