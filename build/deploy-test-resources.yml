@@ -11,9 +11,6 @@ parameters:
   - name: resourceGroupName
     displayName: 'Resource group name'
     default: arcus-observability-dev-we-rg
-  - name: variableGroupName
-    displayName: 'Variable group name'
-    default: Arcus Observability - Integration Testing
 
 variables:
   - template: ./variables/build.yml
@@ -41,13 +38,13 @@ stages:
                 az extension add --name application-insights
 
                 $objectId = (az ad sp show --id $env:servicePrincipalId | ConvertFrom-Json).id
-                $appInsightsOutput = az deployment sub create `
+                az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters appInsightsName=${{ variables['ApplicationInsights.Name'] }} `
-                  --parameters instrumentationKey_secretName=${{ variables.ApplicationInsights.InstrumentationKeySecretName }} `
+                  --parameters instrumentationKey_secretName=${{ variables['ApplicationInsights.InstrumentationKey.SecretName'] }} `
                   --parameters keyVaultName=${{ variables['KeyVault.Name'] }} `
                   --parameters servicePrincipal_objectId=$objectId `
                   | ConvertFrom-Json
@@ -73,8 +70,5 @@ stages:
                 
                 az keyvault secret set `
                   --vault-name ${{ variables['KeyVault.Name'] }} `
-                  --name ${{ variables['ApplicationInsights.ApiKeySecretName'] }} `
+                  --name ${{ variables['ApplicationInsights.ApiKey.SecretName'] }} `
                   --value $apiKeyOutput.apiKey `
-
-                $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs
-                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'
