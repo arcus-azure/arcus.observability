@@ -55,6 +55,12 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
     name: appInsightsName
     workspaceResourceId: workspace.outputs.resourceId
     location: location
+    roleAssignments: [
+      {
+        principalId: servicePrincipal_objectId
+        roleDefinitionIdOrName: 'Log Analytics Contributor'
+      }
+    ]
   }
 }
 
