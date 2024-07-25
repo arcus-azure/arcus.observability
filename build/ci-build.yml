@@ -22,10 +22,6 @@ parameters:
     displayName: 'Azure service connection'
     type: string
     default: 'Azure Codit-Arcus Service Principal'
-  - name: keyVaultName
-    displayName: 'Azure Key vault with integration test secrets'
-    type: string
-    default: 'arcus-observability-kv'
 
 resources:
   repositories:
