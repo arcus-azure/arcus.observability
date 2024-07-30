@@ -41,5 +41,5 @@ stages:
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters instrumentationKey_secretName=${{ variables['Arcus.ApplicationInsights.InstrumentationKey.SecretName'] }} `
                   --parameters resourceId_secretName=${{ variables['Arcus.LogAnalyticsWorkspace.ResourceId.SecretName'] }} `
-                  --parameters keyVaultName=${{ variables['KeyVault.Name'] }} `
+                  --parameters keyVaultName=${{ variables['Arcus.KeyVault.Name'] }} `
                   --parameters servicePrincipal_objectId=$objectId
