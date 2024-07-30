@@ -55,7 +55,7 @@ module component 'br/public:avm/res/insights/component:0.3.0' = {
     roleAssignments: [
       {
         principalId: servicePrincipal_objectId
-        roleDefinitionIdOrName: 'Log Analytics Contributor'
+        roleDefinitionIdOrName: '73c42c96-874c-492b-b04d-ab87d138a893'
       }
     ]
   }
