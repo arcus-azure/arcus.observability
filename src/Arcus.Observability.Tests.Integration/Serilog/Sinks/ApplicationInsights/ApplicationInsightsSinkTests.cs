@@ -3,50 +3,56 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
-using Arcus.Observability.Tests.Core;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
+using Arcus.Testing;
 using Bogus;
 using GuardNet;
-using Microsoft.Azure.ApplicationInsights.Query;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Timeout;
 using Serilog;
+using Serilog.Configuration;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using InMemoryLogSink = Arcus.Observability.Tests.Core.InMemoryLogSink;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
+    public enum TestLocation { Local, Remote }
+
     [Trait(name: "Category", value: "Integration")]
     public class ApplicationInsightsSinkTests : IntegrationTest
     {
+        private readonly ITestOutputHelper _testOutput;
         private readonly InMemoryLogSink _memoryLogSink;
+        private readonly InMemoryApplicationInsightsTelemetryConverter _telemetrySink;
+
 
         /// <summary>
         /// Gets the test generator to create bogus content during the integration test.
         /// </summary>
-        protected static readonly Faker BogusGenerator = new Faker();
+        protected static readonly Faker BogusGenerator = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInsightsSinkTests"/> class.
         /// </summary>
-        public ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
+        protected ApplicationInsightsSinkTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
             _memoryLogSink = new InMemoryLogSink();
 
-            TestOutput = outputWriter;
+            _testOutput = outputWriter;
             ApplicationInsightsSinkOptions = new ApplicationInsightsSinkOptions();
             LoggerConfiguration = new LoggerConfiguration();
             InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
             ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
+            _telemetrySink = new InMemoryApplicationInsightsTelemetryConverter();
         }
 
         /// <summary>
-        /// Gets the to write information to the test output.
+        /// Gets or sets the test location to determine where the telemetry should be logged to.
         /// </summary>
-        protected ITestOutputHelper TestOutput { get; }
+        protected TestLocation TestLocation { get; set; }
 
         /// <summary>
         /// Gets the instrumentation key to connect to the Azure Application Insights instance.
@@ -75,11 +81,34 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             get
             {
+                ApplicationInsightsSinkOptions userOptions = ApplicationInsightsSinkOptions;
+                _telemetrySink.Options = userOptions;
+
                 LoggerConfiguration
                     .MinimumLevel.Verbose()
-                    .WriteTo.Sink(new XunitLogEventSink(TestOutput))
-                    .WriteTo.ApplicationInsights("InstrumentationKey=" + InstrumentationKey, ApplicationInsightsTelemetryConverter.Create(ApplicationInsightsSinkOptions))
+                    .WriteTo.Sink(new XunitLogEventSink(_testOutput))
                     .WriteTo.Sink(_memoryLogSink);
+
+                switch (TestLocation)
+                {
+                    case TestLocation.Local:
+                        LoggerConfiguration.WriteTo.ApplicationInsights(_telemetrySink);
+                        break;
+
+                    case TestLocation.Remote:
+                        LoggerConfiguration.WriteTo.AzureApplicationInsightsWithConnectionString("InstrumentationKey=" + InstrumentationKey, options =>
+                        {
+                            options.Correlation.OperationIdPropertyName = userOptions.Correlation.OperationIdPropertyName;
+                            options.Correlation.OperationParentIdPropertyName = userOptions.Correlation.OperationParentIdPropertyName;
+                            options.Correlation.TransactionIdPropertyName = userOptions.Correlation.TransactionIdPropertyName;
+
+                            options.Exception.IncludeProperties = userOptions.Exception.IncludeProperties;
+                            options.Exception.PropertyFormat = userOptions.Exception.PropertyFormat;
+
+                            options.Request.GenerateId = userOptions.Request.GenerateId;
+                        });
+                        break;
+                }
 
                 ILogger logger = CreateLogger(LoggerConfiguration);
                 return logger;
@@ -100,6 +129,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             Guard.NotNull(config, nameof(config), "Requires a Serilog logger configuration instance to setup the test logger used during the test");
 
+            _telemetrySink.Options = ApplicationInsightsSinkOptions;
+            config.WriteTo.ApplicationInsights(_telemetrySink);
+
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(config.CreateLogger(), dispose: true));
             ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
 
@@ -113,7 +145,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         protected Dictionary<string, object> CreateTestTelemetryContext([CallerMemberName] string memberName = "")
         {
             var testId = Guid.NewGuid();
-            TestOutput.WriteLine("Testing '{0}' using {1}", memberName, testId);
+            _testOutput.WriteLine("Testing '{0}' using {1}", memberName, testId);
 
             return new Dictionary<string, object>
             {
@@ -127,65 +159,35 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// </summary>
         /// <param name="assertion">The assertion function that takes in an Application Insights client which provides access to the available telemetry.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assertion"/> is <c>null</c>.</exception>
-        /// <exception cref="TimeoutRejectedException">Thrown when the <paramref name="assertion"/> failed to be verified within the configured timeout.</exception>
-        protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ApplicationInsightsClient, Task> assertion)
+        /// <exception cref="TimeoutException">Thrown when the <paramref name="assertion"/> failed to be verified within the configured timeout.</exception>
+        protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ITelemetryQueryClient, Task> assertion)
         {
-            Guard.NotNull(assertion, nameof(assertion), "Requires an assertion function to correctly verify if the logged telemetry is tracked in Application Insights");
+            Guard.NotNull(assertion, nameof(assertion));
 
-            using (ApplicationInsightsDataClient dataClient = CreateApplicationInsightsClient())
+            if (TestLocation is TestLocation.Remote)
             {
-                await RetryAssertUntilTelemetryShouldBeAvailableAsync(async () =>
-                {
-                    var client = new ApplicationInsightsClient(dataClient, ApplicationId);
-                    await assertion(client);
-                }, timeout: TimeSpan.FromMinutes(8)); 
+                var client = new AppInsightsClient(Configuration);
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(
+                    async () => await assertion(client),
+                    timeout: TimeSpan.FromMinutes(5));
+            }
+            else if (TestLocation is TestLocation.Local)
+            {
+                var client = new InMemoryTelemetryQueryClient(_telemetrySink);
+                await RetryAssertUntilTelemetryShouldBeAvailableAsync(
+                    async () => await assertion(client),
+                    TimeSpan.FromSeconds(5));
             }
         }
 
-        private ApplicationInsightsDataClient CreateApplicationInsightsClient()
+        private async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
         {
-            var clientCredentials = new ApiKeyClientCredentials(Configuration.GetValue<string>("ApplicationInsights:ApiKey"));
-            var client = new ApplicationInsightsDataClient(clientCredentials);
-
-            return client;
-        }
-
-        private static async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<Task> assertion, TimeSpan timeout)
-        {
-            Exception lastException = null;
-            PolicyResult result =
-                await Policy.TimeoutAsync(timeout)
-                            .WrapAsync(Policy.Handle<Exception>()
-                                             .WaitAndRetryForeverAsync(index => TimeSpan.FromSeconds(1)))
-                            .ExecuteAndCaptureAsync(async () =>
-                            {
-                                try
-                                {
-                                    await assertion();
-                                }
-                                catch (Exception exception)
-                                {
-                                    lastException = exception;
-                                    throw;
-                                }
-                            });
-
-            if (result.Outcome is OutcomeType.Failure)
+            await Poll.UntilAvailableAsync<XunitException>(assertion, options =>
             {
-                if (result.FinalException is TimeoutRejectedException
-                    && result.FinalException.InnerException != null
-                    && result.FinalException.InnerException is not TaskCanceledException)
-                {
-                    throw result.FinalException.InnerException;
-                }
-
-                if (lastException != null)
-                {
-                    throw lastException;
-                }
-
-                throw result.FinalException;
-            }
+                options.Interval = TimeSpan.FromSeconds(1);
+                options.Timeout = timeout;
+                options.FailureMessage = $"({TestLocation}) Telemetry should be available in Application Insights but it wasn't within the given timeout";
+            });
         }
     }
 }

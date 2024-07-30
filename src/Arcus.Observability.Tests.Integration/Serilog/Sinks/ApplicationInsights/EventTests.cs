@@ -5,7 +5,7 @@ using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Tests.Core;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
@@ -32,8 +32,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsCustomEventResult[] results = await client.GetEventsAsync();
-                Assert.Contains(results, result => result.CustomEvent.Name == eventName);
+                CustomEventResult[] results = await client.GetCustomEventsAsync();
+                AssertX.Any(results, ev =>
+                {
+                    Assert.Equal(eventName, ev.Name);
+                });
             });
         }
 
@@ -51,8 +54,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] results = await client.GetTracesAsync();
-                Assert.Contains(results, result => result.Trace.Message == message && result.Cloud.RoleName == componentName);
+                TraceResult[] results = await client.GetTracesAsync();
+                AssertX.Any(results, trace =>
+                {
+                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(componentName, trace.RoleName);
+                });
             });
         }
 
@@ -62,6 +69,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             var eventName = "Update version";
             LoggerConfiguration.Enrich.WithVersion();
+            TestLocation = TestLocation.Remote;
 
             // Act
             Logger.LogCustomEvent(eventName);
@@ -69,12 +77,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsCustomEventResult[] events = await client.GetEventsAsync();
-                Assert.Contains(events, ev =>
+                CustomEventResult[] events = await client.GetCustomEventsAsync();
+                AssertX.Any(events, ev =>
                 {
-                    return ev.CustomEvent.Name == eventName
-                           && ev.CustomDimensions.TryGetValue(VersionEnricher.DefaultPropertyName, out string actualVersion)
-                           && !String.IsNullOrWhiteSpace(actualVersion);
+                    Assert.Equal(eventName, ev.Name);
+                    string actualVersion = Assert.Contains(VersionEnricher.DefaultPropertyName, ev.CustomDimensions);
+                    Assert.False(string.IsNullOrWhiteSpace(actualVersion), "enriched event version should not be blank");
                 });
             });
         }
@@ -98,19 +106,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] traceEvents = await client.GetTracesAsync();
+                TraceResult[] traceEvents = await client.GetTracesAsync();
                 AssertX.Any(traceEvents, trace =>
                 {
-                    Assert.Equal(message, trace.Trace.Message);
-                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationId, out string actualOperationId), "Requires a operation ID in the custom dimensions");
-                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.TransactionId, out string actualTransactionId), "Requires a transaction ID in the custom dimensions");
-                    Assert.True(trace.CustomDimensions.TryGetValue(ContextProperties.Correlation.OperationParentId, out string actualOperationParentId), "Requires a operation parent ID in the custom dimensions");
+                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(operationId, Assert.Contains(ContextProperties.Correlation.OperationId, trace.CustomDimensions));
+                    Assert.Equal(transactionId, Assert.Contains(ContextProperties.Correlation.TransactionId, trace.CustomDimensions));
+                    Assert.Equal(operationParentId, Assert.Contains(ContextProperties.Correlation.OperationParentId, trace.CustomDimensions));
 
-                        Assert.Equal(operationId, actualOperationId);
-                        Assert.Equal(transactionId, actualTransactionId);
-                        Assert.Equal(operationParentId, actualOperationParentId);
-                        Assert.Equal(transactionId, trace.Operation.Id);
-                        Assert.Equal(operationId, trace.Operation.ParentId);
+                    Assert.Equal(transactionId, trace.Operation.Id);
+                    Assert.Equal(operationId, trace.Operation.ParentId);
                 });
             });
         }
@@ -137,16 +142,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] traceEvents = await client.GetTracesAsync();
-                Assert.Contains(traceEvents, trace =>
+                TraceResult[] traceEvents = await client.GetTracesAsync();
+                AssertX.Any(traceEvents, trace =>
                 {
-                    return message == trace.Trace.Message
-                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.NodeName, out string actualNodeName)
-                           && nodeName == actualNodeName
-                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.PodName, out string actualPodName)
-                           && podName == actualPodName
-                           && trace.CustomDimensions.TryGetValue(ContextProperties.Kubernetes.Namespace, out string actualNamespace)
-                           && @namespace == actualNamespace;
+                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(nodeName, Assert.Contains(ContextProperties.Kubernetes.NodeName, trace.CustomDimensions));
+                    Assert.Equal(podName, Assert.Contains(ContextProperties.Kubernetes.PodName, trace.CustomDimensions));
+                    Assert.Equal(@namespace, Assert.Contains(ContextProperties.Kubernetes.Namespace, trace.CustomDimensions));
                 });
             });
         }

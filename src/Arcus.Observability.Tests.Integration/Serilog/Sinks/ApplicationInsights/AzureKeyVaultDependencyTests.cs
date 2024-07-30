@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,14 +37,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
-                    Assert.Equal(vaultUri, result.Dependency.Target);
-                    Assert.Equal(secretName, result.Dependency.Data);
-                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyType, result.Type);
+                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(vaultUri, result.Target);
+                    Assert.Equal(secretName, result.Data);
+                    Assert.Equal(dependencyName, result.Name);
                 });
             });
         }

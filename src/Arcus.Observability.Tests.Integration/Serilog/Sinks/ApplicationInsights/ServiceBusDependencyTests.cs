@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
@@ -44,13 +44,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Contains(entityName, result.Dependency.Target);
-                    Assert.Equal(dependencyName, result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(dependencyType, result.Type);
+                    Assert.Contains(entityName, result.Target);
+                    Assert.Equal(dependencyName, result.Name);
+                    Assert.Equal(dependencyId, result.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);
@@ -83,13 +83,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Contains(entityName, result.Dependency.Target);
-                    Assert.Equal(dependencyName, result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(dependencyType, result.Type);
+                    Assert.Contains(entityName, result.Target);
+                    Assert.Equal(dependencyName, result.Name);
+                    Assert.Equal(dependencyId, result.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);
@@ -97,7 +97,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-        private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
+        private static void AssertContainsCustomDimension(IDictionary<string, string> customDimensions, string key, string expected)
         {
             Assert.True(customDimensions.TryGetValue(key, out string actual), $"Cannot find {key} in custom dimensions: {String.Join(", ", customDimensions.Keys)}");
             Assert.Equal(expected, actual);

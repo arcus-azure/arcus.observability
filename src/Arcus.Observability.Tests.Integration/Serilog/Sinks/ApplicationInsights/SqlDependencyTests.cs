@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,14 +37,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
-                    Assert.Contains(operationName, result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(dependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(serverName, result.Target);
+                    Assert.Contains(databaseName, result.Name);
+                    Assert.Contains(operationName, result.Name);
+                    Assert.Equal(dependencyId, result.Id);
                 });
             });
         }
@@ -73,14 +73,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
-                    Assert.Contains(operationName, result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(dependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(serverName, result.Target);
+                    Assert.Contains(databaseName, result.Name);
+                    Assert.Contains(operationName, result.Name);
+                    Assert.Equal(dependencyId, result.Id);
                 });
             });
         }

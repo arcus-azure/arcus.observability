@@ -22,10 +22,6 @@ parameters:
     displayName: 'Azure service connection'
     type: string
     default: 'Azure Codit-Arcus Service Principal'
-  - name: keyVaultName
-    displayName: 'Azure Key vault with integration test secrets'
-    type: string
-    default: 'arcus-observability-kv'
 
 resources:
   repositories:
@@ -35,7 +31,6 @@ resources:
       endpoint: arcus-azure
 
 variables:
-  - group: 'Arcus Observability - Integration Testing'
   - group: 'Arcus - GitHub Package Registry'
   - group: 'Build Configuration'
   - template: ./variables/build.yml
@@ -83,66 +78,27 @@ stages:
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - job: UnitTests
-        displayName: 'Run unit tests'
-        pool:
-          vmImage: '$(Vm.Image)'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download build artifacts'
-            inputs:
-              artifact: 'Build'
-              path: '$(Build.SourcesDirectory)'
-          - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
-            inputs:
-              packageType: 'sdk'
-              version: '$(DotNet.Sdk.PreviousVersion)'
-          - template: test/run-unit-tests.yml@templates
-            parameters:
-              dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-              includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-              projectName: '$(Project).Tests.Unit'
+      - template: templates/run-unit-tests.yml
 
   - stage: IntegrationTests
     displayName: Integration Tests
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - job: IntegrationTests
-        displayName: 'Run integration tests'
-        pool:
-          vmImage: '$(Vm.Image)'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download build artifacts'
-            inputs:
-              artifact: 'Build'
-              path: '$(Build.SourcesDirectory)'
-          - template: templates/run-self-contained-integration-tests.yml
-            parameters:
-              azureServiceConnection: '${{ parameters.azureServiceConnection }}'
-              keyVaultName: '${{ parameters.keyVaultName }}'
+      - template: templates/run-self-contained-integration-tests.yml
+        parameters:
+          azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
   - stage: DockerTests
     displayName: Docker Tests
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - job: DockerTests
-        displayName: 'Run Docker tests'
-        pool:
-          vmImage: '$(Vm.Image)'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download build artifacts'
-            inputs:
-              artifact: 'Build'
-              path: '$(Build.SourcesDirectory)'
-          - template: templates/run-docker-integration-tests.yml
-            parameters:
-              dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
-              httpPort: '$(AzureFunctions.HttpPort)'
+      - template: templates/run-docker-integration-tests.yml
+        parameters:
+          dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
+          httpPort: '$(AzureFunctions.HttpPort)'
+          azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
   - stage: ReleaseToMyget
     displayName: 'Release to MyGet'

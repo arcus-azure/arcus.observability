@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Tests.Integration.Fixture;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,10 +31,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.DoesNotContain($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions.Keys);
                 });
             });
@@ -56,12 +55,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.True(result.CustomDimensions.TryGetValue($"Exception-{nameof(TestException.SpyProperty)}", out string actualProperty));
-                    Assert.Equal(expectedProperty, actualProperty);
+                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(expectedProperty, Assert.Contains($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions));
                 });
             });
         }
@@ -76,6 +74,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string propertyFormat = "Exception.{0}";
             ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
             ApplicationInsightsSinkOptions.Exception.PropertyFormat = propertyFormat;
+            TestLocation = TestLocation.Remote;
             
             // Act
             Logger.LogCritical(exception, exception.Message);
@@ -83,12 +82,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
                     
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(propertyName, out string actualProperty));
                     Assert.Equal(expectedProperty, actualProperty);
                 });
@@ -110,11 +109,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
+                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(componentName, result.RoleName);
                 });
             });
         }
@@ -140,10 +139,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.Equal(transactionId, result.Operation.Id);
                     Assert.Equal(operationId, result.Operation.ParentId);
                 });
@@ -167,10 +166,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -194,10 +193,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -221,10 +220,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsExceptionResult[] results = await client.GetExceptionsAsync();
+                ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
+                    Assert.Equal(exception.Message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });

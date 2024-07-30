@@ -11,17 +11,10 @@ parameters:
   - name: resourceGroupName
     displayName: 'Resource group name'
     default: arcus-observability-dev-we-rg
-  - name: appInsightsName
-    displayName: 'Application Insights name'
-    default: arcus-observability-dev-we-app-insights
-  - name: variableGroupName
-    displayName: 'Variable group name'
-    default: Arcus Observability - Integration Testing
 
 variables:
-  - name: keyVaultName
-    value: 'arcus-observability-kv'
   - template: ./variables/build.yml
+  - template: ./variables/test.yml
 
 stages:
   - stage: Deploy
@@ -40,44 +33,13 @@ stages:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-                Install-Module -Name Arcus.Scripting.DevOps -AllowClobber
-                az extension add --name application-insights
-
                 $objectId = (az ad sp show --id $env:servicePrincipalId | ConvertFrom-Json).id
-                $appInsightsOutput = az deployment sub create `
+                az deployment sub create `
                   --location westeurope `
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
-                  --parameters appInsightsName=${{ parameters.appInsightsName }} `
-                  --parameters keyVaultName=${{ variables.keyVaultName }} `
-                  --parameters servicePrincipal_objectId=$objectId `
-                  | ConvertFrom-Json
-
-                $apiKeyName = 'Arcus Observability Integration Tests API Key'
-                if (az monitor app-insights api-key show `
-                      --app ${{ parameters.appInsightsName }} `
-                      --resource-group ${{ parameters.resourceGroupName }} `
-                      --api-key $apiKeyName) {
-                  az monitor app-insights api-key delete `
-                  --api-key $apiKeyName `
-                  --app ${{ parameters.appInsightsName }} `
-                  --resource-group ${{ parameters.resourceGroupName }} `
-                  --yes
-                }
-
-                $apiKeyOutput = az monitor app-insights api-key create `
-                  --api-key $apiKeyName `
-                  --app ${{ parameters.appInsightsName }} `
-                  --resource-group ${{ parameters.resourceGroupName }} `
-                  --read-properties ReadTelemetry `
-                  | ConvertFrom-Json
-                
-                az keyvault secret set `
-                  --vault-name ${{ variables.keyVaultName }} `
-                  --name 'ApplicationInsights-ApiKey' `
-                  --value $apiKeyOutput.apiKey `
-
-                $env:ArmOutputs = ConvertTo-Json $appInsightsOutput.properties.outputs
-                Set-AzDevOpsArmOutputsToVariableGroup -VariableGroupName '${{ parameters.variableGroupName }}'
+                  --parameters instrumentationKey_secretName=${{ variables['Arcus.ApplicationInsights.InstrumentationKey.SecretName'] }} `
+                  --parameters resourceId_secretName=${{ variables['Arcus.LogAnalyticsWorkspace.ResourceId.SecretName'] }} `
+                  --parameters keyVaultName=${{ variables['KeyVault.Name'] }} `
+                  --parameters servicePrincipal_objectId=$objectId

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
@@ -39,17 +39,16 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] requests = await client.GetRequestsAsync();
+                RequestResult[] requests = await client.GetRequestsAsync();
                 AssertX.Any(requests, result =>
                 {
-                    Assert.Equal(operationName, result.Request.Name);
-                    Assert.Contains(eventHubsName, result.Request.Source);
-                    Assert.Contains(eventHubsNamespace, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.Equal(operationName, result.Name);
+                    Assert.Contains(eventHubsName, result.Source);
+                    Assert.Contains(eventHubsNamespace, result.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
+                    Assert.Equal(isSuccessful, result.Success);
+                    Assert.Equal(componentName, result.RoleName);
 
                     AssertContainsCustomDimension(result.CustomDimensions, EventHubs.Namespace, eventHubsNamespace);
                     AssertContainsCustomDimension(result.CustomDimensions, EventHubs.ConsumerGroup, eventHubsConsumerGroup);
@@ -58,7 +57,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-        private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
+        private static void AssertContainsCustomDimension(IDictionary<string, string> customDimensions, string key, string expected)
         {
             Assert.True(customDimensions.TryGetValue(key, out string actual), $"Cannot find {key} in custom dimensions: {String.Join(", ", customDimensions.Keys)}");
             Assert.Equal(expected, actual);

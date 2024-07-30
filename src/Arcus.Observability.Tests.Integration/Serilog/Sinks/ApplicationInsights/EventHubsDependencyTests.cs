@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Arcus.Observability.Correlation;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
@@ -40,15 +39,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
-                    Assert.Equal(eventHubName, result.Dependency.Target);
-                    Assert.Equal(namespaceName, result.Dependency.Data);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
-                    Assert.Equal(dependencyName, result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(dependencyType, result.Type);
+                    Assert.Equal(eventHubName, result.Target);
+                    Assert.Equal(namespaceName, result.Data);
+                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(dependencyName, result.Name);
+                    Assert.Equal(dependencyId, result.Id);
                 });
             });
         }

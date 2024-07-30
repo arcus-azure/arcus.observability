@@ -4,8 +4,11 @@ param location string
 // Define the name of the resource group where the components will be deployed.
 param resourceGroupName string
 
-// Define the name of the Application Insights component.
-param appInsightsName string
+// Define the name of the secret that will store the Application Insights Instrumentation Key.
+param instrumentationKey_secretName string
+
+// Define the name of the secret that will store the Application Insights workspace resource ID.
+param resourceId_secretName string
 
 // Define the name of the Key Vault.
 param keyVaultName string
@@ -29,6 +32,9 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
 
 module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
   name: 'workspaceDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
     name: 'arcus-observability-dev-we-workspace'
@@ -38,16 +44,28 @@ module workspace 'br/public:avm/res/operational-insights/workspace:0.3.4' = {
 
 module component 'br/public:avm/res/insights/component:0.3.0' = {
   name: 'componentDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
-    name: appInsightsName
+    name: 'arcus-observability-dev-we-app-insights'
     workspaceResourceId: workspace.outputs.resourceId
     location: location
+    roleAssignments: [
+      {
+        principalId: servicePrincipal_objectId
+        roleDefinitionIdOrName: 'Log Analytics Contributor'
+      }
+    ]
   }
 }
 
 module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
   name: 'vaultDeployment'
+  dependsOn: [
+    resourceGroup
+  ]
   scope: rg
   params: {
     name: keyVaultName
@@ -60,12 +78,13 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     ]
     secrets: [
       {
-        name: 'ApplicationInsights-InstrumentationKey'
+        name: instrumentationKey_secretName
         value: component.outputs.instrumentationKey
+      }
+      {
+        name: resourceId_secretName
+        value: workspace.outputs.resourceGroupName
       }
     ]
   }
 }
-
-output ApplicationInsights_WorkspaceId string = workspace.outputs.resourceId
-output ApplicationInsights_ApplicationId string = component.outputs.applicationId

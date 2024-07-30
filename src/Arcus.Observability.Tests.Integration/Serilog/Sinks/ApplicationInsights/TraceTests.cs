@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,10 +25,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] results = await client.GetTracesAsync();
+                TraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Contains(message, result.Trace.Message);
+                    Assert.Contains(message, result.Message);
                 });
             });
         }
@@ -50,10 +49,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] results = await client.GetTracesAsync();
+                TraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Contains(message, result.Trace.Message);
+                    Assert.Contains(message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -76,10 +75,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] results = await client.GetTracesAsync();
+                TraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Contains(message, result.Trace.Message);
+                    Assert.Contains(message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -102,10 +101,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsTraceResult[] results = await client.GetTracesAsync();
+                TraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Contains(message, result.Trace.Message);
+                    Assert.Contains(message, result.Message);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });

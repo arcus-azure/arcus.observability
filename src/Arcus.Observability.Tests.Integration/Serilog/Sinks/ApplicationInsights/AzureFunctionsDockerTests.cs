@@ -1,6 +1,5 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+﻿using System.Threading.Tasks;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,8 +9,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     [Trait("Category", "Docker")]
     public class AzureFunctionsDockerTests : ApplicationInsightsSinkTests
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureFunctionsDockerTests" /> class.
         /// </summary>
@@ -23,13 +20,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         [Fact]
         public async Task LogRequest_WithRequestsOperationName_SinksToApplicationInsights()
         {
+            TestLocation = TestLocation.Remote;
+
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal("200", result.Request.ResultCode);
-                    Assert.Equal("Timer", result.Request.Source);
+                    Assert.Equal("200", result.ResultCode);
+                    Assert.Equal("Timer", result.Source);
                     Assert.Equal("Triggered", result.Operation.Name);
                 });
             });

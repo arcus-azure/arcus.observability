@@ -5,8 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
@@ -47,14 +47,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
-                    Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
-                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationId, result.Id);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
                     Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });
@@ -82,11 +82,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
-                    Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                 });
             });
@@ -117,11 +117,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
-                    Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                 });
             });
@@ -145,18 +145,20 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             DateTimeOffset startTime = DateTimeOffset.Now;
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
+            TestLocation = TestLocation.Remote;
+
             // Act
             Logger.LogRequest(request, (int) statusCode, operationName, startTime, duration, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
-                    Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
-                    Assert.Equal(requestId, result.Request.Id);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
+                    Assert.Equal(requestId, result.Id);
                 });
             });
         }
@@ -186,14 +188,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(requestUri.ToString(), result.Request.Url);
-                    Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
-                    Assert.Equal(requestId, result.Request.Id);
+                    Assert.Equal(requestUri.ToString(), result.Url);
+                    Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
+                    Assert.Equal(requestId, result.Id);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
-                    Assert.Equal(requestId, result.Request.Id);
+                    Assert.Equal(requestId, result.Id);
                 });
             });
         }
@@ -220,11 +222,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] results = await client.GetRequestsAsync();
+                RequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(requestUri.ToString(), result.Request.Url);
-                    Assert.Equal(((int)statusCode).ToString(), result.Request.ResultCode);
+                    Assert.Equal(requestUri.ToString(), result.Url);
+                    Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                 });
             });

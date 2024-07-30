@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
@@ -50,14 +50,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var requestUri = new Uri(requestUrl);
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
-                    Assert.Equal(requestUri.Host, result.Dependency.Target);
-                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
+                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(requestUri.Host, result.Target);
+                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Name);
+                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(componentName, result.RoleName);
 
                     Assert.Equal(correlation.OperationId, result.Operation.ParentId);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
@@ -89,14 +89,14 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var requestUri = new Uri(requestUrl);
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
-                    Assert.Equal(requestUri.Host, result.Dependency.Target);
-                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
+                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(requestUri.Host, result.Target);
+                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Name);
+                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(componentName, result.RoleName);
                 });
             });
         }
@@ -129,13 +129,13 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                DependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
-                    Assert.Equal(request.Host.Host, result.Dependency.Target);
-                    Assert.Equal($"{httpMethod} {request.Path}", result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(request.Host.Host, result.Target);
+                    Assert.Equal($"{httpMethod} {request.Path}", result.Name);
+                    Assert.Equal(dependencyId, result.Id);
                 });
             });
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.ApplicationInsights.Query.Models;
+using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
@@ -36,16 +36,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                EventsRequestResult[] requests = await client.GetRequestsAsync();
+                RequestResult[] requests = await client.GetRequestsAsync();
                 AssertX.Any(requests, result =>
                 {
-                    Assert.Equal(operationName, result.Request.Name);
-                    Assert.Contains(customRequestSource, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.Equal(operationName, result.Name);
+                    Assert.Contains(customRequestSource, result.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
-                    Assert.Equal(componentName, result.Cloud.RoleName);
+                    Assert.Equal(isSuccessful, result.Success);
+                    Assert.Equal(componentName, result.RoleName);
                 });
             });
         }
