@@ -39,7 +39,7 @@ stages:
                   --template-file ./build/templates/deploy-test-resources.bicep `
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
-                  --parameters instrumentationKey_secretName=${{ variables['Arcus.ApplicationInsights.InstrumentationKey.SecretName'] }} `
-                  --parameters resourceId_secretName=${{ variables['Arcus.LogAnalyticsWorkspace.ResourceId.SecretName'] }} `
-                  --parameters keyVaultName=${{ variables['Arcus.KeyVault.Name'] }} `
+                  --parameters instrumentationKey_secretName=${{ variables['Arcus.Observability.ApplicationInsights.InstrumentationKey.SecretName'] }} `
+                  --parameters resourceId_secretName=${{ variables['Arcus.Observability.LogAnalyticsWorkspace.ResourceId.SecretName'] }} `
+                  --parameters keyVaultName=${{ variables['Arcus.Observability.KeyVault.Name'] }} `
                   --parameters servicePrincipal_objectId=$objectId
