@@ -50,7 +50,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
-                    Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
+                    Assert.Equal(((int) statusCode).ToString(), result.Request.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
                     Assert.Equal(correlation.OperationId, result.Request.Id);

@@ -114,10 +114,9 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             OperationResult operation,
             IDictionary<string, string> customDimensions)
         {
-            Request = new RequestResult(id, name, source, url);
+            Request = new RequestResult(id, name, source, url, resultCode);
             Cloud = new CloudResult(roleName);
             Success = success;
-            ResultCode = resultCode;
             Operation = operation;
             CustomDimensions = customDimensions;
         }
@@ -125,7 +124,6 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         public RequestResult Request { get; }
         public CloudResult Cloud { get; }
         public bool Success { get; }
-        public string ResultCode { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
@@ -134,18 +132,19 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             /// <summary>
             /// Initializes a new instance of the <see cref="RequestResult" /> class.
             /// </summary>
-            public RequestResult(string id, string name, string source, string url)
+            public RequestResult(string id, string name, string source, string url, string resultCode)
             {
                 Id = id;
                 Name = name;
                 Source = source;
                 Url = url;
+                ResultCode = resultCode;
             }
             public string Id { get; }
             public string Name { get; }
             public string Source { get; }
             public string Url { get; }
-
+            public string ResultCode { get; }
         }
     }
 

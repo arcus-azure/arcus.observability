@@ -27,7 +27,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal("200", result.ResultCode);
+                    Assert.Equal("200", result.Request.ResultCode);
                     Assert.Equal("Timer", result.Request.Source);
                     Assert.Equal("Triggered", result.Operation.Name);
                 });
