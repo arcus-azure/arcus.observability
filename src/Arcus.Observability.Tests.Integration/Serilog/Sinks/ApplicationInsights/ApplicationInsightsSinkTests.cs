@@ -44,8 +44,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             _testOutput = outputWriter;
             ApplicationInsightsSinkOptions = new ApplicationInsightsSinkOptions();
             LoggerConfiguration = new LoggerConfiguration();
-            InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
-            ApplicationId = Configuration.GetValue<string>("ApplicationInsights:ApplicationId");
+            InstrumentationKey = Configuration.GetValue<string>("Arcus:ApplicationInsights:InstrumentationKey");
             _telemetrySink = new InMemoryApplicationInsightsTelemetryConverter();
         }
 
