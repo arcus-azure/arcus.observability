@@ -19,7 +19,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     {
         private readonly LogsQueryClient _queryClient;
         private readonly QueryTimeRange _timeRange;
-        private readonly string _resourceId;
+        private readonly string _workspaceId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppInsightsClient" /> class.
@@ -28,7 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             ServicePrincipal servicePrincipal = config.GetServicePrincipal();
             _queryClient = new LogsQueryClient(new ClientSecretCredential(servicePrincipal.TenantId, servicePrincipal.ClientId, servicePrincipal.ClientSecret));
-            _resourceId = config["Arcus:ApplicationInsights:LogAnalyticsWorkspace:ResourceId"];
+            _workspaceId = config["Arcus:ApplicationInsights:LogAnalytics:WorkspaceId"];
             _timeRange = new QueryTimeRange(TimeSpan.FromDays(1));
         }
 
@@ -178,7 +178,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         private async Task<IReadOnlyCollection<LogsTableRow>> QueryLogsAsync(string query)
         {
             LogsQueryResult response = await _queryClient.QueryWorkspaceAsync(
-                _resourceId,
+                _workspaceId,
                 query,
                 timeRange: _timeRange,
                 new LogsQueryOptions { ServerTimeout = TimeSpan.FromSeconds(3) });
