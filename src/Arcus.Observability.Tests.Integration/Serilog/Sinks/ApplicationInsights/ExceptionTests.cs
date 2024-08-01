@@ -85,11 +85,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 ExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
+                    string propertyName = string.Format(propertyFormat, nameof(TestException.SpyProperty));
                     
                     Assert.Equal(exception.Message, result.Message);
-                    Assert.True(result.CustomDimensions.TryGetValue(propertyName, out string actualProperty));
-                    Assert.Equal(expectedProperty, actualProperty);
+                    Assert.Equal(expectedProperty, Assert.Contains(propertyName, result.CustomDimensions));
                 });
             });
         }

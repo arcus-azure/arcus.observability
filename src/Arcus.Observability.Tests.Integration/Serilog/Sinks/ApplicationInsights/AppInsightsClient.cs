@@ -156,7 +156,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public async Task<ExceptionResult[]> GetExceptionsAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows = 
-                await QueryLogsAsync("AppExceptions | project Message, OperationId, ParentId, AppRoleName, Properties");
+                await QueryLogsAsync("AppExceptions | project OuterMessage, OperationId, ParentId, AppRoleName, Properties");
 
             return rows.Select(row =>
             {
