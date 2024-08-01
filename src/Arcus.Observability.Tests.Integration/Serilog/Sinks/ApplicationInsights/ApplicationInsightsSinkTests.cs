@@ -7,6 +7,7 @@ using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fi
 using Arcus.Testing;
 using Bogus;
 using GuardNet;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;

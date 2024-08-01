@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Xunit;
 using Xunit.Abstractions;
 

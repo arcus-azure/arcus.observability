@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture
+namespace Microsoft.Azure.ApplicationInsights.Query.Models
 {
     /// <summary>
     /// Represents a client to query telemetry data from the Azure Application Insights instance.
@@ -40,7 +40,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         Task<EventsExceptionResult[]> GetExceptionsAsync();
     }
 
-     public class OperationResult
+    public class OperationResult
     {
         public OperationResult(string id, string parentId)
         {
@@ -133,7 +133,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             OperationResult operation,
             IDictionary<string, string> customDimensions)
         {
-            Id = id;
+            Request = new RequestResult(id);
             Name = name;
             Source = source;
             Url = url;
@@ -144,7 +144,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             CustomDimensions = customDimensions;
         }
 
-        public string Id { get; }
+        public RequestResult Request { get; }
         public string Name { get; }
         public string Source { get; }
         public string Url { get; }
@@ -153,6 +153,18 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public string RoleName { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
+
+        public class RequestResult
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="RequestResult" /> class.
+            /// </summary>
+            public RequestResult(string id)
+            {
+                Id = id;
+            }
+            public string Id { get; }
+        }
     }
 
     public class EventsDependencyResult

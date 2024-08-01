@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
-using Azure.Monitor.Query.Models;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;

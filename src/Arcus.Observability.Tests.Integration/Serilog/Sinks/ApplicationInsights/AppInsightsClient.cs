@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Arcus.Observability.Tests.Integration.Configuration;
-using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Arcus.Testing;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Newtonsoft.Json;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights

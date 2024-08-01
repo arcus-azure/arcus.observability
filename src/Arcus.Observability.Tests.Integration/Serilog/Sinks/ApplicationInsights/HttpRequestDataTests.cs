@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
-using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -53,7 +53,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
-                    Assert.Equal(correlation.OperationId, result.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
                     Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });

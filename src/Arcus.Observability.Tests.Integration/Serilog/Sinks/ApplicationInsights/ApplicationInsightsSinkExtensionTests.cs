@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -151,11 +151,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsTraceResult[] result = await client.GetTracesAsync();
-                AssertX.Any(result, trace =>
+                AssertX.Any(result, result =>
                 {
-                    Assert.Equal(message, trace.Trace.Message);
-                    Assert.Equal(correlation.TransactionId, trace.Operation.Id);
-                    Assert.Equal(correlation.OperationId, trace.Operation.ParentId);
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Operation.ParentId);
                 });
             });
         }
@@ -181,11 +181,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsTraceResult[] result = await client.GetTracesAsync();
-                AssertX.Any(result, trace =>
+                AssertX.Any(result, result =>
                 {
-                    Assert.Equal(message, trace.Trace.Message);
-                    Assert.Equal(correlation.TransactionId, trace.Operation.Id);
-                    Assert.Equal(correlation.OperationId, trace.Operation.ParentId);
+                    Assert.Equal(message, result.Trace.Message);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Operation.ParentId);
                 });
             });
         }
@@ -218,11 +218,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsRequestResult[] result = await client.GetRequestsAsync();
-                AssertX.Any(result, request =>
+                AssertX.Any(result, result =>
                 {
-                    Assert.Equal(correlation.TransactionId, request.Operation.Id);
-                    Assert.Equal(correlation.OperationId, request.Id);
-                    Assert.Equal(correlation.OperationParentId, request.Operation.ParentId);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });
             });
         }
@@ -255,11 +255,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsRequestResult[] result = await client.GetRequestsAsync();
-                AssertX.Any(result, request =>
+                AssertX.Any(result, result =>
                 {
-                    Assert.Equal(correlation.TransactionId, request.Operation.Id);
-                    Assert.Equal(correlation.OperationId, request.Id);
-                    Assert.Equal(correlation.OperationParentId, request.Operation.ParentId);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });
             });
         }
@@ -292,11 +292,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsRequestResult[] result = await client.GetRequestsAsync();
-                AssertX.Any(result, request =>
+                AssertX.Any(result, result =>
                 {
-                    Assert.Equal(correlation.TransactionId, request.Operation.Id);
-                    Assert.Equal(correlation.OperationId, request.Id);
-                    Assert.Equal(correlation.OperationParentId, request.Operation.ParentId);
+                    Assert.Equal(correlation.TransactionId, result.Operation.Id);
+                    Assert.Equal(correlation.OperationId, result.Request.Id);
+                    Assert.Equal(correlation.OperationParentId, result.Operation.ParentId);
                 });
             });
         }

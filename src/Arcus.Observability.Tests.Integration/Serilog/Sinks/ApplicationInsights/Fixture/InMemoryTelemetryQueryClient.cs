@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using GuardNet;
+using Microsoft.Azure.ApplicationInsights.Query.Models;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture
 {
