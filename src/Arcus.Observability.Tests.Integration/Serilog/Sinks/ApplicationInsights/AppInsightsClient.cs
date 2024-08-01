@@ -28,7 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         {
             ServicePrincipal servicePrincipal = config.GetServicePrincipal();
             _queryClient = new LogsQueryClient(new ClientSecretCredential(servicePrincipal.TenantId, servicePrincipal.ClientId, servicePrincipal.ClientSecret));
-            _resourceId = config["Arcus:LogAnalyticsWorkspace:ResourceId"];
+            _resourceId = config["Arcus:ApplicationInsights:LogAnalyticsWorkspace:ResourceId"];
             _timeRange = new QueryTimeRange(TimeSpan.FromDays(1));
         }
 
