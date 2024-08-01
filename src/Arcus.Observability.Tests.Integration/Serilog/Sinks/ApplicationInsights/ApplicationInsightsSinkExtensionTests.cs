@@ -45,7 +45,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                 });
             });
         }
@@ -74,7 +74,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                 });
             });
         }
@@ -98,7 +98,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                 });
             });
         }
@@ -125,7 +125,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                 });
             });
         }
@@ -153,7 +153,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] result = await client.GetTracesAsync();
                 AssertX.Any(result, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                     Assert.Equal(correlation.TransactionId, trace.Operation.Id);
                     Assert.Equal(correlation.OperationId, trace.Operation.ParentId);
                 });
@@ -183,7 +183,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] result = await client.GetTracesAsync();
                 AssertX.Any(result, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                     Assert.Equal(correlation.TransactionId, trace.Operation.Id);
                     Assert.Equal(correlation.OperationId, trace.Operation.ParentId);
                 });

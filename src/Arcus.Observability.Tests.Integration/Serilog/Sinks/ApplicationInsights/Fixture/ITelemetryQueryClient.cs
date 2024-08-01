@@ -64,16 +64,29 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     {
         public EventsTraceResult(string message, string roleName, OperationResult operation, IDictionary<string, string> customDimensions)
         {
-            Message = message;
+            Trace = new TraceResult(message);
             RoleName = roleName;
             Operation = operation;
             CustomDimensions = customDimensions;
         }
 
-        public string Message { get; }
+        public TraceResult Trace { get; }
         public string RoleName { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
+
+        public class TraceResult
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TraceResult" /> class.
+            /// </summary>
+            public TraceResult(string message)
+            {
+                Message = message;
+            }
+
+            public string Message { get; }
+        }
     }
 
     public class EventsCustomEventResult

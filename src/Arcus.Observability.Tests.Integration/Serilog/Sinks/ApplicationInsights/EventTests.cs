@@ -57,7 +57,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                     Assert.Equal(componentName, trace.RoleName);
                 });
             });
@@ -109,7 +109,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traceEvents = await client.GetTracesAsync();
                 AssertX.Any(traceEvents, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                     Assert.Equal(operationId, Assert.Contains(ContextProperties.Correlation.OperationId, trace.CustomDimensions));
                     Assert.Equal(transactionId, Assert.Contains(ContextProperties.Correlation.TransactionId, trace.CustomDimensions));
                     Assert.Equal(operationParentId, Assert.Contains(ContextProperties.Correlation.OperationParentId, trace.CustomDimensions));
@@ -145,7 +145,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsTraceResult[] traceEvents = await client.GetTracesAsync();
                 AssertX.Any(traceEvents, trace =>
                 {
-                    Assert.Equal(message, trace.Message);
+                    Assert.Equal(message, trace.Trace.Message);
                     Assert.Equal(nodeName, Assert.Contains(ContextProperties.Kubernetes.NodeName, trace.CustomDimensions));
                     Assert.Equal(podName, Assert.Contains(ContextProperties.Kubernetes.PodName, trace.CustomDimensions));
                     Assert.Equal(@namespace, Assert.Contains(ContextProperties.Kubernetes.Namespace, trace.CustomDimensions));
