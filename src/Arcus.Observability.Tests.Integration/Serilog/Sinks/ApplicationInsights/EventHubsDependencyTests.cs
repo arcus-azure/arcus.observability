@@ -45,7 +45,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(dependencyType, result.Dependency.Type);
                     Assert.Equal(eventHubName, result.Dependency.Target);
                     Assert.Equal(namespaceName, result.Dependency.Data);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });

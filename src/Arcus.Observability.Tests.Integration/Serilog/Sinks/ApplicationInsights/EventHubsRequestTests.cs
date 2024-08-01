@@ -48,7 +48,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
 
                     AssertContainsCustomDimension(result.CustomDimensions, EventHubs.Namespace, eventHubsNamespace);
                     AssertContainsCustomDimension(result.CustomDimensions, EventHubs.ConsumerGroup, eventHubsConsumerGroup);

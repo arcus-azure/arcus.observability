@@ -42,7 +42,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal("Azure IoT Hub", result.Dependency.Type);
                     Assert.Equal(iotHubName, result.Dependency.Target);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });
@@ -77,7 +77,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal("Azure IoT Hub", result.Dependency.Type);
                     Assert.Equal(hostName, result.Dependency.Target);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });

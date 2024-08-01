@@ -57,7 +57,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(requestUri.Host, result.Dependency.Target);
                     Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
 
                     Assert.Equal(correlation.OperationId, result.Operation.ParentId);
                     Assert.Equal(correlation.TransactionId, result.Operation.Id);
@@ -96,7 +96,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(requestUri.Host, result.Dependency.Target);
                     Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                 });
             });
         }

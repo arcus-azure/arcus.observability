@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Azure.ApplicationInsights.Query.Models
 {
     /// <summary>
@@ -40,38 +41,18 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         Task<EventsExceptionResult[]> GetExceptionsAsync();
     }
 
-    public class OperationResult
-    {
-        public OperationResult(string id, string parentId)
-        {
-            Id = id;
-            ParentId = parentId;
-        }
-
-        public OperationResult(string id, string parentId, string name)
-        {
-            Id = id;
-            ParentId = parentId;
-            Name = name;
-        }
-
-        public string Id { get; }
-        public string Name { get; }
-        public string ParentId { get; }
-    }
-
     public class EventsTraceResult
     {
         public EventsTraceResult(string message, string roleName, OperationResult operation, IDictionary<string, string> customDimensions)
         {
             Trace = new TraceResult(message);
-            RoleName = roleName;
+            Cloud = new CloudResult(roleName);
             Operation = operation;
             CustomDimensions = customDimensions;
         }
 
         public TraceResult Trace { get; }
-        public string RoleName { get; }
+        public CloudResult Cloud { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
@@ -97,12 +78,12 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         public EventsCustomEventResult(string name, string roleName, IDictionary<string, string> customDimensions)
         {
             Name = name;
-            RoleName = roleName;
+            Cloud = new CloudResult(roleName);
             CustomDimensions = new ReadOnlyDictionary<string, string>(customDimensions);
         }
 
         public string Name { get; }
-        public string RoleName { get; }
+        public CloudResult Cloud { get; }
         public IReadOnlyDictionary<string, string> CustomDimensions { get; }
     }
 
@@ -134,17 +115,17 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             IDictionary<string, string> customDimensions)
         {
             Request = new RequestResult(id, name, source, url);
+            Cloud = new CloudResult(roleName);
             Success = success;
             ResultCode = resultCode;
-            RoleName = roleName;
             Operation = operation;
             CustomDimensions = customDimensions;
         }
 
         public RequestResult Request { get; }
+        public CloudResult Cloud { get; }
         public bool Success { get; }
         public string ResultCode { get; }
-        public string RoleName { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
@@ -183,17 +164,17 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             IDictionary<string, string> customDimensions)
         {
             Dependency = new DependencyResult(id, name, type, target, data);
+            Cloud = new CloudResult(roleName);
             Success = success;
             ResultCode = resultCode;
-            RoleName = roleName;
             Operation = operation;
             CustomDimensions = customDimensions;
         }
 
         public DependencyResult Dependency { get; }
+        public CloudResult Cloud { get; }
         public bool Success { get; }
         public int ResultCode { get; }
-        public string RoleName { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
@@ -227,14 +208,14 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         public EventsExceptionResult(string message, OperationResult operation, string roleName, IDictionary<string, string> customDimensions)
         {
             Exception = new ExceptionResult(message);
+            Cloud = new CloudResult(roleName);
             Operation = operation;
-            RoleName = roleName;
             CustomDimensions = customDimensions;
         }
 
         public ExceptionResult Exception { get; }
         public OperationResult Operation { get; }
-        public string RoleName { get; }
+        public CloudResult Cloud { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
         public class ExceptionResult
@@ -249,5 +230,35 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
 
             public string OuterMessage { get; }
         }
+    }
+
+    public class CloudResult
+    {
+        public CloudResult(string roleName)
+        {
+            RoleName = roleName;
+        }
+
+        public string RoleName { get; }
+    }
+
+    public class OperationResult
+    {
+        public OperationResult(string id, string parentId)
+        {
+            Id = id;
+            ParentId = parentId;
+        }
+
+        public OperationResult(string id, string parentId, string name)
+        {
+            Id = id;
+            ParentId = parentId;
+            Name = name;
+        }
+
+        public string Id { get; }
+        public string Name { get; }
+        public string ParentId { get; }
     }
 }

@@ -112,7 +112,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.Equal(componentName, result.RoleName);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
                 });
             });
         }
