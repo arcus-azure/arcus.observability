@@ -83,7 +83,7 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
       }
       {
         name: resourceId_secretName
-        value: workspace.outputs.resourceGroupName
+        value: workspace.outputs.resourceId
       }
     ]
   }
