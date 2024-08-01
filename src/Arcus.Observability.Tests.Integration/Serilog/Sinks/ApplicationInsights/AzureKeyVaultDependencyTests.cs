@@ -40,11 +40,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Equal(dependencyId, result.Id);
-                    Assert.Equal(vaultUri, result.Target);
-                    Assert.Equal(secretName, result.Data);
-                    Assert.Equal(dependencyName, result.Name);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(vaultUri, result.Dependency.Target);
+                    Assert.Equal(secretName, result.Dependency.Data);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
                 });
             });
         }

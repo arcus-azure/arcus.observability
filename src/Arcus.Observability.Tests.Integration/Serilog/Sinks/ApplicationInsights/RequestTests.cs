@@ -50,7 +50,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                     Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
 
@@ -85,7 +85,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                     Assert.Equal(((int) statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                 });
@@ -120,7 +120,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                     Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.StartsWith(httpMethod.Method, result.Operation.Name);
                 });
@@ -156,7 +156,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Url);
+                    Assert.Equal($"{requestUri.Scheme}://{requestUri.Host}{requestUri.AbsolutePath}", result.Request.Url);
                     Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.Equal(requestId, result.Request.Id);
                 });
@@ -191,7 +191,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(requestUri.ToString(), result.Url);
+                    Assert.Equal(requestUri.ToString(), result.Request.Url);
                     Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.Equal(requestId, result.Request.Id);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
@@ -225,7 +225,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(requestUri.ToString(), result.Url);
+                    Assert.Equal(requestUri.ToString(), result.Request.Url);
                     Assert.Equal(((int)statusCode).ToString(), result.ResultCode);
                     Assert.Equal($"{httpMethod.Method} {operationName}", result.Operation.Name);
                 });

@@ -40,11 +40,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal("Azure IoT Hub", result.Type);
-                    Assert.Equal(iotHubName, result.Target);
+                    Assert.Equal("Azure IoT Hub", result.Dependency.Type);
+                    Assert.Equal(iotHubName, result.Dependency.Target);
                     Assert.Equal(componentName, result.RoleName);
-                    Assert.Equal(dependencyName, result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });
         }
@@ -75,11 +75,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal("Azure IoT Hub", result.Type);
-                    Assert.Equal(hostName, result.Target);
+                    Assert.Equal("Azure IoT Hub", result.Dependency.Type);
+                    Assert.Equal(hostName, result.Dependency.Target);
                     Assert.Equal(componentName, result.RoleName);
-                    Assert.Equal(dependencyName, result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });
         }

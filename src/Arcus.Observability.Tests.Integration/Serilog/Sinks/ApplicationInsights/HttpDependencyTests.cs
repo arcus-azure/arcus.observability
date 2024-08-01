@@ -53,10 +53,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
-                    Assert.Equal(requestUri.Host, result.Target);
-                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(requestUri.Host, result.Dependency.Target);
+                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                     Assert.Equal(componentName, result.RoleName);
 
                     Assert.Equal(correlation.OperationId, result.Operation.ParentId);
@@ -92,10 +92,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
-                    Assert.Equal(requestUri.Host, result.Target);
-                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(requestUri.Host, result.Dependency.Target);
+                    Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                     Assert.Equal(componentName, result.RoleName);
                 });
             });
@@ -132,10 +132,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
-                    Assert.Equal(request.Host.Host, result.Target);
-                    Assert.Equal($"{httpMethod} {request.Path}", result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(request.Host.Host, result.Dependency.Target);
+                    Assert.Equal($"{httpMethod} {request.Path}", result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });
         }

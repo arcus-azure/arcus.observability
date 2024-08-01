@@ -43,10 +43,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(operationName, result.Name);
-                    Assert.Contains(queueName, result.Source);
-                    Assert.Contains(serviceBusNamespace, result.Source);
-                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(queueName, result.Request.Source);
+                    Assert.Contains(serviceBusNamespace, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
 
@@ -82,10 +82,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(operationName, result.Name);
-                    Assert.Contains(queueName, result.Source);
-                    Assert.Contains(serviceBusNamespace, result.Source);
-                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(queueName, result.Request.Source);
+                    Assert.Contains(serviceBusNamespace, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
 
@@ -119,11 +119,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(operationName, result.Name);
-                    Assert.Contains(topicName, result.Source);
-                    Assert.Contains(serviceBusNamespace, result.Source);
-                    Assert.Contains(serviceBusNamespaceSuffix, result.Source);
-                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(topicName, result.Request.Source);
+                    Assert.Contains(serviceBusNamespace, result.Request.Source);
+                    Assert.Contains(serviceBusNamespaceSuffix, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
 
@@ -159,10 +159,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(operationName, result.Name);
-                    Assert.Contains(entityName, result.Source);
-                    Assert.Contains(serviceBusNamespace, result.Source);
-                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(entityName, result.Request.Source);
+                    Assert.Contains(serviceBusNamespace, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
 

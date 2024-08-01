@@ -39,9 +39,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsRequestResult[] requests = await client.GetRequestsAsync();
                 AssertX.Any(requests, result =>
                 {
-                    Assert.Equal(operationName, result.Name);
-                    Assert.Contains(customRequestSource, result.Source);
-                    Assert.True(string.IsNullOrWhiteSpace(result.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(customRequestSource, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
                     Assert.Equal(isSuccessful, result.Success);
                     Assert.Equal(componentName, result.RoleName);

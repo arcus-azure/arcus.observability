@@ -44,11 +44,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 Assert.NotEmpty(results);
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Equal(accountName, result.Target);
-                    Assert.Equal(dependencyName, result.Data);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(accountName, result.Dependency.Target);
+                    Assert.Equal(dependencyName, result.Dependency.Data);
                     Assert.Equal(componentName, result.RoleName);
-                    Assert.Equal(dependencyName, result.Name);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
                 });
             });
         }

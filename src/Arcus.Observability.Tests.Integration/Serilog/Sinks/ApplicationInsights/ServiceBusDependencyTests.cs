@@ -47,10 +47,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Contains(entityName, result.Target);
-                    Assert.Equal(dependencyName, result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Contains(entityName, result.Dependency.Target);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);
@@ -86,10 +86,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Contains(entityName, result.Target);
-                    Assert.Equal(dependencyName, result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Contains(entityName, result.Dependency.Target);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.EntityType, entityType.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.DependencyTracking.ServiceBus.Endpoint, namespaceEndpoint);

@@ -34,7 +34,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.DoesNotContain($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions.Keys);
                 });
             });
@@ -58,7 +58,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(expectedProperty, Assert.Contains($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions));
                 });
             });
@@ -87,7 +87,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     string propertyName = string.Format(propertyFormat, nameof(TestException.SpyProperty));
                     
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(expectedProperty, Assert.Contains(propertyName, result.CustomDimensions));
                 });
             });
@@ -111,7 +111,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(componentName, result.RoleName);
                 });
             });
@@ -141,7 +141,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(transactionId, result.Operation.Id);
                     Assert.Equal(operationId, result.Operation.ParentId);
                 });
@@ -168,7 +168,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -195,7 +195,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });
@@ -222,7 +222,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(exception.Message, result.Message);
+                    Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.True(result.CustomDimensions.TryGetValue(key, out string actual), "Should contain custom dimension property");
                     Assert.Equal(expected, actual);
                 });

@@ -28,7 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal("200", result.ResultCode);
-                    Assert.Equal("Timer", result.Source);
+                    Assert.Equal("Timer", result.Request.Source);
                     Assert.Equal("Triggered", result.Operation.Name);
                 });
             });

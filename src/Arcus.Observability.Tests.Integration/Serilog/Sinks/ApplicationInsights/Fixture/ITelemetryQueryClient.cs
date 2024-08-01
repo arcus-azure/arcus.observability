@@ -133,10 +133,7 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             OperationResult operation,
             IDictionary<string, string> customDimensions)
         {
-            Request = new RequestResult(id);
-            Name = name;
-            Source = source;
-            Url = url;
+            Request = new RequestResult(id, name, source, url);
             Success = success;
             ResultCode = resultCode;
             RoleName = roleName;
@@ -145,9 +142,6 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         }
 
         public RequestResult Request { get; }
-        public string Name { get; }
-        public string Source { get; }
-        public string Url { get; }
         public bool Success { get; }
         public string ResultCode { get; }
         public string RoleName { get; }
@@ -159,11 +153,18 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             /// <summary>
             /// Initializes a new instance of the <see cref="RequestResult" /> class.
             /// </summary>
-            public RequestResult(string id)
+            public RequestResult(string id, string name, string source, string url)
             {
                 Id = id;
+                Name = name;
+                Source = source;
+                Url = url;
             }
             public string Id { get; }
+            public string Name { get; }
+            public string Source { get; }
+            public string Url { get; }
+
         }
     }
 
@@ -181,28 +182,41 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
             OperationResult operation,
             IDictionary<string, string> customDimensions)
         {
-            Id = id;
-            Type = type;
-            Target = target;
-            Data = data;
+            Dependency = new DependencyResult(id, name, type, target, data);
             Success = success;
             ResultCode = resultCode;
-            Name = name;
             RoleName = roleName;
             Operation = operation;
             CustomDimensions = customDimensions;
         }
 
-        public string Type { get; }
-        public string Id { get; }
-        public string Target { get; }
-        public string Data { get; }
+        public DependencyResult Dependency { get; }
         public bool Success { get; }
         public int ResultCode { get; }
-        public string Name { get; }
         public string RoleName { get; }
         public OperationResult Operation { get; }
         public IDictionary<string, string> CustomDimensions { get; }
+
+        public class DependencyResult
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DependencyResult" /> class.
+            /// </summary>
+            public DependencyResult(string id, string name, string type, string target, string data)
+            {
+                Id = id;
+                Name = name;
+                Type = type;
+                Target = target;
+                Data = data;
+            }
+
+            public string Id { get; }
+            public string Name { get; }
+            public string Type { get; }
+            public string Target { get; }
+            public string Data { get; }
+        }
     }
 
     public class EventsExceptionResult
@@ -212,16 +226,28 @@ namespace Microsoft.Azure.ApplicationInsights.Query.Models
         /// </summary>
         public EventsExceptionResult(string message, OperationResult operation, string roleName, IDictionary<string, string> customDimensions)
         {
-            Message = message;
+            Exception = new ExceptionResult(message);
             Operation = operation;
             RoleName = roleName;
             CustomDimensions = customDimensions;
         }
 
-        public string Message { get; }
+        public ExceptionResult Exception { get; }
         public OperationResult Operation { get; }
         public string RoleName { get; }
         public IDictionary<string, string> CustomDimensions { get; }
 
+        public class ExceptionResult
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ExceptionResult" /> class.
+            /// </summary>
+            public ExceptionResult(string message)
+            {
+                OuterMessage = message;
+            }
+
+            public string OuterMessage { get; }
+        }
     }
 }

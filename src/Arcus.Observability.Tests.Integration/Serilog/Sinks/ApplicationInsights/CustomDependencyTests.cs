@@ -36,9 +36,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Equal(dependencyData, result.Data);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyData, result.Dependency.Data);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                 });
             });
         }
@@ -68,10 +68,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Type);
-                    Assert.Equal(dependencyData, result.Data);
-                    Assert.Equal(dependencyName, result.Name);
-                    Assert.Equal(dependencyId, result.Id);
+                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyData, result.Dependency.Data);
+                    Assert.Equal(dependencyName, result.Dependency.Name);
+                    Assert.Equal(dependencyId, result.Dependency.Id);
                     Assert.Equal(isSuccessful, result.Success);
                     Assert.All(telemetryContext, item => Assert.Equal(item.Value.ToString(), Assert.Contains(item.Key, result.CustomDimensions)));
                 });
