@@ -61,7 +61,7 @@ jobs:
           containerName: '${{ parameters.dockerProjectName }}'
           ports: '${{ parameters.httpPort }}:80'
           envVars: |
-            APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights_InstrumentationKey)
+            APPINSIGHTS_INSTRUMENTATIONKEY=$(Arcus.Observability.ApplicationInsights.InstrumentationKey)
             AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
 
       - template: test/run-integration-tests.yml@templates
