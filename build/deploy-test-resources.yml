@@ -40,6 +40,6 @@ stages:
                   --parameters location=westeurope `
                   --parameters resourceGroupName=${{ parameters.resourceGroupName }} `
                   --parameters instrumentationKey_secretName=${{ variables['Arcus.Observability.ApplicationInsights.InstrumentationKey.SecretName'] }} `
-                  --parameters resourceId_secretName=${{ variables['Arcus.Observability.LogAnalyticsWorkspace.ResourceId.SecretName'] }} `
+                  --parameters workspaceId_secretName=${{ variables['Arcus.Observability.LogAnalytics.WorkspaceId.SecretName'] }} `
                   --parameters keyVaultName=${{ variables['Arcus.Observability.KeyVault.Name'] }} `
                   --parameters servicePrincipal_objectId=$objectId

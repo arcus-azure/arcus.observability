@@ -2,4 +2,4 @@ variables:
   AzureFunctions.HttpPort: 5000
   Arcus.Observability.KeyVault.Name: 'arcus-observability-kv'
   Arcus.Observability.ApplicationInsights.InstrumentationKey.SecretName: 'ApplicationInsights-InstrumentationKey'
-  Arcus.Observability.LogAnalyticsWorkspace.ResourceId.SecretName: 'LogAnalytics-Workspace-ResourceId'
+  Arcus.Observability.LogAnalytics.WorkspaceId.SecretName: 'LogAnalytics-WorkspaceId'

@@ -8,7 +8,7 @@ param resourceGroupName string
 param instrumentationKey_secretName string
 
 // Define the name of the secret that will store the Application Insights workspace resource ID.
-param resourceId_secretName string
+param workspaceId_secretName string
 
 // Define the name of the Key Vault.
 param keyVaultName string
@@ -82,8 +82,8 @@ module vault 'br/public:avm/res/key-vault/vault:0.6.1' = {
         value: component.outputs.instrumentationKey
       }
       {
-        name: resourceId_secretName
-        value: workspace.outputs.resourceId
+        name: workspaceId_secretName
+        value: workspace.outputs.logAnalyticsWorkspaceId
       }
     ]
   }
