@@ -24,7 +24,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] results = await client.GetRequestsAsync();
+                EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal("200", result.ResultCode);

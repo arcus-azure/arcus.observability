@@ -25,7 +25,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] results = await client.GetTracesAsync();
+                EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Contains(message, result.Message);
@@ -49,7 +49,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] results = await client.GetTracesAsync();
+                EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Contains(message, result.Message);
@@ -75,7 +75,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] results = await client.GetTracesAsync();
+                EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Contains(message, result.Message);
@@ -101,7 +101,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] results = await client.GetTracesAsync();
+                EventsTraceResult[] results = await client.GetTracesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Contains(message, result.Message);

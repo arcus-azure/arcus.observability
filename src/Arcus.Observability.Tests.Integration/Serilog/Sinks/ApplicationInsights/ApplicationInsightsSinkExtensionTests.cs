@@ -42,7 +42,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] traces = await client.GetTracesAsync();
+                EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -71,7 +71,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] traces = await client.GetTracesAsync();
+                EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -95,7 +95,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] traces = await client.GetTracesAsync();
+                EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -122,7 +122,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] traces = await client.GetTracesAsync();
+                EventsTraceResult[] traces = await client.GetTracesAsync();
                 AssertX.Any(traces, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -150,7 +150,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] result = await client.GetTracesAsync();
+                EventsTraceResult[] result = await client.GetTracesAsync();
                 AssertX.Any(result, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -180,7 +180,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                TraceResult[] result = await client.GetTracesAsync();
+                EventsTraceResult[] result = await client.GetTracesAsync();
                 AssertX.Any(result, trace =>
                 {
                     Assert.Equal(message, trace.Message);
@@ -217,7 +217,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] result = await client.GetRequestsAsync();
+                EventsRequestResult[] result = await client.GetRequestsAsync();
                 AssertX.Any(result, request =>
                 {
                     Assert.Equal(correlation.TransactionId, request.Operation.Id);
@@ -254,7 +254,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] result = await client.GetRequestsAsync();
+                EventsRequestResult[] result = await client.GetRequestsAsync();
                 AssertX.Any(result, request =>
                 {
                     Assert.Equal(correlation.TransactionId, request.Operation.Id);
@@ -291,7 +291,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] result = await client.GetRequestsAsync();
+                EventsRequestResult[] result = await client.GetRequestsAsync();
                 AssertX.Any(result, request =>
                 {
                     Assert.Equal(correlation.TransactionId, request.Operation.Id);

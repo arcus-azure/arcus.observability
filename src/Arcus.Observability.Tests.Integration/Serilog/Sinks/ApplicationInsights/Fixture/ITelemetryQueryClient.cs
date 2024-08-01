@@ -12,32 +12,32 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked traces from the Azure Application Insights instance.
         /// </summary>
-        Task<TraceResult[]> GetTracesAsync();
+        Task<EventsTraceResult[]> GetTracesAsync();
 
         /// <summary>
         /// Gets the tracked metrics from the Azure Application Insights instance.
         /// </summary>
-        Task<MetricsResult[]> GetMetricsAsync(string metricName);
+        Task<EventsMetricsResult[]> GetMetricsAsync(string metricName);
         
         /// <summary>
         /// Gets the tracked custom events from the Azure Application Insights instance.
         /// </summary>
-        Task<CustomEventResult[]> GetCustomEventsAsync();
+        Task<EventsCustomEventResult[]> GetCustomEventsAsync();
 
         /// <summary>
         /// Gets the tracked requests from the Azure Application Insights instance.
         /// </summary>
-        Task<RequestResult[]> GetRequestsAsync();
+        Task<EventsRequestResult[]> GetRequestsAsync();
 
         /// <summary>
         /// Gets the tracked dependencies from the Azure Application Insights instance.
         /// </summary>
-        Task<DependencyResult[]> GetDependenciesAsync();
+        Task<EventsDependencyResult[]> GetDependenciesAsync();
 
         /// <summary>
         /// Gets the tracked exceptions from the Azure Application Insights instance.
         /// </summary>
-        Task<ExceptionResult[]> GetExceptionsAsync();
+        Task<EventsExceptionResult[]> GetExceptionsAsync();
     }
 
      public class OperationResult
@@ -60,9 +60,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public string ParentId { get; }
     }
 
-    public class TraceResult
+    public class EventsTraceResult
     {
-        public TraceResult(string message, string roleName, OperationResult operation, IDictionary<string, string> customDimensions)
+        public EventsTraceResult(string message, string roleName, OperationResult operation, IDictionary<string, string> customDimensions)
         {
             Message = message;
             RoleName = roleName;
@@ -76,12 +76,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public IDictionary<string, string> CustomDimensions { get; }
     }
 
-    public class CustomEventResult
+    public class EventsCustomEventResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomEventResult" /> class.
+        /// Initializes a new instance of the <see cref="EventsCustomEventResult" /> class.
         /// </summary>
-        public CustomEventResult(string name, string roleName, IDictionary<string, string> customDimensions)
+        public EventsCustomEventResult(string name, string roleName, IDictionary<string, string> customDimensions)
         {
             Name = name;
             RoleName = roleName;
@@ -93,9 +93,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public IReadOnlyDictionary<string, string> CustomDimensions { get; }
     }
 
-    public class MetricsResult
+    public class EventsMetricsResult
     {
-        public MetricsResult(string name, double value, IDictionary<string, string> customDimensions)
+        public EventsMetricsResult(string name, double value, IDictionary<string, string> customDimensions)
         {
             Name = name;
             Value = value;
@@ -107,9 +107,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public IDictionary<string, string> CustomDimensions { get; }
     }
 
-    public class RequestResult
+    public class EventsRequestResult
     {
-        public RequestResult(
+        public EventsRequestResult(
             string id,
             string name,
             string source,
@@ -142,9 +142,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public IDictionary<string, string> CustomDimensions { get; }
     }
 
-    public class DependencyResult
+    public class EventsDependencyResult
     {
-        public DependencyResult(
+        public EventsDependencyResult(
             string id,
             string type,
             string target,
@@ -180,12 +180,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public IDictionary<string, string> CustomDimensions { get; }
     }
 
-    public class ExceptionResult
+    public class EventsExceptionResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionResult" /> class.
+        /// Initializes a new instance of the <see cref="EventsExceptionResult" /> class.
         /// </summary>
-        public ExceptionResult(string message, OperationResult operation, string roleName, IDictionary<string, string> customDimensions)
+        public EventsExceptionResult(string message, OperationResult operation, string roleName, IDictionary<string, string> customDimensions)
         {
             Message = message;
             Operation = operation;

@@ -50,7 +50,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var requestUri = new Uri(requestUrl);
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                DependencyResult[] results = await client.GetDependenciesAsync();
+                EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
@@ -89,7 +89,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var requestUri = new Uri(requestUrl);
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                DependencyResult[] results = await client.GetDependenciesAsync();
+                EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);
@@ -129,7 +129,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                DependencyResult[] results = await client.GetDependenciesAsync();
+                EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(DependencyType, result.Type, StringComparer.OrdinalIgnoreCase);

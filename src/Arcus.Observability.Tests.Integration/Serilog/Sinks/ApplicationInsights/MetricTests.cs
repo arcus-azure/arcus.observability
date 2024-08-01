@@ -28,7 +28,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                MetricsResult[] results = await client.GetMetricsAsync(metricName);
+                EventsMetricsResult[] results = await client.GetMetricsAsync(metricName);
                 AssertX.Any(results, metric =>
                 {
                     Assert.Equal(metricName, metric.Name);
@@ -39,7 +39,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-        private static void ContainsTelemetryContext(Dictionary<string, object> telemetryContext, MetricsResult metric)
+        private static void ContainsTelemetryContext(Dictionary<string, object> telemetryContext, EventsMetricsResult metric)
         {
             Assert.All(telemetryContext, item =>
             {

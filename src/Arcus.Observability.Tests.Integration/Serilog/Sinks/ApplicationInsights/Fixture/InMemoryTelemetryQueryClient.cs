@@ -23,11 +23,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked traces from the Azure Application Insights instance.
         /// </summary>
-        public Task<TraceResult[]> GetTracesAsync()
+        public Task<EventsTraceResult[]> GetTracesAsync()
         {
             return Task.FromResult(_telemetrySink.Traces.Select(t =>
             {
-                return new TraceResult(
+                return new EventsTraceResult(
                     t.Message,
                     t.Context.Cloud.RoleName,
                     new OperationResult(
@@ -41,28 +41,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked metrics from the Azure Application Insights instance.
         /// </summary>
-        public Task<MetricsResult[]> GetMetricsAsync(string metricName)
+        public Task<EventsMetricsResult[]> GetMetricsAsync(string metricName)
         {
-            return Task.FromResult(_telemetrySink.Metrics.Where(m => m.Name == metricName).Select(m => new MetricsResult(m.Name, m.Sum, m.Properties)).ToArray());
+            return Task.FromResult(_telemetrySink.Metrics.Where(m => m.Name == metricName).Select(m => new EventsMetricsResult(m.Name, m.Sum, m.Properties)).ToArray());
         }
 
         /// <summary>
         /// Gets the tracked custom events from the Azure Application Insights instance.
         /// </summary>
-        public Task<CustomEventResult[]> GetCustomEventsAsync()
+        public Task<EventsCustomEventResult[]> GetCustomEventsAsync()
         {
-            return Task.FromResult(_telemetrySink.Events.Select(e => new CustomEventResult(e.Name, e.Context.Cloud.RoleName, e.Properties)).ToArray());
+            return Task.FromResult(_telemetrySink.Events.Select(e => new EventsCustomEventResult(e.Name, e.Context.Cloud.RoleName, e.Properties)).ToArray());
         }
 
         /// <summary>
         /// Gets the tracked requests from the Azure Application Insights instance.
         /// </summary>
-        public Task<RequestResult[]> GetRequestsAsync()
+        public Task<EventsRequestResult[]> GetRequestsAsync()
         {
             return Task.FromResult(_telemetrySink.Requests.Select(r =>
             {
                 var operation = new OperationResult(r.Context.Operation.Id, r.Context.Operation.ParentId, r.Context.Operation.Name);
-                return new RequestResult(
+                return new EventsRequestResult(
                     r.Id,
                     r.Name,
                     r.Source,
@@ -78,12 +78,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked dependencies from the Azure Application Insights instance.
         /// </summary>
-        public Task<DependencyResult[]> GetDependenciesAsync()
+        public Task<EventsDependencyResult[]> GetDependenciesAsync()
         {
             return Task.FromResult(_telemetrySink.Dependencies.Select(d =>
             {
                 var operation = new OperationResult(d.Context.Operation.Id, d.Context.Operation.ParentId, d.Context.Operation.Name);
-                return new DependencyResult(d.Id,
+                return new EventsDependencyResult(d.Id,
                     d.Type,
                     d.Target,
                     d.Data,
@@ -99,7 +99,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked exceptions from the Azure Application Insights instance.
         /// </summary>
-        public Task<ExceptionResult[]> GetExceptionsAsync()
+        public Task<EventsExceptionResult[]> GetExceptionsAsync()
         {
             return Task.FromResult(_telemetrySink.Exceptions.Select(e =>
             {
@@ -107,7 +107,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     e.Context.Operation.ParentId,
                     e.Context.Operation.Name);
 
-                return new ExceptionResult(
+                return new EventsExceptionResult(
                     e.Exception.Message,
                     operation,
                     e.Context.Cloud.RoleName,

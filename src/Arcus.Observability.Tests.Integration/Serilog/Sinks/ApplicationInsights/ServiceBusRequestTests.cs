@@ -40,7 +40,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] results = await client.GetRequestsAsync();
+                EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(operationName, result.Name);
@@ -79,7 +79,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] results = await client.GetRequestsAsync();
+                EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(operationName, result.Name);
@@ -116,7 +116,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] results = await client.GetRequestsAsync();
+                EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(operationName, result.Name);
@@ -156,7 +156,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                RequestResult[] results = await client.GetRequestsAsync();
+                EventsRequestResult[] results = await client.GetRequestsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(operationName, result.Name);

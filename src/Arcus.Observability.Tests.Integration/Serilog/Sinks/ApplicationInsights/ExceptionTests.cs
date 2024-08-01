@@ -31,7 +31,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -55,7 +55,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -82,7 +82,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     string propertyName = string.Format(propertyFormat, nameof(TestException.SpyProperty));
@@ -108,7 +108,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -138,7 +138,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -165,7 +165,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -192,7 +192,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);
@@ -219,7 +219,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
-                ExceptionResult[] results = await client.GetExceptionsAsync();
+                EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Message);

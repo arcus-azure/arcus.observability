@@ -35,7 +35,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked traces from the Azure Application Insights instance.
         /// </summary>
-        public async Task<TraceResult[]> GetTracesAsync()
+        public async Task<EventsTraceResult[]> GetTracesAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows = 
                 await QueryLogsAsync("AppTraces | project Message, OperationId, ParentId, AppRoleName, Properties");
@@ -51,7 +51,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 string customDimensionsTxt = row[4].ToString();
                 var customDimensions = JsonConvert.DeserializeObject<Dictionary<string, string>>(customDimensionsTxt);
 
-                return new TraceResult(message, roleName, operation, customDimensions);
+                return new EventsTraceResult(message, roleName, operation, customDimensions);
 
             }).ToArray();
         }
@@ -59,7 +59,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked metrics from the Azure Application Insights instance.
         /// </summary>
-        public Task<MetricsResult[]> GetMetricsAsync(string metricName)
+        public Task<EventsMetricsResult[]> GetMetricsAsync(string metricName)
         {
             throw new NotImplementedException();
         }
@@ -67,7 +67,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked custom events from the Azure Application Insights instance.
         /// </summary>
-        public async Task<CustomEventResult[]> GetCustomEventsAsync()
+        public async Task<EventsCustomEventResult[]> GetCustomEventsAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows = 
                 await QueryLogsAsync("AppEvents | project Name, AppRoleName, Properties");
@@ -80,7 +80,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 var customDimensionsTxt = row[2].ToString();
                 var customDimensions = JsonConvert.DeserializeObject<Dictionary<string, string>>(customDimensionsTxt);
 
-                return new CustomEventResult(name, roleName, customDimensions);
+                return new EventsCustomEventResult(name, roleName, customDimensions);
 
             }).ToArray();
         }
@@ -88,7 +88,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked requests from the Azure Application Insights instance.
         /// </summary>
-        public async Task<RequestResult[]> GetRequestsAsync()
+        public async Task<EventsRequestResult[]> GetRequestsAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows =
                 await QueryLogsAsync(
@@ -111,7 +111,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 var customDimensionsTxt = row[9].ToString();
                 var customDimensions = JsonConvert.DeserializeObject<Dictionary<string, string>>(customDimensionsTxt);
 
-                return new RequestResult(id, name, source, url, success, resultCode, roleName, operation, customDimensions);
+                return new EventsRequestResult(id, name, source, url, success, resultCode, roleName, operation, customDimensions);
                 
             }).ToArray();
         }
@@ -119,7 +119,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked dependencies from the Azure Application Insights instance.
         /// </summary>
-        public async Task<DependencyResult[]> GetDependenciesAsync()
+        public async Task<EventsDependencyResult[]> GetDependenciesAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows = 
                 await QueryLogsAsync("AppDependencies | project Id, Target, DependencyType, Name, Data, Success, ResultCode, AppRoleName, OperationId, ParentId, Properties");
@@ -145,7 +145,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 var customDimensionsTxt = row[10].ToString();
                 var customDimensions = JsonConvert.DeserializeObject<Dictionary<string, string>>(customDimensionsTxt);
 
-                return new DependencyResult(id, type, target, data, success, resultCode, name, roleName, operation, customDimensions);
+                return new EventsDependencyResult(id, type, target, data, success, resultCode, name, roleName, operation, customDimensions);
 
             }).ToArray();
         }
@@ -153,7 +153,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the tracked exceptions from the Azure Application Insights instance.
         /// </summary>
-        public async Task<ExceptionResult[]> GetExceptionsAsync()
+        public async Task<EventsExceptionResult[]> GetExceptionsAsync()
         {
             IReadOnlyCollection<LogsTableRow> rows = 
                 await QueryLogsAsync("AppExceptions | project OuterMessage, OperationId, ParentId, AppRoleName, Properties");
@@ -170,7 +170,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 string customDimensionsTxt = row[4].ToString();
                 var customDimensions = JsonConvert.DeserializeObject<Dictionary<string, string>>(customDimensionsTxt);
 
-                return new ExceptionResult(message, operation, roleName, customDimensions);
+                return new EventsExceptionResult(message, operation, roleName, customDimensions);
 
             }).ToArray();
         }
