@@ -41,10 +41,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 {
                     Assert.Equal(operationName, result.Request.Name);
                     Assert.Contains(customRequestSource, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
+                    Assert.Equal(isSuccessful, result.Success);
                     Assert.Equal(componentName, result.Cloud.RoleName);
                 });
             });

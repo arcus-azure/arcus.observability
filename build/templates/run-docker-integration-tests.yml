@@ -1,54 +1,82 @@
 parameters:
   dockerProjectName: ''
   httpPort: ''
+  azureServiceConnection: ''
 
-steps:
-  - bash: |
-      if [ -z "$PROJECT_NAME" ]; then
-        echo "##vso[task.logissue type=error;]Missing template parameter \"dockerProjectName\""
-        echo "##vso[task.complete result=Failed;]"
-      fi
-       if [ -z "$HTTP_PORT" ]; then
-        echo "##vso[task.logissue type=error;]Missing template parameter \"httpPort\""
-        echo "##vso[task.complete result=Failed;]"
-      fi
-    env:
-      PROJECT_NAME: ${{ parameters.dockerProjectName }}
-      HTTP_PORT: ${{ parameters.httpPort }}
-  - task: UseDotNet@2
-    displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
-    inputs:
-      packageType: 'sdk'
-      version: '$(DotNet.Sdk.Version)'
-      includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-  - task: Docker@1
-    displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
-    inputs:
-      dockerFile: src/${{ parameters.dockerProjectName }}/Dockerfile
-      imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
-      useDefaultContext: false
-      buildContext: src
-  - task: Docker@1
-    displayName: 'Run new  project Docker image from ${{ parameters.dockerProjectName }}'
-    inputs:
-      command: 'Run an image'
-      imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
-      containerName: '${{ parameters.dockerProjectName }}'
-      ports: '${{ parameters.httpPort }}:80'
-      envVars: |
-        APPINSIGHTS_INSTRUMENTATIONKEY=$(ApplicationInsights.InstrumentationKey)
-        AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
-  - template: test/run-integration-tests.yml@templates
-    parameters:
-      dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-      includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-      projectName: '$(Project).Tests.Integration'
-      category: 'Docker'
-  - task: Bash@3
-    inputs:
-      targetType: 'inline'
-      script: |
-        docker logs ${{ parameters.dockerProjectName }}
-      failOnStderr: true
-    displayName: Show ${{ parameters.dockerProjectName }} logs
-    condition: always()
+jobs:
+  - job: DockerTests
+    displayName: 'Run Docker tests'
+    pool:
+      vmImage: '$(Vm.Image)'
+    steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download build artifacts'
+        inputs:
+          artifact: 'Build'
+          path: '$(Build.SourcesDirectory)'
+
+      - bash: |
+          if [ -z "$PROJECT_NAME" ]; then
+            echo "##vso[task.logissue type=error;]Missing template parameter \"dockerProjectName\""
+            echo "##vso[task.complete result=Failed;]"
+          fi
+           if [ -z "$HTTP_PORT" ]; then
+            echo "##vso[task.logissue type=error;]Missing template parameter \"httpPort\""
+            echo "##vso[task.complete result=Failed;]"
+          fi
+        env:
+          PROJECT_NAME: ${{ parameters.dockerProjectName }}
+          HTTP_PORT: ${{ parameters.httpPort }}
+ 
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.PreviousVersion)'
+
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.Version)'
+          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+
+      - template: import-keyvault-secrets.yml
+        parameters:
+          azureServiceConnection: '${{ parameters.azureServiceConnection }}'
+
+      - task: Docker@1
+        displayName: 'Build Docker image from ${{ parameters.dockerProjectName }}'
+        inputs:
+          dockerFile: src/${{ parameters.dockerProjectName }}/Dockerfile
+          imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
+          useDefaultContext: false
+          buildContext: src
+
+      - task: Docker@1
+        displayName: 'Run new  project Docker image from ${{ parameters.dockerProjectName }}'
+        inputs:
+          command: 'Run an image'
+          imageName: '${{ parameters.dockerProjectName }}:$(Build.BuildId)'
+          containerName: '${{ parameters.dockerProjectName }}'
+          ports: '${{ parameters.httpPort }}:80'
+          envVars: |
+            APPINSIGHTS_INSTRUMENTATIONKEY=$(Arcus.Observability.ApplicationInsights.InstrumentationKey)
+            AzureWebJobsStorage=$(Arcus.AzureFunctions.AzureWebJobsStorage)
+
+      - template: test/run-integration-tests.yml@templates
+        parameters:
+          dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+          projectName: '$(Project).Tests.Integration'
+          category: 'Docker'
+
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: |
+            docker logs ${{ parameters.dockerProjectName }}
+          failOnStderr: true
+        displayName: Show ${{ parameters.dockerProjectName }} logs
+        condition: always()
+    

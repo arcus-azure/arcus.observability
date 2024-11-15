@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,8 +9,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
     [Trait("Category", "Docker")]
     public class AzureFunctionsDockerTests : ApplicationInsightsSinkTests
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureFunctionsDockerTests" /> class.
         /// </summary>
@@ -23,6 +20,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         [Fact]
         public async Task LogRequest_WithRequestsOperationName_SinksToApplicationInsights()
         {
+            TestLocation = TestLocation.Remote;
+
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsRequestResult[] results = await client.GetRequestsAsync();

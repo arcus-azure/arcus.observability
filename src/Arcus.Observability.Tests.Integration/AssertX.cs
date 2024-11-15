@@ -25,7 +25,9 @@ namespace Xunit
         {
             Guard.NotNull(collection, nameof(collection), "Requires collection of elements to find a single element that matches the assertion");
             Guard.NotNull(assertion, nameof(assertion), "Requires an element assertion to verify if an single element in the collection matches");
-            
+
+            Assert.NotEmpty(collection);
+
             T[] array = collection.ToArray();
             var stack = new Stack<Tuple<int, object, Exception>>();
 

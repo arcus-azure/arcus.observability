@@ -56,6 +56,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             DateTimeOffset startTime = DateTimeOffset.Now;
             TimeSpan duration = BogusGenerator.Date.Timespan();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+            
+            TestLocation = TestLocation.Remote;
 
             // Act
             Logger.LogDependency(dependencyType, dependencyData, isSuccessful, dependencyName, startTime, duration, dependencyId, telemetryContext);
@@ -70,6 +72,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(dependencyData, result.Dependency.Data);
                     Assert.Equal(dependencyName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
+                    Assert.Equal(isSuccessful, result.Success);
+                    Assert.All(telemetryContext, item => Assert.Equal(item.Value.ToString(), Assert.Contains(item.Key, result.CustomDimensions)));
                 });
             });
         }

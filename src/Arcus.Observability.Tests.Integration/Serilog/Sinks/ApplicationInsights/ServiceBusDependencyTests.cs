@@ -97,7 +97,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-        private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
+        private static void AssertContainsCustomDimension(IDictionary<string, string> customDimensions, string key, string expected)
         {
             Assert.True(customDimensions.TryGetValue(key, out string actual), $"Cannot find {key} in custom dimensions: {String.Join(", ", customDimensions.Keys)}");
             Assert.Equal(expected, actual);

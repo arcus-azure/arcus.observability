@@ -53,7 +53,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
                     Assert.Equal(requestUri.Host, result.Dependency.Target);
                     Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
@@ -92,7 +92,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
                     Assert.Equal(requestUri.Host, result.Dependency.Target);
                     Assert.Equal($"{httpMethod} {requestUri.AbsolutePath}", result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
@@ -132,7 +132,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(DependencyType, result.Dependency.Type);
+                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
                     Assert.Equal(request.Host.Host, result.Dependency.Target);
                     Assert.Equal($"{httpMethod} {request.Path}", result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);

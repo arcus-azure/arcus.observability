@@ -145,6 +145,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             DateTimeOffset startTime = DateTimeOffset.Now;
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
+            TestLocation = TestLocation.Remote;
+
             // Act
             Logger.LogRequest(request, (int) statusCode, operationName, startTime, duration, telemetryContext);
 

@@ -46,10 +46,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(operationName, result.Request.Name);
                     Assert.Contains(queueName, result.Request.Source);
                     Assert.Contains(serviceBusNamespace, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
+                    Assert.Equal(isSuccessful, result.Success);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityType, ServiceBusEntityType.Queue.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityName, queueName);
@@ -86,10 +85,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(operationName, result.Request.Name);
                     Assert.Contains(queueName, result.Request.Source);
                     Assert.Contains(serviceBusNamespace, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
+                    Assert.Equal(isSuccessful, result.Success);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityType, ServiceBusEntityType.Queue.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityName, queueName);
@@ -125,10 +123,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Contains(topicName, result.Request.Source);
                     Assert.Contains(serviceBusNamespace, result.Request.Source);
                     Assert.Contains(serviceBusNamespaceSuffix, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
+                    Assert.Equal(isSuccessful, result.Success);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityType, ServiceBusEntityType.Topic.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityName, topicName);
@@ -151,6 +148,8 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var entityType = BogusGenerator.PickRandom<ServiceBusEntityType>();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
+            TestLocation = TestLocation.Remote;
+
             // Act
             Logger.LogServiceBusRequest(serviceBusNamespace, entityName, operationName, isSuccessful, duration, startTime, entityType, telemetryContext);
 
@@ -163,10 +162,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                     Assert.Equal(operationName, result.Request.Name);
                     Assert.Contains(entityName, result.Request.Source);
                     Assert.Contains(serviceBusNamespace, result.Request.Source);
-                    Assert.Empty(result.Request.Url);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
                     Assert.Equal(operationName, result.Operation.Name);
-                    Assert.True(bool.TryParse(result.Request.Success, out bool success));
-                    Assert.Equal(isSuccessful, success);
+                    Assert.Equal(isSuccessful, result.Success);
 
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityType, entityType.ToString());
                     AssertContainsCustomDimension(result.CustomDimensions, ContextProperties.RequestTracking.ServiceBus.EntityName, entityName);
@@ -175,10 +173,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-        private static void AssertContainsCustomDimension(EventsResultDataCustomDimensions customDimensions, string key, string expected)
+        private static void AssertContainsCustomDimension(IDictionary<string, string> customDimensions, string key, string expected)
         {
-            Assert.True(customDimensions.TryGetValue(key, out string actual), $"Cannot find {key} in custom dimensions: {String.Join(", ", customDimensions.Keys)}");
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected, Assert.Contains(key, customDimensions));
         }
     }
 }

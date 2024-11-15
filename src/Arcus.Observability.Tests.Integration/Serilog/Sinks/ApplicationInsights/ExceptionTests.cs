@@ -6,7 +6,6 @@ using Arcus.Observability.Tests.Integration.Fixture;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -60,8 +59,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.True(result.CustomDimensions.TryGetValue($"Exception-{nameof(TestException.SpyProperty)}", out string actualProperty));
-                    Assert.Equal(expectedProperty, actualProperty);
+                    Assert.Equal(expectedProperty, Assert.Contains($"Exception-{nameof(TestException.SpyProperty)}", result.CustomDimensions));
                 });
             });
         }
@@ -76,6 +74,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string propertyFormat = "Exception.{0}";
             ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
             ApplicationInsightsSinkOptions.Exception.PropertyFormat = propertyFormat;
+            TestLocation = TestLocation.Remote;
             
             // Act
             Logger.LogCritical(exception, exception.Message);
@@ -86,11 +85,10 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsExceptionResult[] results = await client.GetExceptionsAsync();
                 AssertX.Any(results, result =>
                 {
-                    string propertyName = String.Format(propertyFormat, nameof(TestException.SpyProperty));
+                    string propertyName = string.Format(propertyFormat, nameof(TestException.SpyProperty));
                     
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
-                    Assert.True(result.CustomDimensions.TryGetValue(propertyName, out string actualProperty));
-                    Assert.Equal(expectedProperty, actualProperty);
+                    Assert.Equal(expectedProperty, Assert.Contains(propertyName, result.CustomDimensions));
                 });
             });
         }

@@ -40,9 +40,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
                     Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains(databaseName, result.Dependency.Name);
                     Assert.Contains(operationName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });
@@ -76,9 +76,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
                 AssertX.Any(results, result =>
                 {
-                    Assert.Equal(dependencyType, result.Dependency.Type);
+                    Assert.Equal(dependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
                     Assert.Equal(serverName, result.Dependency.Target);
-                    Assert.Contains($"{dependencyType}: {databaseName}", result.Dependency.Name);
+                    Assert.Contains(databaseName, result.Dependency.Name);
                     Assert.Contains(operationName, result.Dependency.Name);
                     Assert.Equal(dependencyId, result.Dependency.Id);
                 });

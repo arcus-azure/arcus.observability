@@ -41,6 +41,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
             {
                 EventsDependencyResult[] results = await client.GetDependenciesAsync();
+                Assert.NotEmpty(results);
                 AssertX.Any(results, result =>
                 {
                     Assert.Equal(dependencyType, result.Dependency.Type);
