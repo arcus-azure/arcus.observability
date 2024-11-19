@@ -24,7 +24,7 @@ module.exports = {
         {
           type: 'docsVersionDropdown',
 
-          //// Optional
+          // Optional
           position: 'right',
           // Add additional dropdown items at the beginning/end of the dropdown.
           dropdownItemsBefore: [],
@@ -84,13 +84,12 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          routeBasePath: "/",
+          routeBasePath: '/',
           path: 'preview',
           sidebarCollapsible: false,
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/arcus-azure/arcus.observability/edit/master/docs',
-          includeCurrentVersion:process.env.CONTEXT !== 'production',
+          editUrl: 'https://github.com/arcus-azure/arcus.observability/edit/master/docs',
+          includeCurrentVersion: process.env.CONTEXT !== 'production',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -98,7 +97,5 @@ module.exports = {
       },
     ],
   ],
-  stylesheets: [
-    'https://fonts.googleapis.com/css2?family=Bitter:wght@700&family=Inter:wght@400;500&display=swap',
-  ],
+  stylesheets: ['https://fonts.googleapis.com/css2?family=Bitter:wght@700&family=Inter:wght@400;500&display=swap'],
 };
