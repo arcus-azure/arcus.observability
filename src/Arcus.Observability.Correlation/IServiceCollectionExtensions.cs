@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Correlation;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -17,11 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
         public static IServiceCollection AddCorrelation(this IServiceCollection services)
-        {
-            Guard.NotNull(services, nameof(services), "Requires a service collection to register the default correlation accessor to the application services");
-
-            return AddCorrelation<CorrelationInfo>(services);
-        }
+            => AddCorrelation<CorrelationInfo>(services);
 
         /// <summary>
         /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/>
@@ -30,15 +25,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
         public static IServiceCollection AddCorrelation<TCorrelationInfo>(
-            this IServiceCollection services) 
+            this IServiceCollection services)
             where TCorrelationInfo : CorrelationInfo
-        {
-            Guard.NotNull(services, nameof(services), "Requires a service collection to register the default correlation accessor to the application services");
-
-            return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
-                services, 
+            => AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
+                services,
                 provider => new DefaultCorrelationInfoAccessor<TCorrelationInfo>());
-        }
+
 
         /// <summary>
         /// Adds operation and transaction correlation to the application.
@@ -48,15 +40,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="createCustomCorrelationAccessor">The custom <see cref="ICorrelationInfoAccessor"/> implementation factory to retrieve the <see cref="CorrelationInfo"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> or the <paramref name="createCustomCorrelationAccessor"/> is <c>null</c>.</exception>
         public static IServiceCollection AddCorrelation<TAccessor>(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor)
-            where TAccessor : class, ICorrelationInfoAccessor
-        {
-            Guard.NotNull(services, nameof(services), "Requires a service collection to register the custom correlation accessor to the application services");
-            Guard.NotNull(createCustomCorrelationAccessor, nameof(createCustomCorrelationAccessor), "Requires a factory function to create a custom correlation accessor");
-
-            return AddCorrelation<TAccessor, CorrelationInfo>(services, createCustomCorrelationAccessor);
-        }
+            where TAccessor : class, ICorrelationInfoAccessor 
+                => AddCorrelation<TAccessor, CorrelationInfo>(services, createCustomCorrelationAccessor);
 
         /// <summary>
         /// Adds operation and transaction correlation to the application.
@@ -72,8 +59,14 @@ namespace Microsoft.Extensions.DependencyInjection
             where TAccessor : class, ICorrelationInfoAccessor<TCorrelationInfo>
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(services, nameof(services), "Requires a service collection to register the custom correlation accessor to the application services");
-            Guard.NotNull(createCustomCorrelationAccessor, nameof(createCustomCorrelationAccessor), "Requires a factory function to create a custom correlation accessor");
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services), "Requires a service collection to register the custom correlation accessor to the application services");
+            }
+            if (createCustomCorrelationAccessor is null)
+            {
+                throw new ArgumentNullException(nameof(createCustomCorrelationAccessor), "Requires a factory function to create a custom correlation accessor");
+            }
 
             services.AddScoped<ICorrelationInfoAccessor<TCorrelationInfo>>(createCustomCorrelationAccessor);
             services.AddScoped<ICorrelationInfoAccessor>(serviceProvider =>
