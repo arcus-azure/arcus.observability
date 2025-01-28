@@ -2,7 +2,6 @@
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -53,7 +52,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor, 
             CorrelationInfoEnricherOptions options)
         {
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to enrich the log events with correlation information");
+            if (correlationInfoAccessor is null)
+            {
+                throw new ArgumentNullException(nameof(correlationInfoAccessor), "Requres a correlation accessor to enrich the log events with correlation information");
+            }
 
             Options = options ?? new CorrelationInfoEnricherOptions();
             CorrelationInfoAccessor = correlationInfoAccessor;
@@ -77,8 +79,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logEvent"/> or the <paramref name="propertyFactory"/> is <c>null</c>.</exception>
         public virtual void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
+            if (logEvent is null)
+            {
+                throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
+            }
+            if (propertyFactory is null)
+            {
+                throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
+            }
 
             TCorrelationInfo correlationInfo = CorrelationInfoAccessor.GetCorrelationInfo();
             if (correlationInfo is null)
@@ -100,9 +108,18 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// </exception>
         protected virtual void EnrichCorrelationInfo(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, TCorrelationInfo correlationInfo)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
-            Guard.NotNull(correlationInfo, nameof(correlationInfo), "Requires the correlation information to enrich the log event");
+            if (logEvent is null)
+            {
+                throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
+            }
+            if (propertyFactory is null)
+            {
+                throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
+            }
+            if (correlationInfo is null)
+            {
+                throw new ArgumentNullException(nameof(correlationInfo), "Requires the correlation information to enrich the log event");
+            }
             
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationIdPropertyName, correlationInfo.OperationId);
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.TransactionIdPropertyName, correlationInfo.TransactionId);
@@ -120,9 +137,18 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
         protected void EnrichLogPropertyIfPresent(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, string propertyName, string propertyValue)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank name for the correlation log property");
+            if (logEvent is null)
+            {
+                throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
+            }
+            if (propertyFactory is null)
+            {
+                throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
+            }
+            if (string.IsNullOrWhiteSpace(propertyName))
+            {
+                throw new ArgumentNullException(nameof(propertyName), "Requires a non-blank name for the correlation log property");
+            }
             
             if (!String.IsNullOrEmpty(propertyValue))
             {

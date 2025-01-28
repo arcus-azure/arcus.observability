@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Enrichers;
 using Serilog.Events;
@@ -33,8 +32,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> or <paramref name="propertyName"/> is blank.</exception>
         public ApplicationEnricher(string componentName, string propertyName)
         {
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank application component name");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+            if (string.IsNullOrWhiteSpace(componentName))
+            {
+                throw new ArgumentNullException(nameof(componentName), "Requires a non-blank application component name");
+            }
+            if (string.IsNullOrWhiteSpace(propertyName))
+            {
+                throw new ArgumentNullException(nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+            }
 
             _componentValue = componentName;
             _propertyName = propertyName;

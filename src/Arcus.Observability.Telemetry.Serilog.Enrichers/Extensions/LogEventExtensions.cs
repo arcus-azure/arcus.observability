@@ -1,6 +1,6 @@
-﻿using GuardNet;
+﻿// ReSharper disable once CheckNamespace
+using System;
 
-// ReSharper disable once CheckNamespace
 namespace Serilog.Events
 {
     /// <summary>
@@ -19,7 +19,10 @@ namespace Serilog.Events
         /// </returns>
         public static bool ContainsProperty(this LogEvent logEvent, string name, string value)
         {
-            Guard.NotNull(logEvent, nameof(logEvent));
+            if (logEvent is null)
+            {
+                throw new ArgumentNullException(nameof(logEvent));
+            }
 
             if (logEvent.Properties.TryGetValue(name, out LogEventPropertyValue actual))
             {
