@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 using Microsoft.AspNetCore.Http;
 
 // ReSharper disable once CheckNamespace
@@ -31,10 +30,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires a measurement instance to time the duration of the HTTP request");
+            }
 
             LogRequest(logger, request, response, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -60,14 +59,7 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
-        }
+                => LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
 
         /// <summary>
         /// Logs an HTTP request.
@@ -88,10 +80,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires a measurement instance to time the duration of the HTTP request");
+            }
 
             LogRequest(logger, request, response, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -116,14 +108,7 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request operation");
-            Guard.NotNull(response, nameof(response), "Requires a HTTP response instance to track a HTTP request operation");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
-        }
+                => LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
 
         /// <summary>
         /// Logs an HTTP request.
@@ -142,11 +127,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
-            Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires a measurement instance to time the duration of the HTTP request");
+            }
 
             LogRequest(logger, request, responseStatusCode, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -172,15 +156,7 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
-
-            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
-        }
+                => LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
 
         /// <summary>
         /// Logs an HTTP request.
@@ -201,11 +177,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
-            Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires an measurement instance to time the duration of the HTTP request");
+            }
 
             LogRequest(logger, request, responseStatusCode, operationName, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -234,11 +209,22 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request instance to track a HTTP request");
-            Guard.NotLessThan(responseStatusCode, 0, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotGreaterThan(responseStatusCode, 999, nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP request");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry")/
+            }
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request), "Requires a HTTP request instance to track a HTTP request");
+            }
+            if (responseStatusCode < 0 || responseStatusCode > 999)
+            {
+                throw new ArgumentOutOfRangeException(nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
+            }
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the HTTP request");
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 

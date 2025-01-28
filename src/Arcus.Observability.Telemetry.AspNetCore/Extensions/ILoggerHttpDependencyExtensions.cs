@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 using Microsoft.AspNetCore.Http;
 
 // ReSharper disable once CheckNamespace
@@ -37,13 +36,7 @@ namespace Microsoft.Extensions.Logging
             HttpStatusCode statusCode,
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-
-            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
-        }
+                => LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, context);
 
         /// <summary>
         /// Logs an HTTP dependency.
@@ -65,13 +58,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             string dependencyId,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-
-            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, dependencyId, context);
-        }
+                => LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, dependencyId, context);
 
         /// <summary>
         /// Logs an HTTP dependency.
@@ -93,13 +80,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             string dependencyId,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the HTTP communication when tracking a HTTP dependency");
-
-            LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, dependencyId, context);
-        }
+                => LogHttpDependency(logger, request, statusCode, measurement.StartTime, measurement.Elapsed, dependencyId, context);
 
         /// <summary>
         /// Logs an HTTP dependency
@@ -122,13 +103,7 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
-
-            LogHttpDependency(logger, request, statusCode, startTime, duration, dependencyId: null, context);
-        }
+                => LogHttpDependency(logger, request, statusCode, startTime, duration, dependencyId: null, context);
 
         /// <summary>
         /// Logs an HTTP dependency
@@ -153,13 +128,7 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             string dependencyId,
             Dictionary<string, object> context = null)
-        {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
-
-            LogHttpDependency(logger, request, (int)statusCode, startTime, duration, dependencyId, context);
-        }
+                => LogHttpDependency(logger, request, (int)statusCode, startTime, duration, dependencyId, context);
 
         /// <summary>
         /// Logs an HTTP dependency
@@ -185,11 +154,22 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNull(request, nameof(request), "Requires a HTTP request message to track a HTTP dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
-            Guard.NotLessThan(statusCode, 100, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
-            Guard.NotGreaterThan(statusCode, 599, nameof(statusCode), "Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
+            }
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request), "Requires a HTTP request message to track a HTTP dependency");
+            }
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the HTTP dependency operation");
+            }
+            if (statusCode < 100 || statusCode > 599)
+            {
+                throw new ArgumentException("Requires a valid HTTP response status code that's within the range of 100 to 599, inclusive", nameof(statusCode));
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
