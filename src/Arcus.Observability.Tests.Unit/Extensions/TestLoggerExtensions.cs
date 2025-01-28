@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 using Xunit;
 
 // ReSharper disable once CheckNamespace
@@ -27,7 +26,10 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static DependencyLogEntry GetMessageAsDependency(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a test logger to retrieve the written log message");
+            }
 
             if (logger.WrittenMessage is null)
             {
@@ -73,7 +75,10 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static RequestLogEntry GetMessageAsRequest(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a test logger to retrieve the written log message");
+            }
 
             if (logger.WrittenMessage is null)
             {
@@ -142,7 +147,10 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static MetricLogEntry GetMessageAsMetric(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a test logger to retrieve the written log message");
+            }
 
             if (logger.WrittenMessage is null)
             {
