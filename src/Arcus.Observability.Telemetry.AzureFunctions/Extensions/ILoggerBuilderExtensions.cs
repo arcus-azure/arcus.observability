@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
@@ -22,7 +21,10 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="InvalidOperationException">Thrown when no 'ApplicationInsightsLoggerProvider' instance can be found in the <paramref name="builder"/>.</exception>
         public static ILoggingBuilder RemoveMicrosoftApplicationInsightsLoggerProvider(this ILoggingBuilder builder)
         {
-            Guard.NotNull(builder, nameof(builder), "Requires an instance of the logging builder to remove Microsoft's 'ApplicationInsightsLoggerProvider'");
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder), "Requires an instance of the logging builder to remove Microsoft's 'ApplicationInsightsLoggerProvider'");
+            }
 
             ServiceDescriptor descriptor = 
                 builder.Services.FirstOrDefault(service => service.ImplementationType?.Name == "ApplicationInsightsLoggerProvider");
