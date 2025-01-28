@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Logging
 {
@@ -36,9 +35,6 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             bool isSuccessful,
             IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
-            
             DependencyType = dependencyType;
             DependencyName = dependencyName;
             DependencyData = dependencyData;
@@ -80,8 +76,14 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             bool isSuccessful,
             IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+            if (string.IsNullOrWhiteSpace(dependencyType))
+            {
+                throw new ArgumentNullException(nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+            }
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the dependency operation");
+            }
 
             DependencyId = dependencyId;
             DependencyType = dependencyType;

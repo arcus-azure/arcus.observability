@@ -1,5 +1,4 @@
-﻿using GuardNet;
-
+﻿
 // ReSharper disable once CheckNamespace
 namespace System.Collections.Generic
 {
@@ -16,7 +15,10 @@ namespace System.Collections.Generic
         /// <param name="propertyKey">Key of the dictionary entry to return</param>
         public static TValue GetValueOrDefault<TValue>(this IReadOnlyDictionary<string, TValue> dictionary, string propertyKey)
         {
-            Guard.NotNull(dictionary, nameof(dictionary));
+            if (dictionary is null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
 
             if (dictionary.TryGetValue(propertyKey, out TValue foundValue))
             {
