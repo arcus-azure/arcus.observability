@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -20,7 +19,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationVersion"/> is <c>null</c>.</exception>
         public ApplicationVersionTelemetryInitializer(IAppVersion applicationVersion)
         {
-            Guard.NotNull(applicationVersion, nameof(applicationVersion), $"Requires an application version ({nameof(IAppVersion)}) implementation to retrieve the application version to initialize in the telemetry");
+            if (applicationVersion is null)
+            {
+                throw new ArgumentNullException(nameof(applicationVersion), $"Requires an application version ({nameof(IAppVersion)}) implementation to retrieve the application version to initialize in the telemetry");
+            }
             _applicationVersion = applicationVersion;
         }
 

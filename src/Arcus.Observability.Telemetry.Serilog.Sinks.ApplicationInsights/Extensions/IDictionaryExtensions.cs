@@ -1,5 +1,4 @@
-﻿using GuardNet;
-
+﻿
 // ReSharper disable once CheckNamespace
 namespace System.Collections.Generic
 {
@@ -17,8 +16,14 @@ namespace System.Collections.Generic
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="items"/> or <paramref name="additionalItems"/> is <c>null</c>.</exception>
         internal static void AddRange(this IDictionary<string, string> items, IDictionary<string, string> additionalItems)
         {
-            Guard.NotNull(items, nameof(items), "Requires a base dictionary to add the additional items to");
-            Guard.NotNull(additionalItems, nameof(additionalItems), "Requires an additional set of items to add to the base dictionary");
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items), "Requires a base dictionary to add the additional items to");
+            }
+            if (additionalItems is null)
+            {
+                throw new ArgumentNullException(nameof(additionalItems), "Requires an additional set of items to add to the base dictionary");
+            }
             
             foreach (KeyValuePair<string, string> property in additionalItems)
             {

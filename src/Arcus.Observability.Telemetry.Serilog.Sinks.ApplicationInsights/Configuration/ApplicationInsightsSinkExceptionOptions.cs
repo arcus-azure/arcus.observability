@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration
 {
@@ -37,8 +36,14 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _propertyFormat;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank string format to track (public) exception properties");
-                Guard.For<FormatException>(() => PropertyFormatRegex.Matches(value).Count != 3, "Requires a single occurrence of the substring '{0}' in the exception property format");
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentNullException(nameof(value), "Requires a non-blank string format to track (public) exception properties");
+                }
+                if (PropertyFormatRegex.Matches(value).Count != 3)
+                {
+                    throw new FormatException(nameof(value), "Requires a single occurrence of the substring '{0}' in the exception property format");
+                }
 
                 _propertyFormat = value;
             }

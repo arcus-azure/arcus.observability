@@ -4,7 +4,6 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using System;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
@@ -22,7 +21,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> is <c>null</c>.</exception>
         public OperationContextConverter(ApplicationInsightsSinkOptions options)
         {
-            Guard.NotNull(options, nameof(options), "Requires a set of options to influence the behavior of the Application Insights Serilog sink");
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options), "Requires a set of options to influence the behavior of the Application Insights Serilog sink");
+            }
+
             _options = options;
         }
 
