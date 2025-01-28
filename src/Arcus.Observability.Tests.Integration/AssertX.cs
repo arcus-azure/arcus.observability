@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using GuardNet;
 using Xunit.Sdk;
 
 // ReSharper disable once CheckNamespace
@@ -23,8 +22,14 @@ namespace Xunit
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="collection"/> or <paramref name="assertion"/> is <c>null</c>.</exception>
         public static void Any<T>(IEnumerable<T> collection, Action<T> assertion)
         {
-            Guard.NotNull(collection, nameof(collection), "Requires collection of elements to find a single element that matches the assertion");
-            Guard.NotNull(assertion, nameof(assertion), "Requires an element assertion to verify if an single element in the collection matches");
+            if (collection is null)
+            {
+                throw new ArgumentNullException(nameof(collection), "Requires collection of elements to find a single element that matches the assertion");
+            }
+            if (assertion is null)
+            {
+                throw new ArgumentNullException(nameof(assertion), "Requires an element assertion to verify if an single element in the collection matches");
+            }
 
             Assert.NotEmpty(collection);
 

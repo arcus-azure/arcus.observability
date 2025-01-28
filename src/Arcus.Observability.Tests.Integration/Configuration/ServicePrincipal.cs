@@ -1,5 +1,5 @@
-﻿using Arcus.Testing;
-using GuardNet;
+﻿using System;
+using Arcus.Testing;
 
 namespace Arcus.Observability.Tests.Integration.Configuration
 {
@@ -13,9 +13,18 @@ namespace Arcus.Observability.Tests.Integration.Configuration
         /// </summary>
         public ServicePrincipal(string tenantId, string clientId, string clientSecret)
         {
-            Guard.NotNullOrWhitespace(tenantId, nameof(tenantId));
-            Guard.NotNullOrWhitespace(clientId, nameof(clientId));
-            Guard.NotNullOrWhitespace(clientSecret, nameof(clientSecret));
+            if (string.IsNullOrWhiteSpace(tenantId))
+            {
+                throw new ArgumentNullException(nameof(tenantId));
+            }
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            if (string.IsNullOrWhiteSpace(clientSecret))
+            {
+                throw new ArgumentNullException(nameof(clientSecret));
+            }
 
             TenantId = tenantId;
             ClientId = clientId;
