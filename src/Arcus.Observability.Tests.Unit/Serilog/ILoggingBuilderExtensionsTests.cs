@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Correlation;
-using Arcus.Observability.Tests.Unit.Telemetry.AzureFunctions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -34,7 +33,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog
             var loggerProvider = serviceProvider.GetService<ILoggerProvider>();
             Assert.NotNull(loggerProvider);
             Assert.IsType<SerilogLoggerProvider>(loggerProvider);
-            Assert.NotNull(serviceProvider.GetService<ILogger<ILoggerBuilderExtensionsTests>>());
+            Assert.NotNull(serviceProvider.GetService<ILogger<ILoggingBuilderExtensionsTests>>());
         }
 
         [Fact]
