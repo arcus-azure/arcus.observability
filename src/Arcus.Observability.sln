@@ -21,11 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Tests.Core", "Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj", "{DC18426F-4D03-4DBD-8D92-224C026BFADC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.AzureFunctions", "Arcus.Observability.Telemetry.AzureFunctions\Arcus.Observability.Telemetry.AzureFunctions.csproj", "{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Telemetry.AspNetCore", "Arcus.Observability.Telemetry.AspNetCore\Arcus.Observability.Telemetry.AspNetCore.csproj", "{72573A95-8B8A-4EE0-8067-099305B211B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcus.Observability.Tests.Runtimes.AzureFunction", "Arcus.Observability.Tests.Runtimes.AzureFunction\Arcus.Observability.Tests.Runtimes.AzureFunction.csproj", "{6F45A438-8C84-4279-8AE5-21346AB05102}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,18 +63,10 @@ Global
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6C0ED5D-94B4-4CD2-B17A-E72432AC4883}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72573A95-8B8A-4EE0-8067-099305B211B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F45A438-8C84-4279-8AE5-21346AB05102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F45A438-8C84-4279-8AE5-21346AB05102}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F45A438-8C84-4279-8AE5-21346AB05102}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F45A438-8C84-4279-8AE5-21346AB05102}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,7 +75,6 @@ Global
 		{4DCD1626-66B4-4396-9CD6-951E9CE7BDE8} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
 		{3D66B14F-2CC7-44E6-A53F-1E45F9A6BCF6} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
 		{DC18426F-4D03-4DBD-8D92-224C026BFADC} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
-		{6F45A438-8C84-4279-8AE5-21346AB05102} = {88258D35-6B48-4F82-AD45-9B3BEB7F8828}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E5382820-51FF-4B00-92BE-C78E80EA0841}
