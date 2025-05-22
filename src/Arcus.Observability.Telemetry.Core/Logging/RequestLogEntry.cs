@@ -39,14 +39,17 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             {
                 throw new ArgumentException("Requires a HTTP request host name without whitespace", nameof(host));
             }
+
             if (string.IsNullOrWhiteSpace(operationName))
             {
-                throw new ArgumentNullException(nameof(operationName), "Requires a non-blank operation name");
+                throw new ArgumentException("Requires a non-blank operation name", nameof(operationName));
             }
+
             if (statusCode < 100 || statusCode > 599)
             {
                 throw new ArgumentOutOfRangeException(nameof(statusCode), "Requires a HTTP response status code that's within the 100-599 range to track a HTTP request");
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the request operation");
@@ -76,6 +79,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <param name="startTime">The time the request was received.</param>
         /// <param name="duration">The duration of the processing of the request.</param>
         /// <param name="context">The context that provides more insights on the HTTP request that was tracked.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="operationName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Thrown when the <paramref name="statusCode"/> is outside the 0-999 range inclusively,
         ///     or the <paramref name="duration"/> is a negative time range.
@@ -90,16 +94,18 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             IDictionary<string, object> context)
-                => new RequestLogEntry(
-                    method,
-                    $"{scheme}://{host}",
-                    uri,
-                    operationName ?? $"{method} {uri}",
-                    statusCode,
-                    RequestSourceSystem.Http,
-                    startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
-                    duration,
-                    context);
+        {
+            return new RequestLogEntry(
+                            method,
+                            $"{scheme}://{host}",
+                            uri,
+                            operationName ?? $"{method} {uri}",
+                            statusCode,
+                            RequestSourceSystem.Http,
+                            startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
+                            duration,
+                            context);
+        }
 
         /// <summary>
         /// Creates an <see cref="RequestLogEntry"/> instance for Azure Service Bus requests.
@@ -109,6 +115,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <param name="duration">The duration it took to process the Azure Service Bus request.</param>
         /// <param name="startTime">The time when the request was received.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="operationName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static RequestLogEntry CreateForServiceBus(
             string operationName,
@@ -116,7 +123,9 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             TimeSpan duration,
             DateTimeOffset startTime,
             IDictionary<string, object> context)
-                => CreateWithoutHttpRequest(RequestSourceSystem.AzureServiceBus, operationName, isSuccessful, duration, startTime, context);
+        {
+            return CreateWithoutHttpRequest(RequestSourceSystem.AzureServiceBus, operationName, isSuccessful, duration, startTime, context);
+        }
 
         /// <summary>
         /// Creates an <see cref="RequestLogEntry"/> instance for Azure EventHubs requests.
@@ -126,6 +135,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <param name="duration">The duration it took to process the Azure EventHubs request.</param>
         /// <param name="startTime">The time when the request was received.</param>
         /// <param name="context">The telemetry context that provides more insights on the Azure EventHubs request.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="operationName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static RequestLogEntry CreateForEventHubs(
             string operationName,
@@ -133,7 +143,9 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             TimeSpan duration,
             DateTimeOffset startTime,
             IDictionary<string, object> context)
-                => CreateWithoutHttpRequest(RequestSourceSystem.AzureEventHubs, operationName, isSuccessful, duration, startTime, context);
+        {
+            return CreateWithoutHttpRequest(RequestSourceSystem.AzureEventHubs, operationName, isSuccessful, duration, startTime, context);
+        }
 
         private static RequestLogEntry CreateWithoutHttpRequest(
             RequestSourceSystem source,
@@ -142,16 +154,18 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             TimeSpan duration,
             DateTimeOffset startTime,
             IDictionary<string, object> context)
-                => new RequestLogEntry(
-                    method: "<not-applicable>",
-                    host: "<not-applicable>",
-                    uri: "<not-applicable>",
-                    operationName: operationName,
-                    statusCode: isSuccessful ? 200 : 500,
-                    sourceSystem: source,
-                    requestTime: startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
-                    duration: duration,
-                    context: context);
+        {
+            return new RequestLogEntry(
+                            method: "<not-applicable>",
+                            host: "<not-applicable>",
+                            uri: "<not-applicable>",
+                            operationName: operationName,
+                            statusCode: isSuccessful ? 200 : 500,
+                            sourceSystem: source,
+                            requestTime: startTime.ToString(FormatSpecifiers.InvariantTimestampFormat),
+                            duration: duration,
+                            context: context);
+        }
 
         /// <summary>
         /// Creates an <see cref="RequestLogEntry"/> instance for custom requests.
@@ -162,6 +176,8 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <param name="duration">The duration it took to process the custom request.</param>
         /// <param name="startTime">The time when the request was received.</param>
         /// <param name="context">The telemetry context that provides more insights on the custom request.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="operationName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static RequestLogEntry CreateForCustomRequest(
             string requestSource,
@@ -173,7 +189,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             if (string.IsNullOrWhiteSpace(requestSource))
             {
-                throw new ArgumentNullException(nameof(requestSource), "Requires a non-blank request source to identify the caller");
+                throw new ArgumentException("Requires a non-blank request source to identify the caller", nameof(requestSource));
             }
 
             return CreateWithoutHttpRequest(requestSource, operationName, isSuccessful, duration, startTime, context);

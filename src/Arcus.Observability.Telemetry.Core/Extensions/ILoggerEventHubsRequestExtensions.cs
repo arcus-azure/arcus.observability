@@ -60,7 +60,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogEventHubsRequest(logger, eventHubsNamespace, "$Default", eventHubsName, operationName: null, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
+        {
+            LogEventHubsRequest(logger, eventHubsNamespace, "$Default", eventHubsName, operationName: null, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
+        }
 
         /// <summary>
         /// Logs an Azure EventHubs request.
@@ -127,18 +129,22 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires an logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(eventHubsNamespace))
             {
-                throw new ArgumentNullException(nameof(eventHubsNamespace), "Requires an Azure EventHubs namespace to track the request");
+                throw new ArgumentException("Requires an Azure EventHubs namespace to track the request", nameof(eventHubsNamespace));
             }
+
             if (string.IsNullOrWhiteSpace(consumerGroup))
             {
-                throw new ArgumentNullException(nameof(consumerGroup), "Requires an Azure EventHubs consumer group to track the request");
+                throw new ArgumentException("Requires an Azure EventHubs consumer group to track the request", nameof(consumerGroup));
             }
+
             if (string.IsNullOrWhiteSpace(eventHubsName))
             {
-                throw new ArgumentNullException(nameof(eventHubsName), "Requires an Azure EventHubs name to track the request");
+                throw new ArgumentException("Requires an Azure EventHubs name to track the request", nameof(eventHubsName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure EventHubs request operation");

@@ -14,6 +14,7 @@ namespace Serilog.Events
         /// <param name="logEvent">The event on which the property should be present.</param>
         /// <param name="name">The unique name of the property that should be present in the <paramref name="logEvent"/>.</param>
         /// <param name="value">The simple value of the property that should be present for the given <paramref name="name"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="logEvent"/> is <c>null</c></exception>
         /// <returns>
         ///     [true] if the specified <paramref name="logEvent"/> contains the log property with the specified <paramref name="name"/> and the simple <paramref name="value"/>; [false] otherwise.
         /// </returns>

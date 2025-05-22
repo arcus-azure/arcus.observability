@@ -19,7 +19,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name), "Requires a non-blank event name to track a custom event");
+                throw new ArgumentException("Requires a non-blank event name to track a custom event", nameof(name));
             }
 
             EventName = name;

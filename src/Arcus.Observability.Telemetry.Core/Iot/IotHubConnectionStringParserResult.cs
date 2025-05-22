@@ -16,8 +16,9 @@ namespace Arcus.Observability.Telemetry.Core.Iot
         {
             if (string.IsNullOrWhiteSpace(hostName))
             {
-                throw new ArgumentNullException(nameof(hostName), "Requires a non-blank fully-qualified DNS hostname of the IoT Hub service");
+                throw new ArgumentException("Requires a non-blank fully-qualified DNS hostname of the IoT Hub service", nameof(hostName));
             }
+            
             HostName = hostName;
         }
 

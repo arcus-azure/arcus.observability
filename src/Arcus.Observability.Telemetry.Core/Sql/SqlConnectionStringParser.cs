@@ -20,7 +20,7 @@ namespace Arcus.Observability.Telemetry.Core.Sql
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new ArgumentNullException(nameof(connectionString), "Requires a non-blank SQL connection string to retrieve specific SQL properties");
+                throw new ArgumentException("Requires a non-blank SQL connection string to retrieve specific SQL properties", nameof(connectionString));
             }
 
             string[] parts = 

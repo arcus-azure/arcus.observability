@@ -89,7 +89,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogBlobStorageDependency(logger, accountName, containerName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Blob Storage Dependency.
@@ -119,15 +121,18 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(accountName))
             {
-                throw new ArgumentNullException(nameof(accountName), "Requires a non-blank account name for the Azure Blob storage resource to track an Azure Blob storage dependency");
+                throw new ArgumentException("Requires a non-blank account name for the Azure Blob storage resource to track an Azure Blob storage dependency", nameof(accountName));
             }
-            if(string.IsNullOrWhiteSpace(containerName))
+            
+            if (string.IsNullOrWhiteSpace(containerName))
             {
-                throw new ArgumentNullException(nameof(containerName), "Requires a non-blank container name in the Azure Blob storage resource to track an Azure Blob storage dependency");
+                throw new ArgumentException("Requires a non-blank container name in the Azure Blob storage resource to track an Azure Blob storage dependency", nameof(containerName));
             }
-            if(duration < TimeSpan.Zero)
+            
+            if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Blob storage operation");
             }

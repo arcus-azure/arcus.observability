@@ -159,7 +159,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, startTime, duration, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -186,7 +188,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             string dependencyId,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, startTime, duration, dependencyId, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, startTime, duration, dependencyId, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -213,7 +217,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, dependencyName, startTime: startTime, duration: duration, context: context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful: isSuccessful, dependencyName, startTime: startTime, duration: duration, context: context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -242,7 +248,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             string dependencyId,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, dependencyName, startTime, duration, dependencyId, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName: null, isSuccessful, dependencyName, startTime, duration, dependencyId, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -401,7 +409,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName: targetName, startTime, duration, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName: targetName, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -430,7 +440,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             string dependencyId,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, targetName, startTime, duration, dependencyId, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, targetName, startTime, duration, dependencyId, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -459,7 +471,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, startTime, duration, dependencyId: null, context);
+        {
+            LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs a dependency.
@@ -477,7 +491,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/> is <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyType"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static void LogDependency(
             this ILogger logger,
@@ -495,14 +509,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(dependencyType))
             {
-                throw new ArgumentNullException(nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+                throw new ArgumentException("Requires a non-blank custom dependency type when tracking the custom dependency", nameof(dependencyType));
             }
+
             if (dependencyData is null)
             {
                 throw new ArgumentNullException(nameof(dependencyData), "Requirs custom dependency data when tracking the custom dependency");
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the dependency operation");

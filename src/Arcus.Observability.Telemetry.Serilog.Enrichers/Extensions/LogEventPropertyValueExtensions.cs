@@ -20,6 +20,7 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c></exception>
         public static string GetAsRawString(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -37,6 +38,7 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the <c>string</c> with quotes.</remarks>
         /// <param name="eventPropertyValues">The Event property values to provide as a <c>string</c> representation.</param>
         /// <param name="propertyKey">The key of the property to return.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c></exception>
         public static double GetAsDouble(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -62,6 +64,7 @@ namespace Serilog.Events
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
         /// <param name="propertyDictionaryValues">Found information for the given property key</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c></exception>
         public static bool TryGetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey, out IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> propertyDictionaryValues)
         {
             if (eventPropertyValues is null)
@@ -86,6 +89,8 @@ namespace Serilog.Events
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c></exception>
+        /// <exception cref="NotSupportedException">Thrown when the value found with <paramref name="propertyKey"/> is <c>null</c> or not of type <see cref="DictionaryValue"/></exception>
         public static IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> GetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -123,9 +128,10 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(eventPropertyValues), "Requires a series of event properties to retrieve a Serilog event property as a enumeration representation");
             }
+
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
-                throw new ArgumentNullException(nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a enumeration representation");
+                throw new ArgumentException("Requires a non-blank property to retrieve a Serilog event property as a enumeration representation", nameof(propertyKey));
             }
 
             LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
@@ -156,6 +162,7 @@ namespace Serilog.Events
         /// </summary>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
         public static DateTimeOffset GetAsDateTimeOffset(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -173,6 +180,7 @@ namespace Serilog.Events
         /// </summary>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
         public static TimeSpan GetAsTimeSpan(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -190,6 +198,7 @@ namespace Serilog.Events
         /// </summary>
         /// <param name="eventPropertyValues">Event property value to provide a string representation</param>
         /// <param name="propertyKey">Key of the property to return</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventPropertyValues"/> is <c>null</c>.</exception>
         public static bool GetAsBool(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
             if (eventPropertyValues is null)
@@ -215,7 +224,7 @@ namespace Serilog.Events
         {
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
-                throw new ArgumentNullException(nameof(propertyKey), "Requires a non-blank property key to retrieve the structure value from the log event");
+                throw new ArgumentException("Requires a non-blank property key to retrieve the structure value from the log event", nameof(propertyKey));
             }
             
             if (properties is null)
@@ -237,6 +246,7 @@ namespace Serilog.Events
         /// </summary>
         /// <remarks>The built-in <c>ToString</c> wraps the string with quotes</remarks>
         /// <param name="logEventPropertyValue">Event property value to provide a string representation</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="logEventPropertyValue"/> is <c>null</c>.</exception>
         public static string ToDecentString(this LogEventPropertyValue logEventPropertyValue)
         {
             if (logEventPropertyValue is null)

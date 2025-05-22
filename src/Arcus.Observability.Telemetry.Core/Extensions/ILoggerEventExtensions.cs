@@ -42,9 +42,10 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instancen to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("Requires a non-blank event name to track an custom event", nameof(name));
+                throw new ArgumentException("Requires a non-blank event name to track an custom event", nameof(name));
             }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);

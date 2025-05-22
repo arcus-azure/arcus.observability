@@ -18,7 +18,7 @@ namespace Arcus.Observability.Telemetry.Core
         {
             if (string.IsNullOrWhiteSpace(componentName))
             {
-                throw new ArgumentNullException(nameof(componentName), "Requires a non-blank functional name to identify the application");
+                throw new ArgumentException("Requires a non-blank functional name to identify the application", nameof(componentName));
             }
 
             _componentName = componentName;

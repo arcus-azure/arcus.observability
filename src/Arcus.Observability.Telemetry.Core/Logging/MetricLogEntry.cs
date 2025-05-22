@@ -22,7 +22,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name), "Requires a non-blank name to track a metric");
+                throw new ArgumentException("Requires a non-blank name to track a metric", nameof(name));
             }
             
             MetricName = name;

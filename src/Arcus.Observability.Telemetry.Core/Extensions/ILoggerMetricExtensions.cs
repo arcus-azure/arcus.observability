@@ -40,9 +40,10 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name), "Requires a non-blank name to track a metric");
+                throw new ArgumentException("Requires a non-blank name to track a metric", nameof(name));
             }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);

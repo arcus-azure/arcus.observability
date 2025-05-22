@@ -8,6 +8,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <summary>
     /// Enrichment on log events that automatically adds Kubernetes information from the environment.
     /// </summary>
+    /// <remarks>
+    /// The default Kubernetes environment variable property names; <c>KUBERNETES_NODE_NAME</c>, <c>KUBERNETES_POD_NAME</c> AND<c>KUBERNETES_NAMESPACE</c> are used to fetch the Kubernetes information.
+    /// </remarks>
     public class KubernetesEnricher : ILogEventEnricher
     {
         /// <summary>
@@ -38,23 +41,25 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <summary>
         /// Initializes a new instance of the <see cref="KubernetesEnricher"/> class.
         /// </summary>
-        /// <param name="nodeNamePropertyName">The name of the property to enrich the log event with the Kubernetes node name.</param>
-        /// <param name="podNamePropertyName">The name of the property to enrich the log event with the Kubernetes pod name.</param>
-        /// <param name="namespacePropertyName">The name of the property to enrich the log event with the Kubernetes namespace.</param>
+        /// <param name="nodeNamePropertyName">The name of the property as it's logged to enrich the log event with the Kubernetes node name.</param>
+        /// <param name="podNamePropertyName">The name of the property as it's logged to enrich the log event with the Kubernetes pod name.</param>
+        /// <param name="namespacePropertyName">The name of the property as it's logged to enrich the log event with the Kubernetes namespace.</param>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="nodeNamePropertyName"/>, <paramref name="podNamePropertyName"/>, or <paramref name="namespacePropertyName"/> is blank.</exception>
         public KubernetesEnricher(string nodeNamePropertyName, string podNamePropertyName, string namespacePropertyName)
         {
             if (string.IsNullOrWhiteSpace(nodeNamePropertyName))
             {
-                throw new ArgumentNullException(nameof(nodeNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes node name");
+                throw new ArgumentException("Requires a non-blank property name to enrich the log event with the Kubernetes node name", nameof(nodeNamePropertyName));
             }
+
             if (string.IsNullOrWhiteSpace(podNamePropertyName))
             {
-                throw new ArgumentNullException(nameof(podNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes pod name");
+                throw new ArgumentException("Requires a non-blank property name to enrich the log event with the Kubernetes pod name", nameof(podNamePropertyName));
             }
+
             if (string.IsNullOrWhiteSpace(namespacePropertyName))
             {
-                throw new ArgumentNullException(nameof(namespacePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes namespace name");
+                throw new ArgumentException("Requires a non-blank property name to enrich the log event with the Kubernetes namespace name", nameof(namespacePropertyName));
             }
 
             _nodeNamePropertyName = nodeNamePropertyName;

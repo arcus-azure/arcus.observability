@@ -84,7 +84,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogIotHubDependency(logger, iotHubName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogIotHubDependency(logger, iotHubName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Iot Hub Dependency.
@@ -110,6 +112,7 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(iotHubConnectionString), "Requires an IoT Hub connection string to retrieve the IoT host name to track the IoT Hub dependency");
             }
+
             if (measurement is null)
             {
                 throw new ArgumentNullException(nameof(measurement), "Requires a measurement instance to measure the duration of interaction with the IoT Hub dependency");
@@ -175,10 +178,12 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(iotHubName))
             {
-                throw new ArgumentNullException(nameof(iotHubName), "Requires a non-blank resource name of the IoT Hub resource to track a IoT Hub dependency");
+                throw new ArgumentException("Requires a non-blank resource name of the IoT Hub resource to track a IoT Hub dependency", nameof(iotHubName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the IoT Hub operation");

@@ -89,14 +89,16 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Search Dependency.
         /// </summary>
         /// <param name="logger">The logger to track the telemetry.</param>
         /// <param name="searchServiceName">Name of the Azure Search service</param>
-        /// <param name="operationName">Name of the operation to execute on the Azure Search service</param>
+        /// <param name="operationName">Name of the operqation to execute on the Azure Search service</param>
         /// <param name="isSuccessful">Indication whether or not the operation was successful</param>
         /// <param name="startTime">Point in time when the interaction with the HTTP dependency was started</param>
         /// <param name="duration">Duration of the operation</param>
@@ -118,14 +120,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(searchServiceName))
             {
-                throw new ArgumentNullException(nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
+                throw new ArgumentException("Requires a non-blank name for the Azure Search service to track the Azure Service dependency", nameof(searchServiceName));
             }
+
             if (string.IsNullOrWhiteSpace(operationName))
             {
-                throw new ArgumentNullException(nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
+                throw new ArgumentException("Requires a non-blank name for the Azure Search service to track the Azure Service dependency", nameof(operationName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentException("Requires a positive time duration of the Azure Search operation", nameof(duration));

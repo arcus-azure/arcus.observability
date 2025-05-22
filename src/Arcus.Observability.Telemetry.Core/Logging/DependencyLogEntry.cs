@@ -78,8 +78,9 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         {
             if (string.IsNullOrWhiteSpace(dependencyType))
             {
-                throw new ArgumentNullException(nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
+                throw new ArgumentException("Requires a non-blank custom dependency type when tracking the custom dependency", nameof(dependencyType));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the dependency operation");

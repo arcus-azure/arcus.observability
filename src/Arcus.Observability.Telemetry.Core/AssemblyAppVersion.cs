@@ -18,6 +18,7 @@ namespace Arcus.Observability.Telemetry.Core
         public AssemblyAppVersion()
         {
             var executingAssembly = Assembly.GetEntryAssembly();
+
             if (executingAssembly is null)
             {
                 throw new InvalidOperationException(

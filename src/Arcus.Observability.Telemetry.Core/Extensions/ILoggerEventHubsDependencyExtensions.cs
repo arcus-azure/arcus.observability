@@ -89,7 +89,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Event Hub Dependency.
@@ -119,14 +121,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(namespaceName))
             {
-                throw new ArgumentNullException(nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
+                throw new ArgumentException("Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency", nameof(namespaceName));
             }
+
             if (string.IsNullOrWhiteSpace(eventHubName))
             {
-                throw new ArgumentNullException(nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
+                throw new ArgumentException("Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency", nameof(eventHubName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");

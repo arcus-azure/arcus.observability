@@ -83,6 +83,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
             }
+
             if (propertyFactory is null)
             {
                 throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
@@ -112,10 +113,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
             }
+
             if (propertyFactory is null)
             {
                 throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
             }
+
             if (correlationInfo is null)
             {
                 throw new ArgumentNullException(nameof(correlationInfo), "Requires the correlation information to enrich the log event");
@@ -141,10 +144,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a log event to enrich the correlation information");
             }
+            
             if (propertyFactory is null)
             {
                 throw new ArgumentNullException(nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
             }
+
             if (string.IsNullOrWhiteSpace(propertyName))
             {
                 throw new ArgumentNullException(nameof(propertyName), "Requires a non-blank name for the correlation log property");

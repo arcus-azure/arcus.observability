@@ -89,7 +89,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogTableStorageDependency(logger, accountName, tableName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogTableStorageDependency(logger, accountName, tableName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Table Storage Dependency.
@@ -102,7 +104,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="duration">Duration of the operation</param>
         /// <param name="dependencyId">The ID of the dependency to link as parent ID.</param>
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>nul</c>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static void LogTableStorageDependency(
@@ -119,14 +121,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(accountName))
             {
-                throw new ArgumentNullException(nameof(accountName), "Requires a non-blank account name for the Azure Table storage resource to track an Azure Table storage dependency");
+                throw new ArgumentException("Requires a non-blank account name for the Azure Table storage resource to track an Azure Table storage dependency", nameof(accountName));
             }
+
             if (string.IsNullOrWhiteSpace(tableName))
             {
-                throw new ArgumentNullException(nameof(tableName), "Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency");
+                throw new ArgumentException("Requires a non-blank table name in the Azure Table storage resource to track an Azure Table storage dependency", nameof(tableName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Table storage operation");

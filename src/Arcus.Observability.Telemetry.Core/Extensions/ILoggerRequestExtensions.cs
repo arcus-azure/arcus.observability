@@ -74,7 +74,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, response.StatusCode, startTime, duration, context);
+        {
+            LogRequest(logger, request, response.StatusCode, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -138,7 +140,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
+        {
+            LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -195,7 +199,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        {
+            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -262,18 +268,31 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (request is null)
             {
                 throw new ArgumentNullException(nameof(request), "Requires a HTTP request instance tot track a HTTP request");
             }
+
             if (request.RequestUri is null)
             {
-                throw new ArgumentNullException(nameof(request), "Requires a request URI to retrieve the necessary request information");
+                throw new ArgumentException("Requires a request URI to retrieve the necessary request information", nameof(request));
             }
-            if (duration < TimeSpan.Zero)
+
+            if (request.RequestUri.Scheme is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the request operation");
+                throw new ArgumentException("Requires a valid request URI scheme", nameof(request));
             }
+
+            if (request.RequestUri.Host is null)
+            {
+                throw new ArgumentException("Requires a valid request host", nameof(request));
+            }
+
+            if (duration < TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the request operation");
+                }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 

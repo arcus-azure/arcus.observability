@@ -16,7 +16,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The services collection containing the dependency injection services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
         public static IServiceCollection AddCorrelation(this IServiceCollection services)
-            => AddCorrelation<CorrelationInfo>(services);
+        {
+            return AddCorrelation<CorrelationInfo>(services);
+        }
 
         /// <summary>
         /// Adds operation and transaction correlation to the application using the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/>
@@ -27,9 +29,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCorrelation<TCorrelationInfo>(
             this IServiceCollection services)
             where TCorrelationInfo : CorrelationInfo
-            => AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
-                services,
-                provider => new DefaultCorrelationInfoAccessor<TCorrelationInfo>());
+        {
+            return AddCorrelation<DefaultCorrelationInfoAccessor<TCorrelationInfo>, TCorrelationInfo>(
+                        services,
+                        provider => new DefaultCorrelationInfoAccessor<TCorrelationInfo>());
+        }
 
 
         /// <summary>
@@ -42,8 +46,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCorrelation<TAccessor>(
             this IServiceCollection services,
             Func<IServiceProvider, TAccessor> createCustomCorrelationAccessor)
-            where TAccessor : class, ICorrelationInfoAccessor 
-                => AddCorrelation<TAccessor, CorrelationInfo>(services, createCustomCorrelationAccessor);
+            where TAccessor : class, ICorrelationInfoAccessor
+        {
+            return AddCorrelation<TAccessor, CorrelationInfo>(services, createCustomCorrelationAccessor);
+        }
 
         /// <summary>
         /// Adds operation and transaction correlation to the application.
@@ -63,6 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services), "Requires a service collection to register the custom correlation accessor to the application services");
             }
+
             if (createCustomCorrelationAccessor is null)
             {
                 throw new ArgumentNullException(nameof(createCustomCorrelationAccessor), "Requires a factory function to create a custom correlation accessor");

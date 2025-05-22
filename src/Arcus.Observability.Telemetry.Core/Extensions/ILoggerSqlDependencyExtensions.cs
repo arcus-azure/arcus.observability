@@ -149,9 +149,10 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new ArgumentNullException(nameof(connectionString), "Requires a SQL connection string to retrieve database information while tracking the SQL dependency");
+                throw new ArgumentException("Requires a SQL connection string to retrieve database information while tracking the SQL dependency", nameof(connectionString));
             }
 
             var result = SqlConnectionStringParser.Parse(connectionString);

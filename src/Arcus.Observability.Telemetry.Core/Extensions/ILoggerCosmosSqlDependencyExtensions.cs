@@ -95,7 +95,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogCosmosSqlDependency(logger, accountName, database, container, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs a Cosmos SQL dependency.
@@ -127,18 +129,22 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(accountName))
             {
-                throw new ArgumentNullException(nameof(accountName), "Requires a non-blank account name of the Cosmos SQL storage to track Cosmos SQL dependency");
+                throw new ArgumentException("Requires a non-blank account name of the Cosmos SQL storage to track Cosmos SQL dependency", nameof(accountName));
             }
+
             if (string.IsNullOrWhiteSpace(database))
             {
-                throw new ArgumentNullException(nameof(database), "Requires a non-blank database name of the Cosmos SQL storage to track a Cosmos SQL dependency");
+                throw new ArgumentException("Requires a non-blank database name of the Cosmos SQL storage to track a Cosmos SQL dependency", nameof(database));
             }
+
             if (string.IsNullOrWhiteSpace(container))
             {
-                throw new ArgumentNullException(nameof(container), "Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency");
+                throw new ArgumentException("Requires a non-blank container name of the Cosmos SQL storage to track a Cosmos SQL dependency", nameof(container));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");

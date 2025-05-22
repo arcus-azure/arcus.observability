@@ -34,11 +34,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         {
             if (string.IsNullOrWhiteSpace(componentName))
             {
-                throw new ArgumentNullException(nameof(componentName), "Requires a non-blank application component name");
+                throw new ArgumentException("Requires a non-blank application component name", nameof(componentName));
             }
+
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentNullException(nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+                throw new ArgumentException("Requires a non-blank property name to enrich the log event with the component name", nameof(propertyName));
             }
 
             _componentValue = componentName;

@@ -59,7 +59,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
+        {
+            LogRequest(logger, request, response.StatusCode, operationName: null, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -108,7 +110,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
+        {
+            LogRequest(logger, request, response.StatusCode, operationName, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -156,7 +160,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        {
+            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -211,16 +217,19 @@ namespace Microsoft.Extensions.Logging
         {
             if (logger is null)
             {
-                throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry")/
+                throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (request is null)
             {
                 throw new ArgumentNullException(nameof(request), "Requires a HTTP request instance to track a HTTP request");
             }
+
             if (responseStatusCode < 0 || responseStatusCode > 999)
             {
                 throw new ArgumentOutOfRangeException(nameof(responseStatusCode), "Requires a HTTP response status code that's within the 0-999 range to track a HTTP request");
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the HTTP request");

@@ -96,7 +96,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, startTime, duration, dependencyId: null, context);
+        {
+            LogAzureKeyVaultDependency(logger, vaultUri, secretName, isSuccessful, startTime, duration, dependencyId: null, context);
+        }
 
         /// <summary>
         /// Logs an Azure Key Vault dependency.
@@ -128,14 +130,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires an logger instance to write the Azure Key Vault dependency");
             }
+
             if (string.IsNullOrWhiteSpace(vaultUri))
             {
-                throw new ArgumentNullException(nameof(vaultUri), "Requires a non-blank URI for the Azure Key Vault");
+                throw new ArgumentException("Requires a non-blank URI for the Azure Key Vault", nameof(vaultUri));
             }
+
             if (string.IsNullOrWhiteSpace(secretName))
             {
-                throw new ArgumentNullException(nameof(secretName), "Requires a non-blank secret name for the Azure Key Vault");
+                throw new ArgumentException("Requires a non-blank secret name for the Azure Key Vault", nameof(secretName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Key Vault operation");

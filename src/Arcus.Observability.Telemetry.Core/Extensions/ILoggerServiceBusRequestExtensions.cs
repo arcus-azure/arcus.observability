@@ -41,8 +41,9 @@ namespace Microsoft.Extensions.Logging
         {
             if (string.IsNullOrWhiteSpace(subscriptionName))
             {
-                throw new ArgumentNullException(nameof(subscriptionName), "Requires an Azure Service Bus subscription name to track the topic request");
+                throw new ArgumentException("Requires an Azure Service Bus subscription name to track the topic request", nameof(subscriptionName));
             }
+
             if (measurement is null)
             {
                 throw new ArgumentNullException(nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
@@ -78,8 +79,9 @@ namespace Microsoft.Extensions.Logging
         {
             if (string.IsNullOrWhiteSpace(subscriptionName))
             {
-                throw new ArgumentNullException(nameof(subscriptionName), "Requires an Azure Service Bus subscription name to track the topic request");
+                throw new ArgumentException("Requires an Azure Service Bus subscription name to track the topic request", nameof(subscriptionName));
             }
+
             if (measurement is null)
             {
                 throw new ArgumentNullException(nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
@@ -120,7 +122,7 @@ namespace Microsoft.Extensions.Logging
         {
             if (string.IsNullOrWhiteSpace(subscriptionName))
             {
-                throw new ArgumentNullException(nameof(subscriptionName), "Requires an Azure Service Bus subscription name to track the topic request");
+                throw new ArgumentException("Requires an Azure Service Bus subscription name to track the topic request", nameof(subscriptionName));
             }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
@@ -246,7 +248,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
-                => LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
+        {
+            LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
+        }
 
         /// <summary>
         /// Logs an Azure Service Bus queue request.
@@ -271,7 +275,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
-                => LogServiceBusRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
+        {
+            LogServiceBusRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
+        }
 
         /// <summary>
         /// Logs an Azure Service Bus request.
@@ -364,7 +370,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
-                => LogServiceBusRequest(logger, serviceBusNamespace + serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, duration, startTime, entityType, context);
+        {
+            LogServiceBusRequest(logger, serviceBusNamespace + serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, duration, startTime, entityType, context);
+        }
 
         /// <summary>
         /// Logs an Azure Service Bus request.
@@ -396,14 +404,17 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (string.IsNullOrWhiteSpace(serviceBusNamespace))
             {
-                throw new ArgumentNullException(nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the request");
+                throw new ArgumentException("Requires an Azure Service Bus namespace to track the request", nameof(serviceBusNamespace));
             }
+
             if (string.IsNullOrWhiteSpace(entityName))
             {
-                throw new ArgumentNullException(nameof(entityName), "Requires an Azure Service Bus name to track the request");
+                throw new ArgumentNullException("Requires an Azure Service Bus name to track the request", nameof(entityName));
             }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");

@@ -61,7 +61,9 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             TimeSpan duration,
             Dictionary<string, object> context = null)
-                => LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        {
+            LogRequest(logger, request, responseStatusCode, operationName: null, startTime, duration, context);
+        }
 
         /// <summary>
         /// Logs an HTTP request.
@@ -116,10 +118,12 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to track telemetry");
             }
+
             if (request is null)
             {
                 throw new ArgumentNullException(nameof(request), "Requires a HTTP request instance to track a HTTP request");
             }
+            
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the request operation");

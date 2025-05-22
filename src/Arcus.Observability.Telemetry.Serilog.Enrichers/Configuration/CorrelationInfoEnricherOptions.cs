@@ -23,7 +23,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information operation ID");
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information operation ID", nameof(value));
                 }
 
                 _operationIdPropertyName = value;
@@ -41,7 +41,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information transaction ID");
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information transaction ID", nameof(value));
                 }
 
                 _transactionIdPropertyName = value;
@@ -59,7 +59,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information parent operation ID");
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information parent operation ID", nameof(value));
                 }
 
                 _operationParentIdPropertyName = value;

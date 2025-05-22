@@ -443,10 +443,12 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(logger), "Requires a logger instance to write a debug message with a telemetry context");
             }
+
             if (string.IsNullOrWhiteSpace(message))
             {
-                throw new ArgumentNullException(nameof(message), "Requires a debug message to write to the logger with a telemetry context");
+                throw new ArgumentException("Requires a debug message to write to the logger with a telemetry context", nameof(message));
             }
+
             if (context is null)
             {
                 throw new ArgumentNullException(nameof(context), "Requires a telemetry context to include with the logged debug message");
