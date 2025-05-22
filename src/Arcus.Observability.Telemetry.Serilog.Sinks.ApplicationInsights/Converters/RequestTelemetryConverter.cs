@@ -34,6 +34,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights Request telemetry instance");
             }
+            
             if (logEvent.Properties is null)
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights Request telemetry instance");

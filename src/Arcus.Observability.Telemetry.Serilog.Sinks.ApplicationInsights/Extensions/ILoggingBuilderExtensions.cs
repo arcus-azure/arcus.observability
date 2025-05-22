@@ -25,6 +25,7 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(builder), "Requires a logging builder instance to add the Serilog logger provider");
             }
+            
             if (implementationFactory is null)
             {
                 throw new ArgumentNullException(nameof(implementationFactory), "Requires an implementation factory to build up the Serilog logger");

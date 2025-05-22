@@ -58,9 +58,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
             {
                 throw new ArgumentNullException(nameof(appVersion), "Requires an application version implementation to enricht the log event with the application version");
             }
+
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentNullException(nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+                throw new ArgumentException("Requires a non-blank property name to enrich the log event with the current runtime version", nameof(propertyName));
             }
 
             _appVersion = appVersion;

@@ -27,9 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services), $"Requires a collection of services to add the '{nameof(IAppName)}' implementation");
             }
+
             if (string.IsNullOrWhiteSpace(componentName))
             {
-                throw new ArgumentNullException(nameof(componentName), "Requires a non-blank functional name to identity the application");
+                throw new ArgumentException("Requires a non-blank functional name to identity the application", nameof(componentName));
             }
 
             return AddAppName(services, provider => new DefaultAppName(componentName));
@@ -49,6 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services), $"Requires a collection of services to add the '{nameof(IAppName)}' implementation");
             }
+
             if (implementationFactory is null)
             {
                 throw new ArgumentNullException(nameof(implementationFactory), $"Requires a factory function to create the '{nameof(IAppName)}' implementation");
@@ -86,6 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services), $"Requires a collection of services to add the assembly version '{nameof(IAppVersion)}' implementation");
             }
+
             if (consumerType is null)
             {
                 throw new ArgumentNullException(nameof(consumerType), "Requires a consumer type to retrieve the assembly where the project runs");
@@ -124,6 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services), $"Requires a collection of services to add the '{nameof(IAppVersion)}' implementation");
             }
+            
             if (createImplementation is null)
             {
                 throw new ArgumentNullException(nameof(createImplementation), $"Requires a factory function to create the '{nameof(IAppVersion)}' implementation");

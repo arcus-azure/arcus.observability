@@ -38,11 +38,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Requires a non-blank string format to track (public) exception properties");
+                    throw new ArgumentException("Requires a non-blank string format to track (public) exception properties", nameof(value));
                 }
                 if (PropertyFormatRegex.Matches(value).Count != 3)
                 {
-                    throw new FormatException(nameof(value), "Requires a single occurrence of the substring '{0}' in the exception property format");
+                    throw new FormatException("Requires a single occurrence of the substring '{0}' in the exception property format");
                 }
 
                 _propertyFormat = value;

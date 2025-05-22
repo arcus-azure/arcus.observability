@@ -23,7 +23,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException(nameof(value), "Requires a non-blank Serilog application property name to locate the correlation operation ID");
+                    throw new ArgumentException("Requires a non-blank Serilog application property name to locate the correlation operation ID", nameof(value));
                 }
 
                 _operationIdPropertyName = value;
@@ -41,7 +41,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), "Requires a non-blank Serilog application property name to locate the correlation transaction ID");
+                    throw new ArgumentException("Requires a non-blank Serilog application property name to locate the correlation transaction ID", nameof(value));
                 }
 
                 _transactionIdPropertyName = value;
@@ -59,7 +59,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), "Requires a non-blank Serilog application property name to locate the correlation operation parent ID");
+                    throw new ArgumentException("Requires a non-blank Serilog application property name to locate the correlation operation parent ID", nameof(value));
                 }
 
                 _operationParentIdPropertyName = value;

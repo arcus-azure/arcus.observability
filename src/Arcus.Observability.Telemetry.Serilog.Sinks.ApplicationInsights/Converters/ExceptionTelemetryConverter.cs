@@ -32,6 +32,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             {
                 throw new ArgumentNullException(nameof(logEvent), "Requires a Serilog log event to create an exception telemetry entry");
             }
+            
             if (logEvent.Exception is null)
             {
                 throw new ArgumentException("Requires a log event that tracks an exception to create an exception telemetry entry", nameof(logEvent));

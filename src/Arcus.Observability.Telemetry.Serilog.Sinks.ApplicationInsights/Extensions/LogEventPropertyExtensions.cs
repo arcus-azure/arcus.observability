@@ -30,6 +30,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property value as a raw string representation");
             }
+            
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property key to retrieve a Serilog event property value as a raw string representation", nameof(propertyKey));
@@ -97,6 +98,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property value as a DateTimeOffset representation");
             }
+
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property key to retrieve a Serilog event property value as a DateTimeOffset representation", nameof(propertyKey));
@@ -132,6 +134,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property value as a IDictionary<string, string> representation");
             }
+
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property key to retrieve a Serilog event property value as a IDictionary<string, string> represenation", nameof(propertyKey));
@@ -167,6 +170,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property value as a Double representation");
             }
+
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property key to retrieve a Serilog event property value as a Double representation", nameof(propertyKey));
@@ -204,6 +208,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a Boolean representation");
             }
+
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property to retrieve a Serilog event property as a Boolean representation", nameof(propertyKey));
@@ -236,6 +241,7 @@ namespace Serilog.Events
             {
                 throw new ArgumentNullException(nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as an object representation");
             }
+            
             if (string.IsNullOrWhiteSpace(propertyKey))
             {
                 throw new ArgumentException("Requires a non-blank property to retrieve a Serilog event property as an object representation", nameof(propertyKey));

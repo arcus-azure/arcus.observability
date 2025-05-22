@@ -20,6 +20,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(items), "Requires a base dictionary to add the additional items to");
             }
+            
             if (additionalItems is null)
             {
                 throw new ArgumentNullException(nameof(additionalItems), "Requires an additional set of items to add to the base dictionary");
