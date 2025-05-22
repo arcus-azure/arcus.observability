@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core
 {
@@ -19,6 +18,7 @@ namespace Arcus.Observability.Telemetry.Core
         public AssemblyAppVersion()
         {
             var executingAssembly = Assembly.GetEntryAssembly();
+
             if (executingAssembly is null)
             {
                 throw new InvalidOperationException(
@@ -35,7 +35,10 @@ namespace Arcus.Observability.Telemetry.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="consumerType"/> is <c>null</c>.</exception>
         public AssemblyAppVersion(Type consumerType)
         {
-            Guard.NotNull(consumerType, nameof(consumerType), "Requires a consumer type to retrieve the assembly where the project runs");
+            if (consumerType is null)
+            {
+                throw new ArgumentNullException(nameof(consumerType), "Requires a consumer type to retrieve the assembly where the project runs");
+            }
 
             Assembly executingAssembly = consumerType.Assembly;
             _assemblyVersion = new Lazy<string>(() => GetAssemblyVersion(executingAssembly));

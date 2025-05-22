@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -32,10 +31,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(eventHubsNamespace, nameof(eventHubsNamespace), "Requires an Azure EventHubs namespace to track the request");
-            Guard.NotNullOrWhitespace(eventHubsName, nameof(eventHubsName), "Requires an Azure EventHubs name to track the request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure EventHubs request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+            }
 
             LogEventHubsRequest(logger, eventHubsNamespace, eventHubsName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -62,11 +61,6 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(eventHubsNamespace, nameof(eventHubsNamespace), "Requires an Azure EventHubs namespace to track the request");
-            Guard.NotNullOrWhitespace(eventHubsName, nameof(eventHubsName), "Requires an Azure EventHubs name to track the request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure EventHubs request operation");
-
             LogEventHubsRequest(logger, eventHubsNamespace, "$Default", eventHubsName, operationName: null, isSuccessful: isSuccessful, startTime: startTime, duration: duration, context: context);
         }
 
@@ -95,11 +89,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(eventHubsNamespace, nameof(eventHubsNamespace), "Requires an Azure EventHubs namespace to track the request");
-            Guard.NotNullOrWhitespace(consumerGroup, nameof(consumerGroup), "Requires an Azure EventHubs consumer group to track the request");
-            Guard.NotNullOrWhitespace(eventHubsName, nameof(eventHubsName), "Requires an Azure EventHubs name to track the request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure EventHubs request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement), "Requires a dependency measurement instance to track the latency of the dependency when tracking the custom dependency");
+            }
 
             LogEventHubsRequest(logger, eventHubsNamespace, consumerGroup, eventHubsName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -132,11 +125,30 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(eventHubsNamespace, nameof(eventHubsNamespace), "Requires an Azure EventHubs namespace to track the request");
-            Guard.NotNullOrWhitespace(consumerGroup, nameof(consumerGroup), "Requires an Azure EventHubs consumer group to track the request");
-            Guard.NotNullOrWhitespace(eventHubsName, nameof(eventHubsName), "Requires an Azure EventHubs name to track the request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure EventHubs request operation");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires an logger instance to track telemetry");
+            }
+
+            if (string.IsNullOrWhiteSpace(eventHubsNamespace))
+            {
+                throw new ArgumentException("Requires an Azure EventHubs namespace to track the request", nameof(eventHubsNamespace));
+            }
+
+            if (string.IsNullOrWhiteSpace(consumerGroup))
+            {
+                throw new ArgumentException("Requires an Azure EventHubs consumer group to track the request", nameof(consumerGroup));
+            }
+
+            if (string.IsNullOrWhiteSpace(eventHubsName))
+            {
+                throw new ArgumentException("Requires an Azure EventHubs name to track the request", nameof(eventHubsName));
+            }
+
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure EventHubs request operation");
+            }
 
             if (string.IsNullOrWhiteSpace(operationName))
             {

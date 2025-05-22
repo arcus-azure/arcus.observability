@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 
 namespace Arcus.Observability.Correlation
 {
@@ -28,7 +27,10 @@ namespace Arcus.Observability.Correlation
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationId"/> is blank.</exception>
         public CorrelationInfo(string operationId, string transactionId, string operationParentId)
         {
-            Guard.NotNullOrEmpty(operationId, nameof(operationId), "Requires a non-blank operation ID to create a correlation instance");
+            if (string.IsNullOrEmpty(operationId))
+            {
+                throw new ArgumentException("Requires a non-blank operation ID to create a correlation instance", nameof(operationId));
+            }
 
             OperationId = operationId;
             TransactionId = transactionId;
@@ -44,7 +46,7 @@ namespace Arcus.Observability.Correlation
         /// Gets the unique ID information of the request.
         /// </summary>
         public string OperationId { get; }
-        
+
         /// <summary>
         /// Gets the ID of the original service that initiated this request.
         /// </summary>

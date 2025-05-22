@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -23,9 +22,6 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public static void LogSecurityEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name of the event to track an security event");
-
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context["EventType"] = "Security";
 
@@ -42,8 +38,15 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public static void LogCustomEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank event name to track an custom event");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger), "Requires a logger instancen to track telemetry");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Requires a non-blank event name to track an custom event", nameof(name));
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 

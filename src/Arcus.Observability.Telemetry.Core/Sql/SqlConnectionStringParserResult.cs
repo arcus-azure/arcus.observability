@@ -1,6 +1,4 @@
-﻿using GuardNet;
-
-namespace Arcus.Observability.Telemetry.Core.Sql
+﻿namespace Arcus.Observability.Telemetry.Core.Sql
 {
     /// <summary>
     /// Represents the result of the <see cref="SqlConnectionStringParser"/> when parsing a SQL connection string.

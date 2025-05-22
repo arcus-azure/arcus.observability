@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Logging
 {
@@ -21,7 +20,10 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public MetricLogEntry(string name, double value, DateTimeOffset timestamp, IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Requires a non-blank name to track a metric", nameof(name));
+            }
             
             MetricName = name;
             MetricValue = value;

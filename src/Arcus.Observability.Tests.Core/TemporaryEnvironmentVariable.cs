@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 
 namespace Arcus.Observability.Tests.Core
 {
@@ -12,7 +11,11 @@ namespace Arcus.Observability.Tests.Core
 
         private TemporaryEnvironmentVariable(string name)
         {
-            Guard.NotNullOrWhitespace(name, nameof(name));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(nameof(name));
+            }
+
 
             _name = name;
         }
@@ -25,8 +28,14 @@ namespace Arcus.Observability.Tests.Core
         /// <param name="value">The value of the environment variable.</param>
         public static TemporaryEnvironmentVariable Create(string name, string value)
         {
-            Guard.NotNullOrWhitespace(name, nameof(name));
-            Guard.NotNullOrWhitespace(value, nameof(value));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(nameof(name));
+            }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(nameof(value));
+            }
 
             Environment.SetEnvironmentVariable(name, value, EnvironmentVariableTarget.Process);
             return new TemporaryEnvironmentVariable(name);

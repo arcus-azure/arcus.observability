@@ -1,4 +1,4 @@
-﻿using GuardNet;
+﻿using System;
 using Serilog.Core;
 using Serilog.Events;
 using Xunit.Abstractions;
@@ -17,7 +17,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog
         /// </summary>
         public XunitLogEventSink(ITestOutputHelper outputWriter)
         {
-            Guard.NotNull(outputWriter, nameof(outputWriter));
+            if (outputWriter is null)
+            {
+                throw new ArgumentNullException(nameof(outputWriter));
+            }
+
             _outputWriter = outputWriter;
         }
 

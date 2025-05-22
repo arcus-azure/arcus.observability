@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
 {
@@ -22,7 +21,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _operationIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information operation ID");
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information operation ID", nameof(value));
+                }
+
                 _operationIdPropertyName = value;
             }
         }
@@ -36,7 +39,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _transactionIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information transaction ID");
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information transaction ID", nameof(value));
+                }
+
                 _transactionIdPropertyName = value;
             }
         }
@@ -50,7 +57,11 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _operationParentIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information parent operation ID");
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Requires a non-blank property name to enrich the log event with the correlation information parent operation ID", nameof(value));
+                }
+
                 _operationParentIdPropertyName = value;
             }
         }

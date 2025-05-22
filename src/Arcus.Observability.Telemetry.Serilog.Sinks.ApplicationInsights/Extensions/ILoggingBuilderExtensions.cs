@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Extensions.Logging;
 
@@ -22,8 +21,15 @@ namespace Microsoft.Extensions.Logging
             this ILoggingBuilder builder,
             Func<IServiceProvider, Serilog.ILogger> implementationFactory)
         {
-            Guard.NotNull(builder, nameof(builder), "Requires a logging builder instance to add the Serilog logger provider");
-            Guard.NotNull(implementationFactory, nameof(implementationFactory), "Requires an implementation factory to build up the Serilog logger");
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder), "Requires a logging builder instance to add the Serilog logger provider");
+            }
+            
+            if (implementationFactory is null)
+            {
+                throw new ArgumentNullException(nameof(implementationFactory), "Requires an implementation factory to build up the Serilog logger");
+            }
 
             builder.Services.AddSingleton<ILoggerProvider>(provider =>
             {

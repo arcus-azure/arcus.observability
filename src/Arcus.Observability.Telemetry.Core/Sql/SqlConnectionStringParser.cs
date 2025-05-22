@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Sql
 {
@@ -19,7 +18,10 @@ namespace Arcus.Observability.Telemetry.Core.Sql
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
         internal static SqlConnectionStringParserResult Parse(string connectionString)
         {
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a non-blank SQL connection string to retrieve specific SQL properties");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException("Requires a non-blank SQL connection string to retrieve specific SQL properties", nameof(connectionString));
+            }
 
             string[] parts = 
                 connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)

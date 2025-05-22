@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using GuardNet;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture
@@ -17,7 +17,11 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// </summary>
         public InMemoryTelemetryQueryClient(InMemoryApplicationInsightsTelemetryConverter telemetrySink)
         {
-            Guard.NotNull(telemetrySink, nameof(telemetrySink));
+            if (telemetrySink is null)
+            {
+                throw new ArgumentNullException(nameof(telemetrySink));
+            }
+
             _telemetrySink = telemetrySink;
         }
 
