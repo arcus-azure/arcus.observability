@@ -26,6 +26,7 @@ namespace Xunit
             {
                 throw new ArgumentNullException(nameof(collection), "Requires collection of elements to find a single element that matches the assertion");
             }
+            
             if (assertion is null)
             {
                 throw new ArgumentNullException(nameof(assertion), "Requires an element assertion to verify if an single element in the collection matches");

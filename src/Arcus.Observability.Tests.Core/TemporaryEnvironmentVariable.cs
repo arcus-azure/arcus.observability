@@ -13,7 +13,7 @@ namespace Arcus.Observability.Tests.Core
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentException(nameof(name));
             }
 
 
@@ -30,11 +30,11 @@ namespace Arcus.Observability.Tests.Core
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentException(nameof(name));
             }
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentException(nameof(value));
             }
 
             Environment.SetEnvironmentVariable(name, value, EnvironmentVariableTarget.Process);

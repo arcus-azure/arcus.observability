@@ -15,15 +15,17 @@ namespace Arcus.Observability.Tests.Integration.Configuration
         {
             if (string.IsNullOrWhiteSpace(tenantId))
             {
-                throw new ArgumentNullException(nameof(tenantId));
+                throw new ArgumentException(nameof(tenantId));
             }
+            
             if (string.IsNullOrWhiteSpace(clientId))
             {
-                throw new ArgumentNullException(nameof(clientId));
+                throw new ArgumentException(nameof(clientId));
             }
+
             if (string.IsNullOrWhiteSpace(clientSecret))
             {
-                throw new ArgumentNullException(nameof(clientSecret));
+                throw new ArgumentException(nameof(clientSecret));
             }
 
             TenantId = tenantId;
