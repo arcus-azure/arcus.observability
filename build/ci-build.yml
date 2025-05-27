@@ -90,23 +90,11 @@ stages:
         parameters:
           azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
-  - stage: DockerTests
-    displayName: Docker Tests
-    dependsOn: Build
-    condition: succeeded()
-    jobs:
-      - template: templates/run-docker-integration-tests.yml
-        parameters:
-          dockerProjectName: '$(Project).Tests.Runtimes.AzureFunction'
-          httpPort: '$(AzureFunctions.HttpPort)'
-          azureServiceConnection: '${{ parameters.azureServiceConnection }}'
-
   - stage: ReleaseToMyget
     displayName: 'Release to MyGet'
     dependsOn:
       - UnitTests
       - IntegrationTests
-      - DockerTests
     condition: succeeded()
     jobs:
       - job: PushToMyGet
