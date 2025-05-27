@@ -33,6 +33,7 @@ resources:
 variables:
   - group: 'Arcus - GitHub Package Registry'
   - group: 'Build Configuration'
+  - group: 'MyGet'
   - template: ./variables/build.yml
   - template: ./variables/test.yml
 
@@ -118,4 +119,9 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - template: nuget/publish-preview-package.yml@templates
+          - task: DotNetCoreCLI@2
+            displayName: 'Push to MyGet.org'
+            inputs:
+              command: 'custom'
+              custom: 'nuget'
+              arguments: 'push src/**/*.nupkg --skip-duplicate --source $(MyGet.SourceUrl) --api-key $(MyGet.ApiKey)'
