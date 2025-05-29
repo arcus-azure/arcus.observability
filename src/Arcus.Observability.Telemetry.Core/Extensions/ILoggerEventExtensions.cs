@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Arcus.Observability;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
@@ -21,6 +22,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the event that occurred.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomEvent) + " instead to track custom events")]
         public static void LogSecurityEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
@@ -40,6 +42,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the event that occurred</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomEvent) + " instead to track custom events")]
         public static void LogCustomEvent(this ILogger logger, string name, Dictionary<string, object> context = null)
         {
             Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");

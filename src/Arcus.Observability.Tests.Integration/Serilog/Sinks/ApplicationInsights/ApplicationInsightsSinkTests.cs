@@ -9,6 +9,7 @@ using Bogus;
 using GuardNet;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
@@ -77,7 +78,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <summary>
         /// Gets the logger implementation that writes telemetry via Serilog to Application Insights.
         /// </summary>
-        protected ILogger Logger
+        protected ITelemetryLogger<ApplicationInsightsSinkTests> Logger
         {
             get
             {
@@ -110,7 +111,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                         break;
                 }
 
-                ILogger logger = CreateLogger(LoggerConfiguration);
+                var logger = CreateLogger(LoggerConfiguration);
                 return logger;
             }
         }
@@ -125,17 +126,22 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <param name="config">The Serilog configuration to setup the logger.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="config"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="config"/> already has created the logger.</exception>
-        protected ILogger CreateLogger(LoggerConfiguration config)
+        protected ITelemetryLogger<ApplicationInsightsSinkTests> CreateLogger(LoggerConfiguration config)
         {
             Guard.NotNull(config, nameof(config), "Requires a Serilog logger configuration instance to setup the test logger used during the test");
 
             _telemetrySink.Options = ApplicationInsightsSinkOptions;
             config.WriteTo.ApplicationInsights(_telemetrySink);
 
-            ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(config.CreateLogger(), dispose: true));
-            ILogger logger = loggerFactory.CreateLogger<ApplicationInsightsSinkTests>();
+            var services = new ServiceCollection();
+            services.AddLogging(logging =>
+            {
+                logging.AddSerilog(config.CreateLogger(), dispose: true)
+                       .UseCustomSerilogTelemetry();
+            });
 
-            return logger;
+            IServiceProvider provider = services.BuildServiceProvider();
+            return provider.GetRequiredService<ITelemetryLogger<ApplicationInsightsSinkTests>>();
         }
 
         /// <summary>
