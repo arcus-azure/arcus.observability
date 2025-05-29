@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -17,6 +18,47 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
 
         [Fact]
         public async Task LogCustomRequest_SinksToApplicationInsights_ResultsInCustomRequestTelemetry()
+        {
+            // Arrange
+            string componentName = BogusGenerator.Commerce.ProductName();
+            LoggerConfiguration.Enrich.WithComponentName(componentName);
+
+            string customRequestSource = BogusGenerator.Lorem.Word();
+            string operationName = BogusGenerator.Lorem.Word();
+
+            bool isSuccessful = BogusGenerator.Random.Bool();
+            Dictionary<string, object> userContext = CreateTestTelemetryContext();
+            var telemetryContext = new SerilogRequestTelemetryContext(userContext)
+            {
+                RequestSource = customRequestSource
+            };
+
+            // Act
+            using (var operation = Logger.LogCustomRequest(operationName, telemetryContext))
+            {
+                operation.IsSuccessful = isSuccessful;
+            }
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsRequestResult[] requests = await client.GetRequestsAsync();
+                AssertX.Any(requests, result =>
+                {
+                    Assert.Equal(operationName, result.Request.Name);
+                    Assert.Contains(customRequestSource, result.Request.Source);
+                    Assert.True(string.IsNullOrWhiteSpace(result.Request.Url), "request URL should be blank");
+                    Assert.Equal(operationName, result.Operation.Name);
+                    Assert.Equal(isSuccessful, result.Success);
+                    Assert.Equal(componentName, result.Cloud.RoleName);
+
+                    Assert.All(telemetryContext, item => Assert.Equal(item.Value.ToString(), Assert.Contains(item.Key, result.CustomDimensions)));
+                });
+            });
+        }
+
+        [Fact]
+        public async Task DeprecatedLogCustomRequest_SinksToApplicationInsights_ResultsInCustomRequestTelemetry()
         {
             // Arrange
             string componentName = BogusGenerator.Commerce.ProductName();

@@ -22,7 +22,32 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
-            Logger.LogCustomMetric(metricName, metricValue, telemetryContext);
+            Logger.LogCustomMetric(metricName: metricName, metricValue, telemetryContext);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsMetricsResult[] results = await client.GetMetricsAsync(metricName);
+                AssertX.Any(results, metric =>
+                {
+                    Assert.Equal(metricName, metric.Name);
+                    Assert.Equal(metricValue, metric.Value);
+
+                    ContainsTelemetryContext(telemetryContext, metric);
+                });
+            });
+        }
+
+        [Fact]
+        public async Task DeprecatedLogCustomMetric_SinksToApplicationInsights_ResultsInMetricTelemetry()
+        {
+            // Arrange
+            string metricName = "threshold";
+            double metricValue = 0.25;
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+            // Act
+            Logger.LogCustomMetric(name: metricName, metricValue, telemetryContext);
 
             // Assert
             await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
