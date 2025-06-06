@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Arcus.Observability;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
@@ -23,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the custom request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomRequest) + " instead to track custom requests")]
         public static void LogCustomRequest(
             this ILogger logger,
             string requestSource,
@@ -49,6 +51,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomRequest) + " instead to track custom requests")]
         public static void LogCustomRequest(
             this ILogger logger,
             string requestSource,
@@ -75,6 +78,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the custom request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomRequest) + " instead to track custom requests")]
         public static void LogCustomRequest(
             this ILogger logger,
             string requestSource,
@@ -103,8 +107,9 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomRequest) + " instead to track custom requests")]
         public static void LogCustomRequest(
-            this ILogger logger, 
+            this ILogger logger,
             string requestSource,
             string operationName,
             bool isSuccessful,

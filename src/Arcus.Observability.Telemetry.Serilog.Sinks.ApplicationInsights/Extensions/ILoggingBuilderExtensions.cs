@@ -1,4 +1,6 @@
 ﻿using System;
+using Arcus.Observability;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Extensions.Logging;
@@ -30,6 +32,16 @@ namespace Microsoft.Extensions.Logging
                 return new SerilogLoggerProvider(implementationFactory(provider), dispose: true);
             });
 
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an <see cref="ITelemetryLogger{TCategoryName}"/> implementation to the application services that interacts via Serilog to Azure Application Insights.
+        /// This allows additional telemetry to be written to Application Insights, such as custom events, metrics, requests, dependencies, etc.
+        /// </summary>
+        public static ILoggingBuilder UseCustomSerilogTelemetry(this ILoggingBuilder builder)
+        {
+            builder.Services.AddSingleton(typeof(ITelemetryLogger<>), typeof(SerilogTelemetryLogger<>));
             return builder;
         }
     }
