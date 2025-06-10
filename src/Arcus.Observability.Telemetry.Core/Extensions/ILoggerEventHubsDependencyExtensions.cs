@@ -62,6 +62,11 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
+
             LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
