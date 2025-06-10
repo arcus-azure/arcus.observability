@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the Azure EventHubs request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="eventHubsNamespace"/>, <paramref name="eventHubsName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogEventHubsRequest(
             this ILogger logger,
             string eventHubsNamespace,
@@ -53,6 +54,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="eventHubsNamespace"/>, <paramref name="eventHubsName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogEventHubsRequest(
             this ILogger logger,
             string eventHubsNamespace,
@@ -85,6 +87,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="eventHubsNamespace"/>, <paramref name="consumerGroup"/>, <paramref name="eventHubsName"/> is blank.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogEventHubsRequest(
             this ILogger logger,
             string eventHubsNamespace,
@@ -121,6 +124,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="eventHubsNamespace"/>, <paramref name="consumerGroup"/>, <paramref name="eventHubsName"/> is blank.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogEventHubsRequest(
             this ILogger logger,
             string eventHubsNamespace,

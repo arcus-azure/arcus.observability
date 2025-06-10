@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogTableStorageDependency(
             this ILogger logger,
             string accountName,
@@ -52,6 +53,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogTableStorageDependency(
             this ILogger logger,
             string accountName,
@@ -82,6 +84,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>nul</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogTableStorageDependency(
             this ILogger logger,
             string accountName,
@@ -113,6 +116,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>nul</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="accountName"/> or <paramref name="tableName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogTableStorageDependency(
             this ILogger logger,
             string accountName,

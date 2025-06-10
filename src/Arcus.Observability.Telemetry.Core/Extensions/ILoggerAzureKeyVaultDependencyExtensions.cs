@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,
@@ -56,6 +57,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="vaultUri"/> or <paramref name="secretName"/> is blank.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,
@@ -88,6 +90,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,
@@ -121,6 +124,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="secretName"/> is not in the correct format.</exception>
         /// <exception cref="UriFormatException">Thrown when the <paramref name="vaultUri"/> is not in the correct format.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureKeyVaultDependency(
             this ILogger logger,
             string vaultUri,

@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubName,
@@ -49,6 +50,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubName,
@@ -76,6 +78,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubName,
@@ -103,6 +106,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependencyWithConnectionString(
             this ILogger logger,
             string iotHubConnectionString,
@@ -131,6 +135,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubConnectionString"/> is blank or is invalid.</exception>
         /// <exception cref="FormatException">Thrown when the <paramref name="iotHubConnectionString"/> is invalid.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependencyWithConnectionString(
             this ILogger logger,
             string iotHubConnectionString,
@@ -160,6 +165,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="iotHubName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogIotHubDependency(
             this ILogger logger,
             string iotHubName,

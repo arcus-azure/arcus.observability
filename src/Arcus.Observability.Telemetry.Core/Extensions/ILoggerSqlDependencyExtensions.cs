@@ -28,6 +28,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft SQL client supports telemetry now natively")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -63,6 +64,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serverName"/> or <paramref name="databaseName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft SQL client supports telemetry now natively")]
         public static void LogSqlDependency(
             this ILogger logger,
             string serverName,
@@ -108,6 +110,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft SQL client supports telemetry now natively")]
         public static void LogSqlDependencyWithConnectionString(
             this ILogger logger,
             string connectionString,
@@ -139,6 +142,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft SQL client supports telemetry now natively")]
         public static void LogSqlDependencyWithConnectionString(
             this ILogger logger,
             string connectionString,

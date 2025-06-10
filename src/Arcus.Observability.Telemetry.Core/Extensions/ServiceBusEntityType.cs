@@ -1,9 +1,12 @@
 ﻿// ReSharper disable once CheckNamespace
+using System;
+
 namespace Microsoft.Extensions.Logging 
 {
     /// <summary>
     /// Corresponds with the type of the dependency type when logging an Azure Service Bus dependency.
     /// </summary>
+    [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
     public enum ServiceBusEntityType
     {
         /// <summary>

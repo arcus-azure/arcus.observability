@@ -27,6 +27,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,
@@ -54,6 +55,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,
@@ -82,6 +84,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,
@@ -111,6 +114,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,
@@ -143,6 +147,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,
@@ -174,6 +179,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="request"/> doesn't have a request URI or HTTP method, the <paramref name="statusCode"/> is outside 100-599 range inclusively.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Microsoft HTTP client supports telemetry now natively")]
         public static void LogHttpDependency(
             this ILogger logger,
             HttpRequestMessage request,

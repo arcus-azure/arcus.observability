@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureSearchDependency(
             this ILogger logger,
             string searchServiceName,
@@ -52,6 +53,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureSearchDependency(
             this ILogger logger,
             string searchServiceName,
@@ -81,6 +83,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureSearchDependency(
             this ILogger logger,
             string searchServiceName,
@@ -111,6 +114,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">Context that provides more insights on the dependency that was measured</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="searchServiceName"/> or <paramref name="operationName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogAzureSearchDependency(
             this ILogger logger,
             string searchServiceName,

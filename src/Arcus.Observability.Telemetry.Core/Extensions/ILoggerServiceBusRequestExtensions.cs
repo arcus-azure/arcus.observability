@@ -29,6 +29,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="serviceBusNamespace"/>, <paramref name="serviceBusNamespaceSuffix"/>, <paramref name="topicName"/>, or the <paramref name="subscriptionName"/> is blank.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -65,6 +66,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">
         ///     Thrown when the <paramref name="serviceBusNamespace"/>, <paramref name="topicName"/>, or the <paramref name="subscriptionName"/> is blank.
         /// </exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicRequest(
             this ILogger logger,
             string serviceBusNamespace,
@@ -102,6 +104,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="serviceBusNamespace"/>, <paramref name="serviceBusNamespaceSuffix"/>, <paramref name="topicName"/>, or the <paramref name="subscriptionName"/> is blank.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -142,6 +145,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/>, <paramref name="topicName"/> or the <paramref name="subscriptionName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicRequest(
             this ILogger logger,
             string serviceBusNamespace,
@@ -178,6 +182,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -209,6 +214,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus queue request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueRequest(
             this ILogger logger,
             string serviceBusNamespace,
@@ -241,6 +247,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -275,6 +282,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="queueName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueRequest(
             this ILogger logger,
             string serviceBusNamespace,
@@ -307,6 +315,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="entityName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -340,6 +349,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The telemetry context that provides more insights on the Azure Service Bus request.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or the <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="entityName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusRequest(
             this ILogger logger,
             string serviceBusNamespace,
@@ -374,6 +384,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="entityName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusRequestWithSuffix(
             this ILogger logger,
             string serviceBusNamespace,
@@ -410,6 +421,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceBusNamespace"/> or <paramref name="entityName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusRequest(
             this ILogger logger,
             string serviceBusNamespace,
