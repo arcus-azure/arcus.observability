@@ -310,7 +310,7 @@ The application map (`Application Insights > Investigate > Application Map`) sho
 ![Product API ↔️ Stock API application map example](/media/product-stock-api-service-correlation-example-applicationmap.png)
 
 If you copy the `X-Transaction-ID` from the response (`8a622fa4-a757-47a0-9db9-e22d00328087`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Product API**. You clearly see how the initial request to the **Product API** is the caller of the dependency towards the **Stock API**:
-![Product API <> Stock API transaction search example](/media/product-stock-api-service-w3c-correlation-example-transactionsearch.png)
+![Product API ↔️ Stock API transaction search example](/media/product-stock-api-service-w3c-correlation-example-transactionsearch.png)
 
 ## Conclusion
 In this user guide, you've seen how the Arcus HTTP correlation functionality can be used to set up service-to-service correlation in Web API solutions. The service-to-service correlation is a very wide topic and can be configured with many options. See the [this documentation page](https://webapi.arcus-azure.net/features/correlation) to learn more about HTTP correlation in Web API applications.
