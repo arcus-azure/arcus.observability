@@ -86,6 +86,11 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentException("Requires a non-blank SQL server name to track a SQL dependency", nameof(serverName));
             }
 
+            if (string.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentException("Requires a non-blank SQL database name to track a SQL dependency", nameof(databaseName));
+            }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the SQL dependency operation");

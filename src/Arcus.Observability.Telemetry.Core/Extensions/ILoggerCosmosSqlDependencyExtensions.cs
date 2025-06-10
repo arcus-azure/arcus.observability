@@ -144,6 +144,11 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentException("Requires a non-blank database name of the Cosmos SQL storage to track a Cosmos SQL dependency", nameof(database));
             }
 
+            if (string.IsNullOrWhiteSpace(container))
+            {
+                throw new ArgumentException("Requires a non-blank container name in the Cosmos SQL storage to track a Cosmos SQL dependency", nameof(container));
+            }
+
             if (duration < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Cosmos SQL operation");

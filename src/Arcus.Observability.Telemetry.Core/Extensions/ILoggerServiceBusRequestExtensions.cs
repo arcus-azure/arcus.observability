@@ -113,6 +113,11 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
+            if (string.IsNullOrWhiteSpace(subscriptionName))
+            {
+                throw new ArgumentException("Subscription name cannot be blank", nameof(subscriptionName));
+            }
+
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
@@ -146,6 +151,11 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
+            if (string.IsNullOrWhiteSpace(subscriptionName))
+            {
+                throw new ArgumentException("Subscription name cannot be blank", nameof(subscriptionName));
+            }
+
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
@@ -367,6 +377,16 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
+            if (string.IsNullOrWhiteSpace(serviceBusNamespace))
+            {
+                throw new ArgumentException("Requires an Azure Service Bus namespace to track the request", nameof(serviceBusNamespace));
+            }
+
+            if (string.IsNullOrWhiteSpace(serviceBusNamespaceSuffix))
+            {
+                throw new ArgumentException("Requires an Azure Service Bus namespace suffix to track the request", nameof(serviceBusNamespaceSuffix));
+            }
+
             LogServiceBusRequest(logger, serviceBusNamespace + serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, duration, startTime, entityType, context);
         }
 
