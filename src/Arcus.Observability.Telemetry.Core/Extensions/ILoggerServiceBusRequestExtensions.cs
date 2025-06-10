@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -41,12 +40,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the topic request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the topic request");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
-            Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus topic request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusTopicRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, topicName, subscriptionName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -77,11 +74,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the topic request");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
-            Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus topic request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusTopicRequest(logger, serviceBusNamespace, topicName, subscriptionName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -117,13 +113,6 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the topic request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the topic request");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
-            Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus topic request operation");
-
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
@@ -157,12 +146,6 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the topic request");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires an Azure Service Bus topic name to track the topic request");
-            Guard.NotNullOrWhitespace(subscriptionName, nameof(subscriptionName), "Requires an Azure Service Bus subscription name on the to track the topic request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus topic request operation");
-
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.RequestTracking.ServiceBus.Topic.SubscriptionName] = subscriptionName;
 
@@ -193,11 +176,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the queue request");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus queue request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusQueueRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, queueName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -224,10 +206,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus queue request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusQueueRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, context);
         }
@@ -259,12 +241,6 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the queue request");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus queue request operation");
-
             LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
         }
 
@@ -293,11 +269,6 @@ namespace Microsoft.Extensions.Logging
             DateTimeOffset startTime,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires an Azure Service Bus queue name to track the queue request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus queue request operation");
-
             LogServiceBusRequest(logger, serviceBusNamespace, queueName, operationName, isSuccessful, duration, startTime, ServiceBusEntityType.Queue, context);
         }
 
@@ -327,11 +298,10 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the queue request");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusRequestWithSuffix(logger, serviceBusNamespace, serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, entityType, context);
         }
@@ -360,10 +330,10 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the queue request");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the Azure Service Bus request process latency duration");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusRequest(logger, serviceBusNamespace, entityName, operationName, isSuccessful, measurement.Elapsed, measurement.StartTime, entityType, context);
         }
@@ -397,12 +367,6 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the request");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceSuffix, nameof(serviceBusNamespaceSuffix), "Requires an Azure Service Bus namespace suffix to track the request");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
-
             LogServiceBusRequest(logger, serviceBusNamespace + serviceBusNamespaceSuffix, entityName, operationName, isSuccessful, duration, startTime, entityType, context);
         }
 
@@ -433,10 +397,25 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespace, nameof(serviceBusNamespace), "Requires an Azure Service Bus namespace to track the request");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires an Azure Service Bus name to track the request");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (string.IsNullOrWhiteSpace(serviceBusNamespace))
+            {
+                throw new ArgumentException("Requires an Azure Service Bus namespace to track the request", nameof(serviceBusNamespace));
+            }
+
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentException("Requires an Azure Service Bus name to track the request", nameof(entityName));
+            }
+
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Service Bus request operation");
+            }
 
             if (string.IsNullOrWhiteSpace(operationName))
             {

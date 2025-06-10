@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -33,11 +32,6 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
-            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Event Hub resource when tracking an Azure Event Hub dependency");
-
             LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -63,11 +57,6 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
-            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Event Hub resource when tracking an Azure Event Hub dependency");
-
             LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -94,11 +83,6 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
-            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");
-
             LogEventHubsDependency(logger, namespaceName, eventHubName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -127,10 +111,25 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(namespaceName, nameof(namespaceName), "Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency");
-            Guard.NotNullOrWhitespace(eventHubName, nameof(eventHubName), "Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (string.IsNullOrWhiteSpace(namespaceName))
+            {
+                throw new ArgumentException("Requires a non-blank resource namespace of the Azure Event Hub to track an Azure Event Hub dependency", nameof(namespaceName));
+            }
+
+            if (string.IsNullOrWhiteSpace(eventHubName))
+            {
+                throw new ArgumentException("Requires a non-blank Azure Event Hub name to track an Azure Event Hub dependency", nameof(eventHubName));
+            }
+
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Events Hubs operation");
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 

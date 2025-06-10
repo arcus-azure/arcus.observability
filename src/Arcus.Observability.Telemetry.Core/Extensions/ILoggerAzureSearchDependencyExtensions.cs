@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -33,10 +32,10 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track the Azure Search dependency");
-            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Search resource when tracking the Azure Search dependency");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
@@ -63,10 +62,10 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track the Azure Search dependency");
-            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Search resource when tracking the Azure Search dependency");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
@@ -93,11 +92,6 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
-
             LogAzureSearchDependency(logger, searchServiceName, operationName, isSuccessful, startTime, duration, dependencyId: null, context);
         }
 
@@ -125,10 +119,25 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(searchServiceName, nameof(searchServiceName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotNullOrWhitespace(operationName, nameof(operationName), "Requires a non-blank name for the Azure Search service to track the Azure Service dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Search operation");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (string.IsNullOrWhiteSpace(searchServiceName))
+            {
+                throw new ArgumentException("Requires a non-blank name for the Azure Search service to track the Azure Service dependency", nameof(searchServiceName));
+            }
+
+            if (string.IsNullOrWhiteSpace(operationName))
+            {
+                throw new ArgumentException("Requires a non-blank operation name for the Azure Search service to track the Azure Service dependency", nameof(operationName));
+            }
+
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Search operation");
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
