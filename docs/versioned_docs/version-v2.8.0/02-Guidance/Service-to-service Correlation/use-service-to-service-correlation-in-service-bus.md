@@ -336,10 +336,10 @@ curl -Method POST `
 The real result, though, happens in Application Insights.
 
 The application map (`Application Insights > Investigate > Application Map`) shows a clear relationship between the two services:
-![Product API <> Stock API application map example](/media/servicebus-worker-service-w3c-correlation-example-applicationmap.png)
+![Product API ↔️ Stock API application map example](/media/servicebus-worker-service-w3c-correlation-example-applicationmap.png)
 
 If you copy the `X-Transaction-ID` from the response (`585ea273-eaa9-44bb-905a-6805bd418566`) and past it in the transaction search (`Application Insights > Investigate > Transaction search`), you'll see this relationship in more detail when you select the initial HTTP request to the **Order API**. You clearly see how the initial request to the **Order API** is the caller of the dependency towards the **Order Worker**:
-![Product API <> Stock API transaction search example](/media/servicebus-worker-service-w3c-correlation-example-transactionsearch.png)
+![Product API ↔️ Stock API transaction search example](/media/servicebus-worker-service-w3c-correlation-example-transactionsearch.png)
 
 ## Further reading
 * [Arcus Service Bus messaging documentation](https://messaging.arcus-azure.net/Features/message-pumps/service-bus)
