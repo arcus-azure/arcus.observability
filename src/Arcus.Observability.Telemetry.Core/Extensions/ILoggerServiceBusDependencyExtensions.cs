@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -25,6 +24,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="queueName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -34,10 +34,10 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires a non-blank Azure Service Bus Queue name to track an Azure Service Bus Queue dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus Queue when tracking the Azure Service Bus Queue dependency");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusQueueDependency(logger, serviceBusNamespaceEndpoint, queueName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
@@ -56,6 +56,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="queueName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusQueueDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -66,11 +67,6 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(queueName, nameof(queueName), "Requires a non-blank Azure Service Bus Queue name to track an Azure Service Bus Queue dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus Queue operation");
-
             LogServiceBusDependency(logger, serviceBusNamespaceEndpoint, queueName, isSuccessful, startTime, duration, dependencyId, ServiceBusEntityType.Queue, context);
         }
 
@@ -86,6 +82,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -95,10 +92,10 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires a non-blank Azure Service Bus Topic name to track an Azure Service Bus Topic dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus Topic when tracking the Azure Service Bus Topic dependency");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusTopicDependency(logger, serviceBusNamespaceEndpoint, topicName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
@@ -117,6 +114,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="topicName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusTopicDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -127,11 +125,6 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(topicName, nameof(topicName), "Requires a non-blank Azure Service Bus Topic name to track an Azure Service Bus Topic dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus Topic operation");
-
             LogServiceBusDependency(logger, serviceBusNamespaceEndpoint, topicName, isSuccessful, startTime, duration, dependencyId, ServiceBusEntityType.Topic, context);
         }
 
@@ -148,6 +141,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the dependency that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="measurement"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -158,10 +152,10 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires a non-blank Azure Service Bus entity name to track an Azure Service Bus dependency");
-            Guard.NotNull(measurement, nameof(measurement), "Requires a dependency measurement instance to track the latency of the Azure Service Bus when tracking the Azure Service Bus dependency");
+            if (measurement is null)
+            {
+                throw new ArgumentNullException(nameof(measurement));
+            }
 
             LogServiceBusDependency(logger, serviceBusNamespaceEndpoint, entityName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, entityType, context);
         }
@@ -181,6 +175,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="entityName"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0 as the Azure SDK supports telemetry now natively")]
         public static void LogServiceBusDependency(
             this ILogger logger,
             string serviceBusNamespaceEndpoint,
@@ -192,10 +187,25 @@ namespace Microsoft.Extensions.Logging
             ServiceBusEntityType entityType = ServiceBusEntityType.Unknown,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(serviceBusNamespaceEndpoint, nameof(serviceBusNamespaceEndpoint), "Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency");
-            Guard.NotNullOrWhitespace(entityName, nameof(entityName), "Requires a non-blank Azure Service Bus entity name to track an Azure Service Bus dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the Azure Service Bus operation");
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (string.IsNullOrWhiteSpace(serviceBusNamespaceEndpoint))
+            {
+                throw new ArgumentException("Requires a non-blank namespace where the Azure Service Bus entity is located to track an Azure Service Bus dependency", nameof(serviceBusNamespaceEndpoint));
+            }
+
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentException("Requires a non-blank Azure Service Bus entity name to track an Azure Service Bus dependency", nameof(entityName));
+            }
+
+            if (duration < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), "Requires a positive time duration of the Azure Service Bus operation");
+            }
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
             context[ContextProperties.DependencyTracking.ServiceBus.EntityType] = entityType;
