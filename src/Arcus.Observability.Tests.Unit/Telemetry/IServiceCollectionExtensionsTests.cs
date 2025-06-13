@@ -4,7 +4,6 @@ using Arcus.Observability.Tests.Unit.Telemetry.Logging;
 using Bogus;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;

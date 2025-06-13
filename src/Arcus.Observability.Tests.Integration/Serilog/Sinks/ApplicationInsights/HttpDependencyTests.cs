@@ -4,10 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
@@ -110,36 +108,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             return request;
         }
 
-        [Fact]
-        public async Task LogHttpDependencyWithRequest_SinksToApplicationInsights_ResultsInHttpDependencyTelemetry()
-        {
-            // Arrange
-            HttpMethod httpMethod = GenerateHttpMethod();
-            HttpRequest request = CreateHttpRequest(httpMethod, "arcus.test", "/integration", "https");
-            string dependencyId = BogusGenerator.Random.Guid().ToString();
-            
-            var statusCode = BogusGenerator.PickRandom<HttpStatusCode>();
-            DateTimeOffset startTime = DateTimeOffset.Now;
-            var duration = BogusGenerator.Date.Timespan();
-            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-
-            // Act
-            Logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId, telemetryContext);
-
-            // Assert
-            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
-            {
-                EventsDependencyResult[] results = await client.GetDependenciesAsync();
-                AssertX.Any(results, result =>
-                {
-                    Assert.Equal(DependencyType, result.Dependency.Type, StringComparer.OrdinalIgnoreCase);
-                    Assert.Equal(request.Host.Host, result.Dependency.Target);
-                    Assert.Equal($"{httpMethod} {request.Path}", result.Dependency.Name);
-                    Assert.Equal(dependencyId, result.Dependency.Id);
-                });
-            });
-        }
-
         private HttpMethod GenerateHttpMethod()
         {
             return BogusGenerator.PickRandom(
@@ -151,16 +119,6 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 HttpMethod.Post,
                 HttpMethod.Put,
                 HttpMethod.Trace);
-        }
-        private static HttpRequest CreateHttpRequest(HttpMethod method, string host, string path, string scheme)
-        {
-            var stubRequest = new Mock<HttpRequest>();
-            stubRequest.Setup(request => request.Method).Returns(method.ToString());
-            stubRequest.Setup(request => request.Host).Returns(new HostString(host));
-            stubRequest.Setup(request => request.Path).Returns(path);
-            stubRequest.Setup(req => req.Scheme).Returns(scheme);
-
-            return stubRequest.Object;
         }
     }
 }
