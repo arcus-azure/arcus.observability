@@ -14,7 +14,6 @@ Arcus Observability allows you to work easily with Azure Application Insights te
 # Guidance
 
 - [Using Arcus & Serilog in ASP.NET Core](./02-Guidance/use-with-dotnet-and-aspnetcore.md)
-- [Using Arcus & Serilog in Azure Functions](./02-Guidance/use-with-dotnet-and-functions.md)
 
 # Installation
 
