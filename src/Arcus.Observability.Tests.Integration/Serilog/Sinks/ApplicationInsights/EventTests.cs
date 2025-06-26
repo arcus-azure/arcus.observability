@@ -27,6 +27,28 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
 
             // Act
+            Logger.LogCustomEvent(eventName, BogusGenerator.Date.Past(), telemetryContext);
+
+            // Assert
+            await RetryAssertUntilTelemetryShouldBeAvailableAsync(async client =>
+            {
+                EventsCustomEventResult[] results = await client.GetCustomEventsAsync();
+                AssertX.Any(results, ev =>
+                {
+                    Assert.Equal(eventName, ev.Name);
+                    Assert.All(telemetryContext, item => Assert.Equal(item.Value.ToString(), Assert.Contains(item.Key, ev.CustomDimensions)));
+                });
+            });
+        }
+
+        [Fact]
+        public async Task DeprecatedLogCustomEvent_SinksToApplicationInsights_ResultsInEventTelemetry()
+        {
+            // Arrange
+            string eventName = BogusGenerator.Finance.AccountName();
+            Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
+
+            // Act
             Logger.LogCustomEvent(eventName, telemetryContext);
 
             // Assert
@@ -47,7 +69,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string componentName = BogusGenerator.Commerce.ProductName();
             LoggerConfiguration.Enrich.WithComponentName(componentName);
-            
+
             // Act
             Logger.LogInformation(message);
 
@@ -99,7 +121,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
             LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
-            
+
             // Act
             Logger.LogInformation(message);
 

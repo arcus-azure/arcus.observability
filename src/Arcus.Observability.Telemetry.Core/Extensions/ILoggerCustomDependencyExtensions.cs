@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Arcus.Observability;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using GuardNet;
@@ -26,6 +27,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -56,6 +58,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -87,6 +90,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -119,6 +123,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -152,6 +157,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -185,6 +191,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -219,6 +226,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -254,6 +262,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -287,6 +296,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -319,6 +329,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -352,6 +363,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -386,6 +398,7 @@ namespace Microsoft.Extensions.Logging
         ///     Thrown when the <paramref name="logger"/>, <paramref name="dependencyData"/>, <paramref name="measurement"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -421,6 +434,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -456,6 +470,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -492,6 +507,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
@@ -529,6 +545,7 @@ namespace Microsoft.Extensions.Logging
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="dependencyData"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
+        [Obsolete("Will be removed in v4.0, please use the specific " + nameof(ITelemetryLogger<object>) + "." + nameof(ITelemetryLogger<object>.LogCustomDependency) + " instead to track custom dependencies")]
         public static void LogDependency(
             this ILogger logger,
             string dependencyType,
