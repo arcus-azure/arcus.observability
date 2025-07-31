@@ -26,7 +26,6 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 10.0.x'
-        dotnet-quality: 'preview'
     - name: Coverlet coverage test
       uses: b3b00/coverlet-action@1.2.4
       with:
