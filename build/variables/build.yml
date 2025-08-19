@@ -1,6 +1,6 @@
 variables:
-  DotNet.Sdk.Version: '8.0.x'
-  DotNet.Sdk.PreviousVersion: '6.0.100'
-  DotNet.Sdk.IncludePreviewVersions: false
+  DotNet.Sdk.Version: '10.0.x'
+  DotNet.Sdk.PreviousVersion: '8.0.x'
+  DotNet.Sdk.IncludePreviewVersions: true
   Project: 'Arcus.Observability'
   Vm.Image: 'ubuntu-latest'
