@@ -24,7 +24,6 @@ using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Xunit;
 using static Arcus.Observability.Telemetry.Core.ContextProperties;
-using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
