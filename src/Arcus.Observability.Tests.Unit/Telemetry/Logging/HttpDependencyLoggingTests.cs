@@ -5,9 +5,7 @@ using System.Net.Http;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
 using Bogus;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
 
 namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
@@ -75,60 +73,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             string dependencyName = $"{requestMethod} {requestUri.AbsolutePath}";
             Assert.Contains("Http " + dependencyName, logMessage);
             Assert.Contains(dependencyId, logMessage);
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequest_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var requestUri = new Uri("https://arcus.test/unit");
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, requestUri.Host, requestUri.AbsolutePath, requestUri.Scheme);
-
-            var statusCode = HttpStatusCode.BadRequest;
-            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
-            var duration = BogusGenerator.Date.Timespan();
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, startTime, duration);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains("Http", dependency.DependencyType);
-            Assert.Contains(request.Method, logger.WrittenMessage);
-            Assert.Contains(request.Path, dependency.DependencyName);
-            Assert.Equal(request.Host.Host, dependency.TargetName);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.False(dependency.IsSuccessful);
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDependencyId_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var requestUri = new Uri("https://arcus.test/unit");
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, requestUri.Host, requestUri.AbsolutePath, requestUri.Scheme);
-
-            var statusCode = HttpStatusCode.OK;
-            DateTimeOffset startTime = BogusGenerator.Date.PastOffset();
-            var duration = BogusGenerator.Date.Timespan();
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains("Http", dependency.DependencyType);
-            Assert.Contains(request.Method, logger.WrittenMessage);
-            Assert.Contains(request.Path, dependency.DependencyName);
-            Assert.Equal(request.Host.Host, dependency.TargetName);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.True(dependency.IsSuccessful);
-            Assert.Equal(dependencyId, dependency.DependencyId);
         }
 
         [Fact]
@@ -260,96 +204,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurement_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var requestUri = new Uri("https://arcus.test/unit");
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, requestUri.Host, requestUri.AbsolutePath, requestUri.Scheme);
-
-            var statusCode = HttpStatusCode.BadRequest;
-            var measurement = DurationMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, measurement);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains("Http", dependency.DependencyType);
-            Assert.Contains(request.Method, logger.WrittenMessage);
-            Assert.EndsWith(request.Path, dependency.DependencyName);
-            Assert.Equal(request.Host.Host, dependency.TargetName);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.False(dependency.IsSuccessful);
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyId_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var requestUri = new Uri("https://arcus.test/unit");
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, requestUri.Host, requestUri.AbsolutePath, requestUri.Scheme);
-
-            var statusCode = HttpStatusCode.BadRequest;
-            var measurement = DurationMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, measurement, dependencyId);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains("Http", dependency.DependencyType);
-            Assert.Equal(dependencyId, dependency.DependencyId);
-            Assert.Contains(request.Method, logger.WrittenMessage);
-            Assert.Contains(request.Path, dependency.DependencyName);
-            Assert.Equal(request.Host.Host, dependency.TargetName);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            Assert.False(dependency.IsSuccessful);
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyIdWithIntStatusCode_ValidArguments_Succeeds()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var requestUri = new Uri("https://arcus.test/unit");
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, requestUri.Host, requestUri.AbsolutePath, requestUri.Scheme);
-
-            var statusCode = BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            DateTimeOffset startTime = measurement.StartTime;
-            measurement.Dispose();
-            TimeSpan duration = measurement.Elapsed;
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, measurement, dependencyId);
-
-            // Assert
-            DependencyLogEntry dependency = logger.GetMessageAsDependency();
-            Assert.Contains("Http", dependency.DependencyType);
-            Assert.Equal(dependencyId, dependency.DependencyId);
-            Assert.Contains(request.Method, logger.WrittenMessage);
-            Assert.Contains(request.Path, dependency.DependencyName);
-            Assert.Equal((int?)statusCode, dependency.ResultCode);
-            Assert.Equal(request.Host.Host, dependency.TargetName);
-            Assert.Equal(duration, dependency.Duration);
-            Assert.Equal(startTime.ToString(FormatSpecifiers.InvariantTimestampFormat), dependency.StartTime);
-            bool isSuccessful = statusCode >= 200 && statusCode < 300;
-            Assert.Equal(isSuccessful, dependency.IsSuccessful);
-        }
-
-        [Fact]
         public void LogHttpDependencyWithRequestMessageWithDurationMeasurement_WithoutRequest_Fails()
         {
             // Arrange
@@ -388,47 +242,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request: (HttpRequestMessage)null, statusCode, measurement, dependencyId));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurement_WithoutRequest_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request: (HttpRequest)null, statusCode, measurement));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyId_WithoutRequest_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request: (HttpRequest)null, statusCode, measurement, dependencyId));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyIdWitIntStatusCode_WithoutRequest_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            var statusCode = BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request: (HttpRequest)null, statusCode, measurement, dependencyId));
         }
 
         [Fact]
@@ -473,66 +286,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Act / Assert
             Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: null, dependencyId));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurement_WithoutMeasurement_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: (DurationMeasurement)null));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyId_WithoutMeasurement_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
-            var statusCode = (HttpStatusCode)BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: null, dependencyId));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequestWithDurationMeasurementWithDependencyIdWithIntStatusCode_WithoutMeasurement_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
-            var statusCode = BogusGenerator.Random.Int(100, 599);
-            var measurement = DurationMeasurement.Start();
-            measurement.Dispose();
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, measurement: null, dependencyId));
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequest_WithHttpStatusCodeOutsideAllowedRange_Fails()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "http");
-            var statusCode = BogusGenerator.PickRandom(
-                BogusGenerator.Random.Int(max: 99),
-                BogusGenerator.Random.Int(min: 600)
-            );
-            string dependencyId = BogusGenerator.Lorem.Word();
-
-            // Act / Assert
-            Assert.ThrowsAny<ArgumentException>(() => logger.LogHttpDependency(request, statusCode, DateTimeOffset.Now, TimeSpan.Zero, dependencyId));
         }
 
         [Fact]
@@ -586,36 +339,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
 
             // Assert
             Assert.Empty(context);
-        }
-
-        [Fact]
-        public void LogHttpDependencyWithRequest_WithContext_DoesNotAlterContext()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            HttpRequest request = CreateStubRequest(HttpMethod.Get, "host", "/path", "https");
-            int statusCode = (int) BogusGenerator.PickRandom<HttpStatusCode>();
-            var startTime = BogusGenerator.Date.RecentOffset();
-            var duration = BogusGenerator.Date.Timespan();
-            var dependencyId = BogusGenerator.Random.Guid().ToString();
-            var context = new Dictionary<string, object>();
-
-            // Act
-            logger.LogHttpDependency(request, statusCode, startTime, duration, dependencyId, context);
-
-            // Assert
-            Assert.Empty(context);
-        }
-
-        private static HttpRequest CreateStubRequest(HttpMethod method, string host, string path, string scheme)
-        {
-            var stubRequest = new Mock<HttpRequest>();
-            stubRequest.Setup(request => request.Method).Returns(method.ToString());
-            stubRequest.Setup(request => request.Host).Returns(new HostString(host));
-            stubRequest.Setup(request => request.Path).Returns(path);
-            stubRequest.Setup(req => req.Scheme).Returns(scheme);
-
-            return stubRequest.Object;
         }
     }
 }
