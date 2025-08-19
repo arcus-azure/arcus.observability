@@ -14,6 +14,7 @@ namespace System.Collections.Generic
         /// </summary>
         /// <param name="dictionary">Dictionary containing data</param>
         /// <param name="propertyKey">Key of the dictionary entry to return</param>
+        [Obsolete("Already available in standard .NET SDK")]
         public static TValue GetValueOrDefault<TValue>(this IReadOnlyDictionary<string, TValue> dictionary, string propertyKey)
         {
             Guard.NotNull(dictionary, nameof(dictionary));
