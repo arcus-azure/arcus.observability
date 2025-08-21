@@ -9,6 +9,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
     /// <summary>
     /// Represents an <see cref="ITelemetryInitializer"/> that configures the application's version.
     /// </summary>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
     public class ApplicationVersionTelemetryInitializer : ITelemetryInitializer
     {
         private readonly IAppVersion _applicationVersion;

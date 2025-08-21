@@ -6,6 +6,9 @@ namespace Arcus.Observability.Telemetry.Core
     /// <summary>
     /// Default <see cref="IAppName"/> implementation that uses a static name to set as application name.
     /// </summary>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application name enrichment is too project specific")]
+#pragma warning restore S1133
     public class DefaultAppName : IAppName
     {
         private readonly string _componentName;

@@ -9,6 +9,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <summary>
     /// Enrichment on log events with the current runtime version (i.e. 'version' = '1.0.0').
     /// </summary>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
     public class VersionEnricher : ILogEventEnricher
     {
         /// <summary>

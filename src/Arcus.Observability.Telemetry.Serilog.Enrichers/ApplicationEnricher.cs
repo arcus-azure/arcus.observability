@@ -9,6 +9,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <summary>
     /// Enrichment on log events with the application role concerning the component and instance name.
     /// </summary>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application name/version enrichment is too project-specific")]
+#pragma warning restore S1133
     public class ApplicationEnricher : ILogEventEnricher
     {
         internal const string ComponentName = "ComponentName";

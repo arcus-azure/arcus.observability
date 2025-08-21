@@ -9,6 +9,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
     /// <summary>
     /// Represents an <see cref="ITelemetryInitializer"/> that configures the application's name.
     /// </summary>
+    [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
     public class ApplicationNameTelemetryInitializer : ITelemetryInitializer
     {
         private readonly IAppName _applicationName;

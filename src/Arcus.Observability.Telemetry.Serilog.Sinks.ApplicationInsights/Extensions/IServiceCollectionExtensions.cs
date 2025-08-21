@@ -13,13 +13,16 @@ namespace Microsoft.Extensions.DependencyInjection
     // ReSharper disable once InconsistentNaming
     public static class IServiceCollectionExtensions
     {
-         /// <summary>
+        /// <summary>
         /// Adds an <see cref="IAppName"/> implementation to the application which can be used to retrieve the current application's name.
         /// </summary>
         /// <param name="services">The collection of registered services to add the <see cref="IAppName"/> implementation to.</param>
         /// <param name="componentName">The functional name to identity the application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAppName(
             this IServiceCollection services,
             string componentName)
@@ -36,6 +39,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection of registered services to add the <see cref="IAppName"/> implementation to.</param>
         /// <param name="implementationFactory">The factory function to create the <see cref="IAppName"/> implementation.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> or the <paramref name="implementationFactory"/> is <c>null</c>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAppName(
             this IServiceCollection services,
             Func<IServiceProvider, IAppName> implementationFactory)
@@ -53,6 +59,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TConsumerType">Some random consumer type that will be used to retrieve the assembly where the project is running.</typeparam>
         /// <param name="services">The collection of registered services to add the <see cref="IAppVersion"/> implementation to.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAssemblyAppVersion<TConsumerType>(this IServiceCollection services)
         {
             Guard.NotNull(services, nameof(services), $"Requires a collection of services to add the assembly version '{nameof(IAppVersion)}' implementation");
@@ -66,6 +75,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection of registered services to add the <see cref="IAppVersion"/> implementation to.</param>
         /// <param name="consumerType">Some random consumer type to have access to the assembly of the executing project.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> or <paramref name="consumerType"/> is <c>null</c>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAssemblyAppVersion(this IServiceCollection services, Type consumerType)
         {
             Guard.NotNull(services, nameof(services), $"Requires a collection of services to add the assembly version '{nameof(IAppVersion)}' implementation");
@@ -80,6 +92,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TAppVersion">The type that implements the <see cref="IAppVersion"/> interface.</typeparam>
         /// <param name="services">The collection of registered services to add the <see cref="IAppVersion"/> implementation to.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> is <c>null</c>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAppVersion<TAppVersion>(this IServiceCollection services) where TAppVersion : class, IAppVersion
         {
             Guard.NotNull(services, nameof(services), $"Requires a collection of services to add the '{nameof(IAppVersion)}' implementation");
@@ -92,6 +107,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection of registered services to add the <see cref="IAppVersion"/> implementation to.</param>
         /// <param name="createImplementation">The factory function to create the <see cref="IAppVersion"/> implementation.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="services"/> or the <paramref name="createImplementation"/> is <c>null</c>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static IServiceCollection AddAppVersion(
             this IServiceCollection services,
             Func<IServiceProvider, IAppVersion> createImplementation)
