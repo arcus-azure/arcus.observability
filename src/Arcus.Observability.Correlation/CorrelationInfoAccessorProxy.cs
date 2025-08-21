@@ -1,4 +1,4 @@
-﻿using GuardNet;
+﻿using System;
 
 namespace Arcus.Observability.Correlation
 {
@@ -16,7 +16,7 @@ namespace Arcus.Observability.Correlation
         /// </summary>
         internal CorrelationInfoAccessorProxy(ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor)
         {
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor));
+            ArgumentNullException.ThrowIfNull(correlationInfoAccessor);
 
             _correlationInfoAccessor = correlationInfoAccessor;
         }
