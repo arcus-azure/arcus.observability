@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using GuardNet;
 
 // ReSharper disable once CheckNamespace
@@ -13,8 +11,8 @@ namespace Serilog.Events
     /// </summary>
     public static class LogEventPropertyValueExtensions
     {
-        private static readonly StructureValue EmptyStructureValue = new StructureValue(new LogEventProperty[0]);
-        
+        private static readonly StructureValue EmptyStructureValue = new StructureValue(Array.Empty<LogEventProperty>());
+
         /// <summary>
         ///     Provide a string representation for a property key
         /// </summary>
@@ -25,7 +23,7 @@ namespace Serilog.Events
         {
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
-            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             return logEventPropertyValue?.ToDecentString();
         }
 
@@ -39,7 +37,7 @@ namespace Serilog.Events
         {
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
-            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             string rawDouble = logEventPropertyValue?.ToDecentString();
 
             if (rawDouble != null)
@@ -61,7 +59,7 @@ namespace Serilog.Events
         {
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
 
-            var propertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            var propertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (propertyValue == null || propertyValue is DictionaryValue == false)
             {
                 propertyDictionaryValues = null;
@@ -111,14 +109,14 @@ namespace Serilog.Events
             Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues), "Requires a series of event properties to retrieve a Serilog event property as a enumeration representation");
             Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a enumeration representation");
 
-            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (logEventPropertyValue is null)
             {
                 return null;
             }
-            
+
             string rawEnum = logEventPropertyValue.ToDecentString();
-            
+
             try
             {
                 if (Enum.TryParse(rawEnum, out TEnum enumRepresentation))
@@ -175,7 +173,7 @@ namespace Serilog.Events
             var value = bool.Parse(logEventPropertyValue);
             return value;
         }
-        
+
         /// <summary>
         /// Provide a <see cref="StructureValue"/> representation for a property value associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -188,12 +186,12 @@ namespace Serilog.Events
         public static StructureValue GetAsStructureValue(this IReadOnlyDictionary<string, LogEventPropertyValue> properties, string propertyKey)
         {
             Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve the structure value from the log event");
-            
+
             if (properties is null)
             {
                 return EmptyStructureValue;
             }
-            
+
             if (properties.TryGetValue(propertyKey, out LogEventPropertyValue propertyValue)
                 && propertyValue is StructureValue value)
             {
@@ -220,12 +218,12 @@ namespace Serilog.Events
             else
             {
                 string propertyValueAsString = logEventPropertyValue.ToString().Trim();
-                if (propertyValueAsString.StartsWith("\""))
+                if (propertyValueAsString.StartsWith('\"'))
                 {
                     propertyValueAsString = propertyValueAsString.Remove(0, 1);
                 }
 
-                if (propertyValueAsString.EndsWith("\""))
+                if (propertyValueAsString.EndsWith('\"'))
                 {
                     propertyValueAsString = propertyValueAsString.Remove(propertyValueAsString.Length - 1);
                 }
