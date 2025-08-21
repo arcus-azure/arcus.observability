@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Iot
 {
@@ -16,7 +15,7 @@ namespace Arcus.Observability.Telemetry.Core.Iot
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
         internal static IotHubConnectionStringParserResult Parse(string connectionString)
         {
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a non-blank connection string based on the hostname of the IoT Hub service");
+            ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
             string hostNameProperty =
                 connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
@@ -28,7 +27,7 @@ namespace Arcus.Observability.Telemetry.Core.Iot
                     "Cannot parse IoT Hub connection string because cannot find 'HostName' in IoT Hub connection string");
             }
 
-            string hostName = 
+            string hostName =
                 string.Join("", hostNameProperty.SkipWhile(ch => ch != '=').Skip(1));
 
             return new IotHubConnectionStringParserResult(hostName);

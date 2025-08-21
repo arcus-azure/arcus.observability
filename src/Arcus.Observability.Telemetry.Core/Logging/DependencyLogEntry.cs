@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Logging
 {
@@ -29,16 +28,16 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             string dependencyType,
             string dependencyName,
             object dependencyData,
-            string targetName, 
+            string targetName,
             TimeSpan duration,
             DateTimeOffset startTime,
             int? resultCode,
             bool isSuccessful,
             IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
-            
+            ArgumentException.ThrowIfNullOrWhiteSpace(dependencyType);
+            ArgumentOutOfRangeException.ThrowIfLessThan(duration, TimeSpan.Zero);
+
             DependencyType = dependencyType;
             DependencyName = dependencyName;
             DependencyData = dependencyData;
@@ -72,7 +71,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             string dependencyType,
             string dependencyName,
             object dependencyData,
-            string targetName, 
+            string targetName,
             string dependencyId,
             TimeSpan duration,
             DateTimeOffset startTime,
@@ -80,8 +79,8 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             bool isSuccessful,
             IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(dependencyType, nameof(dependencyType), "Requires a non-blank custom dependency type when tracking the custom dependency");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the dependency operation");
+            ArgumentException.ThrowIfNullOrWhiteSpace(dependencyType);
+            ArgumentOutOfRangeException.ThrowIfLessThan(duration, TimeSpan.Zero);
 
             DependencyId = dependencyId;
             DependencyType = dependencyType;
@@ -96,7 +95,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
             Context = context;
             Context[ContextProperties.General.TelemetryType] = TelemetryType.Dependency;
         }
-        
+
         /// <summary>
         /// Gets the ID of the dependency to link as parent ID.
         /// </summary>
@@ -106,42 +105,42 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// Gets the custom type of the dependency.
         /// </summary>
         public string DependencyType { get; }
-        
+
         /// <summary>
         /// Gets the name of the dependency.
         /// </summary>
         public string DependencyName { get; }
-        
+
         /// <summary>
         /// Gets the custom data of the dependency.
         /// </summary>
         public object DependencyData { get; }
-        
+
         /// <summary>
         /// Gets the name of the dependency target.
         /// </summary>
         public string TargetName { get; }
-        
+
         /// <summary>
         /// Gets the code of the result of the interaction with the dependency.
         /// </summary>
         public int? ResultCode { get; }
-        
+
         /// <summary>
         /// Gets the indication whether or not the operation was successful.
         /// </summary>
         public bool IsSuccessful { get; }
-        
+
         /// <summary>
         /// Gets the point in time when the interaction with the HTTP dependency was started.
         /// </summary>
         public string StartTime { get; }
-        
+
         /// <summary>
         /// Gets the duration of the operation.
         /// </summary>
         public TimeSpan Duration { get; }
-        
+
         /// <summary>
         /// Gets the context that provides more insights on the dependency that was measured.
         /// </summary>

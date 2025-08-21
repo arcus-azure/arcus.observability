@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Sql
 {
@@ -19,9 +18,9 @@ namespace Arcus.Observability.Telemetry.Core.Sql
         /// <exception cref="ArgumentException">Thrown when the <paramref name="connectionString"/> is blank.</exception>
         internal static SqlConnectionStringParserResult Parse(string connectionString)
         {
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires a non-blank SQL connection string to retrieve specific SQL properties");
+            ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
-            string[] parts = 
+            string[] parts =
                 connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(part => part.Trim())
                                 .ToArray();
@@ -53,7 +52,7 @@ namespace Arcus.Observability.Telemetry.Core.Sql
             switch (propertyName)
             {
                 case SqlProperties.DataSource: return new[] { "Data Source", "Server", "Addr", "Address", "Network Address" };
-                case SqlProperties.InitialCatalog: return new [] { "Initial Catalog", "Database" };
+                case SqlProperties.InitialCatalog: return new[] { "Initial Catalog", "Database" };
                 default:
                     throw new ArgumentOutOfRangeException(nameof(propertyName), propertyName, "Unknown keyword with no known SQL property aliases");
             }
