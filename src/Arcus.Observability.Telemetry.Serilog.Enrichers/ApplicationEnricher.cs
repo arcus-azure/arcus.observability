@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Enrichers;
 using Serilog.Events;
@@ -9,6 +8,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// <summary>
     /// Enrichment on log events with the application role concerning the component and instance name.
     /// </summary>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application name/version enrichment is too project-specific")]
+#pragma warning restore S1133
     public class ApplicationEnricher : ILogEventEnricher
     {
         internal const string ComponentName = "ComponentName";
@@ -33,8 +35,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> or <paramref name="propertyName"/> is blank.</exception>
         public ApplicationEnricher(string componentName, string propertyName)
         {
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank application component name");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+            ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             _componentValue = componentName;
             _propertyName = propertyName;

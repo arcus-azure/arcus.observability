@@ -23,10 +23,13 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the process executable in the default application domain cannot be retrieved.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new VersionEnricher(propertyName));
         }
@@ -39,14 +42,17 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="appVersion"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IAppVersion appVersion,
             string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNull(appVersion, nameof(appVersion), "Requires an application version implementation to enrich the log event with the application version");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(appVersion);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
         }
@@ -59,14 +65,17 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="serviceProvider"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IServiceProvider serviceProvider,
             string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppVersion)}' implementations");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             IAppVersion appVersion = serviceProvider.GetService<IAppVersion>() ?? new AssemblyAppVersion();
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
@@ -80,14 +89,17 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the <paramref name="componentName"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> or <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithComponentName(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
-            string componentName, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
+            string componentName,
             string propertyName = ApplicationEnricher.ComponentName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Require an enrichment configuration to add the application component enricher");
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank application component name");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new ApplicationEnricher(componentName, propertyName));
         }
@@ -102,14 +114,17 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceProvider"/> or <paramref name="propertyName"/> is blank.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no <see cref="IAppName"/> is registered in the <paramref name="serviceProvider"/>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithComponentName(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IServiceProvider serviceProvider,
             string propertyName = ApplicationEnricher.ComponentName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the application enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppName)}' implementations");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current application's name");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             var appName = serviceProvider.GetService<IAppName>();
             if (appName is null)
@@ -171,7 +186,7 @@ namespace Serilog
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
         }
-        
+
         /// <summary>
         /// Adds the previously registered <see cref="ICorrelationInfoAccessor"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
@@ -218,7 +233,7 @@ namespace Serilog
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
         }
-        
+
         /// <summary>
         /// Adds the <see cref="DefaultCorrelationInfoAccessor{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
@@ -252,7 +267,7 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
         public static LoggerConfiguration WithCorrelationInfo(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             ICorrelationInfoAccessor correlationInfoAccessor,
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
             string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
@@ -264,7 +279,7 @@ namespace Serilog
 
             return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor, operationIdPropertyName, transactionIdPropertyName);
         }
-        
+
         /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the <see cref="CorrelationInfo"/> information from the current context.
         /// </summary>
@@ -273,7 +288,7 @@ namespace Serilog
         /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         public static LoggerConfiguration WithCorrelationInfo(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             ICorrelationInfoAccessor correlationInfoAccessor,
             Action<CorrelationInfoEnricherOptions> configureOptions)
         {
@@ -298,10 +313,10 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
         public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
-            string transactionIdPropertyName = ContextProperties.Correlation.TransactionId) 
+            string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
             where TCorrelationInfo : CorrelationInfo
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
@@ -321,9 +336,9 @@ namespace Serilog
         /// <param name="configureOptions">The function to configure the options to change the behavior of the enricher.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
             ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
-            Action<CorrelationInfoEnricherOptions> configureOptions) 
+            Action<CorrelationInfoEnricherOptions> configureOptions)
             where TCorrelationInfo : CorrelationInfo
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
@@ -331,10 +346,10 @@ namespace Serilog
 
             var options = new CorrelationInfoEnricherOptions();
             configureOptions?.Invoke(options);
-            
+
             return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor, options));
         }
-        
+
         /// <summary>
         /// Adds the <see cref="CorrelationInfoEnricher{TCorrelationInfo}"/> to the logger enrichment configuration which adds the custom <typeparamref name="TCorrelationInfo"/> information from the current context.
         /// </summary>
@@ -343,8 +358,8 @@ namespace Serilog
         /// <param name="correlationInfoEnricher">The custom correlation enricher implementation for the <typeparamref name="TCorrelationInfo"/> model.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or the <paramref name="correlationInfoEnricher"/> is <c>null</c>.</exception>
         public static LoggerConfiguration WithCorrelationInfo<TCorrelationInfo>(
-            this LoggerEnrichmentConfiguration enrichmentConfiguration, 
-            CorrelationInfoEnricher<TCorrelationInfo> correlationInfoEnricher) 
+            this LoggerEnrichmentConfiguration enrichmentConfiguration,
+            CorrelationInfoEnricher<TCorrelationInfo> correlationInfoEnricher)
             where TCorrelationInfo : CorrelationInfo
         {
             Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");

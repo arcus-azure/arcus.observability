@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core
 {
@@ -8,6 +7,9 @@ namespace Arcus.Observability.Telemetry.Core
     /// Represents an <see cref="IAppVersion"/> implementation that uses the assembly version as application version.
     /// </summary>
     /// <seealso cref="IAppVersion"/>
+#pragma warning disable S1133
+    [Obsolete("Will be removed in v4.0 as application versioning enrichment is too project-specific")]
+#pragma warning restore S1133
     public class AssemblyAppVersion : IAppVersion
     {
         private readonly Lazy<string> _assemblyVersion;
@@ -24,7 +26,7 @@ namespace Arcus.Observability.Telemetry.Core
                 throw new InvalidOperationException(
                     "Cannot enrich the log events with a 'Version' because the version of the current executing runtime couldn't be determined");
             }
-            
+
             _assemblyVersion = new Lazy<string>(() => GetAssemblyVersion(executingAssembly));
         }
 
@@ -35,7 +37,7 @@ namespace Arcus.Observability.Telemetry.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="consumerType"/> is <c>null</c>.</exception>
         public AssemblyAppVersion(Type consumerType)
         {
-            Guard.NotNull(consumerType, nameof(consumerType), "Requires a consumer type to retrieve the assembly where the project runs");
+            ArgumentNullException.ThrowIfNull(consumerType);
 
             Assembly executingAssembly = consumerType.Assembly;
             _assemblyVersion = new Lazy<string>(() => GetAssemblyVersion(executingAssembly));
