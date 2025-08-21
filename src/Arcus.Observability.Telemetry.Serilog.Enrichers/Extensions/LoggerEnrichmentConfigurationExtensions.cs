@@ -28,8 +28,8 @@ namespace Serilog
 #pragma warning restore S1133
         public static LoggerConfiguration WithVersion(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new VersionEnricher(propertyName));
         }
@@ -50,9 +50,9 @@ namespace Serilog
             IAppVersion appVersion,
             string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNull(appVersion, nameof(appVersion), "Requires an application version implementation to enrich the log event with the application version");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(appVersion);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
         }
@@ -73,9 +73,9 @@ namespace Serilog
             IServiceProvider serviceProvider,
             string propertyName = VersionEnricher.DefaultPropertyName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the version enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppVersion)}' implementations");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             IAppVersion appVersion = serviceProvider.GetService<IAppVersion>() ?? new AssemblyAppVersion();
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
@@ -97,9 +97,9 @@ namespace Serilog
             string componentName,
             string propertyName = ApplicationEnricher.ComponentName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Require an enrichment configuration to add the application component enricher");
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank application component name");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the component name");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             return enrichmentConfiguration.With(new ApplicationEnricher(componentName, propertyName));
         }
@@ -122,9 +122,9 @@ namespace Serilog
             IServiceProvider serviceProvider,
             string propertyName = ApplicationEnricher.ComponentName)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the application enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), $"Requires a services provider collection to look for registered '{nameof(IAppName)}' implementations");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current application's name");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             var appName = serviceProvider.GetService<IAppName>();
             if (appName is null)
