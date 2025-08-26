@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Iot
 {
@@ -15,7 +14,7 @@ namespace Arcus.Observability.Telemetry.Core.Iot
         /// <exception cref="ArgumentException">Thrown when the <paramref name="hostName"/> is blank.</exception>
         internal IotHubConnectionStringParserResult(string hostName)
         {
-            Guard.NotNullOrWhitespace(hostName, nameof(hostName), "Requires a non-blank fully-qualified DNS hostname of the IoT Hub service");
+            ArgumentException.ThrowIfNullOrWhiteSpace(hostName);
             HostName = hostName;
         }
 
