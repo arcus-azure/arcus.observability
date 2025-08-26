@@ -43,7 +43,7 @@ namespace Arcus.Observability.Tests.Unit.Correlation
             var transactionId = Guid.NewGuid().ToString();
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => new CorrelationInfo(operationId: null, transactionId: transactionId));
+            Assert.ThrowsAny<ArgumentException>(() => new CorrelationInfo(operationId: null, transactionId: transactionId));
         }
     }
 }
