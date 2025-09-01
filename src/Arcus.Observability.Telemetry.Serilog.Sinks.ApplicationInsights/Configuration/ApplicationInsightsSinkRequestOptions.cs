@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration
 {
@@ -20,7 +19,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _generatedId;
             set
             {
-                Guard.NotNull(value, nameof(value), "Requires a function to generate the request ID of the telemetry model while tracking requests");
+                ArgumentNullException.ThrowIfNull(value);
                 _generatedId = value;
             }
         }
