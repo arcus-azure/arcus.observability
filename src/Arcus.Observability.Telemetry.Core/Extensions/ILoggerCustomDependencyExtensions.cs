@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.Logging
     /// Telemetry extensions on the <see cref="ILogger"/> instance to write Application Insights compatible log messages.
     /// </summary>
     // ReSharper disable once InconsistentNaming
+    [Obsolete("Will be removed in v4.0 in favor of a Serilog-specific implementation")]
     public static partial class ILoggerExtensions
     {
         /// <summary>

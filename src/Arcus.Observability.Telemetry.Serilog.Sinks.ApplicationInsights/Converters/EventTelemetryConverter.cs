@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
+using EventLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.EventLogEntry;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
@@ -37,10 +37,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
             string eventName = logEntry.Properties.GetAsRawString(nameof(EventLogEntry.EventName));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(EventLogEntry.Context));
-            
+
             var eventTelemetry = new EventTelemetry(eventName);
             eventTelemetry.Properties.AddRange(context);
-            
+
             return eventTelemetry;
         }
     }
