@@ -44,7 +44,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             TimeSpan requestDuration = logEntry.Properties.GetAsTimeSpan(nameof(RequestLogEntry.RequestDuration));
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
-            var sourceSystem = logEntry.Properties.GetAsObject<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
+            Enum.TryParse<RequestSourceSystem>(logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.SourceSystem)), out var sourceSystem);
             string customRequestSource = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.CustomRequestSource));
 
             string sourceName = DetermineSourceName(sourceSystem, requestMethod, requestUri, operationName);
