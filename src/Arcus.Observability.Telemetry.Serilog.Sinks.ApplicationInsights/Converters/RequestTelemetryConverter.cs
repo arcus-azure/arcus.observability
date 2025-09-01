@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
+using RequestLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.RequestLogEntry;
+using RequestSourceSystem = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.RequestSourceSystem;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
@@ -33,7 +34,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights Request telemetry instance");
             Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights Request telemetry instance");
-            
+
             StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.RequestTracking.RequestLogEntry);
             string requestMethod = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.RequestMethod));
             string requestHost = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.RequestHost));
@@ -91,7 +92,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             {
                 string entityName = context[ContextProperties.RequestTracking.ServiceBus.EntityName];
                 string namespaceEndpoint = context[ContextProperties.RequestTracking.ServiceBus.Endpoint];
-                
+
                 return $"type:Azure Service Bus | name:{entityName} | endpoint:sb://{namespaceEndpoint}/";
             }
 
@@ -99,7 +100,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             {
                 string name = context[ContextProperties.RequestTracking.EventHubs.Name];
                 string namespaceEndpoint = context[ContextProperties.RequestTracking.EventHubs.Namespace];
-                
+
                 return $"{namespaceEndpoint}.servicebus.windows.net/{name}";
             }
 

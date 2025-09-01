@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
+using MetricLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.MetricLogEntry;
 
-namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters 
+namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
     /// <summary>
     /// Represents a conversion from a Serilog <see cref="LogEvent"/> to a Application Insights <see cref="MetricTelemetry"/> instance.
@@ -39,7 +39,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             double metricValue = logEntry.Properties.GetAsDouble(nameof(MetricLogEntry.MetricValue));
             DateTimeOffset timestamp = logEntry.Properties.GetAsDateTimeOffset(nameof(MetricLogEntry.Timestamp));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(MetricLogEntry.Context));
-            
+
             var metricTelemetry = new MetricTelemetry(metricName, metricValue)
             {
                 Timestamp = timestamp

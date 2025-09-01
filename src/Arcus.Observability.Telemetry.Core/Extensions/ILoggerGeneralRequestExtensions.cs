@@ -104,7 +104,7 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="requestSource"/> is blank.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="duration"/> is a negative time range.</exception>
         public static void LogCustomRequest(
-            this ILogger logger, 
+            this ILogger logger,
             string requestSource,
             string operationName,
             bool isSuccessful,
