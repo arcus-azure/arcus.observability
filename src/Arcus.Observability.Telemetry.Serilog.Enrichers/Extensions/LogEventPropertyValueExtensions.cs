@@ -10,7 +10,7 @@ namespace Serilog.Events
     /// </summary>
     public static class LogEventPropertyValueExtensions
     {
-        private static readonly StructureValue EmptyStructureValue = new StructureValue(new LogEventProperty[0]);
+        private static readonly StructureValue EmptyStructureValue = new StructureValue([]);
 
         /// <summary>
         ///     Provide a string representation for a property key
@@ -217,12 +217,12 @@ namespace Serilog.Events
             else
             {
                 string propertyValueAsString = logEventPropertyValue.ToString().Trim();
-                if (propertyValueAsString.StartsWith("\""))
+                if (propertyValueAsString.StartsWith('\"'))
                 {
                     propertyValueAsString = propertyValueAsString.Remove(0, 1);
                 }
 
-                if (propertyValueAsString.EndsWith("\""))
+                if (propertyValueAsString.EndsWith('\"'))
                 {
                     propertyValueAsString = propertyValueAsString.Remove(propertyValueAsString.Length - 1);
                 }
