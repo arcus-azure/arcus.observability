@@ -18,6 +18,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Filters
                 throw new ArgumentException("Filtering out traces is not supported", nameof(telemetryType));
             }
 
+            if (!Enum.IsDefined(typeof(TelemetryType), telemetryType))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(telemetryType), telemetryType, "Telemetry type is outside the bounds of the enumeration");
+            }
+
             TelemetryType = telemetryType;
             IsTrackingEnabled = isTrackingEnabled;
         }
