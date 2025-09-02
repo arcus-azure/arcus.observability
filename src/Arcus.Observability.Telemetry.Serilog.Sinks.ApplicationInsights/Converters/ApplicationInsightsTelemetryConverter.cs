@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Serilog.Events;
 using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
@@ -23,7 +22,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
 
         private ApplicationInsightsTelemetryConverter(ApplicationInsightsSinkOptions options)
         {
-            Guard.NotNull(options, nameof(options), "Requires a set of options to influence how to track to Application Insights");
+            ArgumentNullException.ThrowIfNull(options);
 
             _requestTelemetryConverter = new RequestTelemetryConverter(options);
             _exceptionTelemetryConverter = new ExceptionTelemetryConverter(options);
@@ -32,7 +31,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             _metricTelemetryConverter = new MetricTelemetryConverter(options);
             _dependencyTelemetryConverter = new DependencyTelemetryConverter(options);
         }
-        
+
         /// <summary>
         ///     Convert the given <paramref name="logEvent"/> to a series of <see cref="ITelemetry"/> instances.
         /// </summary>

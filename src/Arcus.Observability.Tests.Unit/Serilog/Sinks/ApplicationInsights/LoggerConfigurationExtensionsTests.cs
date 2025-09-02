@@ -66,7 +66,7 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
                 () => config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(provider, "<key>", level, options => { }));
         }
 
-         [Fact]
+        [Fact]
         public void AzureApplicationInsightsWithConnectionString_WithoutTelemetryClient_Fails()
         {
             // Arrange
@@ -118,102 +118,6 @@ namespace Arcus.Observability.Tests.Unit.Serilog.Sinks.ApplicationInsights
             // Act / Assert
             Assert.ThrowsAny<InvalidOperationException>(
                 () => config.WriteTo.AzureApplicationInsightsWithConnectionString(provider, "<connection-string>", level, options => { }));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithInstrumentationKey_WithoutInstrumentationKey_Fails(string instrumentationKey)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithInstrumentationKeyWithConfigOptions_WithoutInstrumentationKey_Fails(string instrumentationKey)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey, options => { }));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithInstrumentationKeyWithMinLogLevel_WithoutInstrumentationKey_Fails(string instrumentationKey)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey, LogEventLevel.Debug));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithInstrumentationKeyWithMinLogLevelWithConfigOptions_WithoutInstrumentationKey_Fails(string instrumentationKey)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithInstrumentationKey(instrumentationKey, LogEventLevel.Debug, options => { }));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithConnectionString_WithoutInstrumentationKey_Fails(string connectionString)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithConnectionStringWithConfigOptions_WithoutInstrumentationKey_Fails(string connectionString)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, options => { }));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithConnectionStringWithMinLogLevel_WithoutInstrumentationKey_Fails(string connectionString)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, LogEventLevel.Debug));
-        }
-
-        [Theory]
-        [ClassData(typeof(Blanks))]
-        public void AzureApplicationInsightsWithConnectionStringWithMinLogLevelWithConfigOptions_WithoutInstrumentationKey_Fails(string connectionString)
-        {
-            // Arrange
-            var config = new LoggerConfiguration();
-
-            // Act / Assert
-            Assert.Throws<ArgumentException>(
-                () => config.WriteTo.AzureApplicationInsightsWithConnectionString(connectionString, LogEventLevel.Debug, options => { }));
         }
     }
 }
