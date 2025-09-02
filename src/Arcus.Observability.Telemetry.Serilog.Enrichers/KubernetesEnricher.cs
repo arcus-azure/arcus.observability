@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -45,9 +44,9 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="nodeNamePropertyName"/>, <paramref name="podNamePropertyName"/>, or <paramref name="namespacePropertyName"/> is blank.</exception>
         public KubernetesEnricher(string nodeNamePropertyName, string podNamePropertyName, string namespacePropertyName)
         {
-            Guard.NotNullOrWhitespace(nodeNamePropertyName, nameof(nodeNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes node name");
-            Guard.NotNullOrWhitespace(podNamePropertyName, nameof(podNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes pod name");
-            Guard.NotNullOrWhitespace(namespacePropertyName, nameof(namespacePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes namespace name");
+            ArgumentException.ThrowIfNullOrWhiteSpace(nodeNamePropertyName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(podNamePropertyName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(namespacePropertyName);
 
             _nodeNamePropertyName = nodeNamePropertyName;
             _podNamePropertyName = podNamePropertyName;
