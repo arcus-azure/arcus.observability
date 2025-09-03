@@ -6,7 +6,6 @@ using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configurat
 using Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights.Fixture;
 using Arcus.Testing;
 using Bogus;
-using GuardNet;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -127,7 +126,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <exception cref="InvalidOperationException">Thrown when the <paramref name="config"/> already has created the logger.</exception>
         protected ILogger CreateLogger(LoggerConfiguration config)
         {
-            Guard.NotNull(config, nameof(config), "Requires a Serilog logger configuration instance to setup the test logger used during the test");
+            ArgumentNullException.ThrowIfNull(config);
 
             _telemetrySink.Options = ApplicationInsightsSinkOptions;
             config.WriteTo.ApplicationInsights(_telemetrySink);
@@ -162,7 +161,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         /// <exception cref="TimeoutException">Thrown when the <paramref name="assertion"/> failed to be verified within the configured timeout.</exception>
         protected async Task RetryAssertUntilTelemetryShouldBeAvailableAsync(Func<ITelemetryQueryClient, Task> assertion)
         {
-            Guard.NotNull(assertion, nameof(assertion));
+            ArgumentNullException.ThrowIfNull(assertion);
 
             if (TestLocation is TestLocation.Remote)
             {
