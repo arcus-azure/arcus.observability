@@ -47,7 +47,9 @@ namespace Xunit
 
             if (stack.Count > 0)
             {
-                throw new ContainsException(array.Length, stack.ToArray());
+                throw ContainsException.ForCollectionFilterNotMatched(
+                    $"None of the {array.Length} items in the passed sequence passes the provided assertion: {Environment.NewLine}" +
+                    stack.Select(item => $"[{item.Item1}] {item.Item2}: {item.Item3}").Aggregate((line1, line2) => line1 + Environment.NewLine + line2));
             }
         }
     }

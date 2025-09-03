@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -10,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Arcus.Testing.Core" Version="1.0.3" />
-    <PackageReference Include="Arcus.Testing.Logging.Xunit" Version="1.0.3" />
+    <PackageReference Include="Arcus.Testing.Core" Version="2.1.0" />
+    <PackageReference Include="Arcus.Testing.Logging.Xunit.v3" Version="2.1.0" />
     <PackageReference Include="Azure.Identity" Version="1.12.0" />
     <PackageReference Include="Azure.Monitor.Query" Version="1.4.0" />
     <PackageReference Include="Bogus" Version="34.0.1" />
@@ -19,8 +20,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageReference Include="xunit.v3" Version="2.*" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.*" />
   </ItemGroup>
 
   <ItemGroup>

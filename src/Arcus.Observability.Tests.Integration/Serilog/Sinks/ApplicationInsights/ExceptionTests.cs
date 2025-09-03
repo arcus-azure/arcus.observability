@@ -7,7 +7,6 @@ using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -16,7 +15,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
         public ExceptionTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
         }
-        
+
         [Fact]
         public async Task LogException_SinksToApplicationInsights_ResultsInExceptionTelemetry()
         {
@@ -24,7 +23,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
-            
+
             // Act
             Logger.LogCritical(exception, exception.Message);
 
@@ -48,7 +47,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string expectedProperty = BogusGenerator.Lorem.Word();
             var exception = new TestException(message) { SpyProperty = expectedProperty };
             ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
-            
+
             // Act
             Logger.LogCritical(exception, exception.Message);
 
@@ -75,7 +74,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             ApplicationInsightsSinkOptions.Exception.IncludeProperties = true;
             ApplicationInsightsSinkOptions.Exception.PropertyFormat = propertyFormat;
             TestLocation = TestLocation.Remote;
-            
+
             // Act
             Logger.LogCritical(exception, exception.Message);
 
@@ -86,7 +85,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
                 AssertX.Any(results, result =>
                 {
                     string propertyName = string.Format(propertyFormat, nameof(TestException.SpyProperty));
-                    
+
                     Assert.Equal(exception.Message, result.Exception.OuterMessage);
                     Assert.Equal(expectedProperty, Assert.Contains(propertyName, result.CustomDimensions));
                 });
@@ -101,7 +100,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string componentName = BogusGenerator.Commerce.ProductName();
             var exception = new PlatformNotSupportedException(message);
             LoggerConfiguration.Enrich.WithComponentName(componentName);
-            
+
             // Act
             Logger.LogCritical(exception, exception.Message);
 
@@ -123,15 +122,15 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             // Arrange
             string message = BogusGenerator.Lorem.Sentence();
             var exception = new PlatformNotSupportedException(message);
-            
+
             string operationId = $"operation-{Guid.NewGuid()}";
             string transactionId = $"transaction-{Guid.NewGuid()}";
             string operationParentId = $"operation-parent-{Guid.NewGuid()}";
-            
+
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
             LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
-            
+
             // Act
             Logger.LogCritical(exception, exception.Message);
 

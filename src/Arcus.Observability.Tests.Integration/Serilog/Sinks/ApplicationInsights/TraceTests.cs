@@ -2,9 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
-using Serilog.Events;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
