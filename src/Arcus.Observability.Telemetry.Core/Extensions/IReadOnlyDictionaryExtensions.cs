@@ -1,6 +1,4 @@
-﻿using GuardNet;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace System.Collections.Generic
 {
     /// <summary>
@@ -17,14 +15,7 @@ namespace System.Collections.Generic
         [Obsolete("Already available in standard .NET SDK")]
         public static TValue GetValueOrDefault<TValue>(this IReadOnlyDictionary<string, TValue> dictionary, string propertyKey)
         {
-            Guard.NotNull(dictionary, nameof(dictionary));
-
-            if (dictionary.TryGetValue(propertyKey, out TValue foundValue))
-            {
-                return foundValue;
-            }
-
-            return default;
+            return dictionary.GetValueOrDefault(key: propertyKey);
         }
     }
 }
