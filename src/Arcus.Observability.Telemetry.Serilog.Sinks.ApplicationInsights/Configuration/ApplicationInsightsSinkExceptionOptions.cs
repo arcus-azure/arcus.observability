@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration
 {
@@ -19,7 +18,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
         ///     Only the current-level properties are considered during the exception tracking; inherited properties will be excluded.
         /// </remarks>
         public bool IncludeProperties { get; set; } = false;
-        
+
         /// <summary>
         /// <para>Gets or sets the string format to track (public) exception properties.</para>
         /// <para>Default: <code>Exception-{0}</code></para>
@@ -37,8 +36,12 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _propertyFormat;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank string format to track (public) exception properties");
-                Guard.For<FormatException>(() => PropertyFormatRegex.Matches(value).Count != 3, "Requires a single occurrence of the substring '{0}' in the exception property format");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
+
+                if (PropertyFormatRegex.Count(value) != 3)
+                {
+                    throw new FormatException("Requires a single occurrence of the substring '{0}' in the exception property format");
+                }
 
                 _propertyFormat = value;
             }

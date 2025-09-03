@@ -3,7 +3,6 @@ using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
 using Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration;
-using GuardNet;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Configuration;
 
@@ -29,8 +28,6 @@ namespace Serilog
         public static LoggerConfiguration WithVersion(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName = VersionEnricher.DefaultPropertyName)
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
-            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
-
             return enrichmentConfiguration.With(new VersionEnricher(propertyName));
         }
 
@@ -51,9 +48,6 @@ namespace Serilog
             string propertyName = VersionEnricher.DefaultPropertyName)
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
-            ArgumentNullException.ThrowIfNull(appVersion);
-            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
-
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
         }
 
@@ -75,7 +69,6 @@ namespace Serilog
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
             ArgumentNullException.ThrowIfNull(serviceProvider);
-            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             IAppVersion appVersion = serviceProvider.GetService<IAppVersion>() ?? new AssemblyAppVersion();
             return enrichmentConfiguration.With(new VersionEnricher(appVersion, propertyName));
@@ -98,9 +91,6 @@ namespace Serilog
             string propertyName = ApplicationEnricher.ComponentName)
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
-            ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
-            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
-
             return enrichmentConfiguration.With(new ApplicationEnricher(componentName, propertyName));
         }
 
@@ -124,7 +114,6 @@ namespace Serilog
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
             ArgumentNullException.ThrowIfNull(serviceProvider);
-            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             var appName = serviceProvider.GetService<IAppName>();
             if (appName is null)
@@ -152,11 +141,7 @@ namespace Serilog
             string podNamePropertyName = ContextProperties.Kubernetes.PodName,
             string namespacePropertyName = ContextProperties.Kubernetes.Namespace)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the Kubernetes enricher");
-            Guard.NotNullOrWhitespace(nodeNamePropertyName, nameof(nodeNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes node name");
-            Guard.NotNullOrWhitespace(podNamePropertyName, nameof(podNamePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes pod name");
-            Guard.NotNullOrWhitespace(namespacePropertyName, nameof(namespacePropertyName), "Requires a non-blank property name to enrich the log event with the Kubernetes namespace name");
-
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
             return enrichmentConfiguration.With(new KubernetesEnricher(nodeNamePropertyName, podNamePropertyName, namespacePropertyName));
         }
 
@@ -178,10 +163,7 @@ namespace Serilog
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
             string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
-            Guard.NotNullOrWhitespace(operationIdPropertyName, nameof(operationIdPropertyName), "Requires a property name to enrich the log event with the correlation operation ID");
-            Guard.NotNullOrWhitespace(transactionIdPropertyName, nameof(transactionIdPropertyName), "Requires a property name to enrich the log event with the correlation transaction ID");
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
@@ -199,8 +181,7 @@ namespace Serilog
             IServiceProvider serviceProvider,
             Action<CorrelationInfoEnricherOptions> configureOptions)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, configureOptions);
@@ -225,10 +206,7 @@ namespace Serilog
             string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
-            Guard.NotNullOrWhitespace(operationIdPropertyName, nameof(operationIdPropertyName), "Requires a property name to enrich the log event with the correlation operation ID");
-            Guard.NotNullOrWhitespace(transactionIdPropertyName, nameof(transactionIdPropertyName), "Requires a property name to enrich the log event with the correlation transaction ID");
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, operationIdPropertyName, transactionIdPropertyName);
@@ -247,8 +225,7 @@ namespace Serilog
             Action<CorrelationInfoEnricherOptions> configureOptions)
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(serviceProvider, nameof(serviceProvider), "Requires a provider to retrieve the correlation information accessor instance");
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
             var accessor = serviceProvider.GetRequiredService<ICorrelationInfoAccessor<TCorrelationInfo>>();
             return WithCorrelationInfo(enrichmentConfiguration, accessor, configureOptions);
@@ -272,11 +249,6 @@ namespace Serilog
             string operationIdPropertyName = ContextProperties.Correlation.OperationId,
             string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
-            Guard.NotNullOrWhitespace(operationIdPropertyName, nameof(operationIdPropertyName), "Requires a property name to enrich the log event with the correlation operation ID");
-            Guard.NotNullOrWhitespace(transactionIdPropertyName, nameof(transactionIdPropertyName), "Requires a property name to enrich the log event with the correlation transaction ID");
-
             return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor, operationIdPropertyName, transactionIdPropertyName);
         }
 
@@ -292,9 +264,6 @@ namespace Serilog
             ICorrelationInfoAccessor correlationInfoAccessor,
             Action<CorrelationInfoEnricherOptions> configureOptions)
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
-
             return WithCorrelationInfo<CorrelationInfo>(enrichmentConfiguration, correlationInfoAccessor, configureOptions);
         }
 
@@ -319,11 +288,7 @@ namespace Serilog
             string transactionIdPropertyName = ContextProperties.Correlation.TransactionId)
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
-            Guard.NotNullOrWhitespace(operationIdPropertyName, nameof(operationIdPropertyName), "Requires a property name to enrich the log event with the correlation operation ID");
-            Guard.NotNullOrWhitespace(transactionIdPropertyName, nameof(transactionIdPropertyName), "Requires a property name to enrich the log event with the correlation transaction ID");
-
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
             return enrichmentConfiguration.With(new CorrelationInfoEnricher<TCorrelationInfo>(correlationInfoAccessor, operationIdPropertyName, transactionIdPropertyName));
         }
 
@@ -341,8 +306,7 @@ namespace Serilog
             Action<CorrelationInfoEnricherOptions> configureOptions)
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to retrieve the correlation information during the enrichment of the log events");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
 
             var options = new CorrelationInfoEnricherOptions();
             configureOptions?.Invoke(options);
@@ -362,8 +326,8 @@ namespace Serilog
             CorrelationInfoEnricher<TCorrelationInfo> correlationInfoEnricher)
             where TCorrelationInfo : CorrelationInfo
         {
-            Guard.NotNull(enrichmentConfiguration, nameof(enrichmentConfiguration), "Requires an enrichment configuration to add the correlation information enricher");
-            Guard.NotNull(correlationInfoEnricher, nameof(correlationInfoEnricher), "Requires an correlation enricher to enrich the log events with correlation information");
+            ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
+            ArgumentNullException.ThrowIfNull(correlationInfoEnricher);
 
             return enrichmentConfiguration.With(correlationInfoEnricher);
         }

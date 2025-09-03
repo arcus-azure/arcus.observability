@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
 {
@@ -22,7 +21,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _operationIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information operation ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _operationIdPropertyName = value;
             }
         }
@@ -36,7 +35,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _transactionIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information transaction ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _transactionIdPropertyName = value;
             }
         }
@@ -50,7 +49,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration
             get => _operationParentIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank property name to enrich the log event with the correlation information parent operation ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _operationParentIdPropertyName = value;
             }
         }

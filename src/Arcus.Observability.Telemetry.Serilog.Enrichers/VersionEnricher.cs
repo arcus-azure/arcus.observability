@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -58,8 +57,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
         public VersionEnricher(IAppVersion appVersion, string propertyName)
         {
-            Guard.NotNull(appVersion, nameof(appVersion), "Requires an application version implementation to enrich the log event with the application version");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank property name to enrich the log event with the current runtime version");
+            ArgumentNullException.ThrowIfNull(appVersion);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
             _appVersion = appVersion;
             _propertyName = propertyName;
