@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -24,9 +23,6 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public static void LogCustomMetric(this ILogger logger, string name, double value, Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
-
             LogCustomMetric(logger, name, value, DateTimeOffset.UtcNow, context);
         }
 
@@ -42,8 +38,8 @@ namespace Microsoft.Extensions.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public static void LogCustomMetric(this ILogger logger, string name, double value, DateTimeOffset timestamp, Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank name to track a metric");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
             context = context is null ? new Dictionary<string, object>() : new Dictionary<string, object>(context);
 
