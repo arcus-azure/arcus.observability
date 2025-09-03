@@ -22,7 +22,7 @@ namespace Serilog.Events
         {
             ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
-            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             return logEventPropertyValue?.ToDecentString();
         }
 
@@ -36,7 +36,7 @@ namespace Serilog.Events
         {
             ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
-            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             string rawDouble = logEventPropertyValue?.ToDecentString();
 
             if (rawDouble != null)
@@ -58,7 +58,7 @@ namespace Serilog.Events
         {
             ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
-            var propertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            var propertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (propertyValue == null || propertyValue is DictionaryValue == false)
             {
                 propertyDictionaryValues = null;
@@ -108,7 +108,7 @@ namespace Serilog.Events
             ArgumentNullException.ThrowIfNull(eventPropertyValues);
             ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
 
-            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(propertyKey);
+            LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (logEventPropertyValue is null)
             {
                 return null;
