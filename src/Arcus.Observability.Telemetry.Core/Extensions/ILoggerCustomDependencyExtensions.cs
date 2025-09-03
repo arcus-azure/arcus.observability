@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -59,6 +60,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -85,6 +87,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -113,6 +116,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -255,6 +259,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -283,6 +288,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
@@ -311,6 +317,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -341,6 +348,7 @@ namespace Microsoft.Extensions.Logging
             string dependencyId,
             Dictionary<string, object> context = null)
         {
+            ArgumentNullException.ThrowIfNull(measurement);
             LogDependency(logger, dependencyType, dependencyData, targetName, isSuccessful, dependencyName, measurement.StartTime, measurement.Elapsed, dependencyId, context);
         }
 
