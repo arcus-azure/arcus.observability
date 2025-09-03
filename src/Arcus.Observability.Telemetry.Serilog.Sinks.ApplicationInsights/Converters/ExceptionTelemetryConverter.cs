@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
 
@@ -20,7 +19,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         public ExceptionTelemetryConverter(ApplicationInsightsSinkOptions options) : base(options)
         {
         }
-        
+
         /// <summary>
         ///     Creates a telemetry entry for a given log event
         /// </summary>
@@ -29,17 +28,21 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <returns>Telemetry entry to emit to Azure Application Insights</returns>
         protected override ExceptionTelemetry CreateTelemetryEntry(LogEvent logEvent, IFormatProvider formatProvider)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an exception telemetry entry");
-            Guard.For(() => logEvent.Exception is null, new ArgumentException(
-                "Requires a log event that tracks an exception to create an exception telemetry entry", nameof(logEvent)));
-            
+            ArgumentNullException.ThrowIfNull(logEvent);
+
+            if (logEvent.Exception is null)
+            {
+                throw new ArgumentException(
+                    "Requires a log event that tracks an exception to create an exception telemetry entry", nameof(logEvent));
+            }
+
             var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception);
 
             if (Options?.Exception.IncludeProperties == true)
             {
                 EnrichWithExceptionProperties(logEvent, exceptionTelemetry);
             }
-            
+
             return exceptionTelemetry;
         }
 
@@ -47,7 +50,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         {
             Type exceptionType = logEvent.Exception.GetType();
             PropertyInfo[] exceptionProperties = exceptionType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            
+
             foreach (PropertyInfo exceptionProperty in exceptionProperties)
             {
                 string propertyFormat = DeterminePropertyFormat();

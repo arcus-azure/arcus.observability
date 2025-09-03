@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Serilog.Events
@@ -11,7 +10,7 @@ namespace Serilog.Events
     /// </summary>
     public static class LogEventPropertyValueExtensions
     {
-        private static readonly StructureValue EmptyStructureValue = new StructureValue(Array.Empty<LogEventProperty>());
+        private static readonly StructureValue EmptyStructureValue = new StructureValue([]);
 
         /// <summary>
         ///     Provide a string representation for a property key
@@ -21,7 +20,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">Key of the property to return</param>
         public static string GetAsRawString(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             return logEventPropertyValue?.ToDecentString();
@@ -35,7 +34,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">The key of the property to return.</param>
         public static double GetAsDouble(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             string rawDouble = logEventPropertyValue?.ToDecentString();
@@ -57,7 +56,7 @@ namespace Serilog.Events
         /// <param name="propertyDictionaryValues">Found information for the given property key</param>
         public static bool TryGetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey, out IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> propertyDictionaryValues)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var propertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (propertyValue == null || propertyValue is DictionaryValue == false)
@@ -78,7 +77,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">Key of the property to return</param>
         public static IReadOnlyDictionary<ScalarValue, LogEventPropertyValue> GetAsDictionary(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var valueFound = TryGetAsDictionary(eventPropertyValues, propertyKey, out var propertyDictionaryValues);
             if (valueFound == false)
@@ -106,8 +105,8 @@ namespace Serilog.Events
         public static TEnum? GetAsEnum<TEnum>(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
             where TEnum : struct
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues), "Requires a series of event properties to retrieve a Serilog event property as a enumeration representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a enumeration representation");
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
 
             LogEventPropertyValue logEventPropertyValue = eventPropertyValues.GetValueOrDefault(key: propertyKey);
             if (logEventPropertyValue is null)
@@ -139,7 +138,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">Key of the property to return</param>
         public static DateTimeOffset GetAsDateTimeOffset(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
             var value = DateTimeOffset.Parse(logEventPropertyValue, CultureInfo.InvariantCulture);
@@ -153,7 +152,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">Key of the property to return</param>
         public static TimeSpan GetAsTimeSpan(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
             var value = TimeSpan.Parse(logEventPropertyValue);
@@ -167,7 +166,7 @@ namespace Serilog.Events
         /// <param name="propertyKey">Key of the property to return</param>
         public static bool GetAsBool(this IReadOnlyDictionary<string, LogEventPropertyValue> eventPropertyValues, string propertyKey)
         {
-            Guard.NotNull(eventPropertyValues, nameof(eventPropertyValues));
+            ArgumentNullException.ThrowIfNull(eventPropertyValues);
 
             var logEventPropertyValue = eventPropertyValues.GetAsRawString(propertyKey);
             var value = bool.Parse(logEventPropertyValue);
@@ -185,7 +184,7 @@ namespace Serilog.Events
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
         public static StructureValue GetAsStructureValue(this IReadOnlyDictionary<string, LogEventPropertyValue> properties, string propertyKey)
         {
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve the structure value from the log event");
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
 
             if (properties is null)
             {
@@ -208,7 +207,7 @@ namespace Serilog.Events
         /// <param name="logEventPropertyValue">Event property value to provide a string representation</param>
         public static string ToDecentString(this LogEventPropertyValue logEventPropertyValue)
         {
-            Guard.NotNull(logEventPropertyValue, nameof(logEventPropertyValue));
+            ArgumentNullException.ThrowIfNull(logEventPropertyValue);
 
             if (logEventPropertyValue is ScalarValue scalar)
             {

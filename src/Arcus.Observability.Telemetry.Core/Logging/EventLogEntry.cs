@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core.Logging
 {
@@ -18,7 +17,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is blank.</exception>
         public EventLogEntry(string name, IDictionary<string, object> context)
         {
-            Guard.NotNullOrWhitespace(name, nameof(name), "Requires a non-blank event name to track an custom event");
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
             EventName = name;
             Context = context ?? new Dictionary<string, object>();
@@ -29,7 +28,7 @@ namespace Arcus.Observability.Telemetry.Core.Logging
         /// Gets the name of the event.
         /// </summary>
         public string EventName { get; }
-        
+
         /// <summary>
         /// Gets the context that provides more insights on the event that occurred.
         /// </summary>

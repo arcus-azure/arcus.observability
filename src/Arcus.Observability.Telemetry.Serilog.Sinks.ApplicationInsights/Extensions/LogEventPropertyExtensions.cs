@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Serilog.Events
@@ -13,7 +12,7 @@ namespace Serilog.Events
     internal static class LogEventPropertyExtensions
     {
         private static readonly IDictionary<string, string> EmptyContext = new Dictionary<string, string>();
-        
+
         /// <summary>
         /// Gets a raw string representation for a property value in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -27,20 +26,20 @@ namespace Serilog.Events
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
         internal static string GetAsRawString(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property value as a raw string representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property value as a raw string representation");
-            
+            ArgumentNullException.ThrowIfNull(propertyKey);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             LogEventProperty propertyValue = properties.FirstOrDefault(prop => prop.Name == propertyKey);
-            if (propertyValue?.Value is null 
-                || (propertyValue.Value is ScalarValue scalarValue 
+            if (propertyValue?.Value is null
+                || (propertyValue.Value is ScalarValue scalarValue
                     && scalarValue.Value is null))
             {
                 return null;
             }
-            
+
             return propertyValue.Value.ToDecentString();
         }
-        
+
         /// <summary>
         /// Gets a <see cref="TimeSpan"/> representation for a property value in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -55,19 +54,19 @@ namespace Serilog.Events
         /// <exception cref="OverflowException">Thrown when the property value is lesser or greater than the supported <see cref="TimeSpan"/> duration.</exception>
         internal static TimeSpan GetAsTimeSpan(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a TimeSpan representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property value as a TimeSpan representation");
-            
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             string propertyValue = properties.GetAsRawString(propertyKey);
             if (propertyValue is null)
             {
                 return TimeSpan.Zero;
             }
-            
+
             TimeSpan value = TimeSpan.Parse(propertyValue);
             return value;
         }
-        
+
         /// <summary>
         /// Gets a <see cref="DateTimeOffset"/> representation of a property value in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -82,19 +81,19 @@ namespace Serilog.Events
         /// <exception cref="FormatException">Throw when the property value cannot be parsed as a <see cref="DateTimeOffset"/> due to its format.</exception>
         internal static DateTimeOffset GetAsDateTimeOffset(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a DateTimeOffset representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property value as a DateTimeOffset representation");
-            
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             string propertyValue = properties.GetAsRawString(propertyKey);
             if (propertyValue is null)
             {
                 return default(DateTimeOffset);
             }
-            
+
             DateTimeOffset value = DateTimeOffset.Parse(propertyValue, CultureInfo.InvariantCulture);
             return value;
         }
-        
+
         /// <summary>
         /// Gets a <see cref="IDictionary{TKey,TValue}"/> representation of a property value in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -108,12 +107,12 @@ namespace Serilog.Events
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="properties"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
         internal static IDictionary<string, string> GetAsDictionary(
-            this IReadOnlyList<LogEventProperty> properties, 
+            this IReadOnlyList<LogEventProperty> properties,
             string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a IDictionary<string, string> representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property value as a IDictionary<string, string> represenation");
-            
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             LogEventProperty property = properties.FirstOrDefault(prop => prop.Name == propertyKey);
             if (property?.Value is DictionaryValue dictionary)
             {
@@ -124,7 +123,7 @@ namespace Serilog.Events
 
             return EmptyContext;
         }
-        
+
         /// <summary>
         /// Gets a <see cref="Double"/> representation of a property value in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -140,16 +139,16 @@ namespace Serilog.Events
         /// <exception cref="OverflowException">Thrown when the property value is lesser or greater than the supported <see cref="Double"/> range.</exception>
         internal static double GetAsDouble(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a Double representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property key to retrieve a Serilog event property as a Double representation");
-            
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             LogEventProperty logEventPropertyValue = properties.FirstOrDefault(prop => prop.Name == propertyKey);
             if (logEventPropertyValue is null)
             {
                 return double.NaN;
             }
 
-            if (logEventPropertyValue.Value is ScalarValue scalarValue 
+            if (logEventPropertyValue.Value is ScalarValue scalarValue
                 && scalarValue.Value is double value)
             {
                 return value;
@@ -157,7 +156,7 @@ namespace Serilog.Events
 
             return double.NaN;
         }
-        
+
         /// <summary>
         /// Gets a <see cref="Boolean"/> representation of a property in the <paramref name="properties"/> associated with the <paramref name="propertyKey"/>.
         /// </summary>
@@ -171,15 +170,15 @@ namespace Serilog.Events
         /// <exception cref="FormatException">Thrown when the property value cannot be parsed as a <see cref="Boolean"/> due to its format.</exception>
         internal static bool GetAsBool(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as a Boolean representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as a Boolean representation");
-            
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
+
             string propertyValue = properties.GetAsRawString(propertyKey);
             if (propertyValue is null)
             {
                 return false;
             }
-            
+
             bool value = bool.Parse(propertyValue);
             return value;
         }
@@ -197,12 +196,12 @@ namespace Serilog.Events
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyKey"/> is blank.</exception>
         internal static TValue GetAsObject<TValue>(this IReadOnlyList<LogEventProperty> properties, string propertyKey)
         {
-            Guard.NotNull(properties, nameof(properties), "Requires a series of event properties to retrieve a Serilog event property as an enumeration representation");
-            Guard.NotNullOrWhitespace(propertyKey, nameof(propertyKey), "Requires a non-blank property to retrieve a Serilog event property as an enumeration representation");
+            ArgumentNullException.ThrowIfNull(properties);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
 
             LogEventProperty property = properties.FirstOrDefault(prop => prop.Name == propertyKey);
-            if (property != null 
-                && property.Value is ScalarValue scalarValue 
+            if (property != null
+                && property.Value is ScalarValue scalarValue
                 && scalarValue.Value is TValue value)
             {
                 return value;
