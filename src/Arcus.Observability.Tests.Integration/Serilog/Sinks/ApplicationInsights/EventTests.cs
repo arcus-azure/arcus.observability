@@ -9,7 +9,6 @@ using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -47,7 +46,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string message = BogusGenerator.Lorem.Sentence();
             string componentName = BogusGenerator.Commerce.ProductName();
             LoggerConfiguration.Enrich.WithComponentName(componentName);
-            
+
             // Act
             Logger.LogInformation(message);
 
@@ -99,7 +98,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             var correlationInfoAccessor = new DefaultCorrelationInfoAccessor();
             correlationInfoAccessor.SetCorrelationInfo(new CorrelationInfo(operationId, transactionId, operationParentId));
             LoggerConfiguration.Enrich.WithCorrelationInfo(correlationInfoAccessor);
-            
+
             // Act
             Logger.LogInformation(message);
 

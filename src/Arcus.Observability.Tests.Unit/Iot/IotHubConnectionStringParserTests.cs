@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Iot;
 using Bogus;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Unit.Iot
 {
@@ -165,9 +159,9 @@ namespace Arcus.Observability.Tests.Unit.Iot
             string iotHubName = PickRandom(alphanumericInputs.Concat(new[] { "_", "-" }), 100);
 
             string hostNameProperty = CreateProperty("HostName", $"{iotHubName}.{hostName}");
-            string deviceIdProperty = CreateProperty("DeviceId", 
+            string deviceIdProperty = CreateProperty("DeviceId",
                 PickRandom(alphanumericInputs.Concat(new[] { "-", ":", ".", "+", "%", "_", "#", "*", "?", "!", "(", ")", ",", "=", "@", "$", "'" }), 128));
-            
+
             string sharedAccessKey =
                 Convert.ToBase64String(
                     Encoding.UTF8.GetBytes(

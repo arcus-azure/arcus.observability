@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using InMemoryLogSink = Arcus.Observability.Tests.Core.InMemoryLogSink;

@@ -1,5 +1,5 @@
 ﻿using Arcus.Testing;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Arcus.Observability.Tests.Integration
 {

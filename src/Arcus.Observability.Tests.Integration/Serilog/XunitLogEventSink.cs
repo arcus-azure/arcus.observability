@@ -1,7 +1,7 @@
 ﻿using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Arcus.Observability.Tests.Integration.Serilog
 {
