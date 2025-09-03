@@ -21,19 +21,20 @@
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
-    <None Include="..\..\docs\static\img\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\docs\static\img\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
-    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="[2.*,3.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="[8.*,10.0.0)" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="[2.*,3.0.0)" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="[3.*,4.0.0)" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="[4.*,5.0.0)" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Correlation\Arcus.Observability.Correlation.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
-    <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Enrichers\Arcus.Observability.Telemetry.Serilog.Enrichers.csproj" />
   </ItemGroup>
 
 </Project>
