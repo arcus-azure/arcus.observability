@@ -1,14 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Arcus.Observability.Telemetry.Core;
 
-namespace Arcus.Observability.Telemetry.Core.Logging
+namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging
 {
+    /// <summary>
+    /// Represents the system from where the request came from.
+    /// </summary>
+    internal enum RequestSourceSystem
+    {
+        /// <summary>
+        /// Specifies that the request-source is an Azure Service Bus queue or topic.
+        /// </summary>
+        AzureServiceBus = 1,
+
+        /// <summary>
+        /// Specifies that the request-source is a HTTP request
+        /// </summary>
+        Http = 2,
+
+        /// <summary>
+        /// Specifies that the request-source is an Azure EventHubs.
+        /// </summary>
+        AzureEventHubs = 4,
+
+        /// <summary>
+        /// Specifies that the request-source is a custom system.
+        /// </summary>
+        Custom = 8
+    }
+
     /// <summary>
     /// Represents a HTTP request as a log entry.
     /// </summary>
-    [Obsolete("Will be moved to Serilog-specific project in v4.0")]
-    public class RequestLogEntry
+    internal sealed class RequestLogEntry
     {
         private RequestLogEntry(
             string method,

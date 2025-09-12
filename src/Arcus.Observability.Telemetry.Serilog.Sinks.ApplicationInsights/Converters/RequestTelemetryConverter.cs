@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
+using RequestLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.RequestLogEntry;
+using RequestSourceSystem = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.RequestSourceSystem;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {
@@ -41,7 +42,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
             TimeSpan requestDuration = logEntry.Properties.GetAsTimeSpan(nameof(RequestLogEntry.RequestDuration));
             DateTimeOffset requestTime = logEntry.Properties.GetAsDateTimeOffset(nameof(RequestLogEntry.RequestTime));
             IDictionary<string, string> context = logEntry.Properties.GetAsDictionary(nameof(RequestLogEntry.Context));
-            var sourceSystem = logEntry.Properties.GetAsObject<RequestSourceSystem>(nameof(RequestLogEntry.SourceSystem));
+            Enum.TryParse<RequestSourceSystem>(logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.SourceSystem)), out var sourceSystem);
             string customRequestSource = logEntry.Properties.GetAsRawString(nameof(RequestLogEntry.CustomRequestSource));
 
             string sourceName = DetermineSourceName(sourceSystem, requestMethod, requestUri, operationName);
