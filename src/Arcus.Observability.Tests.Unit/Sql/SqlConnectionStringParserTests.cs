@@ -5,7 +5,6 @@ using Bogus;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Unit.Sql
 {
@@ -91,7 +90,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
         {
             string applicationName = CreateOptionalProperty(Bogus.PickRandom("Application Name", "app"), CreateWordValue());
             string connectTimeout = CreateOptionalProperty(Bogus.PickRandom("Connect Timeout", "Connection Timeout"), Bogus.Random.Int(min: 0));
-            
+
             string connectLifetime = CreateOptionalProperty("Connection Lifetime", Bogus.Random.Int(min: 0));
             string currentLanguage = CreateOptionalProperty("Current Language", CreateWordValue());
             string encrypt = CreateOptionalProperty("Encrypt", CreateBooleanValue());
@@ -102,7 +101,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
             string maxPoolSize = CreateOptionalProperty("Max Pool Size", Bogus.Random.Int(min: 0));
             string minPoolSize = CreateOptionalProperty("Min Pool Size", Bogus.Random.Int(min: 0));
             string packetSize = CreateOptionalProperty("Packet Size", Bogus.Random.Int(min: 512, max: 32768));
-            
+
             string persistSecurityInfo = CreateOptionalProperty("Persist Security Info", CreateBooleanValue());
             string pooling = CreateOptionalProperty("Pooling", CreateBooleanValue());
             string replication = CreateOptionalProperty("Replication", CreateBooleanValue());
@@ -114,7 +113,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
             string userAuthentication = CombineProperties(
                 CreateProperty("User ID", CreateWordValue()),
                 CreateProperty(Bogus.PickRandom("Password", "Pwd"), CreateWordValue()));
-            
+
             string integratedSecurity = CombineProperties(
                 CreateProperty(Bogus.PickRandom("Integrated Security", "Trusted_Connection"), CreateBooleanValue()),
                 CreateOptionalProperty("User Instance", CreateBooleanValue()));
@@ -131,7 +130,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
             string attachDbFilename = CreateProperty(
                 Bogus.PickRandom("AttachDBFilename", "extended properties", "Initial File Name"),
                 Bogus.System.FilePath());
-            
+
             string initialCatalog = CreateProperty(
                 Bogus.PickRandom("Initial Catalog", "Database"),
                 CreateWordValue());
@@ -166,7 +165,7 @@ namespace Arcus.Observability.Tests.Unit.Sql
         private static string CreateWordValue()
         {
             string sentence = Bogus.Random.AlphaNumeric(Bogus.Random.Int(2, 100));
-            
+
             int index = Bogus.Random.Int(min: 1, max: sentence.Length - 1);
             sentence = sentence.Insert(index, "=");
 

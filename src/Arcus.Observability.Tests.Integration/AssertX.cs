@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using GuardNet;
 using Xunit.Sdk;
 
 // ReSharper disable once CheckNamespace
@@ -23,8 +22,8 @@ namespace Xunit
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="collection"/> or <paramref name="assertion"/> is <c>null</c>.</exception>
         public static void Any<T>(IEnumerable<T> collection, Action<T> assertion)
         {
-            Guard.NotNull(collection, nameof(collection), "Requires collection of elements to find a single element that matches the assertion");
-            Guard.NotNull(assertion, nameof(assertion), "Requires an element assertion to verify if an single element in the collection matches");
+            ArgumentNullException.ThrowIfNull(collection);
+            ArgumentNullException.ThrowIfNull(assertion);
 
             Assert.NotEmpty(collection);
 
@@ -47,7 +46,9 @@ namespace Xunit
 
             if (stack.Count > 0)
             {
-                throw new ContainsException(array.Length, stack.ToArray());
+                throw ContainsException.ForCollectionFilterNotMatched(
+                    $"None of the {array.Length} items in the passed sequence passes the provided assertion: {Environment.NewLine}" +
+                    stack.Select(item => $"[{item.Item1}] {item.Item2}: {item.Item3}").Aggregate((line1, line2) => line1 + Environment.NewLine + line2));
             }
         }
     }

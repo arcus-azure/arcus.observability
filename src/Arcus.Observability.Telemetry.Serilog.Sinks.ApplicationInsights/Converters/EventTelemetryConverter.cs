@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
-using GuardNet;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
 using EventLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.EventLogEntry;
@@ -31,8 +30,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Conver
         /// <returns>Telemetry entry to emit to Azure Application Insights</returns>
         protected override EventTelemetry CreateTelemetryEntry(LogEvent logEvent, IFormatProvider formatProvider)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a Serilog log event to create an Azure Application Insights Event telemetry instance");
-            Guard.NotNull(logEvent.Properties, nameof(logEvent), "Requires a Serilog event with a set of properties to create an Azure Application Insights Event telemetry instance");
+            ArgumentNullException.ThrowIfNull(logEvent);
 
             StructureValue logEntry = logEvent.Properties.GetAsStructureValue(ContextProperties.EventTracking.EventLogEntry);
             string eventName = logEntry.Properties.GetAsRawString(nameof(EventLogEntry.EventName));

@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration
 {
@@ -22,7 +21,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _operationIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank Serilog application property name to locate the correlation operation ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _operationIdPropertyName = value;
             }
         }
@@ -36,7 +35,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _transactionIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank Serilog application property name to locate the correlation transaction ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _transactionIdPropertyName = value;
             }
         }
@@ -50,7 +49,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
             get => _operationParentIdPropertyName;
             set
             {
-                Guard.NotNullOrWhitespace(value, nameof(value), "Requires a non-blank Serilog application property name to locate the correlation operation parent ID");
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
                 _operationParentIdPropertyName = value;
             }
         }

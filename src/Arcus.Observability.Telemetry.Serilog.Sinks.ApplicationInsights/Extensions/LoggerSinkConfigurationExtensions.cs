@@ -1,7 +1,6 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
-using GuardNet;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,9 +28,6 @@ namespace Serilog.Configuration
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string instrumentationKey)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, instrumentationKey, LogEventLevel.Verbose);
         }
 
@@ -51,9 +47,6 @@ namespace Serilog.Configuration
             string instrumentationKey,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, instrumentationKey, LogEventLevel.Verbose, configureOptions);
         }
 
@@ -73,9 +66,6 @@ namespace Serilog.Configuration
             string instrumentationKey,
             LogEventLevel restrictedToMinimumLevel)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, instrumentationKey, restrictedToMinimumLevel, configureOptions: null);
         }
 
@@ -97,8 +87,8 @@ namespace Serilog.Configuration
             LogEventLevel restrictedToMinimumLevel,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+            ArgumentNullException.ThrowIfNull(loggerSinkConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(instrumentationKey);
 
             var options = new ApplicationInsightsSinkOptions();
             configureOptions?.Invoke(options);
@@ -125,9 +115,6 @@ namespace Serilog.Configuration
             IServiceProvider serviceProvider,
             string instrumentationKey)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, LogEventLevel.Verbose);
         }
 
@@ -152,9 +139,6 @@ namespace Serilog.Configuration
             string instrumentationKey,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, LogEventLevel.Verbose, configureOptions);
         }
 
@@ -179,9 +163,6 @@ namespace Serilog.Configuration
             string instrumentationKey,
             LogEventLevel restrictedToMinimumLevel)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithInstrumentationKey(loggerSinkConfiguration, serviceProvider, instrumentationKey, restrictedToMinimumLevel, configureOptions: null);
         }
 
@@ -208,8 +189,8 @@ namespace Serilog.Configuration
             LogEventLevel restrictedToMinimumLevel,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(instrumentationKey, nameof(instrumentationKey), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+            ArgumentNullException.ThrowIfNull(loggerSinkConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(instrumentationKey);
 
             var options = new ApplicationInsightsSinkOptions();
             configureOptions?.Invoke(options);
@@ -231,9 +212,6 @@ namespace Serilog.Configuration
             this LoggerSinkConfiguration loggerSinkConfiguration,
             string connectionString)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, connectionString, configureOptions: null);
         }
 
@@ -253,9 +231,6 @@ namespace Serilog.Configuration
             string connectionString,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, connectionString, LogEventLevel.Verbose, configureOptions);
         }
 
@@ -275,9 +250,6 @@ namespace Serilog.Configuration
             string connectionString,
             LogEventLevel restrictedToMinimumLevel)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, connectionString, restrictedToMinimumLevel, configureOptions: null);
         }
 
@@ -299,8 +271,8 @@ namespace Serilog.Configuration
             LogEventLevel restrictedToMinimumLevel,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+            ArgumentNullException.ThrowIfNull(loggerSinkConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
             var options = new ApplicationInsightsSinkOptions();
             configureOptions?.Invoke(options);
@@ -330,9 +302,6 @@ namespace Serilog.Configuration
             IServiceProvider serviceProvider,
             string connectionString)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, configureOptions: null);
         }
 
@@ -357,9 +326,6 @@ namespace Serilog.Configuration
             string connectionString,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, LogEventLevel.Verbose, configureOptions);
         }
 
@@ -384,9 +350,6 @@ namespace Serilog.Configuration
             string connectionString,
             LogEventLevel restrictedToMinimumLevel)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
-
             return AzureApplicationInsightsWithConnectionString(loggerSinkConfiguration, serviceProvider, connectionString, restrictedToMinimumLevel, configureOptions: null);
         }
 
@@ -413,8 +376,8 @@ namespace Serilog.Configuration
             LogEventLevel restrictedToMinimumLevel,
             Action<ApplicationInsightsSinkOptions> configureOptions)
         {
-            Guard.NotNull(loggerSinkConfiguration, nameof(loggerSinkConfiguration), "Requires a logger configuration to add the Azure Application Insights sink to");
-            Guard.NotNullOrWhitespace(connectionString, nameof(connectionString), "Requires an instrumentation key to authenticate with Azure Application Insights while sinking telemetry");
+            ArgumentNullException.ThrowIfNull(loggerSinkConfiguration);
+            ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
             var options = new ApplicationInsightsSinkOptions();
             configureOptions?.Invoke(options);
@@ -423,7 +386,7 @@ namespace Serilog.Configuration
             if (client is null)
             {
                 throw new InvalidOperationException(
-                    "Could not retrieve Microsoft telemetry client from the application registered services, this happens when the Application Insights services are not registered in the application services," 
+                    "Could not retrieve Microsoft telemetry client from the application registered services, this happens when the Application Insights services are not registered in the application services,"
                     + "please use one of Arcus' extensions like 'services.AddHttpCorrelation()' to automatically register the Application Insights when using the W3C correlation system, "
                     + $"when using the Hierarchical correlation system, use the {nameof(AzureApplicationInsightsWithConnectionString)} extension without the service provider instead");
             }
