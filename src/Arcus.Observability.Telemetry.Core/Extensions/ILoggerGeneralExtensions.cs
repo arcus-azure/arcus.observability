@@ -18,6 +18,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogInformation(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -42,6 +43,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogInformation(
             this ILogger logger,
             string message,
@@ -69,6 +71,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -93,6 +96,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
             this ILogger logger,
             Exception exception,
@@ -122,6 +126,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
             this ILogger logger,
             string message,
@@ -151,6 +156,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
             this ILogger logger,
             Exception exception,
@@ -180,6 +186,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -204,6 +211,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
             this ILogger logger,
             Exception exception,
@@ -233,6 +241,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
             this ILogger logger,
             string message,
@@ -262,6 +271,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
             this ILogger logger,
             Exception exception,
@@ -291,6 +301,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -315,6 +326,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
             this ILogger logger,
             Exception exception,
@@ -344,6 +356,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
             this ILogger logger,
             string message,
@@ -373,6 +386,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
             this ILogger logger,
             Exception exception,
@@ -402,6 +416,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogTrace(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -426,6 +441,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogTrace(
             this ILogger logger,
             string message,
@@ -453,6 +469,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogDebug(this ILogger logger, string message, Dictionary<string, object> context)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -477,6 +494,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogDebug(
             this ILogger logger,
             string message,
