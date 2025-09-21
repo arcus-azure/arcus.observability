@@ -22,6 +22,9 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the process executable in the default application domain cannot be retrieved.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(this LoggerEnrichmentConfiguration enrichmentConfiguration, string propertyName = VersionEnricher.DefaultPropertyName)
         {
             ArgumentNullException.ThrowIfNull(enrichmentConfiguration);
@@ -36,6 +39,9 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="appVersion"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IAppVersion appVersion,
@@ -53,6 +59,9 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the current application version.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> or <paramref name="serviceProvider"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application version enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithVersion(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IServiceProvider serviceProvider,
@@ -73,6 +82,9 @@ namespace Serilog
         /// <param name="propertyName">The name of the property to enrich the log event with the <paramref name="componentName"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> or <paramref name="propertyName"/> is blank.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithComponentName(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             string componentName,
@@ -92,6 +104,9 @@ namespace Serilog
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="enrichmentConfiguration"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="serviceProvider"/> or <paramref name="propertyName"/> is blank.</exception>
         /// <exception cref="InvalidOperationException">Thrown when no <see cref="IAppName"/> is registered in the <paramref name="serviceProvider"/>.</exception>
+#pragma warning disable S1133
+        [Obsolete("Will be removed in v4.0 as application name enrichment is too project-specific")]
+#pragma warning restore S1133
         public static LoggerConfiguration WithComponentName(
             this LoggerEnrichmentConfiguration enrichmentConfiguration,
             IServiceProvider serviceProvider,
