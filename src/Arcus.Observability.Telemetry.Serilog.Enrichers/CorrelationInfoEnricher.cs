@@ -2,7 +2,6 @@
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -32,7 +31,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="operationIdPropertyName"/> or <paramref name="transactionIdPropertyName"/> is blank.</exception>
         public CorrelationInfoEnricher(
-            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor, 
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
             string operationIdPropertyName,
             string transactionIdPropertyName)
             : this(correlationInfoAccessor, new CorrelationInfoEnricherOptions
@@ -50,10 +49,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="options">The user-configurable options to change the behavior of the enricher.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="correlationInfoAccessor"/> is <c>null</c>.</exception>
         public CorrelationInfoEnricher(
-            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor, 
+            ICorrelationInfoAccessor<TCorrelationInfo> correlationInfoAccessor,
             CorrelationInfoEnricherOptions options)
         {
-            Guard.NotNull(correlationInfoAccessor, nameof(correlationInfoAccessor), "Requires an correlation accessor to enrich the log events with correlation information");
+            ArgumentNullException.ThrowIfNull(correlationInfoAccessor);
 
             Options = options ?? new CorrelationInfoEnricherOptions();
             CorrelationInfoAccessor = correlationInfoAccessor;
@@ -77,8 +76,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logEvent"/> or the <paramref name="propertyFactory"/> is <c>null</c>.</exception>
         public virtual void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
+            ArgumentNullException.ThrowIfNull(logEvent);
+            ArgumentNullException.ThrowIfNull(propertyFactory);
 
             TCorrelationInfo correlationInfo = CorrelationInfoAccessor.GetCorrelationInfo();
             if (correlationInfo is null)
@@ -100,10 +99,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// </exception>
         protected virtual void EnrichCorrelationInfo(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, TCorrelationInfo correlationInfo)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
-            Guard.NotNull(correlationInfo, nameof(correlationInfo), "Requires the correlation information to enrich the log event");
-            
+            ArgumentNullException.ThrowIfNull(correlationInfo);
+
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationIdPropertyName, correlationInfo.OperationId);
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.TransactionIdPropertyName, correlationInfo.TransactionId);
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationParentIdPropertyName, correlationInfo.OperationParentId);
@@ -120,10 +117,10 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyName"/> is blank.</exception>
         protected void EnrichLogPropertyIfPresent(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, string propertyName, string propertyValue)
         {
-            Guard.NotNull(logEvent, nameof(logEvent), "Requires a log event to enrich the correlation information");
-            Guard.NotNull(propertyFactory, nameof(propertyFactory), "Requires a log event property factory to create properties for the correlation information");
-            Guard.NotNullOrWhitespace(propertyName, nameof(propertyName), "Requires a non-blank name for the correlation log property");
-            
+            ArgumentNullException.ThrowIfNull(logEvent);
+            ArgumentNullException.ThrowIfNull(propertyFactory);
+            ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
+
             if (!String.IsNullOrEmpty(propertyValue))
             {
                 LogEventProperty property = propertyFactory.CreateProperty(propertyName, propertyValue);

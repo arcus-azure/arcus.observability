@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
@@ -21,7 +20,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyType = "Arcus";
             string dependencyData = BogusGenerator.Finance.Account();
             string dependencyId = Guid.NewGuid().ToString();
-           
+
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = DateTimeOffset.Now;
             TimeSpan duration = BogusGenerator.Date.Timespan();
@@ -51,12 +50,12 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string dependencyData = BogusGenerator.Finance.Account();
             string dependencyName = BogusGenerator.Random.Word();
             string dependencyId = Guid.NewGuid().ToString();
-           
+
             bool isSuccessful = BogusGenerator.PickRandom(true, false);
             DateTimeOffset startTime = DateTimeOffset.Now;
             TimeSpan duration = BogusGenerator.Date.Timespan();
             Dictionary<string, object> telemetryContext = CreateTestTelemetryContext();
-            
+
             TestLocation = TestLocation.Remote;
 
             // Act

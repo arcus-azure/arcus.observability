@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -30,10 +29,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(requestSource, nameof(requestSource), "Requires a non-blank request source to identify the caller");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the custom request process latency duration");
-
+            ArgumentNullException.ThrowIfNull(measurement);
             LogCustomRequest(logger, requestSource, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -57,10 +53,6 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(requestSource, nameof(requestSource), "Requires a non-blank request source to identify the caller");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the custom request operation");
-
             LogCustomRequest(logger, requestSource, operationName: null, isSuccessful, startTime, duration, context);
         }
 
@@ -83,10 +75,7 @@ namespace Microsoft.Extensions.Logging
             DurationMeasurement measurement,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(requestSource, nameof(requestSource), "Requires a non-blank request source to identify the caller");
-            Guard.NotNull(measurement, nameof(measurement), "Requires an instance to measure the custom request process latency duration");
-
+            ArgumentNullException.ThrowIfNull(measurement);
             LogCustomRequest(logger, requestSource, operationName, isSuccessful, measurement.StartTime, measurement.Elapsed, context);
         }
 
@@ -112,9 +101,9 @@ namespace Microsoft.Extensions.Logging
             TimeSpan duration,
             Dictionary<string, object> context = null)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to track telemetry");
-            Guard.NotNullOrWhitespace(requestSource, nameof(requestSource), "Requires a non-blank request source to identify the caller");
-            Guard.NotLessThan(duration, TimeSpan.Zero, nameof(duration), "Requires a positive time duration of the custom request operation");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(requestSource);
+            ArgumentOutOfRangeException.ThrowIfLessThan(duration, TimeSpan.Zero);
 
             if (string.IsNullOrWhiteSpace(operationName))
             {

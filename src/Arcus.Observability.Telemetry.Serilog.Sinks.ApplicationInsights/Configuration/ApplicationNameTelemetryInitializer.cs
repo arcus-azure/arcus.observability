@@ -1,6 +1,5 @@
 ﻿using System;
 using Arcus.Observability.Telemetry.Core;
-using GuardNet;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -20,7 +19,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Config
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> is <c>null</c>.</exception>
         public ApplicationNameTelemetryInitializer(IAppName applicationName)
         {
-            Guard.NotNull(applicationName, nameof(applicationName), $"Requires an application name ({nameof(IAppName)}) implementation to retrieve the application name to initialize in the telemetry");
+            ArgumentNullException.ThrowIfNull(applicationName);
             _applicationName = applicationName;
         }
 

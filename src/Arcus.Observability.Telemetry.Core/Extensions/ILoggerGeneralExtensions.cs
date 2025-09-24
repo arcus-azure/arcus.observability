@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GuardNet;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Logging
@@ -19,11 +18,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogInformation(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an informational message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an informational message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged informational message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Information))
             {
@@ -43,15 +43,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogInformation(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an informational message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an informational message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged informational message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Information))
             {
@@ -70,11 +71,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an error message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an error message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged error message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Error))
             {
@@ -94,16 +96,17 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
-            this ILogger logger, 
-            Exception exception, 
-            string message, 
+            this ILogger logger,
+            Exception exception,
+            string message,
             Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an error message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged error message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an error message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged error message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Error))
             {
@@ -123,15 +126,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an error message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an error message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged error message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Error))
             {
@@ -152,17 +156,18 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogError(
-            this ILogger logger, 
-            Exception exception, 
-            string message, 
+            this ILogger logger,
+            Exception exception,
+            string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an error message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged error message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an error message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged error message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Error))
             {
@@ -181,11 +186,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an critical message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an critical message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged critical message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Critical))
             {
@@ -205,16 +211,17 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
-            this ILogger logger, 
-            Exception exception, 
-            string message, 
+            this ILogger logger,
+            Exception exception,
+            string message,
             Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an critical message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged critical message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an critical message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged critical message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Critical))
             {
@@ -234,15 +241,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an critical message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an critical message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged critical message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Critical))
             {
@@ -263,17 +271,18 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogCritical(
-            this ILogger logger, 
-            Exception exception, 
-            string message, 
+            this ILogger logger,
+            Exception exception,
+            string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an critical message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged critical message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an critical message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged critical message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Critical))
             {
@@ -292,11 +301,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an warning message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an warning message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged warning message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Warning))
             {
@@ -316,16 +326,17 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
-            this ILogger logger, 
+            this ILogger logger,
             Exception exception,
-            string message, 
+            string message,
             Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an warning message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged warning message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an warning message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged warning message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Warning))
             {
@@ -345,15 +356,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an warning message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an warning message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged warning message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Warning))
             {
@@ -374,17 +386,18 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/>, <paramref name="exception"/>, or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogWarning(
-            this ILogger logger, 
+            this ILogger logger,
             Exception exception,
-            string message, 
+            string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an warning message with a telemetry context");
-            Guard.NotNull(exception, nameof(exception), "Requires an exception to include with the logged warning message");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an warning message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged warning message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(exception);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Warning))
             {
@@ -403,11 +416,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogTrace(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an trace message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an trace message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged trace message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -427,15 +441,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogTrace(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an trace message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an trace message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged trace message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -454,11 +469,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="context">The context that provides more insights on the message that was measured.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogDebug(this ILogger logger, string message, Dictionary<string, object> context)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an debug message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an debug message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged debug message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Debug))
             {
@@ -478,15 +494,16 @@ namespace Microsoft.Extensions.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="logger"/> or <paramref name="context"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="message"/> is blank.</exception>
+        [Obsolete("Will be removed in v4.0 in favor of using logging scopes to track telemetry contexts across logs")]
         public static void LogDebug(
             this ILogger logger,
             string message,
             Dictionary<string, object> context,
             params object[] args)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires an logger instance to write an debug message with a telemetry context");
-            Guard.NotNullOrWhitespace(message, nameof(message), "Requires an debug message to write to the logger with a telemetry context");
-            Guard.NotNull(context, nameof(context), "Requires a telemetry context to include with the logged debug message");
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentException.ThrowIfNullOrWhiteSpace(message);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (logger.IsEnabled(LogLevel.Debug))
             {

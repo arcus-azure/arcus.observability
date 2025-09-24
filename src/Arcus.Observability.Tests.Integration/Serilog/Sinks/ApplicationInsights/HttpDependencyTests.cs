@@ -8,9 +8,8 @@ using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights 
+namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class HttpDependencyTests : ApplicationInsightsSinkTests
     {

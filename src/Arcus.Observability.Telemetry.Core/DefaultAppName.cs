@@ -1,5 +1,4 @@
 ﻿using System;
-using GuardNet;
 
 namespace Arcus.Observability.Telemetry.Core
 {
@@ -17,7 +16,7 @@ namespace Arcus.Observability.Telemetry.Core
         /// <exception cref="ArgumentException">Thrown when the <paramref name="componentName"/> is blank.</exception>
         public DefaultAppName(string componentName)
         {
-            Guard.NotNullOrWhitespace(componentName, nameof(componentName), "Requires a non-blank functional name to identity the application");
+            ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
             _componentName = componentName;
         }
 
