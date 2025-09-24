@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Configuration;
 using Xunit;
-using Xunit.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
@@ -101,7 +100,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             });
         }
 
-          [Fact]
+        [Fact]
         public async Task Sink_WithInstrumentationKeyWithServiceProvider_WritesTelemetry()
         {
             // Arrange

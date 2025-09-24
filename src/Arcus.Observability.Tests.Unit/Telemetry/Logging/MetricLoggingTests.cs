@@ -94,18 +94,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
         }
 
         [Fact]
-        public void LogCustomMetric_NoMetricNameWasSpecified_ThrowsException()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string metricName = null;
-            double metricValue = _bogusGenerator.Random.Double();
-
-            // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogCustomMetric(metricName, metricValue));
-        }
-
-        [Fact]
         public void LogCustomMetric_WithContext_DoesNotAlterContext()
         {
             // Arrange

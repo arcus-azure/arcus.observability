@@ -5,7 +5,6 @@ using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
-using Xunit.Abstractions;
 using static Arcus.Observability.Telemetry.Core.ContextProperties.RequestTracking;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights

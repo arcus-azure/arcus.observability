@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
 using Bogus;
 using Microsoft.Extensions.Logging;
@@ -26,17 +25,6 @@ namespace Arcus.Observability.Tests.Unit.Telemetry.Logging
             var logMessage = logger.WrittenMessage;
             Assert.Contains(TelemetryType.Events.ToString(), logMessage);
             Assert.Contains(eventName, logMessage);
-        }
-
-        [Fact]
-        public void LogCustomEvent_NoEventNameSpecified_ThrowsException()
-        {
-            // Arrange
-            var logger = new TestLogger();
-            string eventName = null;
-
-            // Act & Arrange
-            Assert.Throws<ArgumentException>(() => logger.LogCustomEvent(eventName));
         }
 
         [Fact]

@@ -2,7 +2,6 @@
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers.Configuration;
-using GuardNet;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -100,7 +99,7 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// </exception>
         protected virtual void EnrichCorrelationInfo(LogEvent logEvent, ILogEventPropertyFactory propertyFactory, TCorrelationInfo correlationInfo)
         {
-            Guard.NotNull(correlationInfo, nameof(correlationInfo), "Requires the correlation information to enrich the log event");
+            ArgumentNullException.ThrowIfNull(correlationInfo);
 
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.OperationIdPropertyName, correlationInfo.OperationId);
             EnrichLogPropertyIfPresent(logEvent, propertyFactory, Options.TransactionIdPropertyName, correlationInfo.TransactionId);

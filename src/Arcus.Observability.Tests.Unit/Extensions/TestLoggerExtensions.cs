@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Core.Logging;
-using GuardNet;
 using Xunit;
 
 // ReSharper disable once CheckNamespace
@@ -27,7 +26,7 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static DependencyLogEntry GetMessageAsDependency(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            ArgumentNullException.ThrowIfNull(logger);
 
             if (logger.WrittenMessage is null)
             {
@@ -61,7 +60,7 @@ namespace Arcus.Observability.Tests.Unit
                 isSuccessful,
                 context);
         }
-        
+
         /// <summary>
         /// Gets the written message to the <paramref name="logger"/> as a strongly-typed Request.
         /// </summary>
@@ -73,7 +72,7 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static RequestLogEntry GetMessageAsRequest(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            ArgumentNullException.ThrowIfNull(logger);
 
             if (logger.WrittenMessage is null)
             {
@@ -142,7 +141,7 @@ namespace Arcus.Observability.Tests.Unit
         /// <exception cref="InvalidOperationException">Thrown when no test message was written to the test <paramref name="logger"/>.</exception>
         public static MetricLogEntry GetMessageAsMetric(this TestLogger logger)
         {
-            Guard.NotNull(logger, nameof(logger), "Requires a test logger to retrieve the written log message");
+            ArgumentNullException.ThrowIfNull(logger);
 
             if (logger.WrittenMessage is null)
             {
@@ -164,7 +163,7 @@ namespace Arcus.Observability.Tests.Unit
         private static string GetGroupValue(this Match match, string name)
         {
             Assert.True(
-                match.Groups.TryGetValue(name, out Group group), 
+                match.Groups.TryGetValue(name, out Group group),
                 $"Cannot find {name} in logged message");
 
             return group.Captures.FirstOrDefault()?.Value;
@@ -173,18 +172,18 @@ namespace Arcus.Observability.Tests.Unit
         private static double GetGroupValueAsDouble(this Match match, string name)
         {
             string value = match.GetGroupValue(name);
-            
+
             Assert.True(
                 double.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double metricValue),
                 $"Cannot parse {name} to double");
-            
+
             return metricValue;
         }
 
         private static TimeSpan GetGroupValueAsTimeSpan(this Match match, string name)
         {
             string value = match.GetGroupValue(name);
-            
+
             Assert.True(
                 TimeSpan.TryParse(value, out TimeSpan span),
                 $"Cannot parse {name} to a time span");
@@ -195,18 +194,18 @@ namespace Arcus.Observability.Tests.Unit
         private static DateTimeOffset GetGroupValueAsDateTimeOffset(this Match match, string name)
         {
             string value = match.GetGroupValue(name);
-            
+
             Assert.True(
                 DateTimeOffset.TryParse(value, out DateTimeOffset timestamp),
                 $"Cannot parse {name} to date time offset");
-           
+
             return timestamp;
         }
 
         private static bool GetGroupValueAsBool(this Match match, string name)
         {
             string value = match.GetGroupValue(name);
-            
+
             Assert.True(
                 bool.TryParse(value, out bool result),
                 $"Cannot parse {name} to boolean");
@@ -230,7 +229,7 @@ namespace Arcus.Observability.Tests.Unit
         {
             string contextText = match.GetGroupValue(name);
 
-            char[] trailingChars = {'[', ']', ' '};
+            char[] trailingChars = { '[', ']', ' ' };
             IDictionary<string, object> context =
                 contextText.Split(';')
                            .Select(item => item.Split(','))
@@ -244,7 +243,7 @@ namespace Arcus.Observability.Tests.Unit
                        && item.Value.ToString() == telemetryType.ToString();
             });
             context.Remove(ContextProperties.General.TelemetryType);
-            
+
             return context;
         }
     }
