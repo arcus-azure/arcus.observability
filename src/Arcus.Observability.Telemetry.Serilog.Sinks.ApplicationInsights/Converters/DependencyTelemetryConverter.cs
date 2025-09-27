@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Arcus.Observability.Telemetry.Core;
-using Arcus.Observability.Telemetry.Core.Logging;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Microsoft.ApplicationInsights.DataContracts;
 using Serilog.Events;
+using DependencyLogEntry = Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging.DependencyLogEntry;
 
 namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters
 {

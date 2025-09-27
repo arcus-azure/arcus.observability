@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Arcus.Observability.Telemetry.Core;
 
-namespace Arcus.Observability.Telemetry.Core.Logging
+namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging
 {
     /// <summary>
     /// Represents a custom dependency as a logging entry.
     /// </summary>
-    [Obsolete("Will be moved to Serilog-specific project in v4.0")]
-    public class DependencyLogEntry
+    internal sealed class DependencyLogEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyLogEntry"/> class.
