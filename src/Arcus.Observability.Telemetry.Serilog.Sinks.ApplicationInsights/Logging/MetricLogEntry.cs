@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Arcus.Observability.Telemetry.Core;
 
-namespace Arcus.Observability.Telemetry.Core.Logging
+namespace Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Logging
 {
     /// <summary>
     /// Represents a metric as a log entry.
     /// </summary>
-    [Obsolete("Will be moved to Serilog-specific project in v4.0")]
-    public class MetricLogEntry
+    internal sealed class MetricLogEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MetricLogEntry"/> class.
