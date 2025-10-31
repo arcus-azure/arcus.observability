@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Arcus</Authors>
+    <Company>Arcus</Company>
+    <Description>Provides capability to improve telemetry with OpenTelemetry that is sent to Azure Application Insights</Description>
+    <Copyright>Copyright (c) Arcus</Copyright>
+    <PackageProjectUrl>https://observability.arcus-azure.net/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryType>Git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Azure;Observability;Telemetry;OpenTelemetry</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>S1133</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="..\..\docs\static\img\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="[1.*,2.0.0)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.Core\Arcus.Observability.Telemetry.Core.csproj" />
+  </ItemGroup>
+
+</Project>

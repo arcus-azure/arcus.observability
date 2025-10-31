@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Arcus.Testing.Core" Version="2.1.0" />
+    <PackageReference Include="Arcus.Testing.Logging.Xunit.v3" Version="2.1.0" />
     <PackageReference Include="Bogus" Version="34.0.1" />
     <PackageReference Include="coverlet.collector" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
@@ -20,8 +22,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.42.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.InMemory" Version="1.13.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="xunit.v3" Version="2.*" />
@@ -30,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcus.Observability.Correlation\Arcus.Observability.Correlation.csproj" />
+    <ProjectReference Include="..\Arcus.Observability.Telemetry.OpenTelemetry\Arcus.Observability.Telemetry.OpenTelemetry.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights\Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Arcus.Observability.Tests.Core\Arcus.Observability.Tests.Core.csproj" />
   </ItemGroup>
