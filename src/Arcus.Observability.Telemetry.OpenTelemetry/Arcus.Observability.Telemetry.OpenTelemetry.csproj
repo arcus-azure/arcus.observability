@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Authors>Arcus</Authors>
     <Company>Arcus</Company>
-    <Description>Provides capability to improve telemetry with OpenTelemetry that is sent to Azure Application Insights</Description>
+    <Description>Provides capability to improve telemetry with OpenTelemetry that is sent to Azure Application Insights or other observability backends</Description>
     <Copyright>Copyright (c) Arcus</Copyright>
     <PackageProjectUrl>https://observability.arcus-azure.net/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/arcus-azure/arcus.observability</RepositoryUrl>
