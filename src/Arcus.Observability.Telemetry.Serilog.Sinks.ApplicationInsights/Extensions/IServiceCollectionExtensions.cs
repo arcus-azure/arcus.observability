@@ -1,7 +1,10 @@
 ﻿using System;
+using Arcus.Observability;
 using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights;
 using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -93,6 +96,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddSingleton(createImplementation)
                            .AddSingleton<ITelemetryInitializer, ApplicationVersionTelemetryInitializer>();
+        }
+
+        /// <summary>
+        /// Registers the Serilog <see cref="IObservability"/> implementation to the application services.
+        /// </summary>
+        public static IServiceCollection UseObservability(this IServiceCollection services)
+        {
+            ArgumentNullException.ThrowIfNull(services);
+            return services.AddSingleton<IObservability>(provider =>
+            {
+                return new SerilogObservability(
+                    provider.GetRequiredService<ILogger<SerilogObservability>>());
+            });
         }
     }
 }
