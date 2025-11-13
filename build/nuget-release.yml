@@ -20,6 +20,7 @@ resources:
 
 variables:
   - group: 'Build Configuration'
+  - group: 'NuGet'
   - template: ./variables/build.yml
   - template: ./variables/test.yml
   - name: 'Repository'
@@ -106,4 +107,9 @@ stages:
                 None.
                 ### Removal
                 None.
-          - template: nuget/publish-official-package.yml@templates
+          - task: DotNetCoreCLI@2
+            displayName: 'Push to NuGet.org'
+            inputs:
+              command: 'custom'
+              custom: 'nuget'
+              arguments: 'push src/**/*.nupkg --source $(NuGet.SourceUrl) --api-key $(NuGet.ApiKey)'
