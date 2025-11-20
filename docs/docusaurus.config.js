@@ -14,13 +14,36 @@ module.exports = {
   themeConfig: {
     image: 'img/arcus.jpg',
     navbar: {
-      title: 'Observability',
+      title: '',
       logo: {
         alt: 'Arcus',
         src: 'img/arcus.png',
         srcDark: 'img/arcus_for_dark.png',
       },
       items: [
+        {
+          type: 'dropdown',
+          label: 'Observability',
+          position: 'left',
+          items: [
+            {
+              label: 'Arcus Messaging',
+              href: 'https://messaging.arcus-azure.net/'
+            },
+            {
+              label: 'Arcus Testing',
+              href: 'https://testing.arcus-azure.net/'
+            },
+            {
+              label: 'Arcus Scripting',
+              href: 'https://scripting.arcus-azure.net/'
+            },
+            {
+              label: 'Arcus Security',
+              href: 'https://security.arcus-azure.net/',
+            }
+          ]
+        },
         {
           type: 'docsVersionDropdown',
 
@@ -75,7 +98,7 @@ module.exports = {
     prism: {
       theme: lightCodeTheme,
       darkTheme: darkCodeTheme,
-      additionalLanguages: ['csharp'],
+      additionalLanguages: ['csharp', 'powershell', 'diff'],
     },
   },
   presets: [
@@ -90,7 +113,7 @@ module.exports = {
           // Please change this to your repo.
           editUrl:
             'https://github.com/arcus-azure/arcus.observability/edit/master/docs',
-          includeCurrentVersion:process.env.CONTEXT !== 'production',
+          includeCurrentVersion: process.env.CONTEXT !== 'production',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
