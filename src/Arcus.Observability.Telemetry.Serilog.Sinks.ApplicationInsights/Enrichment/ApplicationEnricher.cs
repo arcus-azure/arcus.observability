@@ -1,6 +1,5 @@
 ﻿using System;
 using Serilog.Core;
-using Serilog.Enrichers;
 using Serilog.Events;
 
 namespace Arcus.Observability.Telemetry.Serilog.Enrichers
@@ -10,9 +9,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
     /// </summary>
     public class ApplicationEnricher : ILogEventEnricher
     {
-        internal const string ComponentName = "ComponentName";
+        internal const string ComponentName = "ComponentName", MachineName = "MachineName";
 
-        private readonly ILogEventEnricher _machineNameEnricher = new MachineNameEnricher();
         private readonly string _componentValue, _propertyName;
 
         /// <summary>
@@ -46,10 +44,8 @@ namespace Arcus.Observability.Telemetry.Serilog.Enrichers
         /// <param name="propertyFactory">Factory for creating new properties to add to the event.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            LogEventProperty property = propertyFactory.CreateProperty(_propertyName, _componentValue);
-            logEvent.AddPropertyIfAbsent(property);
-
-            _machineNameEnricher.Enrich(logEvent, propertyFactory);
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(_propertyName, _componentValue));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(MachineName, Environment.MachineName));
         }
     }
 }
