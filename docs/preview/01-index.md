@@ -15,7 +15,7 @@ Arcus Observability is an umbrella term for a set of NuGet packages `Arcus.Obser
 Tracking telemetry in applications can be quite complex. Different services to inject, multi-dimensional contexts, different observability backends - each with their own clients. Arcus Observability captures these general concepts and provides an extensible API that is future proof for other observability backends.
 
 ## How to use Arcus Observability?
-See our dedicated [getting started](./02-getting-started.md) page to take your first steps with Arcus Observability. Good luck!
+See our dedicated [getting started](./02-getting-started.md) page to take your first steps with Arcus Observability.
 
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.
