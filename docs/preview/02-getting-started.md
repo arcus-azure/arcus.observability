@@ -35,7 +35,7 @@ Host.CreateDefaultBuilder()
 ```
 
 :::note
-Internally, the magic happens where Arcus' `IObservability` point of contact gets registered and provides a way to handle .NET `Activity` and `Meter` instances.
+Internally, the magic happens where an implementation of the Arcus' `IObservability` interface gets registered and provides a way to handle .NET `Activity` and `Meter` instances.
 :::
 
 Tracking telemetry is now available in your application via the `IObservability` facade that can be injected in your services that are not yet automatically tracked by either OpenTelemetry or Microsoft.
