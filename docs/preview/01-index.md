@@ -12,7 +12,7 @@ Welcome to the Arcus Observability site! 🎉
 Arcus Observability is an umbrella term for a set of NuGet packages `Arcus.Observability.*` that help with abstracting away boilerplate code when tracking telemetry in applications. It allows you to minimize the infrastructure code in implementation code, while giving application developers a clear API to work with.
 
 ## Why should I use Arcus Observability?
-Tracking telemetry in applications can be quite complex. Different services to inject, multi-dimensional contexts, different observability backends - each with their own clients. Arcus Observability capture these general concepts and provides an extensible API that is future proof for other observability backends.
+Tracking telemetry in applications can be quite complex. Different services to inject, multi-dimensional contexts, different observability backends - each with their own clients. Arcus Observability captures these general concepts and provides an extensible API that is future proof for other observability backends.
 
 ## How to use Arcus Observability?
 See our dedicated [getting started](./02-getting-started.md) page to take your first steps with Arcus Observability. Good luck!
