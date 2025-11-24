@@ -8,7 +8,7 @@ sidebar_label: Getting started
 This page is dedicated to be used as a walkthrough on how to set up Arcus Observability in a new or existing project. Arcus Observability is an umbrella term for a set of NuGet packages that kickstart your observability solution.
 
 ## The basics
-Arcus Observability is split between two major observability backend implementations: OpenTelemetry and Serilog. This split gets translated in two different packages:
+Arcus Observability is split between two major observability backend implementations: OpenTelemetry and Serilog. This split is translated in two different packages:
 * `Arcus.Observability.Telemetry.OpenTelemetry`
 * `Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights`
 
