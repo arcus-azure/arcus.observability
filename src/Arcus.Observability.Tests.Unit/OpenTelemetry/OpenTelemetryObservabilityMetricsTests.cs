@@ -25,7 +25,7 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
 
             await using var context = await MetricsTestContext.GivenAsync(otel =>
             {
-                otel.UseObservability();
+                otel.UseArcusObservability();
             });
 
             // Act

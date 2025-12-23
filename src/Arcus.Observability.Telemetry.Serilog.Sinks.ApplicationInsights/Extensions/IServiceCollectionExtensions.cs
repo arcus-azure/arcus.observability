@@ -101,7 +101,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers the Serilog <see cref="IObservability"/> implementation to the application services.
         /// </summary>
-        public static IServiceCollection UseObservability(this IServiceCollection services)
+        public static IServiceCollection UseArcusObservability(this IServiceCollection services)
         {
             ArgumentNullException.ThrowIfNull(services);
             return services.AddSingleton<IObservability>(provider =>

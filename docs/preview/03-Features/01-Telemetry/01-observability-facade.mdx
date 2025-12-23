@@ -24,7 +24,7 @@ Host.CreateDefaultBuilder()
     .ConfigureServices(services =>
     {
         services.AddOpenTelemetry()
-+               .UseObservability();
++               .UseArcusObservability();
     });
 ```
 
@@ -109,7 +109,7 @@ Several options are available on the facade to configure at a global level the t
 
 ```csharp
 services.OpenTelemetry()
-        .UseObservability(options =>
+        .UseArcusObservability(options =>
         {
             // Configure the resource's service name via an `IAppName` implementation.
             // Corresponds with OpenTelemetry's service.name and Azure Application Insights Cloud's role name.
@@ -139,7 +139,7 @@ Host.CreateDefaultBuilder()
     .ConfigureServices(services =>
     {
         services.AddApplicationInsightsTelemetryWorkerService();
-+       services.UseObservability();
++       services.UseArcusObservability();
     })
     .ConfigureLogging(logging =>
     {

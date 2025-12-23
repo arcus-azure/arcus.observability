@@ -22,7 +22,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             using var context = SerilogObservabilityTestContext.Given(services =>
             {
-                services.UseObservability();
+                services.UseArcusObservability();
             });
 
             var metricName = string.Join("_", Bogus.Lorem.Words().Select(w => w.ToLowerInvariant()));
@@ -42,7 +42,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             using var context = SerilogObservabilityTestContext.Given(services =>
             {
-                services.UseObservability();
+                services.UseArcusObservability();
             });
 
             var operationName = Bogus.Random.Guid().ToString();
@@ -66,7 +66,7 @@ namespace Arcus.Observability.Tests.Integration.Serilog
             // Arrange
             using var context = SerilogObservabilityTestContext.Given(services =>
             {
-                services.UseObservability();
+                services.UseArcusObservability();
             });
 
             var dependencyName = Bogus.Random.Guid().ToString();
