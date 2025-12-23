@@ -16,7 +16,7 @@ namespace OpenTelemetry
 {
     /// <summary>
     /// Represents the available options to configure the OpenTelemetry <see cref="IObservability"/> implementation
-    /// via <see cref="OpenTelemetryBuilderExtensions.UseArcusObservability"/>
+    /// via <see cref="OpenTelemetryBuilderExtensions.UseArcusObservability(OpenTelemetryBuilder,Action{OpenTelemetryObservabilityOptions})"/>
     /// </summary>
     public class OpenTelemetryObservabilityOptions
     {
