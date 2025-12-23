@@ -30,7 +30,8 @@ Host.CreateDefaultBuilder()
 
 Telemetry tracking happens via the `IObservability` facade, which is an interface that gets registered in the application services.
 :::note
-An `ActivitySource` gets registered as a singleton for the entire application, which gets also registered in OpenTelemetry's 'tracked sources'. Same for the `Meter`, a single name gets used throughout the application which recorded metrics gets used.
+An `ActivitySource` is registered as a singleton for the entire lifetime of the application.  This `ActivitySource` is also registered in OpenTelemetry's 'tracked sources'. 
+The same applies for the `Meter` type.  A single instance is used throughout the application which is used for recording metrics in the application.
 :::
 
 ## Tracking metrics

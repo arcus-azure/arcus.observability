@@ -8,7 +8,7 @@ sidebar_label: Getting started
 This page is dedicated to be used as a walkthrough on how to set up Arcus Observability in a new or existing project. Arcus Observability is an umbrella term for a set of NuGet packages that kickstart your observability solution.
 
 ## The basics
-Arcus Observability is split between two major observability backend implementations: OpenTelemetry and Serilog. This split gets translated in two different packages:
+Arcus Observability is split between two major observability backend implementations: OpenTelemetry and Serilog. This split is translated in two different packages:
 * `Arcus.Observability.Telemetry.OpenTelemetry`
 * `Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights`
 
@@ -35,7 +35,7 @@ Host.CreateDefaultBuilder()
 ```
 
 :::note
-Internally, the magic happens where Arcus' `IObservability` point of contact gets registered and provides a way to handle .NET `Activity` and `Meter` instances.
+Internally, the magic happens where an implementation of the Arcus' `IObservability` interface gets registered and provides a way to handle .NET `Activity` and `Meter` instances.
 :::
 
 Tracking telemetry is now available in your application via the `IObservability` facade that can be injected in your services that are not yet automatically tracked by either OpenTelemetry or Microsoft.
