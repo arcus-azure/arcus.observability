@@ -46,7 +46,6 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
             private readonly IHost _host;
             private readonly Collection<Metric> _actualMetrics;
 
-
             /// <summary>
             /// Initializes a new instance of the <see cref="MetricsTestContext"/> class.
             /// </summary>
