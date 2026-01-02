@@ -23,9 +23,19 @@ jobs:
         parameters:
           azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
-      - template: test/run-integration-tests.yml@templates
-        parameters:
-          dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-          projectName: '$(Project).Tests.Integration'
-          category: 'Integration'
+      - script: |
+          dotnet test src/**/$(Project).Tests.Integration.csproj --configuration $(Build.Configuration) --collect:"XPlat Code Coverage" --logger trx --results-directory $(Pipeline.Workspace)
+        displayName: 'Run integration tests'
+
+      - task: PublishTestResults@2
+        displayName: 'Publish integration test results'
+        condition: always()
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/*.trx'
+
+      - task: PublishPipelineArtifact@0
+        displayName: 'Publish code coverage artifacts'
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifactName: Coverage-Integration

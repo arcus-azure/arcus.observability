@@ -11,13 +11,31 @@ jobs:
           path: '$(Build.SourcesDirectory)'
 
       - task: UseDotNet@2
-        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
+        displayName: 'Import .NET SDK ($(DotNet.Sdk.VersionBC))'
         inputs:
           packageType: 'sdk'
-          version: '$(DotNet.Sdk.PreviousVersion)'
+          version: '$(DotNet.Sdk.VersionBC)'
 
-      - template: test/run-unit-tests.yml@templates
-        parameters:
-          dotnetSdkVersion: '$(DotNet.Sdk.Version)'
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.Version)'
           includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-          projectName: '$(Project).Tests.Unit'
+
+      - script: |
+          dotnet test src/**/$(Project).Tests.Unit.csproj --configuration $(Build.Configuration) --collect:"XPlat Code Coverage" --logger trx --results-directory $(Pipeline.Workspace)
+        displayName: 'Run unit tests'
+
+      - task: PublishTestResults@2
+        displayName: 'Publish unit test results'
+        condition: always()
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/*.trx'
+
+      - task: PublishPipelineArtifact@0
+        displayName: 'Publish code coverage artifacts'
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifactName: Coverage-Unit
