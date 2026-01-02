@@ -25,7 +25,7 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
 
             await using var context = await OpenTelemetryRequestTestContext.GivenAsync(otel =>
             {
-                otel.UseObservability(options =>
+                otel.UseArcusObservability(options =>
                 {
                     if (componentName != null)
                     {
@@ -57,7 +57,7 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
 
             await using var context = await OpenTelemetryRequestTestContext.GivenAsync(otel =>
             {
-                otel.UseObservability(options =>
+                otel.UseArcusObservability(options =>
                 {
                     if (componentName != null)
                     {

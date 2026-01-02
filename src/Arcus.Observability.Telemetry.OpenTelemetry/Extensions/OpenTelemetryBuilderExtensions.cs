@@ -16,7 +16,7 @@ namespace OpenTelemetry
 {
     /// <summary>
     /// Represents the available options to configure the OpenTelemetry <see cref="IObservability"/> implementation
-    /// via <see cref="OpenTelemetryBuilderExtensions.UseObservability(OpenTelemetryBuilder)"/>
+    /// via <see cref="OpenTelemetryBuilderExtensions.UseArcusObservability(OpenTelemetryBuilder,Action{OpenTelemetryObservabilityOptions})"/>
     /// </summary>
     public class OpenTelemetryObservabilityOptions
     {
@@ -85,9 +85,9 @@ namespace OpenTelemetry
         /// </summary>
         /// <param name="otel">The current OpenTelemetry setup being configured in the application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="otel"/> is <c>null</c>.</exception>
-        public static OpenTelemetryBuilder UseObservability(this OpenTelemetryBuilder otel)
+        public static OpenTelemetryBuilder UseArcusObservability(this OpenTelemetryBuilder otel)
         {
-            return UseObservability(otel, configureOptions: null);
+            return UseArcusObservability(otel, configureOptions: null);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace OpenTelemetry
         /// <param name="otel">The current OpenTelemetry setup being configured in the application.</param>
         /// <param name="configureOptions">The additional options to manipulate the behavior of the <see cref="IObservability"/> implementation.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="otel"/> is <c>null</c>.</exception>
-        public static OpenTelemetryBuilder UseObservability(this OpenTelemetryBuilder otel, Action<OpenTelemetryObservabilityOptions> configureOptions)
+        public static OpenTelemetryBuilder UseArcusObservability(this OpenTelemetryBuilder otel, Action<OpenTelemetryObservabilityOptions> configureOptions)
         {
             ArgumentNullException.ThrowIfNull(otel);
 

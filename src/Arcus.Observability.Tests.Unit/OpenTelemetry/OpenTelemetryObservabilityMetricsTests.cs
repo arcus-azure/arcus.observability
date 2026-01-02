@@ -25,7 +25,7 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
 
             await using var context = await MetricsTestContext.GivenAsync(otel =>
             {
-                otel.UseObservability();
+                otel.UseArcusObservability();
             });
 
             // Act
@@ -45,7 +45,6 @@ namespace Arcus.Observability.Tests.Unit.OpenTelemetry
         {
             private readonly IHost _host;
             private readonly Collection<Metric> _actualMetrics;
-
 
             /// <summary>
             /// Initializes a new instance of the <see cref="MetricsTestContext"/> class.

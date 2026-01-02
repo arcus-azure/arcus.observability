@@ -1,0 +1,315 @@
+---
+sidebar_label: Tracking
+---
+
+import Tabs from '@theme/Tabs'; 
+import TabItem from '@theme/TabItem';
+
+# Simplified telemetry tracking
+Arcus provides a simplified way of tracking telemetry in applications. Based on your preferences and needs, one of the following telemetry tracking systems can be used as infrastructure where Arcus Observability can build upon.
+
+<Tabs groupId="tracking-systems">
+<TabItem label="OpenTelemetry" value="otel">
+
+To build upon OpenTelemetry's infrastructure, install the following NuGet package:
+```powershell
+PS> Install-Package -Name Arcus.Observability.Telemetry.OpenTelemetry
+```
+
+Only a single line is required to activate Arcus' alternative to telemetry tracking:
+```diff
+using OpenTelemetry;
+
+Host.CreateDefaultBuilder()
+    .ConfigureServices(services =>
+    {
+        services.AddOpenTelemetry()
++               .UseArcusObservability();
+    });
+```
+
+Telemetry tracking happens via the `IObservability` facade, which is an interface that gets registered in the application services.
+:::note
+An `ActivitySource` is registered as a singleton for the entire lifetime of the application.  This `ActivitySource` is also registered in OpenTelemetry's 'tracked sources'. 
+The same applies for the `Meter` type.  A single instance is used throughout the application which is used for recording metrics in the application.
+:::
+
+## Tracking metrics
+OpenTelemetry works with .NET default [`Meter`](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-collection) infrastructure to track metrics in observability backends. One can still use this way of working in case more advanced metrics have to be tracked. For simple delta values, Arcus provides a simple solution with the `IObservability.RecordMetric("<metric-name>")` method.
+
+```csharp
+using Arcus.Observability;
+
+public class OrderMessageHandler(IObservability observability)
+{
+    public async Task ProcessOrdersAsync(OrderBatch orders)
+    {
+        // TODO: process orders
+
+        var telemetryContext = new Dictionary<string, object> 
+        {
+            ["BatchId"] = orders.Id
+        };
+        // highlight-next-line
+        observability.RecordMetric("orders_processed").WithValue(orders.Length, telemetryContext);
+    }
+}
+```
+
+## Tracking requests/dependencies
+OpenTelemetry works with .NET default [`Activity`](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing-instrumentation-walkthroughs) instances to track requests/dependencies in application. One can still use this way of working in case more advanced distributed traces are needed. For simple parent/child relationships, Arcus provides a simple solution with the `IObservability.StartCustom[Request/Dependency]("<operation-name>")` method for cases where Microsoft does not built-in track the request/dependency.
+
+The `IsSuccessful` property on both operations allows to specify how the status of the request/dependency operation should be tracked.
+
+```csharp
+using Arcus.Observability;
+
+public class OrderProcessingHost(IObservability observability)
+{
+    public async Task ReceiveOrdersAsync(OrderBatch orders)
+    {
+        var telemetryContext = new Dictionary<string, object> 
+        {
+            ["BatchId"] = orders.Id
+        };
+
+        // highlight-next-line
+        using (var request = observability.StartCustomRequest("Process Orders", telemetryContext))
+        {
+            try
+            {
+                // TODO: process orders
+                
+                // highlight-next-line
+                using (var dependency = observability.StartCustomDependency("Publish Results", telemetryContext))
+                {
+                    try
+                    {
+                        // TODO: publish results
+                    }
+                    catch (PublishException exception)
+                    {
+                      // highlight-next-line
+                      dependency.IsSuccessful = false;
+                    }
+                }
+            }
+            catch (ProcessException exception)
+            {
+                // highlight-next-line
+                request.IsSuccessful = false;
+            }
+        }
+    }
+}
+```
+
+## Customization
+Several options are available on the facade to configure at a global level the tracked telemetry.
+
+```csharp
+services.OpenTelemetry()
+        .UseArcusObservability(options =>
+        {
+            // Configure the resource's service name via an `IAppName` implementation.
+            // Corresponds with OpenTelemetry's service.name and Azure Application Insights Cloud's role name.
+            // Default: Assembly name of running application.
+            options.UseAppName("Order.Handler");
+
+            // Configure the resource's service version via an `IAppVersion` implementation.
+            // Corresponds with OpenTelemetry's service.version.
+            options.UseAssemblyAppVersion<Program>();
+        });
+```
+
+</TabItem>
+<TabItem label="Serilog" value="serilog">
+
+To build upon Serilog's infrastructure that tracks telemetry in Azure Application Insights, install the following NuGet package:
+```powershell
+PS> Install-Package -Name Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights
+```
+
+Assuming a Serilog setup in your project with the necessary [Azure Application Insights](https://docs.azure.cn/en-us/azure-monitor/app/worker-service) package the following changes are required to activate Arcus' alternative telemetry tracking:
+```diff
++ using Arcus.Observability.Telemetry.Serilog.Sinks.ApplicationInsights.Converters;
+using Serilog;
+
+Host.CreateDefaultBuilder()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService();
++       services.UseArcusObservability();
+    })
+    .ConfigureLogging(logging =>
+    {
++       logging.AddSerilog(serviceProvider =>
+        {
+            var client = serviceProvider.GetRequiredService<TelemetryClient>();
++           var converter = ApplicationInsightsTelemetryConverter.Create();
+
+            return new LoggerConfiguration()
+                   .WriteTo.ApplicationInsights(client, converter)
+                   .CreateLogger();
+        });
+    });
+```
+
+## Tracking metrics
+Arcus provides a simple solution to track metrics with a Serilog infrastructure via the `IObservability.RecordMetric("<metric-name>")` method.
+```csharp
+using Arcus.Observability;
+
+public class OrderMessageHandler(IObservability observability)
+{
+    public async Task ProcessOrdersAsync(OrderBatch orders)
+    {
+        // TODO: process orders
+
+        var telemetryContext = new Dictionary<string, object> 
+        {
+            ["BatchId"] = orders.Id
+        };
+        observability.RecordMetric("orders_processed").WithValue(orders.Length, telemetryContext);
+    }
+}
+```
+
+## Tracking requests/dependencies
+Arcus provides a simple solution to track simple parent/child relationships with the `IObservability.StartCustom[Request/Dependency]("<operation-name>")` method.
+```csharp
+using Arcus.Observability;
+
+public class OrderProcessingHost(IObservability observability)
+{
+    public async Task ReceiveOrdersAsync(OrderBatch orders)
+    {
+        var telemetryContext = new Dictionary<string, object> 
+        {
+            ["BatchId"] = orders.Id
+        };
+
+        using (var request = observability.StartCustomRequest("Process Orders", telemetryContext))
+        {
+            try
+            {
+                // TODO: process orders
+                
+                using (var dependency = observability.StartCustomDependency("Publish Results", telemetryContext))
+                {
+                    try
+                    {
+                        // TODO: publish results
+                    }
+                    catch (PublishException exception)
+                    {
+                      dependency.IsSuccessful = false;
+                    }
+                }
+            }
+            catch (ProcessException exception)
+            {
+                request.IsSuccessful = false;
+            }
+        }
+    }
+}
+```
+
+## Filtering
+In certain scenarios, the cost of having too much telemetry or having a certain type of telemetry in your logging can be too high to be useful. We could, for example, filter out in container logs the Request, Metrics and Dependencies, and discard all the other types to make the logging output more readable and cost-effective.
+
+```csharp
+using Arcus.Observability.Telemetry.Core;
+using Arcus.Observability.Telemetry.Serilog.Filters;
+
+var config = new LoggerConfiguration()
+    // highlight-next-line
+    .Filter.With(TelemetryTypeFilter.On(TelemetryType.Dependency))
+    .CreateLogger();
+```
+
+:::note[Override filter with 'tracking enabled']
+If the tracking of a certain telemetry type is enabled/disabled, then filtering here is unnecessary. This is an extra option on the filtering:
+```csharp
+TelemetryTypeFilter.On(..., isTrackingEnabled: false)
+```
+:::
+
+
+## Customization
+Several options are available to configure at a global level the tracked telemetry.
+```csharp
+logging.AddSerilog(serviceProvider =>
+{
+    return new LoggerConfiguration()
+        // Enrich the logs with an application name.
+        // Corresponds with Azure Application Insights Cloud role name.
+        // Default property name: "ComponentName"
+        .Enrich.WithComponentName("<component-name>")
+
+        // Enrich the logs with an application version.
+        // Default: Assembly version
+        // Default property name: "version"
+        .Enrich.WithVersion()
+
+        // Enrich with Kubernetes machine information from environment variables
+        // * KUBERNETES_NODE_NAME (default property name: "NodeName")
+        // * KUBERNETES_POD_NAME (default property name: "PodName")
+        // * KUBERNETES_NAMESPACE (default property name: "Namespace")
+        .Enrich.WithKubernetesInfo()
+
+      .CreateLogger();
+});
+```
+
+<details>
+<summary>**Dynamically enrich application name with `IAppName` registration**</summary>
+
+It is also possible to retrieve the application name dynamically during telemetry enrichment by registering your own `IAppName` implementation in the application services.
+
+```csharp
+.ConfigureServices(services =>
+{
+    // highlight-next-line
+    services.AddAppName(serviceProvider => new MyAppNameFromEnvironment());
+})
+.ConfigureLogging(logging =>
+{
+    logging.AddSerilog(serviceProvider =>
+    {
+        return new LoggerConfiguration()
+            // highlight-next-line
+            .Enrich.WithComponentName(serviceProvider)
+            .CreateLogger();
+    })
+})
+```
+</details>
+
+<details>
+<summary>**Dynamically enrich application version with `IAppVersion` registration**</summary>
+
+It is also possible to retrieve the application name dynamically during telemetry enrichment by registering your own `IAppVersion` implementation in the application services.
+
+```csharp
+.ConfigureServices(services =>
+{
+    // highlight-next-line
+    services.AddAppVersion(serviceProvider => new MyAppVersionFromEnvironment());
+})
+.ConfigureLogging(logging =>
+{
+    logging.AddSerilog(serviceProvider =>
+    {
+        return new LoggerConfiguration()
+            // highlight-next-line
+            .Enrich.WithVersion(serviceProvider.GetRequiredService<IAppVersion>())
+            .CreateLogger();
+    })
+})
+```
+</details>
+
+</TabItem>
+</Tabs>

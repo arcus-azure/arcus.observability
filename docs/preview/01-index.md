@@ -6,24 +6,16 @@ sidebar_label: Welcome
 ---
 
 # Introduction
+Welcome to the Arcus Observability site! 🎉
 
-Arcus Observability allows you to work easily with Azure Application Insights telemetry by making use of the common `ILogger` infrastructure to track dependencies, log custom metrics and log multi-dimensional telemetry data. The library supports multiple telemetry types like tracking dependencies, requests, events, metrics, while also be able to filter with Serilog filters and enrich with custom correlation.
+## What is Arcus Observability?
+Arcus Observability is an umbrella term for a set of NuGet packages `Arcus.Observability.*` that help with abstracting away boilerplate code when tracking telemetry in applications. It allows you to minimize the infrastructure code in implementation code, while giving application developers a clear API to work with.
 
-![Logger Arcus - Application Insights](/img/logger-arcus-appinsights.png)
+## Why should I use Arcus Observability?
+Tracking telemetry in applications can be quite complex. Different services to inject, multi-dimensional contexts, different observability backends - each with their own clients. Arcus Observability captures these general concepts and provides an extensible API that is future proof for other observability backends.
 
-# Guidance
-
-- [Using Arcus & Serilog in ASP.NET Core](./02-Guidance/use-with-dotnet-and-aspnetcore.md)
-
-# Installation
-
-The Arcus.Observability.Correlation package can be installed via NuGet:
-
-```shell
-PM > Install-Package Arcus.Observability.Serilog.Sinks.ApplicationInsights
-```
-
-For more granular packages we recommend reading [the documentation](./03-Features/sinks/azure-application-insights.md).
+## How to use Arcus Observability?
+See our dedicated [getting started](./02-getting-started.md) page to take your first steps with Arcus Observability.
 
 # License
 This is licensed under The MIT License (MIT). Which means that you can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the web application. But you always need to state that Codit is the original author of this web application.
