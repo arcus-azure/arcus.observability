@@ -129,7 +129,7 @@ namespace OpenTelemetry
                 var source = provider.GetRequiredService<ActivitySource>();
                 var factory = provider.GetRequiredService<IMeterFactory>();
 
-                return new OpenTelemetryObservability(source, factory, options);
+                return new OpenTelemetryObservability(source, factory);
             });
 
             otel.ConfigureResource(resource =>

@@ -11,24 +11,21 @@ namespace Arcus.Observability.Telemetry.OpenTelemetry
     /// Represents the OpenTelemetry implementation of the <see cref="IObservability"/> interface
     /// to track telemetry throughout the application in a developer-friendly way.
     /// </summary>
-    internal class OpenTelemetryObservability : IObservability
+    internal sealed class OpenTelemetryObservability : IObservability
     {
         private readonly ActivitySource _applicationSource;
         private readonly IMeterFactory _meterFactory;
-        private readonly OpenTelemetryObservabilityOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenTelemetryObservability"/> class.
         /// </summary>
-        internal OpenTelemetryObservability(ActivitySource applicationSource, IMeterFactory meterFactory, OpenTelemetryObservabilityOptions options)
+        internal OpenTelemetryObservability(ActivitySource applicationSource, IMeterFactory meterFactory)
         {
             ArgumentNullException.ThrowIfNull(applicationSource);
             ArgumentNullException.ThrowIfNull(meterFactory);
-            ArgumentNullException.ThrowIfNull(options);
 
             _applicationSource = applicationSource;
             _meterFactory = meterFactory;
-            _options = options;
         }
 
         /// <summary>
