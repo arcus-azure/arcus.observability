@@ -101,7 +101,7 @@ namespace Arcus.Observability.Telemetry.OpenTelemetry
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(metricName);
 
-            var meter = _meterFactory.Create(_options.GetDefaultMeterName());
+            var meter = _meterFactory.Create(OpenTelemetryObservabilityOptions.GetDefaultMeterName());
             return new OpenTelemetryRecordedMetricBuilder(metricName, meter);
         }
 
