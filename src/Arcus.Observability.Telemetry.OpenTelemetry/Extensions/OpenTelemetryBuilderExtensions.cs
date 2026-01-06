@@ -12,7 +12,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
+#pragma warning disable IDE0130 // Extensions should be in the same namespace as the extended type.
 namespace OpenTelemetry
+#pragma warning restore IDE0130
 {
     /// <summary>
     /// Represents the available options to configure the OpenTelemetry <see cref="IObservability"/> implementation
@@ -23,7 +25,7 @@ namespace OpenTelemetry
         internal Func<IServiceProvider, IAppName> AppNameImplementationFactory { get; set; }
         internal Func<IServiceProvider, IAppVersion> AppVersionImplementationFactory { get; set; }
 
-        internal string GetDefaultMeterName()
+        internal static string GetDefaultMeterName()
         {
             return Assembly.GetEntryAssembly()?.GetName().Name ?? "Default.Meter";
         }
@@ -127,7 +129,7 @@ namespace OpenTelemetry
                 var source = provider.GetRequiredService<ActivitySource>();
                 var factory = provider.GetRequiredService<IMeterFactory>();
 
-                return new OpenTelemetryObservability(source, factory, options);
+                return new OpenTelemetryObservability(source, factory);
             });
 
             otel.ConfigureResource(resource =>
@@ -146,7 +148,7 @@ namespace OpenTelemetry
             });
             otel.WithMetrics(metrics =>
             {
-                metrics.AddMeter(options.GetDefaultMeterName());
+                metrics.AddMeter(OpenTelemetryObservabilityOptions.GetDefaultMeterName());
             });
 
             return otel;
