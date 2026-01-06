@@ -19,6 +19,13 @@ jobs:
           packageType: 'sdk'
           version: '$(DotNet.Sdk.PreviousVersion)'
 
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.Version)'
+          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+
       - template: import-keyvault-secrets.yml
         parameters:
           azureServiceConnection: '${{ parameters.azureServiceConnection }}'

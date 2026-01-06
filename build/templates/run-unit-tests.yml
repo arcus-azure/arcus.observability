@@ -11,10 +11,10 @@ jobs:
           path: '$(Build.SourcesDirectory)'
 
       - task: UseDotNet@2
-        displayName: 'Import .NET SDK ($(DotNet.Sdk.VersionBC))'
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.PreviousVersion))'
         inputs:
           packageType: 'sdk'
-          version: '$(DotNet.Sdk.VersionBC)'
+          version: '$(DotNet.Sdk.PreviousVersion)'
 
       - task: UseDotNet@2
         displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
