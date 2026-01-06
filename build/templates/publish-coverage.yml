@@ -1,0 +1,100 @@
+jobs:
+  - job: PublishCoverage
+    displayName: 'Publish code coverage'
+    pool:
+      vmImage: '$(Vm.Image)'
+    dependsOn:
+      - UnitTests
+      - IntegrationTests
+    steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download coverage unit artifacts'
+        inputs:
+          artifact: 'Coverage-Unit'
+          path: '$(Build.SourcesDirectory)/TestResults'
+
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download coverage integration artifacts'
+        inputs:
+          artifact: 'Coverage-Integration'
+          path: '$(Build.SourcesDirectory)/TestResults'
+
+      - task: reportgenerator@5
+        displayName: 'Generate code coverage report'
+        inputs:
+          reports: '$(Build.SourcesDirectory)/TestResults/**/coverage.cobertura.xml'
+          targetdir: coveragereport
+          reporttypes: Html;HtmlInline_AzurePipelines_Dark;Cobertura;MarkdownSummaryGithub
+          publishCodeCoverageResults: true
+
+      - script: sudo apt install gh
+        condition: eq(variables['Build.Reason'], 'PullRequest')
+        displayName: 'Install GitHub CLI'
+
+      - powershell: |
+          gh auth login --with-token $(GITHUB_TOKEN)
+          gh repo view
+
+          $summary = Get-Content -Path './coveragereport/SummaryGithub.md' -Raw
+          Write-Host "Summary: $summary"
+
+          $lineCoveragePattern = "\*\*Line coverage:\*\*\s*\|\s*(\d+(\.\d+)?%)"
+          $branchCoveragePattern = "\*\*Branch coverage:\*\*\s*\|\s*(\d+(\.\d+)?%)"
+
+          $lineCoverage = "N/A"
+          if ($summary -match $lineCoveragePattern) {
+            $lineCoverage = $matches[1]
+            Write-Host "Line coverage: $lineCoverage"
+          } else {
+            Write-Host "Line coverage not found"
+          }
+
+          $branchCoverage = "N/A"
+          if ($summary -match $branchCoveragePattern) {
+            $branchCoverage = $matches[1]
+            Write-Host "Branch coverage: $branchCoverage"
+          } else {
+            Write-Host "Branch coverage not found"
+          }
+
+          $lineCoverageValue = [double]($lineCoverage -replace '%', '')
+          $branchCoverageValue = [double]($branchCoverage -replace '%', '')
+          $buildId = $env:BUILD_BUILDID
+          $reportUrl = "https://dev.azure.com/codit/Arcus/_build/results?buildId=$buildId&view=codecoverage-tab"
+
+          $minCoverage = 80
+          if ($lineCoverageValue -ge $minCoverage -and $branchCoverage -ge $minCoverage) {
+            $motivationalMessage = "Great job! 😎 Your code coverage is higher than my caffeine levels! ☕"
+          } else {
+            $motivationalMessage = @"
+            😟 Your code coverage is not fully reaching **$minCoverage %** yet. 
+            Please inspect [the report]($reportUrl) to find possible improvements and before you know it, your code coverage will reach the stars! 🚀
+          "@
+          }
+
+          if ($lineCoverageValue -ge $minCoverage) { $lineCoverageBadge = "🟢" } else { $lineCoverageBadge = "🔴" }
+          if ($branchCoverageValue -ge $minCoverage) { $branchCoverageBadge = "🟢" } else { $branchCoverageBadge = "🔴" }
+
+          $comments = gh pr view $env:PR_NUMBER --json comments --jq '.comments[].body'
+          $commentExists = $comments | Where-Object { $_ -like "*Code coverage*" -and $_ -like "*summary*" }
+
+          $content = @"
+          ## 🧪 [Code coverage]($reportUrl) summary
+          | Metric | Value |
+          | ------ | ----- |
+          | Line coverage | $lineCoverageBadge **$lineCoverage** |
+          | Branch coverage | $branchCoverageBadge  **$branchCoverage** |
+
+          $motivationalMessage
+          "@
+
+          if ($commentExists) {
+            gh pr comment $env:PR_NUMBER --body $content --edit-last
+          } else {
+            gh pr comment $env:PR_NUMBER --body $content
+          }
+        env:
+          GITHUB_TOKEN: $(GITHUB_TOKEN)
+          PR_NUMBER: $(System.PullRequest.PullRequestNumber)
+        displayName: 'Publish code coverage summary on GitHub'
+        condition: eq(variables['Build.Reason'], 'PullRequest')

@@ -19,13 +19,41 @@ jobs:
           packageType: 'sdk'
           version: '$(DotNet.Sdk.PreviousVersion)'
 
+      - task: UseDotNet@2
+        displayName: 'Import .NET Core SDK ($(DotNet.Sdk.Version))'
+        inputs:
+          packageType: 'sdk'
+          version: '$(DotNet.Sdk.Version)'
+          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
+
       - template: import-keyvault-secrets.yml
         parameters:
           azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
-      - template: test/run-integration-tests.yml@templates
-        parameters:
-          dotnetSdkVersion: '$(DotNet.Sdk.Version)'
-          includePreviewVersions: $(DotNet.Sdk.IncludePreviewVersions)
-          projectName: '$(Project).Tests.Integration'
-          category: 'Integration'
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+        displayName: 'Replace integration test tokens'
+        inputs:
+          root: 'src/$(Project).Tests.Integration/'
+          sources: 'appsettings.json'
+          missingVarLog: 'error'
+          logLevel: 'debug'
+          addBOM: true
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+
+      - script: |
+          dotnet test src/**/$(Project).Tests.Integration.csproj --configuration $(Build.Configuration) --collect:"XPlat Code Coverage" --logger trx --results-directory $(Pipeline.Workspace)
+        displayName: 'Run integration tests'
+
+      - task: PublishTestResults@2
+        displayName: 'Publish integration test results'
+        condition: always()
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '$(Pipeline.Workspace)/*.trx'
+
+      - task: PublishPipelineArtifact@0
+        displayName: 'Publish code coverage artifacts'
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifactName: Coverage-Integration
