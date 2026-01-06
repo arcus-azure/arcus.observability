@@ -30,6 +30,17 @@ jobs:
         parameters:
           azureServiceConnection: '${{ parameters.azureServiceConnection }}'
 
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+        displayName: 'Replace integration test tokens'
+        inputs:
+          root: 'src/$(Project).Tests.Integration/'
+          sources: 'appsettings.json'
+          missingVarLog: 'error'
+          logLevel: 'debug'
+          addBOM: true
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+
       - script: |
           dotnet test src/**/$(Project).Tests.Integration.csproj --configuration $(Build.Configuration) --collect:"XPlat Code Coverage" --logger trx --results-directory $(Pipeline.Workspace)
         displayName: 'Run integration tests'
