@@ -4,18 +4,22 @@ using System.Threading.Tasks;
 using Arcus.Observability.Correlation;
 using Arcus.Observability.Telemetry.Core;
 using Arcus.Observability.Telemetry.Serilog.Enrichers;
-using Arcus.Observability.Tests.Core;
+using Arcus.Testing;
 using Microsoft.Azure.ApplicationInsights.Query.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Xunit;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsights
 {
     public class EventTests : ApplicationInsightsSinkTests
     {
+        private readonly ILogger _logger;
+
         public EventTests(ITestOutputHelper outputWriter) : base(outputWriter)
         {
+            _logger = new XunitTestLogger(outputWriter);
         }
 
         [Fact]
@@ -128,9 +132,9 @@ namespace Arcus.Observability.Tests.Integration.Serilog.Sinks.ApplicationInsight
             string @namespace = $"namespace-{Guid.NewGuid()}";
             var message = "This message will have Kubernetes information";
 
-            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NodeNameVariable, nodeName))
-            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.PodNameVariable, podName))
-            using (TemporaryEnvironmentVariable.Create(KubernetesEnricher.NamespaceVariable, @namespace))
+            using (TemporaryEnvironmentVariable.SetIfNotExists(KubernetesEnricher.NodeNameVariable, nodeName, _logger))
+            using (TemporaryEnvironmentVariable.SetIfNotExists(KubernetesEnricher.PodNameVariable, podName, _logger))
+            using (TemporaryEnvironmentVariable.SetIfNotExists(KubernetesEnricher.NamespaceVariable, @namespace, _logger))
             {
                 LoggerConfiguration.Enrich.WithKubernetesInfo();
 
